@@ -128,48 +128,48 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-6">Kiired toimingud</h3>
-              <div className="space-y-4">
-                <a
-                  href="/broneeri"
-                  className="flex items-center space-x-3 bg-white/20 rounded-lg p-4 hover:bg-white/30 transition"
-                >
-                  <Calendar className="w-6 h-6" />
-                  <div>
-                    <p className="font-semibold">Broneeri külastus</p>
-                    <p className="text-sm opacity-80">Vali sobiv aeg ja täida vorm</p>
-                  </div>
-                </a>
-                
-                <a
-                  href="#faqs"
-                  className="flex items-center space-x-3 bg-white/20 rounded-lg p-4 hover:bg-white/30 transition"
-                >
-                  <MessageSquare className="w-6 h-6" />
-                  <div>
-                    <p className="font-semibold">Vaata KKK</p>
-                    <p className="text-sm opacity-80">Levinumad küsimused ja vastused</p>
-                  </div>
-                </a>
-
-                <a
-                  href="/kulastajatele"
-                  className="flex items-center space-x-3 bg-white/20 rounded-lg p-4 hover:bg-white/30 transition"
-                >
-                  <Navigation className="w-6 h-6" />
-                  <div>
-                    <p className="font-semibold">Külastajate info</p>
-                    <p className="text-sm opacity-80">Hinnad, reeglid ja juhised</p>
-                  </div>
-                </a>
-              </div>
-            </div>
           </div>
 
           {/* Contact Form */}
           <ContactForm />
+        </div>
+
+        {/* Quick Actions - Full Width */}
+        <div className="mb-16">
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white">
+            <h3 className="text-2xl font-bold mb-4 text-center">Kiired toimingud</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a
+                href="/broneeri"
+                className="flex items-center justify-center bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-all"
+              >
+                <div className="text-center">
+                  <p className="font-semibold">Broneeri külastus</p>
+                  <p className="text-xs opacity-80">Vali sobiv aeg ja täida vorm</p>
+                </div>
+              </a>
+              
+              <a
+                href="#faqs"
+                className="flex items-center justify-center bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-all"
+              >
+                <div className="text-center">
+                  <p className="font-semibold">Vaata KKK</p>
+                  <p className="text-xs opacity-80">Levinumad küsimused ja vastused</p>
+                </div>
+              </a>
+
+              <a
+                href="/kulastajatele"
+                className="flex items-center justify-center bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-all"
+              >
+                <div className="text-center">
+                  <p className="font-semibold">Külastajate info</p>
+                  <p className="text-xs opacity-80">Hinnad, reeglid ja juhised</p>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Social Media */}
@@ -252,16 +252,6 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Emergency Contact */}
-        <div className="mt-12 bg-red-100 border-l-4 border-red-500 rounded-r-lg p-6">
-          <div className="flex items-center space-x-3 mb-3">
-            <Phone className="w-6 h-6 text-red-600" />
-            <h3 className="text-lg font-semibold text-red-800">Hädaolukord külastuse ajal</h3>
-          </div>
-          <p className="text-red-700">
-            Kui külastuse ajal tekib hädaolukord, informeerige kohe meie personali kohapeal või helistage hädaabinumbril 112.
-          </p>
-        </div>
       </div>
     </div>
   )

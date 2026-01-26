@@ -5,7 +5,7 @@ import { Calendar, Users, Heart, Star, Clock } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[115vh] flex items-center justify-center overflow-hidden">
       {/* Beautiful Ara Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -104,15 +104,9 @@ export default function Hero() {
               </div>
             </div>
             
-            <div className="bg-papagoi-orange/20 backdrop-blur-sm border border-papagoi-orange/30 rounded-lg p-4 mb-4">
+            <div className="bg-amber-800/30 backdrop-blur-sm border border-amber-700/50 rounded-2xl p-4">
               <p className="text-white font-medium drop-shadow-xl">
-                ⚠️ Külastused ainult eelneval kokkuleppel. Broneerige aeg ette!
-              </p>
-            </div>
-            
-            <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-lg p-3">
-              <p className="text-white font-medium drop-shadow-xl text-sm">
-                ℹ️ Tavakülastus on minimaalselt 3 inimese jaoks
+                Külastused ainult eelneval kokkuleppel. Broneerige aeg ette! (min 3 inimest)
               </p>
             </div>
           </div>

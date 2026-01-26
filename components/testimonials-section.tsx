@@ -2,39 +2,34 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { Star, Quote, ExternalLink } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-import Image from 'next/image';
 
 const testimonials = [
   {
-    name: 'Kadri Mets',
+    name: 'Kadri',
     role: 'Ema kolme lapsega',
-    image: 'https://i.pinimg.com/736x/3a/ec/6c/3aec6cae45e032ba3ba4c9595e9562b1.jpg',
     content: 'Lapsed olid vaimustuses! Eriti meeldis Mac, kes oskas rääkida ja oli nii sõbralik. Sellist kogemust ei unusta kunagi.',
     rating: 5,
     location: 'Tartu'
   },
   {
-    name: 'Marko Kask',
+    name: 'Marko',
     role: 'Lasteaia õpetaja',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     content: 'Viisime terve lasteaiarühma. Lapsed õppisid palju ja said papagoisid kätte võtta. Professionaalne ja turvaline kogemus.',
     rating: 5,
     location: 'Elva'
   },
   {
-    name: 'Liis Tamm',
+    name: 'Liis',
     role: 'Ettevõtte juht',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     content: 'Korraldame siin meie firma meeskonnasündmusi. Alati eriline kogemus, mis ühendab inimesi ja toob head meeleolu.',
     rating: 5,
     location: 'Kambja'
   },
   {
-    name: 'Peeter Saar',
+    name: 'Peeter',
     role: 'Pensionär',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     content: 'Käin koos lapselastega regulaarselt. Papagoid tunnevad meid juba ära ja on alati rõõmsad meid nähes!',
     rating: 5,
     location: 'Ülenurme'
@@ -45,16 +40,16 @@ export default function TestimonialsSection() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-yellow-50" ref={ref}>
-      <div className="container-custom">
+    <section className="pt-4 pb-12 bg-gradient-to-b from-blue-50 to-yellow-50" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Mida ütlevad meie <span className="text-blue-600">külastajad?</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Mida ütlevad meie külastajad?</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Meie külastajad on meie parim reklaam - lugege, mida nad oma kogemusest räägivad
@@ -91,14 +86,6 @@ export default function TestimonialsSection() {
 
               {/* Author */}
               <div className="flex items-center">
-                <div className="relative w-12 h-12 mr-4">
-                  <Image
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    fill
-                    className="object-cover rounded-full"
-                  />
-                </div>
                 <div>
                   <div className="font-semibold text-gray-900">{testimonial.name}</div>
                   <div className="text-sm text-gray-600">{testimonial.role}</div>
@@ -109,46 +96,31 @@ export default function TestimonialsSection() {
           ))}
         </div>
 
-        {/* Stats Section */}
+        {/* Google Reviews Link */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white text-center"
+          className="text-center mt-12"
         >
-          <h3 className="text-3xl font-bold mb-8">Meie külastajad täidavad meie päeva rõõmuga</h3>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { value: '1000+', label: 'Rahulolu külastajat' },
-              { value: '5.0', label: 'Keskmine hinnang' },
-              { value: '95%', label: 'Soovitab edasi' },
-              { value: '200+', label: 'Pere külastust' }
-            ].map((stat, index) => (
-              <div key={stat.label}>
-                <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                <div className="text-sm md:text-base opacity-90">{stat.label}</div>
-              </div>
-            ))}
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">Jaga oma kogemust teistega!</h3>
+            <p className="text-lg mb-6 opacity-90 max-w-2xl mx-auto">
+              Kui oled meid külastanud, jaga oma kogemust Google'is. Sinu arvustus aitab teisi inimesi meid leida!
+            </p>
+            <a
+              href="https://g.page/r/CXfsGh_UtN6-EAE/review"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center space-x-2 bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-lg"
+            >
+              <Star className="w-5 h-5 fill-current text-yellow-400" />
+              <span>Jäta meile arvustus Google'is</span>
+              <ExternalLink className="w-5 h-5" />
+            </a>
           </div>
         </motion.div>
 
-        {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.8, delay: 1.0 }}
-          className="text-center mt-12"
-        >
-          <p className="text-lg text-gray-600 mb-4">
-            Kas soovite ka teie saada järgmiseks rahuloleva külastajaks?
-          </p>
-          <div className="inline-flex items-center space-x-2 text-green-600 font-semibold">
-            <Star className="h-5 w-5 fill-current text-yellow-400" />
-            <span>Liituge üle 1000 rahuloleva külastajaga</span>
-            <Star className="h-5 w-5 fill-current text-yellow-400" />
-          </div>
-        </motion.div>
       </div>
     </section>
   );

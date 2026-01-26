@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
       name,
       email,
       phone = '',
-      subject,
       message,
       formType = 'contact',
       website // honeypot
@@ -34,14 +33,13 @@ export async function POST(request: NextRequest) {
       name: cleanText(name, { max: 120 }),
       email: cleanText(email, { max: 254 }),
       phone: phone ? cleanText(phone, { max: 40 }) : '',
-      subject: cleanText(subject, { max: 120 }),
       message: cleanText(message, { max: 2000, preserveNewlines: true }),
       formType: cleanText(formType, { max: 50 }),
       website: cleanText(website, { max: 200 }),
     };
 
     // Validate required fields
-    if (!cleaned.name || !cleaned.email || !cleaned.subject || !cleaned.message) {
+    if (!cleaned.name || !cleaned.email || !cleaned.phone || !cleaned.message) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Kõik kohustuslikud väljad peavad olema täidetud'),
         { status: 400 }
@@ -80,8 +78,8 @@ export async function POST(request: NextRequest) {
     await sendContactFormEmail({
       name: cleaned.name,
       email: cleaned.email,
-      phone: cleaned.phone ? cleaned.phone : undefined,
-      subject: cleaned.subject,
+      phone: cleaned.phone,
+      subject: 'Kontaktvormi sõnum',
       message: cleaned.message,
       formType: cleaned.formType ? cleaned.formType : undefined,
     });

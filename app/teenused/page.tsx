@@ -331,10 +331,6 @@ export default function TeenusedPage() {
             
             <div className="p-8">
               <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-orange-500 text-white mb-4">
-                  <Heart className="w-10 h-10" />
-                </div>
-                <h4 className="text-2xl font-bold text-gray-800 mb-3">PetsVilla.ee</h4>
                 <p className="text-gray-700 leading-relaxed mb-6">
                   Kui otsite papagoide või merisigade müügipakkumisi ning kasvatuse infot, vaadake meie teist kodulehte.
                   Papagoi Keskus on eelkõige koht, kuhu tulla külla ja kogeda papagoisid kohapeal.

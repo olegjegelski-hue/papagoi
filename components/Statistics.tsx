@@ -42,7 +42,7 @@ const CountUp = ({ end, duration = 2000 }: { end: number; duration?: number }) =
 
 export default function Statistics() {
   return (
-    <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50">
+    <section className="pt-4 pb-16 bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -107,19 +107,6 @@ export default function Statistics() {
           </div>
         </div>
 
-        {/* Täiendav info */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600 bg-white/60 backdrop-blur-sm px-8 py-4 rounded-full border border-white/30">
-            <div className="flex items-center space-x-2">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-              <span>E-P 12-18</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
-              <span>Ainulaadne kogemus</span>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )

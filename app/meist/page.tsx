@@ -178,45 +178,10 @@ export default function MeistPage() {
             </div>
           </div>
 
-          {/* Tulevik */}
+          {/* Meie visioon */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-8 text-white">
-              <div className="flex items-center justify-center space-x-3">
-                <Sparkles className="w-8 h-8" />
-                <h2 className="text-3xl md:text-4xl font-bold">Tulevik</h2>
-              </div>
-            </div>
-            
             <div className="p-8 md:p-12">
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                Meie plaanid on suured! Järgmistel aastatel soovime keskust laiendada ja parandada.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-purple-50 rounded-xl p-6 border-l-4 border-purple-500">
-                  <div className="flex items-center mb-4">
-                    <Heart className="w-6 h-6 text-purple-600 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">Aretusruum</h4>
-                  </div>
-                  <p className="text-gray-700">
-                    Plaanime rajada eraldi aretusruumi, kus saame professionaalselt tegeleda papagoide aretamisega. 
-                    See võimaldab meil suurendada oma aretuse osakaalu ja vähendada sõltuvust partneritelt.
-                  </p>
-                </div>
-
-                <div className="bg-pink-50 rounded-xl p-6 border-l-4 border-pink-500">
-                  <div className="flex items-center mb-4">
-                    <Calendar className="w-6 h-6 text-pink-600 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">Talvekoda</h4>
-                  </div>
-                  <p className="text-gray-700">
-                    Soovime ehitada talvekoda, kus papagoid saaksid nautida valgust ja värsket õhku ka talvel. 
-                    See annab lindudele rohkem ruumi ja võimalusi liikumiseks.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
                 <p className="text-gray-700">
                   <strong>Meie visioon:</strong> Luua Eesti parim papagoidekeskus, kus linnud saavad elada õnnelikku ja tervislikku elu, 
                   ja kus külastajad saavad kogeda midagi tõeliselt erilist. Kui soovid meid toetada, vaata meie 

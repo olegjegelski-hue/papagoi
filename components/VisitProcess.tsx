@@ -90,9 +90,9 @@ export default function VisitProcess() {
                 <h3 className="text-xl font-bold text-gray-800 mb-3">🏡 Puuridevaba elu meie keskuses</h3>
                 <p className="text-gray-600 leading-relaxed text-lg">
                   Papagoid elavad puuridevabat elu, neile on kasutada <strong className="text-green-600">suur tuba (50m²)</strong>. 
-                  Piki seinu on palju oksi kus saavad papagoid istuda. Samas toas elavad ka <strong className="text-blue-600">40 tõumerisiga</strong> ning 
+                  Piki seinu on palju oksi kus saavad papagoid istuda. Samas toas elavad ka <strong className="text-blue-600">50 tõumerisiga</strong> ning 
                   toome ka <strong className="text-purple-600">küüliku</strong>. 
-                  <span className="text-orange-600 font-semibold"> Linde ja merisigu saab toita oma käest.</span>
+                  <span className="text-orange-600 font-semibold"> Peremehe juhendamisel saab linde ja merisigu toita oma käest.</span>
                 </p>
               </div>
             </div>
@@ -143,10 +143,6 @@ export default function VisitProcess() {
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                   <span><strong>Vanus:</strong> Sobib kõigile vanuseastmetele</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Tavakülastus:</strong> Minimaalselt 3 inimest</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>

@@ -6,6 +6,7 @@ import VisitProcess from '@/components/VisitProcess'
 import BookingCTA from '@/components/BookingCTA'
 import Statistics from '@/components/Statistics'
 import SponsorshipProgram from '@/components/SponsorshipProgram'
+import TestimonialsSection from '@/components/testimonials-section'
 
 // Server-side funktsioon, mis toob andmed Notion'ist
 async function getParrotsFromNotion() {
@@ -27,7 +28,7 @@ async function getParrotsFromNotion() {
   }
 }
 
-export default async function Home2() {
+export default async function Home() {
   // Proovime võtta andmed Notion'ist
   const notionParrots = await getParrotsFromNotion()
   
@@ -36,6 +37,7 @@ export default async function Home2() {
       <Hero />
       <WhyVisit />
       <VisitProcess />
+      <TestimonialsSection />
       <BookingCTA />
       <Statistics />
       <ParrotShowcase parrots={notionParrots} />

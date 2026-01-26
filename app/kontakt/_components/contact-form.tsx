@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
@@ -21,26 +20,16 @@ export default function ContactForm() {
     name: '',
     email: '',
     phone: '',
-    subject: '',
     message: '',
     formType: 'contact',
     website: '' // honeypot field (bots täidavad sageli selle)
   });
 
-  const subjects = [
-    { value: 'broneering', label: 'Broneerimisküsimus' },
-    { value: 'gruppid', label: 'Gruppide hinnapakkumine' },
-    { value: 'info', label: 'Üldine info' },
-    { value: 'mobile', label: 'Mobiilne teenus' },
-    { value: 'hotel', label: 'Linnuhotell' },
-    { value: 'muu', label: 'Muu teema' }
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Valideeri vorm
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
       toast.error('Palun täitke kõik kohustuslikud väljad');
       return;
     }
@@ -65,7 +54,6 @@ export default function ContactForm() {
           name: '',
           email: '',
           phone: '',
-          subject: '',
           message: '',
           formType: 'contact',
           website: ''
@@ -93,15 +81,13 @@ export default function ContactForm() {
   // Kui vorm on edukalt saadetud, näita teavitust
   if (isSubmitted) {
     return (
-      <section className="py-20 bg-gradient-to-b from-green-50 to-blue-50" ref={ref}>
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-3xl mx-auto"
-          >
-            <Card className="shadow-2xl">
+      <div ref={ref}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+            <Card className="shadow-2xl rounded-2xl overflow-hidden">
               <CardContent className="p-12 text-center">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Send className="h-10 w-10 text-green-600" />
@@ -131,32 +117,21 @@ export default function ContactForm() {
                 </Button>
               </CardContent>
             </Card>
-          </motion.div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-green-50 to-blue-50" ref={ref}>
-      <div className="container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl mx-auto"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Saatke meile <span className="text-blue-600">sõnum</span>
-            </h2>
-            <p className="text-lg text-gray-600">
-              Küsige, arrutage või lihtsalt andke meile teada oma soovid - vastame esimesel võimalusel!
-            </p>
-          </div>
+    <div ref={ref}>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+        transition={{ duration: 0.8 }}
+      >
 
-          <Card className="shadow-2xl">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-center rounded-t-lg">
+          <Card className="shadow-2xl rounded-2xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-center">
               <CardTitle className="text-2xl font-bold flex items-center justify-center space-x-3">
                 <Mail className="h-6 w-6" />
                 <span>Kontaktvorm</span>
@@ -210,41 +185,20 @@ export default function ContactForm() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-phone" className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4" />
-                      <span>Telefon</span>
-                    </Label>
-                    <Input
-                      id="contact-phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+372 ... (valikuline)"
-                      className="form-input pl-10"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Teema *</Label>
-                    <Select 
-                      value={formData.subject} 
-                      onValueChange={(value) => handleInputChange('subject', value)}
-                      required
-                    >
-                      <SelectTrigger className={!formData.subject ? 'border-red-300' : ''}>
-                        <SelectValue placeholder="Valige teema *" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subjects.map((subject) => (
-                          <SelectItem key={subject.value} value={subject.value}>
-                            {subject.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-phone" className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4" />
+                    <span>Telefon *</span>
+                  </Label>
+                  <Input
+                    id="contact-phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="+372 ..."
+                    required
+                    className="form-input pl-10"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -276,16 +230,10 @@ export default function ContactForm() {
                     </>
                   )}
                 </Button>
-
-                <div className="text-center text-sm text-gray-600">
-                  <p>Vastame kõikidele sõnumitele 24 tunni jooksul.</p>
-                  <p className="mt-1">Kiirete küsimuste puhul helistage +372 512 7938</p>
-                </div>
               </form>
             </CardContent>
           </Card>
         </motion.div>
       </div>
-    </section>
   );
 }
