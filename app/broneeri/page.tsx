@@ -91,9 +91,8 @@ export default function BookingPage() {
               <h4 className="font-semibold text-papagoi-yellow-800 mb-2">⚠️ Oluline!</h4>
               <ul className="text-papagoi-yellow-700 text-sm space-y-1">
                 <li>• Külastused ainult eelneval kokkuleppel</li>
-                <li>• Asukohta teatame broneerides</li>
                 <li>• Tühistamine vähemalt 24h ette</li>
-                <li>• Makse kohapeal või pangaülekandega</li>
+                <li>• Makse kohapeal sulas või pangaülekandega</li>
               </ul>
             </div>
 
@@ -106,9 +105,6 @@ export default function BookingPage() {
                 </p>
                 <p className="text-warm-gray-700">
                   <strong className="text-papagoi-green">E-post:</strong> keskus@papagoi.ee
-                </p>
-                <p className="text-warm-gray-700">
-                  <strong className="text-papagoi-orange">Vastame:</strong> E-R 9:00-18:00
                 </p>
               </div>
             </div>

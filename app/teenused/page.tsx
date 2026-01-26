@@ -203,7 +203,7 @@ export default function TeenusedPage() {
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-pink-600 font-bold mt-1">•</span>
-                    <span><strong>Sünnipäevalaud:</strong> söögituba/köök on kasutamiseks (12 kohta), oma tort ja joogid kaasa võtta</span>
+                    <span><strong>Sünnipäevalaud:</strong> söögituba/köök on kasutamiseks (12 istumiskohta lauas), oma tort ja joogid kaasa võtta</span>
                   </li>
                 </ul>
               </div>

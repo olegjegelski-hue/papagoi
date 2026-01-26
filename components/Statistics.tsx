@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 const CountUp = ({ end, duration = 2000 }: { end: number; duration?: number }) => {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(end) // Algväärtus on end, et näidata kohe õiget numbrit
   const { ref, inView } = useInView({
     threshold: 0.3,
     triggerOnce: true
@@ -13,6 +13,8 @@ const CountUp = ({ end, duration = 2000 }: { end: number; duration?: number }) =
 
   useEffect(() => {
     if (inView) {
+      // Alusta animatsioonist 0-st
+      setCount(0)
       let startTime: number
       let animationId: number
 
@@ -57,6 +59,7 @@ export default function Statistics() {
           {/* Papagoid */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
             <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+              <noscript>50</noscript>
               <CountUp end={50} />+
             </div>
             <div className="text-sm md:text-base font-semibold text-gray-700 mb-1">
@@ -70,6 +73,7 @@ export default function Statistics() {
           {/* Puurivabalt */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
             <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+              <noscript>40</noscript>
               <CountUp end={40} />
             </div>
             <div className="text-sm md:text-base font-semibold text-gray-700 mb-1">
@@ -83,6 +87,7 @@ export default function Statistics() {
           {/* Kogemus */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
             <div className="text-4xl md:text-5xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+              <noscript>11</noscript>
               <CountUp end={11} />
             </div>
             <div className="text-sm md:text-base font-semibold text-gray-700 mb-1">
@@ -96,6 +101,7 @@ export default function Statistics() {
           {/* Facebook järgijad */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
             <div className="text-4xl md:text-5xl font-bold text-pink-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+              <noscript>5600</noscript>
               <CountUp end={5600} />
             </div>
             <div className="text-sm md:text-base font-semibold text-gray-700 mb-1">

@@ -66,13 +66,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Telefon</h3>
-                    <a 
+                    <a
                       href="tel:+3725127938" 
                       className="text-gray-600 hover:text-green-600 transition-colors mb-2 block font-medium"
                     >
                       +372 512 7938
                     </a>
-                    <p className="text-sm text-gray-500">Kõnede vastuvõtt: E-P 12-18</p>
                   </div>
                 </div>
 

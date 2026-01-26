@@ -15,7 +15,7 @@ export default function StaticBookingInfo() {
         </div>
         <div className="text-papagoi-yellow-700 space-y-2">
           <p><strong>Külastused toimuvad AINULT eelneval kokkuleppel!</strong></p>
-          <p>Ilma broneeringuta ei saa meid külastada. Asukohta teatame broneeringu kinnitamisel.</p>
+          <p>Ilma broneeringuta ei saa meid külastada.</p>
         </div>
       </div>
 
