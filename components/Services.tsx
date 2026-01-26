@@ -195,7 +195,7 @@ export default function Services() {
                       </li>
                       <li className="flex items-start space-x-3">
                         <span className="text-green-600 font-bold">•</span>
-                        <span>Jutustamine ja väikeste trikitamistega, mis ei suuda kedagi külmaks jätta</span>
+                        <span><strong>Jutustamine ja väikeste trikitamistega</strong>, mis ei suuda kedagi külmaks jätta</span>
                       </li>
                       <li className="flex items-start space-x-3">
                         <span className="text-green-600 font-bold">•</span>
