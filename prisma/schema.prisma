@@ -1,0 +1,57 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  date        DateTime
+  timeSlot    String
+  groupSize   Int
+  groupType   String   // "perevisit", "kool", "ettevote", "muu"
+  message     String?
+  totalPrice  Float
+  status      String   @default("pending") // "pending", "confirmed", "cancelled"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model ContactForm {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  formType  String   // "contact", "event", "mobile-service", "bird-hotel"
+  status    String   @default("new") // "new", "responded", "closed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_forms")
+}
+
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  status    String   @default("active") // "active", "unsubscribed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletter_subscriptions")
+}
