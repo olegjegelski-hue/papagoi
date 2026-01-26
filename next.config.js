@@ -4,15 +4,6 @@ const path = require('path');
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
-  // Need env overrides only for production builds/deploys.
-  // In dev, forcing output modes (e.g. "export") can break Next dev asset routing.
-  distDir: isProd ? (process.env.NEXT_DIST_DIR || '.next') : '.next',
-  output: isProd ? process.env.NEXT_OUTPUT_MODE : undefined,
-  experimental: isProd
-    ? {
-        outputFileTracingRoot: path.join(__dirname, '../'),
-      }
-    : undefined,
   eslint: {
     ignoreDuringBuilds: true,
   },
