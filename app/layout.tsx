@@ -5,6 +5,8 @@ import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { Toaster } from 'sonner'
+import LocalBusinessSchema from '@/components/LocalBusinessSchema'
+import CookieBanner from '@/components/CookieBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,11 +29,13 @@ export default function RootLayout({
   return (
     <html lang="et">
       <body className={inter.className}>
+        <LocalBusinessSchema />
         <Navigation />
         <main className="min-h-screen">
           {children}
         </main>
         <Footer />
+        <CookieBanner />
         <Toaster position="top-center" richColors />
       </body>
     </html>

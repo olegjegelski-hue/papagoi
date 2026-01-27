@@ -18,7 +18,7 @@ export default function WhyVisit() {
           {/* Left side - Content */}
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-8">
-              Miks <span className="bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">meid külastada?</span>
+              Miks külastada <span className="bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">Papagoi Keskust Tartus?</span>
             </h2>
             
             <div className="space-y-4">

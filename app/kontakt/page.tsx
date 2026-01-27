@@ -2,9 +2,12 @@
 import { MapPin, Phone, Mail, Clock, MessageSquare, Calendar, Navigation, ExternalLink } from 'lucide-react'
 import ContactForm from './_components/contact-form'
 
-export const metadata = {
-  title: 'Kontakt - Papagoi Keskus',
-  description: 'Võtke Papagoi Keskusega ühendust. Kontaktandmed, broneerimisinfo ja korduma kippuvad küsimused.',
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Kontakt - Papagoi Keskus Tartus | Broneeri külastus',
+  description: 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed, broneerimisinfo ja korduma kippuvad küsimused. Helistage +372 512 7938 või broneerige külastus veebis.',
+  keywords: 'Papagoi Keskus kontakt, broneeri külastus Tartus, Papagoi Keskus telefon, Papagoi Keskus aadress',
 }
 
 const faqs = [

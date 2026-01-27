@@ -33,9 +33,9 @@ export default function Hero() {
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
             <p className="text-xl md:text-2xl lg:text-3xl text-white mb-8 leading-relaxed drop-shadow-xl text-center">
-              <span className="font-bold">Tere tulemast!</span> Papagoi Keskuses elab
+              <span className="font-bold">Tere tulemast Papagoi Keskusesse Tartus!</span> Eesti esimene papagoidekeskus, kus elab
               <span className="font-bold papagoi-text-gradient"> üle 50 papagoi</span>.
-              Tule külla, kuula põnevaid lugusid papagoidest, tee nendega pilti ja soovi korral toida neid oma käest.
+              Külastus broneerimisega – tule külla, kuula põnevaid lugusid papagoidest, tee nendega pilti ja soovi korral toida neid oma käest.
             </p>
             
             <div className="flex flex-wrap justify-center gap-6">

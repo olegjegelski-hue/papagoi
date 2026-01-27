@@ -1,24 +1,29 @@
 import { Clock, Euro, Users, GraduationCap, Building, Heart, PartyPopper, Utensils, Feather, ExternalLink, Calendar, Phone } from 'lucide-react'
 import Link from 'next/link'
+import ServiceSchema from '@/components/ServiceSchema'
+import type { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Teenused - Papagoi Keskus',
-  description: 'Kõik meie teenused: külastus keskuses, sünnipäev, üritus väljas, grupikülastused, linnuhotell ja papagoide müük.',
+export const metadata: Metadata = {
+  title: 'Teenused - Papagoi Keskus Tartus | Külastus, sünnipäev, grupikülastused',
+  description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega, üritus väljas, grupikülastused koolidele ja ettevõtetele. Broneeri külastus juba täna!',
+  keywords: 'Papagoi Keskus teenused, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, linnuhotell',
 }
 
 export default function TeenusedPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-warm-gray-50 via-white to-papagoi-green-50/50">
-      <main className="pt-12 pb-16">
+    <>
+      <ServiceSchema />
+      <div className="min-h-screen bg-gradient-to-b from-warm-gray-50 via-white to-papagoi-green-50/50">
+        <main className="pt-12 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Meie teenused</span>
+              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Papagoi Keskuse teenused Tartus</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Valige teile sobiv külastusviis ja nautige aega meie papagoidega. 
+              Papagoi Keskus Tartus pakub erinevaid külastusviise: külastus broneerimisega, papagoid sünnipäevale, grupikülastused koolidele ja ettevõtetele. 
               Kõik külastused toimuvad ainult eelneval kokkuleppel.
             </p>
           </div>
@@ -376,5 +381,6 @@ export default function TeenusedPage() {
         </div>
       </main>
     </div>
+    </>
   )
 }

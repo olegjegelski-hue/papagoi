@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
@@ -22,7 +23,8 @@ export default function ContactForm() {
     phone: '',
     message: '',
     formType: 'contact',
-    website: '' // honeypot field (bots täidavad sageli selle)
+    website: '', // honeypot field (bots täidavad sageli selle)
+    consent: false // GDPR nõusolek
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +33,12 @@ export default function ContactForm() {
     // Valideeri vorm
     if (!formData.name || !formData.email || !formData.phone || !formData.message) {
       toast.error('Palun täitke kõik kohustuslikud väljad');
+      return;
+    }
+
+    // Valideeri nõusolek
+    if (!formData.consent) {
+      toast.error('Palun nõustuge andmete kasutamisega');
       return;
     }
 
@@ -56,7 +64,8 @@ export default function ContactForm() {
           phone: '',
           message: '',
           formType: 'contact',
-          website: ''
+          website: '',
+          consent: false
         });
       } else {
         console.error('API error:', result);
@@ -214,6 +223,18 @@ export default function ContactForm() {
                     rows={6}
                     required
                   />
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="contact-consent"
+                    checked={formData.consent}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, consent: checked === true }))}
+                    className="mt-1"
+                  />
+                  <Label htmlFor="contact-consent" className="text-sm text-gray-700 cursor-pointer">
+                    Nõustun, et minu andmeid kasutatakse päringule vastamiseks. *
+                  </Label>
                 </div>
 
                 <Button

@@ -107,6 +107,11 @@ export default function Footer() {
                   Kontakt
                 </Link>
               </li>
+              <li>
+                <Link href="/privaatsus" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
+                  Privaatsus ja küpsised
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -163,9 +168,14 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-papagoi-green/20 pt-6">
-          <p className="text-warm-gray-400 text-sm text-center">
-            © 2015 - {new Date().getFullYear()} Papagoi Keskus. Kõik õigused kaitstud.
-          </p>
+          <div className="text-warm-gray-400 text-sm text-center space-y-2">
+            <p>
+              Koduinfo OÜ | Reg nr. 11105156
+            </p>
+            <p>
+              © 2015 - {new Date().getFullYear()} Papagoi Keskus. Kõik õigused kaitstud.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

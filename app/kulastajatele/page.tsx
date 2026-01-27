@@ -1,10 +1,13 @@
-import { Clock, MapPin, Euro, Users, Camera, Shield, AlertCircle, Phone, Calendar, CheckCircle, XCircle, Info, GraduationCap, Building, Heart } from 'lucide-react'
+import { Clock, MapPin, Euro, Users, Camera, Shield, AlertCircle, Phone, Calendar, CheckCircle, XCircle, Info, GraduationCap, Building, Heart, Car, Baby } from 'lucide-react'
 import Link from 'next/link'
 import VisitProcess from '@/components/VisitProcess'
 
-export const metadata = {
-  title: 'Külastajatele - Papagoi Keskus',
-  description: 'Kõik vajalik info Papagoi Keskuse külastamiseks. Lahtiolekuajad: E-P 12-18. Hinnad, reeglid ja soovitused.',
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Külastajatele - Papagoi Keskus Tartus | Info, reeglid, hinnad',
+  description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus. Lahtiolekuajad: E-P 12-18. Hinnad, reeglid, parkimine ja praktiline info külastuseks. Külastus broneerimisega.',
+  keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid',
 }
 
 export default function VisitorsPage() {
@@ -16,10 +19,10 @@ export default function VisitorsPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele</span>
+              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele - Papagoi Keskus Tartus</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Kõik vajalik info meeldejäävaks kogemuseks meie papagoidekeskuses
+              Kõik vajalik info meeldejäävaks kogemuseks meie papagoidekeskuses. Külastus broneerimisega – broneeri külastus juba täna!
             </p>
           </div>
 
@@ -166,6 +169,90 @@ export default function VisitorsPage() {
                   </li>
                 </ul>
               </div>
+            </div>
+
+            {/* Väikelapsed ja ohutus */}
+            <div className="mt-8 bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+              <div className="flex items-center mb-4">
+                <Baby className="w-6 h-6 text-yellow-600 mr-2" />
+                <h3 className="font-semibold text-gray-800 text-lg">👶 Väikelapsed ja ohutus:</h3>
+              </div>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start space-x-2">
+                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span>Vanemad peavad jälgima oma lapsi kogu külastuse ajal</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span>Ohutus nii lindudele kui lastele on meie prioriteet</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span>Väikelapsed peavad käituma rahulikult ja järgima juhiseid</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Praktiline info külastuseks */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <Info className="w-6 h-6 text-green-600 mr-2" />
+              Praktiline info külastuseks
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Parkimine */}
+              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                <div className="flex items-center mb-4">
+                  <Car className="w-6 h-6 text-green-600 mr-2" />
+                  <h3 className="font-semibold text-gray-800 text-lg">🚗 Parkimine:</h3>
+                </div>
+                <p className="text-gray-700">
+                  Parkimine maja ees. Palun järgige parkimisjuhiseid ja jätke piisavalt ruumi teiste külastajate jaoks.
+                </p>
+              </div>
+
+              {/* Hilinemine */}
+              <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                <div className="flex items-center mb-4">
+                  <Clock className="w-6 h-6 text-orange-600 mr-2" />
+                  <h3 className="font-semibold text-gray-800 text-lg">⏰ Hilinemine:</h3>
+                </div>
+                <p className="text-gray-700">
+                  Kui teate, et hilinete, palun andke meile teada telefoni teel: <a href="tel:+3725127938" className="text-orange-600 font-semibold hover:underline">+372 512 7938</a>
+                </p>
+              </div>
+
+              {/* Maksmine */}
+              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-center mb-4">
+                  <Euro className="w-6 h-6 text-blue-600 mr-2" />
+                  <h3 className="font-semibold text-gray-800 text-lg">💳 Maksmine:</h3>
+                </div>
+                <ul className="space-y-2 text-gray-700">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span>Maksmine toimub peale üritust</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span>Makseviisid: sularaha (pangaterminal puudub)</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Tühistamine */}
+              <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+                <div className="flex items-center mb-4">
+                  <XCircle className="w-6 h-6 text-red-600 mr-2" />
+                  <h3 className="font-semibold text-gray-800 text-lg">❌ Tühistamine:</h3>
+                </div>
+                <p className="text-gray-700">
+                  Tühistamiseks palun teatage vähemalt <strong>24 tundi ette</strong> telefoni teel: <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
+                </p>
+              </div>
+
             </div>
           </div>
 

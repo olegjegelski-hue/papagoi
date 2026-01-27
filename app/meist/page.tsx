@@ -1,9 +1,12 @@
 import { Home, Users, Feather, Heart, Building, Sparkles, Calendar, Shield } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = {
-  title: 'Meist - Papagoi Keskus',
-  description: 'Tutvuge Papagoi Keskusega: Meie maja, üle 50 papagoid, umbes 40 puurivabalt lendavat lindu. Meie lugu, ruumid ja tulevik.',
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Meist - Papagoi Keskus Tartus | Eesti esimene papagoidekeskus',
+  description: 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015. Meie maja, üle 50 papagoid, umbes 40 puurivabalt lendavat lindu. Meie lugu ja visioon.',
+  keywords: 'Papagoi Keskus meie lugu, Eesti esimene papagoidekeskus, Papagoi Keskus ajalugu, papagoidekeskus Tartus',
 }
 
 export default function MeistPage() {
