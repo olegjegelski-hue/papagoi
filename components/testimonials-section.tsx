@@ -1,44 +1,54 @@
 
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote, ExternalLink } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import GoogleRating from './GoogleRating';
 
-const testimonials = [
-  {
-    name: 'Kadri',
-    role: 'Ema kolme lapsega',
-    content: 'Lapsed olid vaimustuses! Eriti meeldis Mac, kes oskas rääkida ja oli nii sõbralik. Sellist kogemust ei unusta kunagi.',
-    rating: 5,
-    location: 'Tartu'
-  },
-  {
-    name: 'Marko',
-    role: 'Lasteaia õpetaja',
-    content: 'Viisime terve lasteaiarühma. Lapsed õppisid palju ja said papagoisid kätte võtta. Professionaalne ja turvaline kogemus.',
-    rating: 5,
-    location: 'Elva'
-  },
-  {
-    name: 'Liis',
-    role: 'Ettevõtte juht',
-    content: 'Korraldame siin meie firma meeskonnasündmusi. Alati eriline kogemus, mis ühendab inimesi ja toob head meeleolu.',
-    rating: 5,
-    location: 'Kambja'
-  },
-  {
-    name: 'Peeter',
-    role: 'Pensionär',
-    content: 'Käin koos lapselastega regulaarselt. Papagoid tunnevad meid juba ära ja on alati rõõmsad meid nähes!',
-    rating: 5,
-    location: 'Ülenurme'
-  }
-];
+interface GoogleReview {
+  author_name: string;
+  rating: number;
+  text: string;
+  relative_time_description?: string;
+}
 
 export default function TestimonialsSection() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
+  const [googleReviews, setGoogleReviews] = React.useState<GoogleReview[]>([]);
+  const [googleReviewsLoaded, setGoogleReviewsLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    async function fetchGoogleReviews() {
+      try {
+        const response = await fetch('/api/google-reviews');
+        const data = await response.json();
+
+        if (Array.isArray(data.reviews)) {
+          // Filtreerime ainult need arvustused, kus on tekst
+          const withText = data.reviews.filter(
+            (review: GoogleReview) => review.text && review.text.trim().length > 0
+          );
+
+          // Võtame maksimaalselt 3–4 värskemat arvustust (järjekord tuleb Google'ist)
+          setGoogleReviews(withText.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error fetching Google reviews list:', error);
+      } finally {
+        setGoogleReviewsLoaded(true);
+      }
+    }
+
+    fetchGoogleReviews();
+  }, []);
+
+  const formatFirstName = (fullName: string) => {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(' ');
+    return parts[0] || fullName;
+  };
 
   return (
     <section className="pt-4 pb-12 bg-gradient-to-b from-blue-50 to-yellow-50" ref={ref}>
@@ -47,55 +57,58 @@ export default function TestimonialsSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Mida ütlevad meie külastajad?</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              Mida ütlevad meie külastajad?
+            </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Meie külastajad on meie parim reklaam - lugege, mida nad oma kogemusest räägivad
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Allpool näed värskeid arvamusi Papagoi Keskuse külastajatelt otse Google&apos;i arvustustest.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={testimonial.name}
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              className="bg-white rounded-3xl shadow-lg p-8 relative hover:shadow-xl transition-shadow duration-300"
-            >
-              {/* Quote Icon */}
-              <div className="absolute -top-4 -left-4">
-                <div className="bg-blue-500 rounded-full p-3">
-                  <Quote className="h-6 w-6 text-white" />
+        {/* Google'i arvustused Google Mapsist */}
+        {googleReviewsLoaded && googleReviews.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-12"
+          >
+            <div className="grid md:grid-cols-2 gap-6">
+              {googleReviews.map((review, index) => (
+                <div
+                  key={`${review.author_name}-${index}`}
+                  className="bg-white rounded-3xl shadow-lg p-6 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center mb-3">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-current text-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-gray-700 mb-4 italic">"{review.text}"</p>
+                  </div>
+                  <div className="mt-4">
+                    <div className="font-semibold text-gray-900">
+                      {formatFirstName(review.author_name)}
+                    </div>
+                    {review.relative_time_description && (
+                      <div className="text-xs text-gray-500">
+                        {review.relative_time_description}
+                      </div>
+                    )}
+                    <div className="text-xs text-blue-600 mt-1">
+                      Allikas: Google&apos;i arvustused (Google Maps)
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-current text-yellow-400" />
-                ))}
-              </div>
-
-              {/* Content */}
-              <blockquote className="text-gray-700 text-lg leading-relaxed mb-6 italic">
-                "{testimonial.content}"
-              </blockquote>
-
-              {/* Author */}
-              <div className="flex items-center">
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                  <div className="text-sm text-gray-600">{testimonial.role}</div>
-                  <div className="text-xs text-blue-600">{testimonial.location}</div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Google Reviews Link */}
         <motion.div

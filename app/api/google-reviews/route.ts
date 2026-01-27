@@ -23,15 +23,28 @@ export async function GET() {
     }
 
     // Kasutame ainult Place ID-d – see on kõige kindlam ja üheselt mõistetav
-    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${EXPLICIT_PLACE_ID}&fields=rating,user_ratings_total&key=${GOOGLE_PLACES_API_KEY}`;
+    // Lisame vastusesse ka arvustused (reviews), et saaksime neid veebilehel kuvada.
+    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${EXPLICIT_PLACE_ID}&fields=rating,user_ratings_total,reviews&key=${GOOGLE_PLACES_API_KEY}`;
 
     const detailsResponse = await fetch(detailsUrl);
     const detailsData = await detailsResponse.json();
 
     if (detailsData.status === 'OK' && detailsData.result) {
+      const reviews = Array.isArray(detailsData.result.reviews)
+        ? detailsData.result.reviews.map((review: any) => ({
+            author_name: review.author_name,
+            rating: review.rating,
+            text: review.text,
+            relative_time_description: review.relative_time_description,
+            profile_photo_url: review.profile_photo_url,
+            time: review.time
+          }))
+        : [];
+
       return NextResponse.json({
         rating: detailsData.result.rating || 5.0,
         user_ratings_total: detailsData.result.user_ratings_total || 0,
+        reviews,
         success: true,
         source: 'place_id'
       });
