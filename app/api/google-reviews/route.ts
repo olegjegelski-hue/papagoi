@@ -14,67 +14,36 @@ export async function GET() {
       });
     }
 
-    // If Place ID is configured explicitly, use that (kõige kindlam variant)
-    if (EXPLICIT_PLACE_ID) {
-      const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${EXPLICIT_PLACE_ID}&fields=rating,user_ratings_total&key=${GOOGLE_PLACES_API_KEY}`;
-
-      const detailsResponse = await fetch(detailsUrl);
-      const detailsData = await detailsResponse.json();
-
-      if (detailsData.result) {
-        return NextResponse.json({
-          rating: detailsData.result.rating || 5.0,
-          user_ratings_total: detailsData.result.user_ratings_total || 0,
-          success: true,
-          source: 'place_id'
-        });
-      }
-
-      // Kui midagi läks valesti, logime ja kukume allapoole textsearch variandi peale
-      console.error('Google Places details error:', detailsData);
+    if (!EXPLICIT_PLACE_ID) {
+      return NextResponse.json({
+        rating: 5.0,
+        user_ratings_total: 0,
+        error: 'GOOGLE_PLACES_PLACE_ID is not configured on the server'
+      });
     }
 
-    // ------------------------------
-    // Fallback: Text Search variandi kasutamine
-    // ------------------------------
-    const placeName = 'Papagoi Keskus';
-    const fullAddress = 'Papagoi Keskus, Tartu mnt 80, Soinaste, Kambja vald, Estonia';
+    // Kasutame ainult Place ID-d – see on kõige kindlam ja üheselt mõistetav
+    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${EXPLICIT_PLACE_ID}&fields=rating,user_ratings_total&key=${GOOGLE_PLACES_API_KEY}`;
 
-    // Text Search – proovime kõigepealt täpset aadressi
-    const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
-      fullAddress
-    )}&type=establishment&region=ee&key=${GOOGLE_PLACES_API_KEY}`;
+    const detailsResponse = await fetch(detailsUrl);
+    const detailsData = await detailsResponse.json();
 
-    const searchResponse = await fetch(searchUrl);
-    const searchData = await searchResponse.json();
-
-    if (searchData.results && searchData.results.length > 0) {
-      const placeId = searchData.results[0].place_id;
-
-      const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=rating,user_ratings_total&key=${GOOGLE_PLACES_API_KEY}`;
-      const detailsResponse = await fetch(detailsUrl);
-      const detailsData = await detailsResponse.json();
-
-      if (detailsData.result) {
-        return NextResponse.json({
-          rating: detailsData.result.rating || 5.0,
-          user_ratings_total: detailsData.result.user_ratings_total || 0,
-          success: true,
-          source: 'textsearch',
-          placeId
-        });
-      }
-
-      console.error('Google Places details (from textsearch) error:', detailsData);
-    } else {
-      console.error('Google Places textsearch error:', searchData);
+    if (detailsData.status === 'OK' && detailsData.result) {
+      return NextResponse.json({
+        rating: detailsData.result.rating || 5.0,
+        user_ratings_total: detailsData.result.user_ratings_total || 0,
+        success: true,
+        source: 'place_id'
+      });
     }
 
-    // Fallback if place not found
+    // Tagastame täpsema vea, et näha Google API vastust
     return NextResponse.json({
       rating: 5.0,
       user_ratings_total: 0,
-      error: 'Place not found (configure GOOGLE_PLACES_PLACE_ID for reliable results)'
+      error: 'Google Places details failed',
+      status: detailsData.status,
+      error_message: detailsData.error_message || null
     });
   } catch (error) {
     console.error('Error fetching Google reviews:', error);
