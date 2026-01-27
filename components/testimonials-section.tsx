@@ -52,7 +52,7 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="pt-4 pb-12 bg-gradient-to-b from-blue-50 to-yellow-50" ref={ref}>
+    <section className="pt-0 pb-12 bg-gradient-to-b from-blue-50 to-yellow-50" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -65,13 +65,13 @@ export default function TestimonialsSection() {
               Mida ütlevad meie külastajad?
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-2">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-0">
             Allpool näed värskeid arvamusi Papagoi Keskuse külastajatelt otse Google&apos;i arvustustest.
           </p>
         </motion.div>
 
         {/* Üldine Google reiting enne arvustuste loendit */}
-        <div className="mb-3 flex justify-center">
+        <div className="mt-1 mb-3 flex justify-center">
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl px-6 py-4 text-white inline-block shadow-lg">
             <GoogleRating />
           </div>
