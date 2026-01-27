@@ -4,6 +4,7 @@
 import { motion } from 'framer-motion';
 import { Star, Quote, ExternalLink } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import GoogleRating from './GoogleRating';
 
 const testimonials = [
   {
@@ -105,6 +106,14 @@ export default function TestimonialsSection() {
         >
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Jaga oma kogemust teistega!</h3>
+            
+            {/* Google Rating Display */}
+            <div className="mb-6 flex justify-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 inline-block">
+                <GoogleRating />
+              </div>
+            </div>
+            
             <p className="text-lg mb-6 opacity-90 max-w-2xl mx-auto">
               Kui oled meid külastanud, jaga oma kogemust Google'is. Sinu arvustus aitab teisi inimesi meid leida!
             </p>
