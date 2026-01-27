@@ -31,8 +31,9 @@ export default function TestimonialsSection() {
             (review: GoogleReview) => review.text && review.text.trim().length > 0
           );
 
-          // Võtame maksimaalselt 3–4 värskemat arvustust (järjekord tuleb Google'ist)
-          setGoogleReviews(withText.slice(0, 4));
+          // Segame järjekorra juhuslikult ja valime kuni 4 suvalist arvustust
+          const shuffled = [...withText].sort(() => Math.random() - 0.5);
+          setGoogleReviews(shuffled.slice(0, 4));
         }
       } catch (error) {
         console.error('Error fetching Google reviews list:', error);
@@ -64,10 +65,17 @@ export default function TestimonialsSection() {
               Mida ütlevad meie külastajad?
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-2">
             Allpool näed värskeid arvamusi Papagoi Keskuse külastajatelt otse Google&apos;i arvustustest.
           </p>
         </motion.div>
+
+        {/* Üldine Google reiting enne arvustuste loendit */}
+        <div className="mb-3 flex justify-center">
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl px-6 py-4 text-white inline-block shadow-lg">
+            <GoogleRating />
+          </div>
+        </div>
 
         {/* Google'i arvustused Google Mapsist */}
         {googleReviewsLoaded && googleReviews.length > 0 && (
@@ -119,14 +127,7 @@ export default function TestimonialsSection() {
         >
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Jaga oma kogemust teistega!</h3>
-            
-            {/* Google Rating Display */}
-            <div className="mb-6 flex justify-center">
-              <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 inline-block">
-                <GoogleRating />
-              </div>
-            </div>
-            
+
             <p className="text-lg mb-6 opacity-90 max-w-2xl mx-auto">
               Kui oled meid külastanud, jaga oma kogemust Google'is. Sinu arvustus aitab teisi inimesi meid leida!
             </p>
