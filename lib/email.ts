@@ -220,11 +220,11 @@ export async function sendBookingEmail(data: {
     // Kliendi kinnitusemail
     const clientContent = `
       <h2>Tere, ${safeName}!</h2>
-      <p>Teie broneering on edukalt esitatud. Võtame teiega ühendust 24 tunni jooksul külastuse aja kinnitamiseks ja täpsema asukoha teatamiseks.</p>
+      <p>Teie päring on edukalt esitatud. Võtame teiega ühendust 24 tunni jooksul külastuse aja kinnitamiseks.</p>
       
       <div class="info-box">
-        <h3>Broneeringu andmed:</h3>
-        <p><strong>Broneeringu ID:</strong> ${safeBookingId}</p>
+        <h3>Papagoi Keskuse külastuse päring (ID - ${safeBookingId}):</h3>
+        <p><strong>Asukoht:</strong> Tartu mnt 80, Soinaste, Kambja vald, Tartumaa 61709</p>
         ${data.date ? `<p><strong>Eelistatud kuupäev:</strong> ${formattedDate}</p>` : ''}
         ${data.timeSlot ? `<p><strong>Eelistatud kellaaeg:</strong> ${safeTimeSlot}</p>` : ''}
         <p><strong>Grupi suurus:</strong> ${data.groupSize} inimest</p>
@@ -236,25 +236,23 @@ export async function sendBookingEmail(data: {
       <div class="highlight">
         <strong>⚠️ Oluline:</strong>
         <ul style="margin: 10px 0; padding-left: 20px;">
-          <li>Külastused toimuvad AINULT eelneval kokkuleppel</li>
-          <li>Täpset asukohta teatame broneeringu kinnitamisel</li>
-          <li>Kui teil on küsimusi, helistage: <strong>+372 51 27 938</strong></li>
+          <li>Külastus jõustub AINULT, kui olete saanud meilt kinnituskirja.</li>
+          <li>Kui teil on küsimusi, helistage või kirjutage meile.</li>
         </ul>
       </div>
       
       <p>Meie kontaktandmed:</p>
       <p>
         <strong>Telefon:</strong> +372 51 27 938<br>
-        <strong>Email:</strong> keskus@papagoi.ee<br>
-        <strong>Asukoht:</strong> Tartu mnt 80, Soinaste, Kambja vald, Tartumaa 61709
+        <strong>Email:</strong> keskus@papagoi.ee
       </p>
     `;
 
     await transporter.sendMail({
       from: `"Papagoi Keskus" <${FROM_EMAIL}>`,
       to: data.email,
-      subject: 'Broneeringu kinnitus - Papagoi Keskus',
-      html: getEmailTemplate('Broneeringu kinnitus', clientContent, true),
+      subject: 'Broneeringu päring - Papagoi Keskus',
+      html: getEmailTemplate('Broneeringu päring', clientContent, true),
     });
 
     // Keskuse teavitusemail
