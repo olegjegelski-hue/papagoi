@@ -94,7 +94,8 @@ async function sumVisitorCountsByPageIds(
   visitorsDb: { countPropertyName?: string } | null,
   pageIds: string[]
 ) {
-  if (!visitorsDb?.countPropertyName || pageIds.length === 0) return null
+  const countPropertyName = visitorsDb?.countPropertyName
+  if (!countPropertyName || pageIds.length === 0) return null
   const counts = await Promise.all(
     pageIds.map(async (pageId) => {
       const response = await fetch(`https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`, {
@@ -107,7 +108,7 @@ async function sumVisitorCountsByPageIds(
       if (!response.ok) return 0
       const page = await response.json()
       const properties = page.properties || {}
-      return extractCount(properties[visitorsDb.countPropertyName])
+      return extractCount(properties[countPropertyName])
     })
   )
   if (!counts.length) return null
