@@ -120,7 +120,9 @@ async function sumVisitorCountsByVisitId(
   visitorsDb: { databaseId: string; relationPropertyName?: string; countPropertyName?: string } | null,
   visitPageId: string
 ) {
-  if (!visitorsDb?.relationPropertyName || !visitorsDb?.countPropertyName) return null
+  const relationPropertyName = visitorsDb?.relationPropertyName
+  const countPropertyName = visitorsDb?.countPropertyName
+  if (!relationPropertyName || !countPropertyName) return null
   const response = await fetch(`https://api.notion.com/v1/databases/${visitorsDb.databaseId}/query`, {
     method: 'POST',
     headers: {
@@ -130,7 +132,7 @@ async function sumVisitorCountsByVisitId(
     },
     body: JSON.stringify({
       filter: {
-        property: visitorsDb.relationPropertyName,
+        property: relationPropertyName,
         relation: {
           contains: visitPageId,
         },
@@ -145,7 +147,7 @@ async function sumVisitorCountsByVisitId(
 
   return pages.reduce((sum: number, page: any) => {
     const properties = page.properties || {}
-    const value = extractCount(properties[visitorsDb.countPropertyName])
+    const value = extractCount(properties[countPropertyName])
     return sum + value
   }, 0)
 }

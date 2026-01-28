@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
   description: 'Tule külasta Papagoi Keskust! Meie juures elab üle 50 papagoi. Broneeri külastus – räägime papagoidest, teeme koos pilti ja võimalusel saad neid ka käest toita.',
   keywords: 'papagoi, papagoid keskus, külastus, pered, koolid, lasteaiad, lemmikloomad, Eesti, broneerida',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   openGraph: {
     title: 'Papagoi Keskus – Elu täis värve ja hääli',
     description: 'Tule külasta Papagoi Keskust! Broneeri külastus juba täna.',
