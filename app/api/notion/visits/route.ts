@@ -7,6 +7,16 @@ function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 6000) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
 function extractTime(property: any) {
   if (!property) return null
   if (property.type === 'select') return property.select?.name || null
@@ -60,7 +70,7 @@ async function resolveVisitorsDatabase(
   visitorsDatabaseId: string
 ) {
   const dbId = visitorsDatabaseId.replace(/-/g, '')
-  const response = await fetch(`https://api.notion.com/v1/databases/${dbId}`, {
+  const response = await fetchWithTimeout(`https://api.notion.com/v1/databases/${dbId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${NOTION_API_KEY}`,
@@ -98,7 +108,7 @@ async function sumVisitorCountsByPageIds(
   if (!countPropertyName || pageIds.length === 0) return null
   const counts = await Promise.all(
     pageIds.map(async (pageId) => {
-      const response = await fetch(`https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`, {
+      const response = await fetchWithTimeout(`https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${NOTION_API_KEY}`,
@@ -123,7 +133,7 @@ async function sumVisitorCountsByVisitId(
   const relationPropertyName = visitorsDb?.relationPropertyName
   const countPropertyName = visitorsDb?.countPropertyName
   if (!relationPropertyName || !countPropertyName) return null
-  const response = await fetch(`https://api.notion.com/v1/databases/${visitorsDb.databaseId}/query`, {
+  const response = await fetchWithTimeout(`https://api.notion.com/v1/databases/${visitorsDb.databaseId}/query`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${NOTION_API_KEY}`,
@@ -185,68 +195,16 @@ function findGuestsRelationPropertyName(properties: Record<string, any>) {
 
 async function resolveDatabase(NOTION_API_KEY: string, inputId: string) {
   const baseId = inputId.replace(/-/g, '')
-  const fetchDatabase = async (databaseId: string) => {
-    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${NOTION_API_KEY}`,
-        'Notion-Version': '2022-06-28',
-      },
-    })
-    if (!response.ok) return null
-    const data = await response.json()
-    return { databaseId, data }
-  }
-
-  const direct = await fetchDatabase(baseId)
-  if (direct) return direct
-
-  const blocksResponse = await fetch(`https://api.notion.com/v1/blocks/${baseId}/children`, {
+  const response = await fetchWithTimeout(`https://api.notion.com/v1/databases/${baseId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${NOTION_API_KEY}`,
       'Notion-Version': '2022-06-28',
     },
   })
-
-  if (blocksResponse.ok) {
-    const blocksData = await blocksResponse.json()
-    const databaseBlock = blocksData.results?.find(
-      (block: any) => block.type === 'child_database' || block.type === 'database'
-    )
-    if (databaseBlock?.id) {
-      const childDatabaseId = databaseBlock.id.replace(/-/g, '')
-      const childDatabase = await fetchDatabase(childDatabaseId)
-      if (childDatabase) return childDatabase
-    }
-  }
-
-  const searchResponse = await fetch('https://api.notion.com/v1/search', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${NOTION_API_KEY}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      filter: {
-        property: 'object',
-        value: 'database',
-      },
-      query: 'Külastused',
-    }),
-  })
-
-  if (searchResponse.ok) {
-    const searchData = await searchResponse.json()
-    if (searchData.results && searchData.results.length > 0) {
-      const searchDatabaseId = searchData.results[0].id.replace(/-/g, '')
-      const searchDatabase = await fetchDatabase(searchDatabaseId)
-      if (searchDatabase) return searchDatabase
-    }
-  }
-
-  return null
+  if (!response.ok) return null
+  const data = await response.json()
+  return { databaseId: baseId, data }
 }
 
 export async function GET() {
@@ -287,7 +245,7 @@ export async function GET() {
     const guestsRelationPropertyName = findGuestsRelationPropertyName(properties)
 
     const today = format(new Date(), 'yyyy-MM-dd')
-    const queryResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+    const queryResponse = await fetchWithTimeout(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${NOTION_API_KEY}`,
