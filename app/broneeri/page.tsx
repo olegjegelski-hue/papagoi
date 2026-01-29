@@ -83,6 +83,13 @@ export default function BookingPage() {
                     <p className="text-warm-gray-600 text-sm">10€ inimene</p>
                   </div>
                 </div>
+                <div className="flex items-center space-x-3">
+                  <AlertCircle className="w-5 h-5 text-papagoi-yellow-600" />
+                  <div>
+                    <p className="font-medium text-deep-anthracite">Tühistamine</p>
+                    <p className="text-warm-gray-600 text-sm">24h ette</p>
+                  </div>
+                </div>
               </div>
             </div>
 
