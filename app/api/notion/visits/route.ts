@@ -262,6 +262,7 @@ export async function GET() {
 
     const resolved = await resolveDatabase(NOTION_API_KEY, NOTION_VISITS_DATABASE_ID)
     if (!resolved) {
+      console.warn('Notion visits: database not resolved')
       return NextResponse.json({ bookings: [] })
     }
 
@@ -274,6 +275,7 @@ export async function GET() {
     )
 
     if (!datePropertyName) {
+      console.warn('Notion visits: Kuupäev veerg puudub', Object.keys(properties))
       return NextResponse.json({ bookings: [] })
     }
 
@@ -308,6 +310,7 @@ export async function GET() {
     }
 
     const data = await queryResponse.json()
+    console.log('Notion visits: query results', data.results?.length || 0, 'rows')
     const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
     const bookings: { date: string; time: string | null; guests: number | null }[] = []
     for (const page of data.results || []) {

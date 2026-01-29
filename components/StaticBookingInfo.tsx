@@ -14,6 +14,7 @@ export default function StaticBookingInfo() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState<string | null>(null)
   const [hasConsent, setHasConsent] = useState(false)
+  const [bookingsLoadError, setBookingsLoadError] = useState<string | null>(null)
   const [bookingsByDate, setBookingsByDate] = useState<
     Record<string, { time: string; guests: number | null }[]>
   >({})
@@ -146,10 +147,13 @@ export default function StaticBookingInfo() {
   }
   useEffect(() => {
     let isMounted = true
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 7000)
     const loadBookings = async () => {
       setIsLoadingBookings(true)
+      setBookingsLoadError(null)
       try {
-        const response = await fetch('/api/notion/visits')
+        const response = await fetch('/api/notion/visits', { signal: controller.signal })
         const data = await response.json()
         if (!isMounted) return
         const grouped: Record<string, Record<string, number | null>> = {}
@@ -180,7 +184,9 @@ export default function StaticBookingInfo() {
         })
         setBookingsByDate(normalized)
       } catch (error) {
+        if (!isMounted) return
         console.error('Broneeringute laadimine ebaõnnestus', error)
+        setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
       } finally {
         if (isMounted) setIsLoadingBookings(false)
       }
@@ -188,6 +194,8 @@ export default function StaticBookingInfo() {
     loadBookings()
     return () => {
       isMounted = false
+      clearTimeout(timeoutId)
+      controller.abort()
     }
   }, [])
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -434,6 +442,9 @@ export default function StaticBookingInfo() {
 
               {isLoadingBookings && (
                 <p className="mt-4 text-sm text-warm-gray-500">Laen broneeringuid...</p>
+              )}
+              {bookingsLoadError && !isLoadingBookings && (
+                <p className="mt-4 text-sm text-papagoi-red">{bookingsLoadError}</p>
               )}
 
               {selectedTime && (
