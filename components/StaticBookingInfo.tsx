@@ -148,12 +148,15 @@ export default function StaticBookingInfo() {
   useEffect(() => {
     let isMounted = true
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 7000)
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
     const loadBookings = async () => {
       setIsLoadingBookings(true)
       setBookingsLoadError(null)
       try {
         const response = await fetch('/api/notion/visits', { signal: controller.signal })
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
         const data = await response.json()
         if (!isMounted) return
         const grouped: Record<string, Record<string, number | null>> = {}
@@ -186,7 +189,11 @@ export default function StaticBookingInfo() {
       } catch (error) {
         if (!isMounted) return
         console.error('Broneeringute laadimine ebaõnnestus', error)
-        setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          setBookingsLoadError('Broneeringute laadimine võttis liiga kaua. Palun värskendage lehte.')
+        } else {
+          setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
+        }
       } finally {
         if (isMounted) setIsLoadingBookings(false)
       }
