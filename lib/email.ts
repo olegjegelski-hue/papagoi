@@ -225,11 +225,19 @@ export async function sendBookingEmail(data: {
       <div class="info-box">
         <h3>Papagoi Keskuse külastuse päring (ID - ${safeBookingId}):</h3>
         <p><strong>Asukoht:</strong> Tartu mnt 80, Soinaste, Kambja vald, Tartumaa 61709</p>
+        <p>
+          <strong>Google Maps:</strong>
+          <a href="https://www.google.com/maps/search/?api=1&query=Tartu%20mnt%2080%2C%20Soinaste%2C%20Kambja%20vald%2C%20Tartumaa%2061709">
+            Ava navigatsioon
+          </a>
+        </p>
         ${data.date ? `<p><strong>Eelistatud kuupäev:</strong> ${formattedDate}</p>` : ''}
         ${data.timeSlot ? `<p><strong>Eelistatud kellaaeg:</strong> ${safeTimeSlot}</p>` : ''}
+        ${data.timeSlot ? `<p>Palun saabuge 5–10 min varem. Kui hilinete, andke meile kindlasti teada tel 512 7938.</p>` : ''}
         <p><strong>Grupi suurus:</strong> ${data.groupSize} inimest</p>
         ${data.groupType ? `<p><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
         <p><strong>Eeldatav hind:</strong> <strong style="color: #43A047; font-size: 1.2em;">${data.totalPrice.toFixed(2)} €</strong></p>
+        <p>Maksmine peale üritust sularahas või suuremad grupid arvega.</p>
         ${data.message ? `<p><strong>Lisainfo:</strong> ${safeMessage}</p>` : ''}
       </div>
       
@@ -238,6 +246,7 @@ export async function sendBookingEmail(data: {
         <ul style="margin: 10px 0; padding-left: 20px;">
           <li>Külastus jõustub AINULT, kui olete saanud meilt kinnituskirja.</li>
           <li>Kui teil on küsimusi, helistage või kirjutage meile.</li>
+          <li>Tühistamine 24 h ette.</li>
         </ul>
       </div>
       

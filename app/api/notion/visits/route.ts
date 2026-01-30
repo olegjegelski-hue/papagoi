@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 
 export const dynamic = 'force-dynamic'
 
@@ -276,7 +277,9 @@ export async function GET() {
       const dateValue = pageProperties[datePropertyName]?.date?.start || null
       if (!dateValue) continue
       const timeValue = timePropertyName ? extractTime(pageProperties[timePropertyName]) : null
-      const derivedTime = dateValue.includes('T') ? format(new Date(dateValue), 'HH:mm') : null
+        const derivedTime = dateValue.includes('T')
+          ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
+          : null
       let guestsValue = guestsPropertyName ? extractGuests(pageProperties[guestsPropertyName]) : null
       if (guestsValue === null && guestsRelationPropertyName) {
         const relation = pageProperties[guestsRelationPropertyName]?.relation || []
