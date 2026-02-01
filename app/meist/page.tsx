@@ -10,7 +10,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Meist - Papagoi Keskus Tartus | Eesti esimene papagoidekeskus',
-  description: 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015. Meie maja, üle 50 papagoid, umbes 40 puurivabalt lendavat lindu. Meie lugu ja visioon.',
+  description: 'Papagoi Keskus on üle 50 papagoi pere Tartus. Tutvusta meie lugu, 50m² papagoide tuba, 15+ liiki, hügieen ja hooldus. Eesti esimene papagoidekeskus alates 2015.',
   keywords: 'Papagoi Keskus meie lugu, Eesti esimene papagoidekeskus, Papagoi Keskus ajalugu, papagoidekeskus Tartus',
   alternates: {
     canonical: `${getSiteUrl()}/meist`,

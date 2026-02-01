@@ -11,7 +11,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Kontakt - Papagoi Keskus Tartus | Broneeri külastus',
-  description: 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed, broneerimisinfo ja korduma kippuvad küsimused. Helistage +372 512 7938 või broneerige külastus veebis.',
+  description: 'Võta ühendust Papagoi Keskusega: +372 512 7938, keskus@papagoi.ee. Aadress: Tartu mnt 80, Soinaste. KKK, kontaktvorm, Google Maps. Vastame 24h jooksul!',
   keywords: 'Papagoi Keskus kontakt, broneeri külastus Tartus, Papagoi Keskus telefon, Papagoi Keskus aadress, papagoidekeskus Tartus, papagoid Tartus',
   alternates: {
     canonical: `${getSiteUrl()}/kontakt`,

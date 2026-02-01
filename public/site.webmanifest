@@ -1,0 +1,14 @@
+{
+  "name": "Papagoi Keskus",
+  "short_name": "Papagoi Keskus",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

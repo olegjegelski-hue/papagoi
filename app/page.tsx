@@ -12,7 +12,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Papagoi Keskus Tartus | Eesti esimene papagoidekeskus alates 2015',
-  description: 'Külasta Papagoi Keskust Tartus! Üle 50 papagoi, külastus broneerimisega, sünnipäevad, grupikülastused. Broneeri külastus juba täna ja koge ainulaadset seiklust meie värvilise perekonnaga.',
+  description: 'Külasta Eesti esimest papagoidekeskust Tartus! Üle 50 papagoi, giidiga ekskursioonid, fotod Araga. Sobib peredele, koolidele ja ettevõtetele. Broneeri külastus!',
   keywords: 'Papagoi Keskus Tartus, papagoidekeskus, papagoidekeskus Tartus, papagoid Tartus, papagoid Eestis, külastus broneerimisega, papagoid sünnipäevale, linnuhotell, papagoide külastus Tartus, laste tegevused Tartu, perepuhkus Tartu, ekskursioon papagoidega, kus saab papagoid näha Eestis, papagoidega fotod Tartu, lapsesõbralik tegevus Tartu, kooli ekskursioon Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/`,

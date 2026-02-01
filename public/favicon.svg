@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Papagoi Keskus logo">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <path d="M140 120c-44 0-80 36-80 80v32c0 88 72 160 160 160h92c60 0 108-48 108-108V220c0-44-36-80-80-80H140z" fill="#1a73e8"/>
+  <path d="M140 120c-44 0-80 36-80 80v12c18-10 39-16 62-16h110c8 0 16 2 23 5-6-47-46-81-95-81H140z" fill="#16a34a"/>
+  <circle cx="250" cy="230" r="26" fill="#1a73e8"/>
+  <path d="M200 310c24-28 56-44 92-44h28c8 0 16 2 23 6-20 44-62 74-111 74h-32z" fill="#16a34a"/>
+</svg>

@@ -11,7 +11,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Külastajatele - Papagoi Keskus Tartus | Info, reeglid, hinnad',
-  description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus. Lahtiolekuajad: E-P 12-18. Hinnad, reeglid, parkimine ja praktiline info külastuseks. Külastus broneerimisega.',
+  description: 'Külastajate info: külastuse käik 6 sammuga, reeglid, hinnad, grupikülastused. Ara käe peale istutamine, parkimine, maksmine sularahas. Kõik vajalik info!',
   keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid, perepuhkus Tartu, lapsesõbralik tegevus Tartu, kus saab papagoid näha Eestis, papagoidega fotod Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/kulastajatele`,

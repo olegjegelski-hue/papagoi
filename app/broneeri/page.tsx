@@ -9,7 +9,7 @@ function getSiteUrl() {
 
 export const metadata = {
   title: 'Broneeri külastus - Papagoi Keskus',
-  description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+  description: 'Broneeri külastus Papagoi Keskusesse Tartus! Interaktiivne kalender, vastus 24h jooksul. Külastused E-P 12-18, hind 10€/inimene. Min 3 inimest.',
   keywords: 'broneeri külastus, papagoidekeskus Tartus, papagoid Tartus, perepuhkus Tartu, lapsesõbralik tegevus Tartu, ekskursioon papagoidega',
   alternates: {
     canonical: `${getSiteUrl()}/broneeri`,

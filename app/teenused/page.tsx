@@ -10,7 +10,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Teenused - Papagoi Keskus Tartus | Külastus, sünnipäev, grupikülastused',
-  description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega, üritus väljas, grupikülastused koolidele ja ettevõtetele. Broneeri külastus juba täna!',
+  description: 'Papagoi Keskuse teenused: külastus 10€, sünnipäev 350€, õhtusöök papagoidega, grupikülastused koolidele. Väliüritused ja linnuhotell. Broneeri täna!',
   keywords: 'Papagoi Keskus teenused, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, linnuhotell, ekskursioon papagoidega, kooli ekskursioon Tartu, papagoidega fotod Tartu, laste tegevused Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/teenused`,
