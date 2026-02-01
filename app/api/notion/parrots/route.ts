@@ -241,13 +241,11 @@ export async function GET() {
       console.warn('HOIATUS: Notion\'ist ei tulnud ühtegi papagoid!')
     }
     
-    // Filtreerime ainult need, millel on Status = "Kodus"
+    // Filtreerime ainult need, millel on Status = "Kodus" ja pilt lisatud
     const parrots = allParrots.filter((parrot: any) => {
-      const status = (parrot.status || '').trim()
-      // Proovime erinevaid variante (suur/tähtede tõstmine, tühikud jne)
-      return status === 'Kodus' || 
-             status.toLowerCase() === 'kodus' ||
-             status === 'KODUS'
+      const status = (parrot.status || '').trim().toLowerCase()
+      const hasImage = Boolean(parrot.image && String(parrot.image).trim().length > 0)
+      return status === 'kodus' && hasImage
     })
     
     console.log('Papagoisid pärast filtreerimist (Status=Kodus):', parrots.length)

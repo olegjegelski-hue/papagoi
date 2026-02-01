@@ -164,57 +164,19 @@ export default function MeistPage() {
             </div>
           </div>
 
-          {/* Hügieen ja hooldus */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
-            <div className="bg-gradient-to-r from-orange-500 to-yellow-600 p-8 text-white">
-              <div className="flex items-center justify-center space-x-3">
-                <Shield className="w-8 h-8" />
-                <h2 className="text-3xl md:text-4xl font-bold">Hügieen ja hooldus</h2>
-              </div>
-            </div>
-            
-            <div className="p-8 md:p-12">
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                Kuna papagoid elavad koos perega samas ruumis, on hügieen meie jaoks väga oluline. 
-                Meie kodu on pidevalt puhas ja korras, et tagada nii meie kui ka papagoide tervis.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-orange-50 rounded-xl p-6">
-                  <h4 className="font-bold text-gray-800 mb-3">Igapäevane hooldus:</h4>
-                  <ul className="space-y-2 text-gray-700 text-sm">
-                    <li>• Põrandate puhastamine mitu korda päevas</li>
-                    <li>• Linnupuid ja mänguasjade koristamine</li>
-                    <li>• Toitmisalade puhastamine</li>
-                    <li>• Õhu kvaliteedi jälgimine</li>
-                  </ul>
-                </div>
-
-                <div className="bg-yellow-50 rounded-xl p-6">
-                  <h4 className="font-bold text-gray-800 mb-3">Tervisekontrollid:</h4>
-                  <ul className="space-y-2 text-gray-700 text-sm">
-                    <li>• Regulaarsed veterinaarvisiidid</li>
-                    <li>• Linnude tervise jälgimine</li>
-                    <li>• Karantiin uute lindude jaoks</li>
-                    <li>• Tervislik toitumine ja liikumine</li>
-                  </ul>
+          {false && (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+              <div className="p-8 md:p-12">
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+                  <p className="text-gray-700">
+                    <strong>Meie visioon:</strong> Luua Eesti parim papagoidekeskus, kus linnud saavad elada õnnelikku ja tervislikku elu, 
+                    ja kus külastajad saavad kogeda midagi tõeliselt erilist. Kui soovid meid toetada, vaata meie 
+                    <Link href="/ristiisa-programm" className="text-purple-600 hover:underline font-semibold"> ristiisa programmi</Link>.
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Meie visioon */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
-            <div className="p-8 md:p-12">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
-                <p className="text-gray-700">
-                  <strong>Meie visioon:</strong> Luua Eesti parim papagoidekeskus, kus linnud saavad elada õnnelikku ja tervislikku elu, 
-                  ja kus külastajad saavad kogeda midagi tõeliselt erilist. Kui soovid meid toetada, vaata meie 
-                  <Link href="/ristiisa-programm" className="text-purple-600 hover:underline font-semibold"> ristiisa programmi</Link>.
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Külastusprogramm */}
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-12 text-white text-center">

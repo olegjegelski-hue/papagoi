@@ -65,13 +65,22 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
   const [selectedParrot, setSelectedParrot] = useState<any | null>(null)
   const [expandedStories, setExpandedStories] = useState<{ [key: string]: boolean }>({})
 
+  const isKodusStatus = (value?: string) => {
+    return (value || '').trim().toLowerCase() === 'kodus'
+  }
+
+  const baseParrots = allParrots.filter((parrot) => {
+    const hasImage = Boolean(parrot.image && String(parrot.image).trim().length > 0)
+    return hasImage && isKodusStatus(parrot.status)
+  })
+
   // Kõik unikaalsed liigid
-  const allSpecies = Array.from(new Set(allParrots.map(p => p.species).filter(Boolean))).sort()
+  const allSpecies = Array.from(new Set(baseParrots.map(p => p.species).filter(Boolean))).sort()
   
   // Kõik unikaalsed nimed
-  const allNames = Array.from(new Set(allParrots.map(p => p.name).filter(Boolean))).sort()
+  const allNames = Array.from(new Set(baseParrots.map(p => p.name).filter(Boolean))).sort()
 
-  const filteredParrots = allParrots.filter(parrot => {
+  const filteredParrots = baseParrots.filter(parrot => {
     // Ristiisa staatuse filter
     if (filter !== 'all') {
       if (filter === 'available' && parrot.sponsorship?.status !== 'available') return false
@@ -169,7 +178,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 : 'bg-white text-gray-600 hover:bg-gray-100'
             }`}
           >
-            Kõik papagoid ({allParrots.length})
+            Kõik papagoid ({baseParrots.length})
           </button>
           <button
             onClick={() => {
@@ -184,7 +193,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 : 'bg-white text-gray-600 hover:bg-gray-100'
             }`}
           >
-            Otsivad ristiisa ({allParrots.filter(p => p.sponsorship.status === 'available').length})
+            Otsivad ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'available').length})
           </button>
           <button
             onClick={() => {
@@ -199,14 +208,14 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 : 'bg-white text-gray-600 hover:bg-gray-100'
             }`}
           >
-            On ristiisa ({allParrots.filter(p => p.sponsorship.status === 'sponsored').length})
+            On ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'sponsored').length})
           </button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-            <div className="text-3xl font-bold text-green-600 mb-2">{allParrots.length}+</div>
+            <div className="text-3xl font-bold text-green-600 mb-2">{baseParrots.length}+</div>
             <p className="text-gray-600">Papagoid</p>
           </div>
           <div className="bg-white rounded-xl p-6 text-center shadow-lg">
@@ -214,7 +223,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             <p className="text-gray-600">Erinevat liiki</p>
           </div>
           <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-            <div className="text-3xl font-bold text-red-600 mb-2">{allParrots.filter(p => p.sponsorship.status === 'available').length}</div>
+            <div className="text-3xl font-bold text-red-600 mb-2">{baseParrots.filter(p => p.sponsorship?.status === 'available').length}</div>
             <p className="text-gray-600">Otsib ristiisa</p>
           </div>
           <div className="bg-white rounded-xl p-6 text-center shadow-lg">
