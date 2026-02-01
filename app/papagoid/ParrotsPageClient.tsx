@@ -164,53 +164,55 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <button
-            onClick={() => {
-              setFilter('all')
-              setNameFilter('all')
-              setSpeciesFilter('all')
-              setSelectedParrot(null)
-            }}
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-              filter === 'all' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Kõik papagoid ({baseParrots.length})
-          </button>
-          <button
-            onClick={() => {
-              setFilter('available')
-              setNameFilter('all')
-              setSpeciesFilter('all')
-              setSelectedParrot(null)
-            }}
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-              filter === 'available' 
-                ? 'bg-green-600 text-white' 
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Otsivad ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'available').length})
-          </button>
-          <button
-            onClick={() => {
-              setFilter('sponsored')
-              setNameFilter('all')
-              setSpeciesFilter('all')
-              setSelectedParrot(null)
-            }}
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-              filter === 'sponsored' 
-                ? 'bg-gray-600 text-white' 
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            On ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'sponsored').length})
-          </button>
-        </div>
+        {false && (
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <button
+              onClick={() => {
+                setFilter('all')
+                setNameFilter('all')
+                setSpeciesFilter('all')
+                setSelectedParrot(null)
+              }}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                filter === 'all' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Kõik papagoid ({baseParrots.length})
+            </button>
+            <button
+              onClick={() => {
+                setFilter('available')
+                setNameFilter('all')
+                setSpeciesFilter('all')
+                setSelectedParrot(null)
+              }}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                filter === 'available' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Otsivad ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'available').length})
+            </button>
+            <button
+              onClick={() => {
+                setFilter('sponsored')
+                setNameFilter('all')
+                setSpeciesFilter('all')
+                setSelectedParrot(null)
+              }}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                filter === 'sponsored' 
+                  ? 'bg-gray-600 text-white' 
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              On ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'sponsored').length})
+            </button>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
@@ -268,11 +270,13 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 >
                   <X className="w-6 h-6 text-gray-800" />
                 </button>
-                <div className="absolute top-4 left-4">
-                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedParrot.sponsorship?.status).bg} ${getStatusColor(selectedParrot.sponsorship?.status).text} ${getStatusColor(selectedParrot.sponsorship?.status).border} border backdrop-blur-sm`}>
-                    {getStatusText(selectedParrot.sponsorship?.status)}
+                {false && (
+                  <div className="absolute top-4 left-4">
+                    <div className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedParrot.sponsorship?.status).bg} ${getStatusColor(selectedParrot.sponsorship?.status).text} ${getStatusColor(selectedParrot.sponsorship?.status).border} border backdrop-blur-sm`}>
+                      {getStatusText(selectedParrot.sponsorship?.status)}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -472,11 +476,13 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 )}
                 
                 {/* Sponsorship Status Badge */}
-                <div className="absolute bottom-4 right-4">
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(parrot.sponsorship.status).bg} ${getStatusColor(parrot.sponsorship.status).text} ${getStatusColor(parrot.sponsorship.status).border} border backdrop-blur-sm`}>
-                    {getStatusText(parrot.sponsorship.status)}
+                {false && (
+                  <div className="absolute bottom-4 right-4">
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(parrot.sponsorship.status).bg} ${getStatusColor(parrot.sponsorship.status).text} ${getStatusColor(parrot.sponsorship.status).border} border backdrop-blur-sm`}>
+                      {getStatusText(parrot.sponsorship.status)}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Content - kompaktne */}
