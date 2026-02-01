@@ -14,7 +14,7 @@ export default function Footer() {
             <div className="flex items-center space-x-3 mb-4">
               <Image
                 src="/logo.png"
-                alt="Papagoi Keskus"
+                alt="Papagoi Keskus logo - kolm kaunist papagoid"
                 width={50}
                 height={50}
                 className="rounded-lg shadow-lg border-2 border-papagoi-green/20"

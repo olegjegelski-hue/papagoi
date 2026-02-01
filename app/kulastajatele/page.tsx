@@ -4,10 +4,32 @@ import VisitProcess from '@/components/VisitProcess'
 
 import type { Metadata } from 'next'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Külastajatele - Papagoi Keskus Tartus | Info, reeglid, hinnad',
   description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus. Lahtiolekuajad: E-P 12-18. Hinnad, reeglid, parkimine ja praktiline info külastuseks. Külastus broneerimisega.',
-  keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid',
+  keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid, perepuhkus Tartu, lapsesõbralik tegevus Tartu, kus saab papagoid näha Eestis, papagoidega fotod Tartu',
+  alternates: {
+    canonical: `${getSiteUrl()}/kulastajatele`,
+  },
+  openGraph: {
+    title: 'Külastajatele - Papagoi Keskus Tartus',
+    description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus. Lahtiolekuajad: E-P 12-18.',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/kulastajatele`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Külastajatele - Papagoi Keskus Tartus',
+    description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus.',
+    images: ['/logo.png'],
+  },
 }
 
 export default function VisitorsPage() {
@@ -22,7 +44,8 @@ export default function VisitorsPage() {
               <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele - Papagoi Keskus Tartus</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Kõik vajalik info meeldejäävaks kogemuseks meie papagoidekeskuses. Külastus broneerimisega – broneeri külastus juba täna!
+              Kõik vajalik info meeldejäävaks kogemuseks meie papagoidekeskuses. See on lapsesõbralik tegevus Tartus ja tore
+              perepuhkus Tartus. Külastus broneerimisega – broneeri külastus juba täna!
             </p>
           </div>
 

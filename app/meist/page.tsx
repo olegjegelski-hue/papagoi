@@ -3,10 +3,32 @@ import Link from 'next/link'
 
 import type { Metadata } from 'next'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Meist - Papagoi Keskus Tartus | Eesti esimene papagoidekeskus',
   description: 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015. Meie maja, üle 50 papagoid, umbes 40 puurivabalt lendavat lindu. Meie lugu ja visioon.',
   keywords: 'Papagoi Keskus meie lugu, Eesti esimene papagoidekeskus, Papagoi Keskus ajalugu, papagoidekeskus Tartus',
+  alternates: {
+    canonical: `${getSiteUrl()}/meist`,
+  },
+  openGraph: {
+    title: 'Meist - Papagoi Keskus Tartus',
+    description: 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015.',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/meist`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Meist - Papagoi Keskus Tartus',
+    description: 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015.',
+    images: ['/logo.png'],
+  },
 }
 
 export default function MeistPage() {

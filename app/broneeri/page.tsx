@@ -2,9 +2,30 @@
 import StaticBookingInfo from '@/components/StaticBookingInfo'
 import { Calendar, Users, Clock, Euro, Phone, AlertCircle } from 'lucide-react'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata = {
   title: 'Broneeri külastus - Papagoi Keskus',
   description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+  keywords: 'broneeri külastus, papagoidekeskus Tartus, papagoid Tartus, perepuhkus Tartu, lapsesõbralik tegevus Tartu, ekskursioon papagoidega',
+  alternates: {
+    canonical: `${getSiteUrl()}/broneeri`,
+  },
+  openGraph: {
+    title: 'Broneeri külastus - Papagoi Keskus',
+    description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+    url: `${getSiteUrl()}/broneeri`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Broneeri külastus - Papagoi Keskus',
+    description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+    images: ['/logo.png'],
+  },
 }
 
 export default function BookingPage() {
@@ -18,7 +39,8 @@ export default function BookingPage() {
             <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Broneeri külastus</span>
           </h1>
           <p className="text-xl text-deep-anthracite-700 max-w-3xl mx-auto">
-            Täitke vorm ja me võtame teiega ühendust 24 tunni jooksul külastuse aja kokkuleppimiseks.
+            Täitke vorm ja me võtame teiega ühendust 24 tunni jooksul külastuse aja kokkuleppimiseks. Papagoidekeskus Tartus
+            sobib suurepäraselt perepuhkus Tartu plaanideks.
           </p>
         </div>
 

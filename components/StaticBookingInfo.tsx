@@ -311,6 +311,19 @@ export default function StaticBookingInfo() {
             </div>
           </div>
 
+          <div className="mb-6 rounded-lg border border-papagoi-blue/20 bg-papagoi-blue/10 p-3 text-sm text-deep-anthracite">
+            <p className="font-semibold mb-1">Vali endale sobiv kuupäev ja aeg</p>
+            <p className="text-warm-gray-600">🕐 Tüüpilised külastusajad: 12:00, 14:00, 16:00</p>
+            <div className="h-2" />
+            <blockquote className="border-l-2 border-papagoi-blue/40 pl-3 text-warm-gray-600 italic">
+              Meie papagoid vajavad külastuste vahel puhkeaega, et olla energilised ja sõbralikud.
+              Seetõttu jätame külastuste vahele vähemalt 1-tunnise pausi. Kui päeval on vähe broneeringuid,
+              võime pakkuda ka vahepealset aega.
+            </blockquote>
+            <div className="h-2" />
+            <p className="text-warm-gray-600">💡 Soovid hommikust aega (kl 10 või 11)? Kirjuta meile ja leiame lahenduse!</p>
+          </div>
+
           <div className="grid grid-cols-7 text-center text-xs font-semibold text-warm-gray-500 mb-2">
             {['E', 'T', 'K', 'N', 'R', 'L', 'P'].map((day) => (
               <div key={day} className="py-2">

@@ -72,7 +72,7 @@ export default function BlogPostsClient({ posts }: Props) {
                 <div className="h-56 w-full overflow-hidden">
                   <img
                     src={post.cover}
-                    alt={post.title}
+                    alt={`${post.title} kaanepilt`}
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />

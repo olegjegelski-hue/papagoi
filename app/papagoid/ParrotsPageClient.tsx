@@ -111,8 +111,9 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Meie papagoid</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Tutvuge meie värvilise perekonnaga! Iga papagoi on ainulaadne isiksuseomaduste ja loo poolest. 
-            Nad kõik ootavad kannatamatult võimalust teiega tutvuda.
+            Tutvuge meie värvilise perekonnaga! Kui mõtlete, kus saab papagoid näha Eestis, siis siin kohtute tõeliste
+            papagoidega Tartus. Iga papagoi on ainulaadne isiksuseomaduste ja loo poolest. Nad kõik ootavad kannatamatult
+            võimalust teiega tutvuda.
           </p>
         </div>
 
@@ -243,7 +244,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 {selectedParrot.image ? (
                   <Image
                     src={selectedParrot.image}
-                    alt={selectedParrot.name}
+                    alt={`${selectedParrot.name} - ${selectedParrot.species}`}
                     fill
                     className="object-cover"
                   />
@@ -452,7 +453,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 {parrot.image ? (
                   <Image
                     src={parrot.image}
-                    alt={parrot.name}
+                    alt={`${parrot.name} - ${parrot.species}`}
                     fill
                     className="object-cover"
                   />

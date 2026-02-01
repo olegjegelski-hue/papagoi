@@ -22,6 +22,11 @@ function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
 }
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 function getText(property: any) {
   if (!property) return ''
   if (property.type === 'title') return property.title?.[0]?.plain_text || ''
@@ -224,7 +229,7 @@ function renderRichText(text: NotionText[]) {
   return text.map((item, index) => <span key={index}>{item.plain_text}</span>)
 }
 
-function renderBlocks(blocks: NotionBlock[]) {
+function renderBlocks(blocks: NotionBlock[], fallbackAlt?: string) {
   return blocks.map((block) => {
     switch (block.type) {
       case 'paragraph': {
@@ -266,9 +271,10 @@ function renderBlocks(blocks: NotionBlock[]) {
         const url = block.image?.file?.url || block.image?.external?.url
         if (!url) return null
         const caption = block.image?.caption?.[0]?.plain_text
+        const altText = caption || fallbackAlt || 'Blogi pilt'
         return (
           <figure key={block.id} className="my-6">
-            <img src={url} alt={caption || 'Blogi pilt'} className="w-full rounded-2xl" />
+            <img src={url} alt={altText} className="w-full rounded-2xl" />
             {caption && <figcaption className="text-sm text-gray-500 mt-2">{caption}</figcaption>}
           </figure>
         )
@@ -288,9 +294,30 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title: 'Blogi | Papagoi Keskus',
     }
   }
+  const baseUrl = getSiteUrl()
+  const canonicalUrl = `${baseUrl}/blogi/${params.slug}`
+  const description = post.excerpt || undefined
+  const images = post.cover ? [post.cover] : ['/logo.png']
   return {
     title: `${post.title} | Papagoi Keskus`,
-    description: post.excerpt || undefined,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: 'article',
+      title: post.title,
+      description,
+      url: canonicalUrl,
+      images,
+    },
+    twitter: {
+      card: post.cover ? 'summary_large_image' : 'summary',
+      title: post.title,
+      description,
+      images,
+    },
+    authors: [{ name: 'Papagoi Keskus' }],
   }
 }
 
@@ -316,10 +343,42 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         year: 'numeric',
       })
     : ''
+  const baseUrl = getSiteUrl()
+  const canonicalUrl = `${baseUrl}/blogi/${params.slug}`
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt || undefined,
+    image: post.cover ? [post.cover] : undefined,
+    author: {
+      '@type': 'Organization',
+      name: 'Papagoi Keskus',
+      url: baseUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Papagoi Keskus',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+    datePublished: post.date || undefined,
+    dateModified: post.date || undefined,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <div className="max-w-4xl mx-auto px-4 py-16">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        />
         <div className="mb-6">
           <Link href="/blogi" className="text-sm font-semibold text-papagoi-blue hover:underline">
             ← Tagasi blogi lehele
@@ -328,7 +387,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <article className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/60">
           {post.cover && (
             <div className="h-80 w-full overflow-hidden">
-              <img src={post.cover} alt={post.title} className="h-full w-full object-cover" />
+              <img src={post.cover} alt={`${post.title} kaanepilt`} className="h-full w-full object-cover" />
             </div>
           )}
           <div className="p-10">
@@ -356,7 +415,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                       {paragraph}
                     </p>
                   ))
-                : renderBlocks(blocks)}
+              : renderBlocks(blocks, post.title)}
             </div>
             <div className="mt-10">
               <Link href="/blogi" className="text-sm font-semibold text-papagoi-blue hover:underline">

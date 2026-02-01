@@ -3,10 +3,32 @@ import Link from 'next/link'
 import ServiceSchema from '@/components/ServiceSchema'
 import type { Metadata } from 'next'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Teenused - Papagoi Keskus Tartus | Külastus, sünnipäev, grupikülastused',
   description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega, üritus väljas, grupikülastused koolidele ja ettevõtetele. Broneeri külastus juba täna!',
-  keywords: 'Papagoi Keskus teenused, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, linnuhotell',
+  keywords: 'Papagoi Keskus teenused, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, linnuhotell, ekskursioon papagoidega, kooli ekskursioon Tartu, papagoidega fotod Tartu, laste tegevused Tartu',
+  alternates: {
+    canonical: `${getSiteUrl()}/teenused`,
+  },
+  openGraph: {
+    title: 'Teenused - Papagoi Keskus Tartus',
+    description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega, grupikülastused.',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/teenused`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Teenused - Papagoi Keskus Tartus',
+    description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega.',
+    images: ['/logo.png'],
+  },
 }
 
 export default function TeenusedPage() {
@@ -23,7 +45,8 @@ export default function TeenusedPage() {
               <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Papagoi Keskuse teenused Tartus</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Papagoi Keskus Tartus pakub erinevaid külastusviise: külastus broneerimisega, papagoid sünnipäevale, grupikülastused koolidele ja ettevõtetele. 
+              Papagoi Keskus Tartus pakub erinevaid külastusviise: külastus broneerimisega, papagoid sünnipäevale, grupikülastused
+              koolidele ja ettevõtetele ning ekskursioon papagoidega. Sobib ka kooli ekskursioon Tartu piirkonnas ja laste tegevused Tartu peredele.
               Kõik külastused toimuvad ainult eelneval kokkuleppel.
             </p>
           </div>

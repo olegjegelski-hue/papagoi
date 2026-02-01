@@ -2,9 +2,29 @@
 import Image from 'next/image'
 import { Heart, Gift, Calendar, Camera, Users, Phone, Mail, Euro, Check, Star, Clock } from 'lucide-react'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata = {
   title: 'Ristiisa Programm - Papagoi Keskus',
   description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+  alternates: {
+    canonical: `${getSiteUrl()}/ristiisa-programm`,
+  },
+  openGraph: {
+    title: 'Ristiisa Programm - Papagoi Keskus',
+    description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+    url: `${getSiteUrl()}/ristiisa-programm`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Ristiisa Programm - Papagoi Keskus',
+    description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+    images: ['/logo.png'],
+  },
 }
 
 const benefits = [
@@ -98,8 +118,29 @@ const faqItems = [
 ]
 
 export default function SponsorshipProgramPage() {
+  const baseUrl = getSiteUrl()
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/ristiisa-programm`,
+    },
+  }
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       
       {/* Hero Section */}
       <section className="pt-12 pb-16">

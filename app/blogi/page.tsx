@@ -2,9 +2,29 @@
 import { Metadata } from 'next'
 import BlogPostsClient from './BlogPostsClient'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Blogi | Papagoi Keskus',
   description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+  alternates: {
+    canonical: `${getSiteUrl()}/blogi`,
+  },
+  openGraph: {
+    title: 'Blogi | Papagoi Keskus',
+    description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+    url: `${getSiteUrl()}/blogi`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Blogi | Papagoi Keskus',
+    description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+    images: ['/logo.png'],
+  },
 }
 
 type BlogPost = {
@@ -38,10 +58,30 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 export default async function BlogPage() {
   const posts = await getBlogPosts()
   const hasPosts = posts.length > 0
+  const baseUrl = getSiteUrl()
+  const blogSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Papagoi Keskus Blogi',
+    url: `${baseUrl}/blogi`,
+    description: 'Lood papagoidest, hooldusest ja Papagoi Keskuse tegemistest.',
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt || undefined,
+      datePublished: post.date || undefined,
+      url: post.slug ? `${baseUrl}/blogi/${post.slug}` : undefined,
+      image: post.cover ? [post.cover] : undefined,
+    })),
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <div className="max-w-6xl mx-auto px-4 py-16">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+        />
         
         {/* Header */}
         <div className="text-center mb-16">

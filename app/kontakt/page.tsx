@@ -4,10 +4,32 @@ import ContactForm from './_components/contact-form'
 
 import type { Metadata } from 'next'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Kontakt - Papagoi Keskus Tartus | Broneeri külastus',
   description: 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed, broneerimisinfo ja korduma kippuvad küsimused. Helistage +372 512 7938 või broneerige külastus veebis.',
-  keywords: 'Papagoi Keskus kontakt, broneeri külastus Tartus, Papagoi Keskus telefon, Papagoi Keskus aadress',
+  keywords: 'Papagoi Keskus kontakt, broneeri külastus Tartus, Papagoi Keskus telefon, Papagoi Keskus aadress, papagoidekeskus Tartus, papagoid Tartus',
+  alternates: {
+    canonical: `${getSiteUrl()}/kontakt`,
+  },
+  openGraph: {
+    title: 'Kontakt - Papagoi Keskus Tartus',
+    description: 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed ja broneerimisinfo.',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/kontakt`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Kontakt - Papagoi Keskus Tartus',
+    description: 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed ja broneerimisinfo.',
+    images: ['/logo.png'],
+  },
 }
 
 const faqs = [
@@ -38,8 +60,29 @@ const faqs = [
 ]
 
 export default function ContactPage() {
+  const baseUrl = getSiteUrl()
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/kontakt`,
+    },
+  }
   return (
     <div className="min-h-screen bg-gray-50 pt-12 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

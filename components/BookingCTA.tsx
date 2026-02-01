@@ -11,8 +11,8 @@ export default function BookingCTA() {
             Valmis meie papagoidega tutvuma?
           </h2>
           <p className="text-lg text-deep-anthracite-600 mb-8 max-w-2xl mx-auto">
-            Broneerige oma külastus juba täna ja kogege ainulaadset seiklust 
-            koos üle 50 erinevas papagoid!
+            Broneerige oma külastus juba täna ja kogege ainulaadset seiklust
+            koos üle 50 erineva papagoiga!
           </p>
           
           {/* Call to Action Button - same style as Hero */}

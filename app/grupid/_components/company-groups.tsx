@@ -113,7 +113,7 @@ export default function CompanyGroups() {
                     <div className={`relative aspect-[4/3] lg:aspect-auto ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                       <Image
                         src={program.image}
-                        alt={program.title}
+                        alt={`${program.title} - grupikülastus Papagoi Keskuses`}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 50vw"

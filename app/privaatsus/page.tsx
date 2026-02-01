@@ -2,10 +2,32 @@ import { Shield, Cookie, Lock, Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata: Metadata = {
   title: 'Privaatsus ja küpsised - Papagoi Keskus',
   description: 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused. Lugege, kuidas me kaitstame teie isikuandmeid.',
   keywords: 'privaatsuspoliitika, küpsised, andmekaitse, GDPR, Papagoi Keskus',
+  alternates: {
+    canonical: `${getSiteUrl()}/privaatsus`,
+  },
+  openGraph: {
+    title: 'Privaatsus ja küpsised - Papagoi Keskus',
+    description: 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused.',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/privaatsus`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Privaatsus ja küpsised - Papagoi Keskus',
+    description: 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused.',
+    images: ['/logo.png'],
+  },
 }
 
 export default function PrivacyPage() {

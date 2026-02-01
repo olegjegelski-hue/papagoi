@@ -1,8 +1,31 @@
 import ParrotsPageClient from './ParrotsPageClient'
 
+function getSiteUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+}
+
 export const metadata = {
   title: 'Meie papagoid - Papagoi Keskus',
   description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
+  keywords: 'papagoid Tartus, papagoid Eestis, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus',
+  alternates: {
+    canonical: `${getSiteUrl()}/papagoid`,
+  },
+  openGraph: {
+    title: 'Meie papagoid - Papagoi Keskus',
+    description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
+    type: 'website',
+    locale: 'et_EE',
+    url: `${getSiteUrl()}/papagoid`,
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Meie papagoid - Papagoi Keskus',
+    description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
+    images: ['/logo.png'],
+  },
 }
 
 // Fallback andmed, kui Notion API ei tööta

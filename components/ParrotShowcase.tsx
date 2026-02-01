@@ -112,7 +112,7 @@ export default function ParrotShowcase({ parrots: parrotsProp }: ParrotShowcaseP
                   {parrot.image ? (
                     <Image
                       src={parrot.image}
-                      alt={parrot.name}
+                      alt={`${parrot.name} - ${parrot.species}`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 14vw"
@@ -158,7 +158,7 @@ export default function ParrotShowcase({ parrots: parrotsProp }: ParrotShowcaseP
                   {selectedParrot.image ? (
                     <Image
                       src={selectedParrot.image}
-                      alt={selectedParrot.name}
+                      alt={`${selectedParrot.name} - ${selectedParrot.species}`}
                       fill
                       className="object-cover"
                     />
