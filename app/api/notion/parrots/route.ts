@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const isDebug = searchParams.get('debug') === '1'
     // Notion database ID - see tuleb seadistada .env failis
     let DATABASE_ID = process.env.NOTION_PARROTS_DATABASE_ID || ''
     const NOTION_API_KEY = process.env.NOTION_API_KEY
@@ -123,6 +125,27 @@ export async function GET() {
     console.log('Notion API päring õnnestus:', notionResponse.results?.length || 0, 'lehte')
 
     // Teisendame Notion andmed meie formaati
+    const getImageFromProperties = (properties: any) => {
+      const imageKeys = ['Pilt', 'Pildid', 'Kaanepilt', 'Foto', 'Image', 'Photo', 'Cover']
+      for (const key of imageKeys) {
+        const prop = properties[key]
+        if (!prop) continue
+        if (prop.type === 'files') {
+          return prop.files?.[0]?.file?.url || prop.files?.[0]?.external?.url || ''
+        }
+        if (prop.type === 'url') {
+          return prop.url || ''
+        }
+      }
+      return (
+        properties.Pilt?.files?.[0]?.file?.url ||
+        properties.Pilt?.files?.[0]?.external?.url ||
+        properties.Image?.files?.[0]?.file?.url ||
+        properties.Image?.files?.[0]?.external?.url ||
+        ''
+      )
+    }
+
     const allParrots = notionResponse.results.map((page: any) => {
       const properties = page.properties
 
@@ -136,11 +159,7 @@ export async function GET() {
         species: properties.Liik?.select?.name || 
                  properties.Species?.select?.name || 
                  '',
-        image: properties.Pilt?.files?.[0]?.file?.url || 
-               properties.Pilt?.files?.[0]?.external?.url || 
-               properties.Image?.files?.[0]?.file?.url || 
-               properties.Image?.files?.[0]?.external?.url || 
-               '',
+        image: getImageFromProperties(properties),
         age: properties.Vanus?.rich_text?.[0]?.plain_text || 
              properties.Age?.rich_text?.[0]?.plain_text || 
              '',
@@ -249,6 +268,28 @@ export async function GET() {
     })
     
     console.log('Papagoisid pärast filtreerimist (Status=Kodus):', parrots.length)
+
+    if (isDebug) {
+      const statusCounts = allParrots.reduce((acc: Record<string, number>, parrot: any) => {
+        const key = (parrot.status || 'N/A').trim() || 'N/A'
+        acc[key] = (acc[key] || 0) + 1
+        return acc
+      }, {})
+      const missingImage = allParrots.filter((parrot: any) => !parrot.image).map((parrot: any) => parrot.name)
+      const notKodus = allParrots
+        .filter((parrot: any) => (parrot.status || '').trim().toLowerCase() !== 'kodus')
+        .map((parrot: any) => `${parrot.name} (${parrot.status || 'N/A'})`)
+      return NextResponse.json({
+        parrots,
+        debug: {
+          total: allParrots.length,
+          filtered: parrots.length,
+          statusCounts,
+          missingImage,
+          notKodus,
+        },
+      })
+    }
 
     return NextResponse.json({ parrots })
   } catch (error: any) {

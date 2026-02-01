@@ -381,8 +381,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 </div>
               )}
 
-              {/* Sponsorship Info */}
-              {selectedParrot.sponsorship && (
+              {false && selectedParrot.sponsorship && (
                 <div className="border-t pt-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-4">Ristiisa programm</h3>
                   {selectedParrot.sponsorship.status === 'sponsored' ? (
@@ -566,42 +565,43 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
           </div>
         )}
 
-        {/* Additional Info */}
-        <div className="mt-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-3xl p-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">
-            Meie keskuses elab palju rohkem!
-          </h2>
-          <div className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-            <p className="font-medium text-gray-700">
-              🐾 Lisaks papagoidele elab meie keskuses üle 50 merisiga erinevatest tõugudest. 
-              Külastuse ajal saate neid toita ja paitada - see on unustamatu kogemus kõigile vanuseastmetele!
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-8 max-w-2xl mx-auto">
-            <div className="flex items-center justify-center mb-4">
-              <Heart className="w-8 h-8 text-red-500 fill-current mr-3" />
-              <h3 className="text-xl font-semibold text-gray-800">Soovite aidata kaasa?</h3>
+        {false && (
+          <div className="mt-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-3xl p-12 text-center">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">
+              Meie keskuses elab palju rohkem!
+            </h2>
+            <div className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+              <p className="font-medium text-gray-700">
+                🐾 Lisaks papagoidele elab meie keskuses üle 50 merisiga erinevatest tõugudest. 
+                Külastuse ajal saate neid toita ja paitada - see on unustamatu kogemus kõigile vanuseastmetele!
+              </p>
             </div>
-            <p className="text-gray-600 mb-6">
-              Ristivanema programm võimaldab teil luua erilise side mõne meie papagaiga ja aidata kaasa tema heaolule.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/ristiisa-programm"
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
-              >
-                Tutvu programmiga
-              </a>
-              <a
-                href="/broneeri"
-                className="text-green-600 border-2 border-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-600 hover:text-white transition-all duration-300"
-              >
-                Broneeri külastus
-              </a>
+            
+            <div className="bg-white rounded-2xl p-8 max-w-2xl mx-auto">
+              <div className="flex items-center justify-center mb-4">
+                <Heart className="w-8 h-8 text-red-500 fill-current mr-3" />
+                <h3 className="text-xl font-semibold text-gray-800">Soovite aidata kaasa?</h3>
+              </div>
+              <p className="text-gray-600 mb-6">
+                Ristivanema programm võimaldab teil luua erilise side mõne meie papagaiga ja aidata kaasa tema heaolule.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/ristiisa-programm"
+                  className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  Tutvu programmiga
+                </a>
+                <a
+                  href="/broneeri"
+                  className="text-green-600 border-2 border-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-600 hover:text-white transition-all duration-300"
+                >
+                  Broneeri külastus
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
