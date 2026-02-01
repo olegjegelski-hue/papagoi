@@ -174,7 +174,7 @@ async function getParrotsFromNotion() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/notion/parrots`, {
-      next: { revalidate: 3600 }, // värskendame kord tunnis
+      next: { revalidate: 300 }, // värskendame 5 minuti järel
     })
     
     if (!response.ok) {
