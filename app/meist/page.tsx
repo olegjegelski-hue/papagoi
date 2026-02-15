@@ -1,4 +1,4 @@
-import { Home, Users, Feather, Heart, Building, Sparkles, Calendar, Shield } from 'lucide-react'
+import { Home, Feather, Heart, Building, Sparkles, Calendar, Shield } from 'lucide-react'
 import Link from 'next/link'
 
 import type { Metadata } from 'next'
@@ -56,7 +56,11 @@ export default function MeistPage() {
             <div className="p-8 md:p-12">
               <div className="prose prose-lg max-w-none">
                 <p className="text-lg md:text-xl leading-relaxed text-deep-anthracite mb-6 first-letter:text-6xl first-letter:font-bold first-letter:text-papagoi-green first-letter:mr-2 first-letter:float-left first-letter:leading-none">
-                  Papagoi Keskus on kasvanud üle 50-liikmeliseks linnupereks, kus on esindatud 15+ erinevat papagoi liiki. Lisaks sibavad siin ringi kääbusküülikud ja merisead ning on akvaariumisein, kus ujuvad bettad, piraajad, gupid, klaassägad, põhjakoristajad, minivähjad, krevetid, teod jt. Loomulikult ei puudu ka kassid ja koer.
+                  Papagoi Keskus asutati aastal 2015 Raplamaal esimese omaniku Katarina poolt. 2017.a külastasime perega seda imelist kohta, tegime pilti peategelase Mac&apos;uga, kuulasime, kuidas Robbie &quot;Tšau!&quot; ja &quot;Hallo!&quot; ütleb ning lahkusime vaimustatud külalistena. Kes oleks võinud siis arvata, et Mac ja Robbie saavad kunagi meie pereliikmeteks. Covid sulges meie perel mitmed uksed ning ka tollane Papagoi Keskus oli raskustes. 2022.a otsustasime Papagoi Keskuse üle võtta ja sellest ajast oleme tegutsenud Tartus oma eramajas ning kõik linnud on saanud võrdseteks pereliikmeteks nii nagu meie koer, küülikud, merisead, kameeleonid või kassid.
+                </p>
+                
+                <p className="text-lg md:text-xl leading-relaxed text-deep-anthracite mb-6">
+                  Kuigi Papagoi Keskuse lugu algas kolme peategelasega – hetkel 11-aastase aara Maci, 23-aastase aafrika hallpapagoi Robbie ja 23-aastase kaeluspapagoi Lucasega –, on sellest tänaseks kasvanud üle 50-liikmeline papagoipere. Esindatud on ligi 15 erinevat liiki.
                 </p>
                 
                 <p className="text-lg md:text-xl leading-relaxed text-deep-anthracite mb-6">
@@ -87,78 +91,18 @@ export default function MeistPage() {
                     <h3 className="text-2xl font-bold text-gray-800">Meie maja</h3>
                   </div>
                   <p className="text-gray-700 leading-relaxed">
-                    Kogu keskus asub meie perekodu ruumides. See on tõeline kodu, kus papagoid elavad koos perega, mitte eraldi hoone või aiamajake.
+                    Kogu keskus asub meie perekodu ruumides. See on tõeline kodu, kus papagoid elavad koos perega, mitte eraldi hoones või aiamajakeses.
                   </p>
                 </div>
 
                 <div className="bg-green-50 rounded-xl p-6">
                   <div className="flex items-center mb-4">
                     <Feather className="w-8 h-8 text-green-600 mr-3" />
-                    <h3 className="text-2xl font-bold text-gray-800">50 m² peamine papagoide tuba</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">50 m² papagoituba</h3>
                   </div>
                   <p className="text-gray-700 leading-relaxed">
-                    Suur, valgusrikas ruum, kus enamik papagoisid veedab oma aega. Siin on linnupuid, mänguasju ja palju ruumi lendamiseks.
+                    Suur, valgusrikas spetsiaalsete UV valgustitega ruum, kus lindudel on ronimisalad erinevate okstega, mänguasjad ja palju ruumi lendamiseks.
                   </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Meie papagoid */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
-            <div className="bg-gradient-to-r from-green-500 to-teal-600 p-8 text-white">
-              <div className="flex items-center justify-center space-x-3">
-                <Users className="w-8 h-8" />
-                <h2 className="text-3xl md:text-4xl font-bold">Meie papagoid</h2>
-              </div>
-            </div>
-            
-            <div className="p-8 md:p-12">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-green-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-green-600 mb-2">50+</div>
-                  <div className="text-lg font-semibold text-gray-800">Papagoid</div>
-                  <div className="text-sm text-gray-600 mt-1">meie peres</div>
-                </div>
-
-                <div className="bg-blue-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">~40</div>
-                  <div className="text-lg font-semibold text-gray-800">Puurivabalt</div>
-                  <div className="text-sm text-gray-600 mt-1">lendavad linnud</div>
-                </div>
-
-                <div className="bg-purple-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-purple-600 mb-2">15+</div>
-                  <div className="text-lg font-semibold text-gray-800">Erinevat liiki</div>
-                  <div className="text-sm text-gray-600 mt-1">papagoisid</div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
-                <h4 className="text-xl font-bold text-gray-800 mb-4">
-                  Meie papagoide liigid:{' '}
-                  <Link href="/papagoid" className="text-green-600 hover:underline font-semibold">
-                    Meie papagoid
-                  </Link>
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-                  <div>
-                    <p className="font-semibold mb-2">Suuremad papagoid:</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Ara (Ara ararauna)</li>
-                      <li>• Cockatoo (Cacatua spp.)</li>
-                      <li>• Aafrika hall papagoi</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-2">Keskmised ja väiksemad:</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Viirpapagoid</li>
-                      <li>• Nümfkakaduud</li>
-                      <li>• Kaeluspapagoid</li>
-                      <li>• Ja palju teisi</li>
-                    </ul>
-                  </div>
                 </div>
               </div>
             </div>

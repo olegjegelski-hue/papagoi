@@ -146,6 +146,7 @@ export default function Services() {
                       <li>• <strong>2.5 tunnine programm:</strong> tutvustame papagoisid, merisigu, küülikuid ning kameeleone</li>
                       <li>• <strong>Õppimine:</strong> põnevad faktid eri liikide ja lemmikloomade kohta</li>
                       <li>• <strong>Interaktsioon:</strong> pildistamine, paitamine, küsimused</li>
+                      <li>• <strong>Üllatusprogramm &quot;Laps mullis&quot;:</strong> lapsed pannakse suure seebimulli sisse ja saab teha vahvaid pilte</li>
                       <li>• <strong>Sünnipäevalaud:</strong> oma tort ja joogid kaasa võtta</li>
                     </ul>
                   </div>
@@ -177,7 +178,7 @@ export default function Services() {
                   </div>
                   <h4 className="text-2xl font-bold text-gray-800 mb-4">Sünnipäev, perega koosistumine, firmapidu vm sündmus</h4>
                   <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                    Üllatage oma peolisi unikaalsete külalistega ning elevust ja vahvaid emotsioone on garanteeritud!
+                    Üllatage oma peolisi unikaalsete külalistega - elevus ja vahvad emotsioonid garanteeritud!
                   </p>
                 </div>
                 
@@ -191,15 +192,15 @@ export default function Services() {
                       </li>
                       <li className="flex items-start space-x-3">
                         <span className="text-green-600 font-bold">•</span>
-                        <span><strong>Kaasas on kaks-kolm papagoid:</strong> aara Mac ja aafrika hall Millie 🥰</span>
+                        <span><strong>Kaasas on kaks-kolm papagoid:</strong> põhitegelased aara Mac ja aafrika hall Millie 🥰</span>
                       </li>
                       <li className="flex items-start space-x-3">
                         <span className="text-green-600 font-bold">•</span>
-                        <span><strong>Jutustamine ja väikeste trikitamistega</strong>, mis ei suuda kedagi külmaks jätta</span>
+                        <span><strong>Papagoide interaktiivset suhtlust ning trikkide näitamist</strong></span>
                       </li>
                       <li className="flex items-start space-x-3">
                         <span className="text-green-600 font-bold">•</span>
-                        <span><strong>Kui seltskonnas on lapsi:</strong> võtame kindlasti kaasa ka mõned kääbusküülikud ja merisead, kes ootavad paitamist</span>
+                        <span><strong>Kui seltskonnas on lapsi,</strong> võtame kindlasti kaasa ka mõned kääbusküülikud ja merisead, kes ootavad paitamist</span>
                       </li>
                     </ul>
                   </div>

@@ -27,17 +27,14 @@ export default function TestimonialsSection() {
         const data = await response.json();
 
         if (Array.isArray(data.reviews)) {
-          // Filtreerime ainult need arvustused, kus on tekst
           const withText = data.reviews.filter(
             (review: GoogleReview) => review.text && review.text.trim().length > 0
           );
-
-          // Sorteerime uusimad esimesena (time on Unix timestamp) ja näitame 4 uusimat
           const byNewest = [...withText].sort((a, b) => (b.time ?? 0) - (a.time ?? 0));
           setGoogleReviews(byNewest.slice(0, 4));
         }
       } catch (error) {
-        console.error('Error fetching Google reviews list:', error);
+        console.error('Error fetching Google reviews:', error);
       } finally {
         setGoogleReviewsLoaded(true);
       }

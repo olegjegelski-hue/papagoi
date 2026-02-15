@@ -233,7 +233,11 @@ export default function TeenusedPage() {
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-pink-600 font-bold mt-1">•</span>
-                    <span><strong>Sünnipäevalaud:</strong> söögituba/köök on kasutamiseks (12 istumiskohta lauas), oma tort ja joogid kaasa võtta</span>
+                    <span><strong>Üllatusprogramm &quot;Laps mullis&quot;:</strong> lapsed pannakse suure seebimulli sisse ja saab teha vahvaid pilte</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-pink-600 font-bold mt-1">•</span>
+                    <span><strong>Sünnipäevalaud:</strong> kasutamiseks söögituba ja köök (12 istumiskohta lauas); kaasa võtta oma toit, joogid ja ühekordsed nõud</span>
                   </li>
                 </ul>
               </div>
@@ -251,7 +255,7 @@ export default function TeenusedPage() {
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Sünnipäev, perega koosistumine, firmapidu vm sündmus</h3>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Üllatage oma peolisi unikaalsete külalistega ning elevust ja vahvaid emotsioone on garanteeritud!
+                  Üllatage oma peolisi unikaalsete külalistega - elevus ja vahvad emotsioonid garanteeritud!
                 </p>
               </div>
 
@@ -264,15 +268,15 @@ export default function TeenusedPage() {
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span><strong>Kaasas on kaks-kolm papagoid:</strong> aara Mac ja aafrika hall Millie 🥰</span>
+                    <span><strong>Kaasas on kaks-kolm papagoid:</strong> põhitegelased aara Mac ja aafrika hall Millie 🥰</span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span><strong>Jutustamine ja väikeste trikitamistega</strong>, mis ei suuda kedagi külmaks jätta</span>
+                    <span><strong>Papagoide interaktiivset suhtlust ning trikkide näitamist</strong></span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span><strong>Kui seltskonnas on lapsi:</strong> võtame kindlasti kaasa ka mõned kääbusküülikud ja merisead, kes ootavad paitamist</span>
+                    <span><strong>Kui seltskonnas on lapsi,</strong> võtame kindlasti kaasa ka mõned kääbusküülikud ja merisead, kes ootavad paitamist</span>
                   </li>
                 </ul>
               </div>
@@ -301,10 +305,10 @@ export default function TeenusedPage() {
                   </div>
                   <ul className="space-y-2 text-gray-700">
                     <li>• Hariduslik programm</li>
-                    <li>• Kuni 20-liikmelised grupid</li>
-                    <li>• Kuni 30 lasteaia last</li>
+                    <li>• Kuni 30-liikmelised grupid</li>
                     <li>• Interaktiivne õppeprogramm</li>
                     <li>• Teaduslikud faktid papagoidest</li>
+                    <li>• Saatja õpetaj tasuta</li>
                   </ul>
                 </div>
 
@@ -318,45 +322,25 @@ export default function TeenusedPage() {
                     <li>• Klientide meelelahutus</li>
                     <li>• Privaatne külastus</li>
                     <li>• Paindlik ajakava</li>
-                    <li>• Fotosessioon</li>
+                    <li>• Pildistamine papagoidega</li>
+                    <li>• Kuni 20-liikmelised grupid</li>
                   </ul>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-xl p-4">
                 <p className="text-gray-700">
-                  <strong>Hind:</strong> Meil hind alati 10€ inimene (saatjad tasuta).
+                  <strong>Hind:</strong> 10€ inimene
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 6. LINNUHOTELL */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
-            <div className="bg-gradient-to-r from-orange-500 to-yellow-600 p-8 text-white text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">🏨 Linnuhotell</h2>
-              <p className="text-xl opacity-90">Majutusteenus lindudele</p>
-            </div>
-            
-            <div className="p-8">
-              <div className="mb-6">
-                <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  Pakume majutusteenust lindudele Papagoi Keskuses teie äraoleku ajal.
-                </p>
-                <div className="bg-orange-50 rounded-xl p-4">
-                  <p className="text-gray-700">
-                    <strong>Hind:</strong> al 5 EUR päev. Võtke meiega ühendust, et rääkida läbi detailid.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 7. PAPAGOIDE MÜÜK */}
+          {/* 6. PAPAGOIDE MÜÜK */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-2">🦜 Papagoide müük</h2>
-              <p className="text-lg opacity-90">Võta meiega ühendust kui soovid endale papagoid osta</p>
+              <p className="text-lg opacity-90">Võta meiega ühendust, kui soovid endale papagoid soetada</p>
             </div>
             
             <div className="p-8">
