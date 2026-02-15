@@ -1,6 +1,7 @@
-
 import { Metadata } from 'next'
 import BlogPostsClient from './BlogPostsClient'
+
+export const dynamic = 'force-dynamic'
 
 function getSiteUrl() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'

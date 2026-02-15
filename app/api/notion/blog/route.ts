@@ -237,15 +237,10 @@ export async function GET(request: Request) {
 
     const posts = await Promise.all(
       filtered.map(async (page: any) => {
-        let pageToUse = page
-        let cover = getCoverFromPage(page) || getCoverFromPageProperties(page.properties || {})
-        if (!cover) {
-          const fullPage = await fetchFullPage(page.id, NOTION_API_KEY)
-          if (fullPage) {
-            pageToUse = fullPage
-            cover = getCoverFromPage(fullPage) || getCoverFromPageProperties(fullPage.properties || {})
-          }
-        }
+        // Alati võta täielik leht - database query ei pruugi tagastada cover'i
+        const fullPage = await fetchFullPage(page.id, NOTION_API_KEY)
+        const pageToUse = fullPage || page
+        const cover = getCoverFromPage(pageToUse) || getCoverFromPageProperties(pageToUse.properties || {})
         const pageProperties = pageToUse.properties || {}
         const title = getText(pageProperties[titlePropertyName])
         const excerpt =

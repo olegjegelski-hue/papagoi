@@ -75,6 +75,7 @@ export default function BlogPostsClient({ posts }: Props) {
                     alt={`${post.title} kaanepilt`}
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
               )}
