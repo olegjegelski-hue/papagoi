@@ -12,6 +12,7 @@ interface GoogleReview {
   rating: number;
   text: string;
   relative_time_description?: string;
+  time?: number;
 }
 
 export default function TestimonialsSection() {
@@ -31,9 +32,9 @@ export default function TestimonialsSection() {
             (review: GoogleReview) => review.text && review.text.trim().length > 0
           );
 
-          // Segame järjekorra juhuslikult ja valime kuni 4 suvalist arvustust
-          const shuffled = [...withText].sort(() => Math.random() - 0.5);
-          setGoogleReviews(shuffled.slice(0, 4));
+          // Sorteerime uusimad esimesena (time on Unix timestamp) ja näitame 4 uusimat
+          const byNewest = [...withText].sort((a, b) => (b.time ?? 0) - (a.time ?? 0));
+          setGoogleReviews(byNewest.slice(0, 4));
         }
       } catch (error) {
         console.error('Error fetching Google reviews list:', error);

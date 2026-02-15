@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Arvustused värskenduvad sageli – väldime pikka vahemällu salvestamist
+export const dynamic = 'force-dynamic';
+export const revalidate = 60;
+
 export async function GET() {
   try {
     const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
@@ -41,13 +45,15 @@ export async function GET() {
           }))
         : [];
 
-      return NextResponse.json({
+      const res = NextResponse.json({
         rating: detailsData.result.rating || 5.0,
         user_ratings_total: detailsData.result.user_ratings_total || 0,
         reviews,
         success: true,
         source: 'place_id'
       });
+      res.headers.set('Cache-Control', 'public, max-age=60, s-maxage=60');
+      return res;
     }
 
     // Tagastame täpsema vea, et näha Google API vastust
