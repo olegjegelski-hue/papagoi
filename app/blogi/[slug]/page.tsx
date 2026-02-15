@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 type NotionText = { plain_text: string }
 type NotionBlock = {
   id: string
@@ -90,6 +92,18 @@ function getContent(property: any) {
 function isPublished(property: any) {
   if (!property || property.type !== 'checkbox') return true
   return Boolean(property.checkbox)
+}
+
+async function fetchFullPage(pageId: string, apiKey: string) {
+  const cleanId = pageId.replace(/-/g, '')
+  const response = await fetch(`https://api.notion.com/v1/pages/${cleanId}`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Notion-Version': '2022-06-28',
+    },
+  })
+  if (!response.ok) return null
+  return response.json()
 }
 
 async function fetchBlocks(notionId: string, apiKey: string) {
@@ -229,8 +243,11 @@ async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   })
   if (!queryResponse.ok) return null
   const data = await queryResponse.json()
-  const page = data.results?.[0]
+  let page = data.results?.[0]
   if (!page) return null
+  // Täielik leht võimaldab saada cover - database query võib tagastada lühendatud andmed
+  const fullPage = await fetchFullPage(page.id, apiKey)
+  if (fullPage) page = fullPage
   const pageProps = page.properties || {}
   if (publishedPropertyName && !isPublished(pageProps[publishedPropertyName])) return null
   if (animalPropertyName) {
@@ -303,7 +320,8 @@ function renderBlocks(blocks: NotionBlock[], fallbackAlt?: string) {
         const altText = caption || fallbackAlt || 'Blogi pilt'
         return (
           <figure key={block.id} className="my-6">
-            <img src={url} alt={altText} className="w-full rounded-2xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={altText} className="w-full rounded-2xl" referrerPolicy="no-referrer" />
             {caption && <figcaption className="text-sm text-gray-500 mt-2">{caption}</figcaption>}
           </figure>
         )
@@ -416,7 +434,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <article className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/60">
           {post.cover && (
             <div className="h-80 w-full overflow-hidden">
-              <img src={post.cover} alt={`${post.title} kaanepilt`} className="h-full w-full object-cover" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.cover} alt={`${post.title} kaanepilt`} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
             </div>
           )}
           <div className="p-10">

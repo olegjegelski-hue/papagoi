@@ -44,12 +44,23 @@ function getCoverFromPageProperties(pageProperties: any) {
 }
 
 function getCoverFromPage(page: any) {
-  // Notion page cover on lehekülje tasemel (page.cover), mitte properties
   const cover = page?.cover
   if (!cover) return ''
   if (cover.type === 'external' && cover.external?.url) return cover.external.url
   if (cover.type === 'file' && cover.file?.url) return cover.file.url
   return ''
+}
+
+async function fetchFullPage(pageId: string, apiKey: string) {
+  const cleanId = pageId.replace(/-/g, '')
+  const response = await fetch(`https://api.notion.com/v1/pages/${cleanId}`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Notion-Version': '2022-06-28',
+    },
+  })
+  if (!response.ok) return null
+  return response.json()
 }
 
 function getSlug(property: any) {
@@ -216,42 +227,52 @@ export async function GET(request: Request) {
       }
     }
 
-    const posts = results
-      .filter((page: any) => {
-        const pageProperties = page.properties || {}
-        const animalValues = getCategories(pageProperties[animalPropertyName])
-        const matchesAnimal = animalValues.includes('Papagoid')
-        const isPublic = publishedPropertyName ? isPublished(pageProperties[publishedPropertyName]) : true
-        return matchesAnimal && isPublic
-      })
-      .map((page: any) => {
+    const filtered = results.filter((page: any) => {
       const pageProperties = page.properties || {}
-      const title = getText(pageProperties[titlePropertyName])
-      const excerpt =
-        getText(pageProperties['Kokkuvõte']) ||
-        getText(pageProperties['Kokkuvotte']) ||
-        getText(pageProperties.Excerpt) ||
-        getText(pageProperties['Kirjeldus'])
-      const cover = getCoverFromPage(page) || getCoverFromPageProperties(pageProperties)
-      const slug =
-        getSlug(pageProperties.Slug) ||
-        getSlug(pageProperties['Slug']) ||
-        getSlug(pageProperties['URL']) ||
-        getSlug(pageProperties.Url)
-      const categories = getCategories(pageProperties[categoryPropertyName])
-      const dateValue = datePropertyName ? pageProperties[datePropertyName]?.date?.start : null
-
-      return {
-        id: page.id,
-        slug,
-        title,
-        excerpt,
-        cover,
-        categories,
-        date: dateValue,
-        notionUrl: page.url,
-      }
+      const animalValues = getCategories(pageProperties[animalPropertyName])
+      const matchesAnimal = animalValues.includes('Papagoid')
+      const isPublic = publishedPropertyName ? isPublished(pageProperties[publishedPropertyName]) : true
+      return matchesAnimal && isPublic
     })
+
+    const posts = await Promise.all(
+      filtered.map(async (page: any) => {
+        let pageToUse = page
+        let cover = getCoverFromPage(page) || getCoverFromPageProperties(page.properties || {})
+        if (!cover) {
+          const fullPage = await fetchFullPage(page.id, NOTION_API_KEY)
+          if (fullPage) {
+            pageToUse = fullPage
+            cover = getCoverFromPage(fullPage) || getCoverFromPageProperties(fullPage.properties || {})
+          }
+        }
+        const pageProperties = pageToUse.properties || {}
+        const title = getText(pageProperties[titlePropertyName])
+        const excerpt =
+          getText(pageProperties['Kokkuvõte']) ||
+          getText(pageProperties['Kokkuvotte']) ||
+          getText(pageProperties.Excerpt) ||
+          getText(pageProperties['Kirjeldus'])
+        const slug =
+          getSlug(pageProperties.Slug) ||
+          getSlug(pageProperties['Slug']) ||
+          getSlug(pageProperties['URL']) ||
+          getSlug(pageProperties.Url)
+        const categories = getCategories(pageProperties[categoryPropertyName])
+        const dateValue = datePropertyName ? pageProperties[datePropertyName]?.date?.start : null
+
+        return {
+          id: pageToUse.id,
+          slug,
+          title,
+          excerpt,
+          cover,
+          categories,
+          date: dateValue,
+          notionUrl: pageToUse.url,
+        }
+      })
+    )
 
     return NextResponse.json({
       posts,
