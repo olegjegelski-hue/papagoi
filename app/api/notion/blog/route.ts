@@ -14,12 +14,33 @@ function getText(property: any) {
 }
 
 function getCoverFromProperty(property: any) {
-  if (!property || property.type !== 'files') return ''
-  return (
-    property.files?.[0]?.file?.url ||
-    property.files?.[0]?.external?.url ||
-    ''
-  )
+  if (!property) return ''
+  if (property.type === 'files') {
+    return (
+      property.files?.[0]?.file?.url ||
+      property.files?.[0]?.external?.url ||
+      ''
+    )
+  }
+  if (property.type === 'url' && property.url) return property.url
+  return ''
+}
+
+function getCoverFromPageProperties(pageProperties: any) {
+  const imageKeys = ['Kaanepilt', 'Pilt', 'Pildid', 'Cover', 'Image', 'Foto', 'Photo']
+  for (const key of imageKeys) {
+    const url = getCoverFromProperty(pageProperties[key])
+    if (url) return url
+  }
+  // Otsi läbi kõik "Files & media" tüüpi väljad
+  for (const key of Object.keys(pageProperties || {})) {
+    const prop = pageProperties[key]
+    if (prop?.type === 'files') {
+      const url = getCoverFromProperty(prop)
+      if (url) return url
+    }
+  }
+  return ''
 }
 
 function getCoverFromPage(page: any) {
@@ -211,7 +232,7 @@ export async function GET(request: Request) {
         getText(pageProperties['Kokkuvotte']) ||
         getText(pageProperties.Excerpt) ||
         getText(pageProperties['Kirjeldus'])
-      const cover = getCoverFromPage(page) || getCoverFromProperty(pageProperties['Kaanepilt'])
+      const cover = getCoverFromPage(page) || getCoverFromPageProperties(pageProperties)
       const slug =
         getSlug(pageProperties.Slug) ||
         getSlug(pageProperties['Slug']) ||

@@ -35,8 +35,29 @@ function getText(property: any) {
 }
 
 function getCoverFromProperty(property: any) {
-  if (!property || property.type !== 'files') return ''
-  return property.files?.[0]?.file?.url || property.files?.[0]?.external?.url || ''
+  if (!property) return ''
+  if (property.type === 'files') {
+    return property.files?.[0]?.file?.url || property.files?.[0]?.external?.url || ''
+  }
+  if (property.type === 'url' && property.url) return property.url
+  return ''
+}
+
+function getCoverFromPageProperties(pageProperties: any) {
+  const imageKeys = ['Kaanepilt', 'Pilt', 'Pildid', 'Cover', 'Image', 'Foto', 'Photo']
+  for (const key of imageKeys) {
+    const url = getCoverFromProperty(pageProperties[key])
+    if (url) return url
+  }
+  // Otsi läbi kõik "Files & media" tüüpi väljad
+  for (const key of Object.keys(pageProperties || {})) {
+    const prop = pageProperties[key]
+    if (prop?.type === 'files') {
+      const url = getCoverFromProperty(prop)
+      if (url) return url
+    }
+  }
+  return ''
 }
 
 function getCoverFromPage(page: any) {
@@ -152,7 +173,7 @@ async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     return {
       id: page.id,
       title: getText(pageProps[titlePropertyName]),
-      cover: getCoverFromPage(page) || getCoverFromProperty(pageProps['Kaanepilt']),
+      cover: getCoverFromPage(page) || getCoverFromPageProperties(pageProps),
       date: datePropertyName ? pageProps[datePropertyName]?.date?.start : null,
       excerpt:
         getText(pageProps['Kokkuvõte']) ||
@@ -221,7 +242,7 @@ async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   return {
     id: page.id,
     title: getText(pageProps[titlePropertyName]),
-    cover: getCoverFromPage(page) || getCoverFromProperty(pageProps['Kaanepilt']),
+    cover: getCoverFromPage(page) || getCoverFromPageProperties(pageProps),
     date: datePropertyName ? pageProps[datePropertyName]?.date?.start : null,
     excerpt:
       getText(pageProps['Kokkuvõte']) ||
