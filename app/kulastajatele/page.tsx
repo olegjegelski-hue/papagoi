@@ -11,7 +11,7 @@ function getSiteUrl() {
 
 export const metadata: Metadata = {
   title: 'Külastajatele | Info, reeglid, hinnad',
-  description: 'Külastajate info: külastuse käik 6 sammuga, reeglid, hinnad, grupikülastused. Ara käe peale istutamine, parkimine, maksmine sularahas. Kõik vajalik info!',
+  description: 'Külastajate info: külastuse käik 6 sammuga, reeglid, hinnad, grupikülastused. Individuaalpilt aaraga, parkimine, maksmine sularahas. Kõik vajalik info!',
   keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid, perepuhkus Tartu, lapsesõbralik tegevus Tartu, kus saab papagoid näha Eestis, papagoidega fotod Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/kulastajatele`,
@@ -56,7 +56,7 @@ export default function VisitorsPage() {
                 <h3 className="text-2xl font-bold text-amber-800 mb-4">⚠️ OLULINE!</h3>
                 <div className="text-amber-800 space-y-3 text-lg">
                   <p><strong>Külastused toimuvad AINULT eelneval kokkuleppel!</strong></p>
-                  <p>Meie keskus asub eraomanduses ja ilma broneeringuta ei ole külastused võimalikud.</p>
+                  <p>Kuna Papagoi Keskus asub eraomandis, on külastuseks vajalik broneerida aeg.</p>
                   <div className="mt-4 flex items-center space-x-2">
                     <Phone className="w-5 h-5" />
                     <a href="tel:+3725127938" className="font-semibold hover:underline">+372 512 7938</a>
@@ -72,7 +72,7 @@ export default function VisitorsPage() {
               <Clock className="w-8 h-8 text-green-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Lahtiolekuajad</h3>
               <p className="text-gray-600 font-medium">E-P 12-18</p>
-              <p className="text-sm text-gray-500 mt-1">igal täistunnil</p>
+              <p className="text-sm text-gray-500 mt-1">algusega täistunnil</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-blue-500">
               <Users className="w-8 h-8 text-blue-500 mx-auto mb-4" />
@@ -142,23 +142,19 @@ export default function VisitorsPage() {
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
                     <span className="text-red-600 font-bold mt-1">•</span>
-                    <span>Liiga vali käitumine</span>
+                    <span>Vali käitumine</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-red-600 font-bold mt-1">•</span>
-                    <span>Papagoidele stressseisukordade tekitamine</span>
+                    <span>Loomadele stressi tekitamine</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-red-600 font-bold mt-1">•</span>
-                    <span>Puude vastu koputamine</span>
+                    <span>Loata loomade puutumine</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-red-600 font-bold mt-1">•</span>
-                    <span>Papagoidele toidu andmine ilma loata</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
-                    <span>Loomade tõrjumine või hirmutamine</span>
+                    <span>Loomade hirmutamine</span>
                   </li>
                 </ul>
               </div>
@@ -175,11 +171,11 @@ export default function VisitorsPage() {
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>Vältige teravaid ehteid</span>
+                    <span>Ehted ära võtta</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>Võtke kaasa fotoaparaat</span>
+                    <span>Kandke tumedaid sokke</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-600 font-bold mt-1">•</span>
@@ -187,7 +183,7 @@ export default function VisitorsPage() {
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>Külastus on ca 1 tund</span>
+                    <span>Jälgige oma lapsi</span>
                   </li>
                 </ul>
               </div>
@@ -231,18 +227,10 @@ export default function VisitorsPage() {
                   <h3 className="font-semibold text-gray-800 text-lg">🚗 Parkimine:</h3>
                 </div>
                 <p className="text-gray-700">
-                  Parkimine maja ees. Palun järgige parkimisjuhiseid ja jätke piisavalt ruumi teiste külastajate jaoks.
+                  Parkimine maja ees. Palume järgida viisakat parkimist ja jätta piisavalt ruumi teiste külastajatele.
                 </p>
-              </div>
-
-              {/* Hilinemine */}
-              <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
-                <div className="flex items-center mb-4">
-                  <Clock className="w-6 h-6 text-orange-600 mr-2" />
-                  <h3 className="font-semibold text-gray-800 text-lg">⏰ Hilinemine:</h3>
-                </div>
-                <p className="text-gray-700">
-                  Kui teate, et hilinete, palun andke meile teada telefoni teel: <a href="tel:+3725127938" className="text-orange-600 font-semibold hover:underline">+372 512 7938</a>
+                <p className="text-gray-700 mt-2 font-semibold text-red-600">
+                  NB! Tee ääres murul parkimine KEELATUD!
                 </p>
               </div>
 
@@ -254,14 +242,25 @@ export default function VisitorsPage() {
                 </div>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-red-600 font-bold mt-1">•</span>
                     <span>Maksmine toimub peale üritust</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-red-600 font-bold mt-1">•</span>
                     <span>Makseviisid: sularaha (pangaterminal puudub)</span>
                   </li>
                 </ul>
+              </div>
+
+              {/* Hilinemine */}
+              <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                <div className="flex items-center mb-4">
+                  <Clock className="w-6 h-6 text-orange-600 mr-2" />
+                  <h3 className="font-semibold text-gray-800 text-lg">⏰ Hilinemine:</h3>
+                </div>
+                <p className="text-gray-700">
+                  Hilinemisest palume teada anda telefoni teel: <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
+                </p>
               </div>
 
               {/* Tühistamine */}
@@ -271,7 +270,7 @@ export default function VisitorsPage() {
                   <h3 className="font-semibold text-gray-800 text-lg">❌ Tühistamine:</h3>
                 </div>
                 <p className="text-gray-700">
-                  Tühistamiseks palun teatage vähemalt <strong>24 tundi ette</strong> telefoni teel: <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
+                  Palume külastuse tühistamisel sellest aegsasti teada anda, kuna pererahvas planeerib vastavaid töid ja ettevalmistusi ning teie broneeritud aega ei saa pärast keegi teine kasutada. <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
                 </p>
               </div>
 
@@ -499,7 +498,7 @@ export default function VisitorsPage() {
                     </li>
                     <li className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-papagoi-red rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-deep-anthracite/80">Individuaalne lähenemine</span>
+                      <span className="text-deep-anthracite/80">Personaalne lähenemine</span>
                     </li>
                     <li className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-papagoi-red rounded-full mt-2 flex-shrink-0"></div>

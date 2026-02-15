@@ -21,28 +21,28 @@ const visitSteps = [
   {
     icon: Gift,
     title: 'Pähklite andmine',
-    description: 'Saate käega anda pähkleid meie papagoidele',
+    description: 'Saate käest anda pähkleid meie papagoidele',
     details: 'Kogemus otsesest kontaktist lindudega',
     color: 'bg-yellow-500'
   },
   {
     icon: Camera,
-    title: 'Fotosessioon Araga',
-    description: 'Teeme fotod - paneme Ara teile käe peale istuma!',
-    details: 'Unustamatuid pilte suure Ara macao papagoiga',
+    title: 'Pildistamine papagoidega',
+    description: 'Paneme aara teile käe peale istuma!',
+    details: 'Unustamatuid pilte suure aara papagoiga',
     color: 'bg-red-500'
   },
   {
     icon: Heart,
-    title: 'Lisaks (soovi korral)',
-    description: 'Vastame küsimustele ja räägime papagoide hooldusest',
-    details: 'Külastus on paindlik – keskendume papagoidele ja teie huvidele',
+    title: 'Interaktiivne suhtlus',
+    description: 'Papagoid räägivad, trikitavad, vilistavad, tantsivad ...',
+    details: 'Inimese ja papagoi vahetu suhtlus',
     color: 'bg-purple-500'
   },
   {
     icon: Clock,
     title: 'Nõuanded ja küsimused',
-    description: 'Õpime, kuidas papagoie lemmikloomana kasvatada',
+    description: 'Õpime, kuidas papagoid lemmikloomana kasvatada',
     details: 'Vastame kõikidele küsimustele ja jagame kogemusi',
     color: 'bg-indigo-500'
   }
@@ -61,7 +61,7 @@ export default function VisitProcess() {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Iga külastus on ainulaadne kogemus! Vaata, mida huvitavat teid ootab meie papagoidega.
+            Iga külastus on ainulaadne kogemus! Tutvu sellega, mida võid oodata oma külaskäigult.
           </p>
           
           {/* Panoramic Image */}
@@ -87,12 +87,9 @@ export default function VisitProcess() {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-800 mb-3">🏡 Puuridevaba elu meie keskuses</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-3">🏡 Puurivaba elu</h3>
                 <p className="text-gray-600 leading-relaxed text-lg">
-                  Papagoid elavad puuridevabat elu, neile on kasutada <strong className="text-green-600">suur tuba (50m²)</strong>. 
-                  Piki seinu on palju oksi kus saavad papagoid istuda. Samas toas elavad ka <strong className="text-blue-600">50 tõumerisiga</strong> ning 
-                  toome ka <strong className="text-purple-600">küüliku</strong>. 
-                  <span className="text-orange-600 font-semibold"> Peremehe juhendamisel saab linde ja merisigu toita oma käest.</span>
+                  Papagoid elavad puurivaba elu, kus neile on kasutada <strong className="text-green-600">suur tuba (50m²)</strong>. Piki seinu on palju erinevaid oksi ronimiseks ja istumiseks. Kui papagoid ronivad ja lendavad kõrgustes, siis põrandapinnal elavad spetsiaalsetelt ehitatud suuremates kodukestes <strong className="text-blue-600">tõumerisead (50+ notsikut, 5 erinevat tõugu)</strong>. Vahest käib neid külastamas ka pere <strong className="text-purple-600">küülikupoiss</strong>. <span className="text-orange-600 font-semibold">Peremehe juhendamisel saab linde ja merisigu käest toita.</span>
                 </p>
               </div>
             </div>
@@ -161,12 +158,12 @@ export default function VisitProcess() {
               </h4>
               <div className="space-y-3">
                 <div className="bg-white/70 rounded-lg p-3">
-                  <p className="font-semibold text-gray-800">Ara käe peale istutamine</p>
+                  <p className="font-semibold text-gray-800">Individuaalpilt aaraga</p>
                   <p className="text-sm text-gray-600">Ainulaadne kogemus suure papagoiga!</p>
                 </div>
                 <div className="bg-white/70 rounded-lg p-3">
-                  <p className="font-semibold text-gray-800">Individuaalne lähenemine</p>
-                  <p className="text-sm text-gray-600">Igale külastajale pöörame isiklikku tähelepanu</p>
+                  <p className="font-semibold text-gray-800">Personaalne lähenemine</p>
+                  <p className="text-sm text-gray-600">Kogu külastus toimub peremehe juhendamisel</p>
                 </div>
                 <div className="bg-white/70 rounded-lg p-3">
                   <p className="font-semibold text-gray-800">Hariduslik väärtus</p>
