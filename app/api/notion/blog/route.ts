@@ -13,13 +13,22 @@ function getText(property: any) {
   return ''
 }
 
-function getCover(property: any) {
+function getCoverFromProperty(property: any) {
   if (!property || property.type !== 'files') return ''
   return (
     property.files?.[0]?.file?.url ||
     property.files?.[0]?.external?.url ||
     ''
   )
+}
+
+function getCoverFromPage(page: any) {
+  // Notion page cover on lehekülje tasemel (page.cover), mitte properties
+  const cover = page?.cover
+  if (!cover) return ''
+  if (cover.type === 'external' && cover.external?.url) return cover.external.url
+  if (cover.type === 'file' && cover.file?.url) return cover.file.url
+  return ''
 }
 
 function getSlug(property: any) {
@@ -202,7 +211,7 @@ export async function GET(request: Request) {
         getText(pageProperties['Kokkuvotte']) ||
         getText(pageProperties.Excerpt) ||
         getText(pageProperties['Kirjeldus'])
-        const cover = getCover(pageProperties['Kaanepilt'])
+      const cover = getCoverFromPage(page) || getCoverFromProperty(pageProperties['Kaanepilt'])
       const slug =
         getSlug(pageProperties.Slug) ||
         getSlug(pageProperties['Slug']) ||

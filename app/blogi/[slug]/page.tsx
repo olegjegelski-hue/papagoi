@@ -34,9 +34,17 @@ function getText(property: any) {
   return ''
 }
 
-function getCover(property: any) {
+function getCoverFromProperty(property: any) {
   if (!property || property.type !== 'files') return ''
   return property.files?.[0]?.file?.url || property.files?.[0]?.external?.url || ''
+}
+
+function getCoverFromPage(page: any) {
+  const cover = page?.cover
+  if (!cover) return ''
+  if (cover.type === 'external' && cover.external?.url) return cover.external.url
+  if (cover.type === 'file' && cover.file?.url) return cover.file.url
+  return ''
 }
 
 function getCategories(property: any) {
@@ -144,7 +152,7 @@ async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     return {
       id: page.id,
       title: getText(pageProps[titlePropertyName]),
-      cover: getCover(pageProps['Kaanepilt']),
+      cover: getCoverFromPage(page) || getCoverFromProperty(pageProps['Kaanepilt']),
       date: datePropertyName ? pageProps[datePropertyName]?.date?.start : null,
       excerpt:
         getText(pageProps['Kokkuvõte']) ||
@@ -213,7 +221,7 @@ async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   return {
     id: page.id,
     title: getText(pageProps[titlePropertyName]),
-    cover: getCover(pageProps['Kaanepilt']),
+    cover: getCoverFromPage(page) || getCoverFromProperty(pageProps['Kaanepilt']),
     date: datePropertyName ? pageProps[datePropertyName]?.date?.start : null,
     excerpt:
       getText(pageProps['Kokkuvõte']) ||
