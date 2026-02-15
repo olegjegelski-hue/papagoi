@@ -42,11 +42,9 @@ export default function TeenusedPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Papagoi Keskuse teenused Tartus</span>
+              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Teenused</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Papagoi Keskus Tartus pakub erinevaid külastusviise: külastus broneerimisega, papagoid sünnipäevale, grupikülastused
-              koolidele ja ettevõtetele ning ekskursioon papagoidega. Sobib ka kooli ekskursioon Tartu piirkonnas ja laste tegevused Tartu peredele.
               Kõik külastused toimuvad ainult eelneval kokkuleppel.
             </p>
           </div>
@@ -86,7 +84,11 @@ export default function TeenusedPage() {
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span>Võimalus papagoisid toita oma käest</span>
+                    <span>Tutvumine erinevate liikidega (kohapeal 13 erinevat liiki)</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span>Papagoide toitmine oma käest</span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
@@ -94,11 +96,11 @@ export default function TeenusedPage() {
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span>Merisigadele saab süüa anda ja neid paitada</span>
+                    <span>Merisigade toitmine ja paitamine, tutvumine eri tõugudega (kohapeal üle 50 tõumerisea)</span>
                   </li>
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
-                    <span>Kääbusküülikud on samuti kohapeal</span>
+                    <span>Huvi korral saate näha ka pere kameeleoni või küülikuid</span>
                   </li>
                 </ul>
               </div>
@@ -132,7 +134,7 @@ export default function TeenusedPage() {
                   <Calendar className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
                   <div>
                     <h4 className="font-bold text-gray-800 mb-2">Lahtiolekuajad:</h4>
-                    <p className="text-gray-700">E-P (esmaspäevast pühapäevani) kell 12-18, igal täistunnil</p>
+                    <p className="text-gray-700">E-P (esmaspäevast pühapäevani) kell 12-18, algusega täistunnil</p>
                     <p className="text-sm text-gray-600 mt-2">⚠️ Külastus ainult ette helistades: <a href="tel:+3725127938" className="text-blue-600 hover:underline">+372 512 7938</a></p>
                   </div>
                 </div>
@@ -140,10 +142,10 @@ export default function TeenusedPage() {
             </div>
           </div>
 
-          {/* 2. ÕHTUSÖÖK PAPAGOIDEGA */}
+          {/* 2. VIP KÜLASTUS */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">🍽️ Õhtusöök papagoidega</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">⭐ VIP külastus</h2>
               <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8 mb-4">
                 <div className="flex items-center space-x-2">
                   <Users className="w-5 h-5" />

@@ -26,7 +26,7 @@ export default function Footer() {
             </div>
             <p className="text-warm-gray-300 mb-6 max-w-md leading-relaxed">
               Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015.
-              Tule tutvuge meie värvilise perekonnaga ja koge midagi erilist!
+              Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!
             </p>
             <div className="flex items-center justify-center space-x-4">
               <a 

@@ -2,13 +2,13 @@ import { Check } from 'lucide-react'
 
 export default function WhyVisit() {
   const reasons = [
-    'Eesti esimene papagoidekeskus - üle 50 papagoi',
-    'Lapsesõbralik tegevus Tartus ja perepuhkus Tartus',
-    'Ekskursioon papagoidega koolidele ja gruppidele',
+    'Eesti esimene papagoide keskus - üle 50 papagoi',
+    'Lapsesõbralik tegevus ja perepuhkus Tartus',
+    'Ekskursioon papagoide juurde koolidele jm gruppidele',
     'Kuulete põnevaid lugusid ja saate teada papagoidest',
-    'Papagoidega fotod Tartus (soovi korral ka Ara käe peale!)',
+    'Pildistamine papagoidega (soovi korral aara käe peale)',
     'Personaalne tähelepanu ja turvaline keskkond',
-    'Võimalusel saate papagoisid toita oma käest'
+    'Papagoide toitmine käest'
   ]
 
   return (

@@ -51,7 +51,7 @@ export default function Statistics() {
             Meie saavutused arvudes
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Üle 11 aasta kogemust papagoidega töötamisel ja tuhandetest rõõmsatest külastustest
+            11 aastat kogemust ning tuhandeid rõõmsaid kliente
           </p>
         </div>
 

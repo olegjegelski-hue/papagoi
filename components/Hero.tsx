@@ -33,9 +33,9 @@ export default function Hero() {
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
             <p className="text-xl md:text-2xl lg:text-3xl text-white mb-8 leading-relaxed drop-shadow-xl text-center">
-              <span className="font-bold">Tere tulemast Papagoi Keskusesse Tartus!</span> Eesti esimene papagoidekeskus, kus elab
+              <span className="font-bold">Tere tulemast Papagoi Keskusesse Tartus!</span> Eesti esimene papagoide keskus, kus elab
               <span className="font-bold papagoi-text-gradient"> üle 50 papagoi</span>.
-              Külastus broneerimisega – tule külla, kuula põnevaid lugusid papagoidest, tee nendega pilti ja soovi korral toida neid oma käest.
+              Külastus ainult broneerimisega. Tule külla, kuula põnevaid lugusid papagoidest, tee nendega pilti ja toida neid oma käest.
             </p>
             
             <div className="flex flex-wrap justify-center gap-6">
@@ -66,15 +66,15 @@ export default function Hero() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300">
             <h3 className="font-bold text-lg text-papagoi-green mb-2">Peredele</h3>
-            <p className="text-deep-anthracite-700">Täiuslik pereväljak - põnevust kõigile vanuseastmetele</p>
+            <p className="text-deep-anthracite-700">Põnevate mälestuste loomine igale vanuseastmele</p>
           </div>
           <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-blue hover:scale-105 transition-transform duration-300">
-            <h3 className="font-bold text-lg text-papagoi-blue mb-2">Koolidele & Lasteaedadele</h3>
-            <p className="text-deep-anthracite-700">Hariduslik kogemus, mis jääb meelde elupäevaks</p>
+            <h3 className="font-bold text-lg text-papagoi-blue mb-2">Koolidele & lasteaedadele</h3>
+            <p className="text-deep-anthracite-700">Õppimine läbi praktilise kogemuse</p>
           </div>
           <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-orange hover:scale-105 transition-transform duration-300">
             <h3 className="font-bold text-lg text-papagoi-orange mb-2">Ettevõtetele</h3>
-            <p className="text-deep-anthracite-700">Ainulaadne meeskonnaüritus või klientide meelelahutus</p>
+            <p className="text-deep-anthracite-700">Ainulaadne meeskonnaüritus või meeldejääv kliendielamus</p>
           </div>
         </div>
 
