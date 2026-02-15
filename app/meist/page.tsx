@@ -125,10 +125,10 @@ export default function MeistPage() {
           {/* Külastusprogramm */}
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-12 text-white text-center">
             <h2 className="text-3xl font-bold mb-6">
-              Tule külasta meid!
+              Külasta meid!
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Koge midagi erilist - tule meie kodusse ja tutvu meie suure perega!
+              Tule külla ja tutvu meie suure perega!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

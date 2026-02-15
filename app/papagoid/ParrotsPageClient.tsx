@@ -120,9 +120,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Meie papagoid</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Tutvuge meie värvilise perekonnaga! Kui mõtlete, kus saab papagoid näha Eestis, siis siin kohtute tõeliste
-            papagoidega Tartus. Iga papagoi on ainulaadne isiksuseomaduste ja loo poolest. Nad kõik ootavad kannatamatult
-            võimalust teiega tutvuda.
+            Saa tuttavaks meie sulelistega! Igal linnul on oma lugu või seiklus, iga isend on oma iseloomu ja tunnetega. Meil on nii &quot;solvujaid&quot;, kui &quot;rõõmurulle&quot;, naljatilku ja eputajaid, kui ka armunud paarikesi või armukolmnurka – ehtsate tunnete ja emotsioonidega.
           </p>
         </div>
 

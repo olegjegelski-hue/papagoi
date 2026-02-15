@@ -10,14 +10,14 @@ function getSiteUrl() {
 }
 
 export const metadata: Metadata = {
-  title: 'Külastajatele - Papagoi Keskus Tartus | Info, reeglid, hinnad',
+  title: 'Külastajatele | Info, reeglid, hinnad',
   description: 'Külastajate info: külastuse käik 6 sammuga, reeglid, hinnad, grupikülastused. Ara käe peale istutamine, parkimine, maksmine sularahas. Kõik vajalik info!',
   keywords: 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, papagoide külastus info, Papagoi Keskus reeglid, perepuhkus Tartu, lapsesõbralik tegevus Tartu, kus saab papagoid näha Eestis, papagoidega fotod Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/kulastajatele`,
   },
   openGraph: {
-    title: 'Külastajatele - Papagoi Keskus Tartus',
+    title: 'Külastajatele',
     description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus. Lahtiolekuajad: E-P 12-18.',
     type: 'website',
     locale: 'et_EE',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Külastajatele - Papagoi Keskus Tartus',
+    title: 'Külastajatele',
     description: 'Kõik vajalik info Papagoi Keskuse külastamiseks Tartus.',
     images: ['/logo.png'],
   },
@@ -41,11 +41,10 @@ export default function VisitorsPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele - Papagoi Keskus Tartus</span>
+              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
-              Kõik vajalik info meeldejäävaks kogemuseks meie papagoidekeskuses. See on lapsesõbralik tegevus Tartus ja tore
-              perepuhkus Tartus. Külastus broneerimisega – broneeri külastus juba täna!
+              Sujuvaks külastuseks tutvu alloleva infoga.
             </p>
           </div>
 
