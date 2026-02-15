@@ -5,15 +5,23 @@ import { escapeHtml } from '@/lib/sanitize';
 const CENTER_EMAIL = process.env.CENTER_EMAIL || 'keskus@papagoi.ee';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@papagoi.ee';
 
+// Kontrolli, kas email on seadistatud (Vercel, production)
+export function isEmailConfigured(): boolean {
+  return !!(
+    (process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS) ||
+    (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ||
+    (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD)
+  );
+}
+
 // Loo emaili transporter
-// Toetab mitmeid võimalusi: Gmail, Outlook, oma SMTP server, jne
 function createTransporter() {
-  // Kui on määratud SMTP seaded, kasuta neid
-  if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
+  // SMTP seaded
+  if (process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS) {
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -21,18 +29,18 @@ function createTransporter() {
     });
   }
 
-  // Gmail'i kasutamine (kui on määratud Gmail kasutajanimi ja parool)
+  // Gmail
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD, // Gmail App Password (mitte tavaline parool!)
+        pass: process.env.GMAIL_APP_PASSWORD,
       },
     });
   }
 
-  // Outlook/Hotmail kasutamine
+  // Outlook/Hotmail
   if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD) {
     return nodemailer.createTransport({
       service: 'hotmail',
@@ -43,17 +51,7 @@ function createTransporter() {
     });
   }
 
-  // Kui midagi pole määratud, loo test transporter (ei saada päris emaili)
-  // See on kasulik arendamiseks
-  console.warn('⚠️ Emaili seaded puuduvad! Emailid ei saadeta. Loo .env fail SMTP seadetega.');
-  return nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
-      user: 'test@example.com',
-      pass: 'test',
-    },
-  });
+  return null;
 }
 
 const transporter = createTransporter();
@@ -103,6 +101,13 @@ export async function sendContactFormEmail(data: {
   message: string;
   formType?: string;
 }) {
+  if (!transporter || !isEmailConfigured()) {
+    const err = new Error(
+      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: GMAIL_USER + GMAIL_APP_PASSWORD või SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS. Vaata EMAIL_SETUP.md'
+    );
+    console.error(err.message);
+    throw err;
+  }
   try {
     const safeName = escapeHtml(data.name);
     const safeSubject = escapeHtml(data.subject);
@@ -195,6 +200,13 @@ export async function sendBookingEmail(data: {
   totalPrice: number;
   bookingId: string;
 }) {
+  if (!transporter || !isEmailConfigured()) {
+    const err = new Error(
+      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad. Vaata EMAIL_SETUP.md'
+    );
+    console.error(err.message);
+    throw err;
+  }
   try {
     const safeName = escapeHtml(data.name);
     const safeEmail = escapeHtml(data.email);

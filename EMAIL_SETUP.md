@@ -73,6 +73,22 @@ FROM_EMAIL=noreply@papagoi.ee
 CENTER_EMAIL=keskus@papagoi.ee
 ```
 
+## Vercel (Production)
+
+Kui kasutate Vercelit, lisa **Settings → Environment Variables** järgmised muutujad:
+
+**Gmail (soovitatav):**
+- `GMAIL_USER` – teie Gmail aadress
+- `GMAIL_APP_PASSWORD` – Gmail App Password (https://myaccount.google.com/apppasswords)
+- `FROM_EMAIL` – sama kui GMAIL_USER
+- `CENTER_EMAIL` – keskuse email (nt keskus@papagoi.ee)
+
+**Või SMTP:**
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
+- `FROM_EMAIL`, `CENTER_EMAIL`
+
+**Oluline:** Pärast muutujate lisamist tee uus deploy (Redeploy).
+
 ## Testimine
 
 Pärast seadistamist:
