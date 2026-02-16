@@ -1,230 +1,128 @@
-import nodemailer from 'nodemailer';
-import type { Transporter } from 'nodemailer';
-import { escapeHtml } from '@/lib/sanitize';
 
-// Keskuse emaili aadress
-const CENTER_EMAIL = process.env.CENTER_EMAIL || 'keskus@papagoi.ee';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@papagoi.ee';
+import nodemailer from 'nodemailer'
+import type { Transporter } from 'nodemailer'
 
-// SMTP parool – toetab nii SMTP_PASS kui SMTP_PASSWORD (nagu PetsVilla)
-const smtpPass = process.env.SMTP_PASSWORD || process.env.SMTP_PASS;
+// Create reusable transporter with error handling – identne PetsVillaga
+const createTransporter = (): Transporter => {
+  const host = process.env.SMTP_HOST
+  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587
+  const user = process.env.SMTP_USER
+  const password = process.env.SMTP_PASSWORD
 
-// Kontrolli, kas email on seadistatud (Vercel, production)
-export function isEmailConfigured(): boolean {
-  return !!(
-    (process.env.SMTP_HOST && process.env.SMTP_USER && smtpPass) ||
-    (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ||
-    (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD)
-  );
-}
+  if (!host || !user || !password) {
+    throw new Error(
+      'SMTP configuration is incomplete. Please set SMTP_HOST, SMTP_USER, and SMTP_PASSWORD environment variables.'
+    )
+  }
 
-// Loo emaili transporter – PetsVilla stiilis (Alfanet smtp.alfanetti.ee töötab Vercelis)
-function createTransporter(): Transporter {
-  const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
-  const user = process.env.SMTP_USER;
-  const password = smtpPass;
-
-  if (host && user && password) {
+  try {
     return nodemailer.createTransport({
       host,
       port,
-      secure: port === 465,
-      auth: { user, pass: password },
-      connectionTimeout: 15000,
-      greetingTimeout: 10000,
+      secure: port === 465, // true for 465 (SSL), false for other ports (TLS)
+      auth: {
+        user,
+        pass: password,
+      },
       tls: {
-        rejectUnauthorized: false,
-        minVersion: 'TLSv1.2',
+        rejectUnauthorized: false, // Accept self-signed certificates
+        minVersion: 'TLSv1.2', // Minimum TLS version
       },
       debug: process.env.NODE_ENV === 'development',
       logger: process.env.NODE_ENV === 'development',
-    });
-  }
-
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    });
-  }
-
-  if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD) {
-    return nodemailer.createTransport({
-      service: 'hotmail',
-      auth: {
-        user: process.env.OUTLOOK_USER,
-        pass: process.env.OUTLOOK_PASSWORD,
-      },
-    });
-  }
-
-  throw new Error('Emaili seaded puuduvad. Vaata EMAIL_SETUP.md');
-}
-
-// HTML emaili mall
-function getEmailTemplate(title: string, content: string, isClientEmail: boolean = true) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #43A047 0%, #039BE5 50%, #FF9800 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-        .info-box { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #43A047; border-radius: 5px; }
-        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
-        .highlight { background: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107; border-radius: 5px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>${isClientEmail ? 'Papagoi Keskus' : 'Uus sõnum'}</h1>
-          <p>${isClientEmail ? 'Elu täis värve ja hääli' : 'Kontaktvorm'}</p>
-        </div>
-        <div class="content">
-          ${content}
-        </div>
-        <div class="footer">
-          <p>Papagoi Keskus | Tartu mnt 80, Soinaste, Kambja vald, Tartumaa 61709</p>
-          <p>Tel: +372 51 27 938 | Email: keskus@papagoi.ee</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-// Kontaktvormi emaili saatmine
-export async function sendContactFormEmail(data: {
-  name: string;
-  email: string;
-  phone?: string;
-  subject: string;
-  message: string;
-  formType?: string;
-}) {
-  if (!isEmailConfigured()) {
-    const err = new Error(
-      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: SMTP_HOST, SMTP_USER, SMTP_PASSWORD. Vaata EMAIL_SETUP.md'
-    );
-    console.error(err.message);
-    throw err;
-  }
-  try {
-    const transporter = createTransporter();
-    const safeName = escapeHtml(data.name);
-    const safeSubject = escapeHtml(data.subject);
-    const safeMessage = escapeHtml(data.message).replace(/\n/g, '<br>');
-    const safeEmail = escapeHtml(data.email);
-    const safePhone = data.phone ? escapeHtml(data.phone) : '';
-    const safeFormType = data.formType ? escapeHtml(data.formType) : '';
-
-    // Kliendi kinnitusemail
-    const clientContent = `
-      <h2>Tere, ${safeName}!</h2>
-      <p>Täname, et võtsite meiega ühendust. Teie sõnum on edukalt saadetud ja me vastame teile esimesel võimalusel.</p>
-      
-      <div class="info-box">
-        <h3>Teie sõnumi ülevaade:</h3>
-        <p><strong>Teema:</strong> ${safeSubject}</p>
-        <p><strong>Sõnum:</strong></p>
-        <p>${safeMessage}</p>
-      </div>
-      
-      <p>Vastame teile tavaliselt 24 tunni jooksul aadressil <strong>${safeEmail}</strong>${data.phone ? ` või telefonil <strong>${safePhone}</strong>` : ''}.</p>
-      
-      <p>Kui teil on kiire küsimus, helistage meile otse: <strong>+372 51 27 938</strong></p>
-    `;
-
-    await transporter.sendMail({
-      from: `"Papagoi Keskus" <${FROM_EMAIL}>`,
-      to: data.email,
-      subject: 'Teie sõnum on saadetud - Papagoi Keskus',
-      html: getEmailTemplate('Teie sõnum on saadetud', clientContent, true),
-    });
-
-    // Keskuse teavitusemail
-    const centerContent = `
-      <div class="info-box">
-        <strong>Nimi:</strong> ${safeName}
-      </div>
-      <div class="info-box">
-        <strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a>
-      </div>
-      ${data.phone ? `
-      <div class="info-box">
-        <strong>Telefon:</strong> <a href="tel:${safePhone}">${safePhone}</a>
-      </div>
-      ` : ''}
-      <div class="info-box">
-        <strong>Teema:</strong> ${safeSubject}
-      </div>
-      ${data.formType ? `
-      <div class="info-box">
-        <strong>Vormi tüüp:</strong> ${safeFormType}
-      </div>
-      ` : ''}
-      <div class="highlight">
-        <strong>Sõnum:</strong>
-        <p>${safeMessage}</p>
-      </div>
-      
-      <p style="margin-top: 30px;">
-        <a href="mailto:${safeEmail}" style="background: #43A047; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-          Vasta kliendile
-        </a>
-      </p>
-    `;
-
-    await transporter.sendMail({
-      from: `"Papagoi Keskus Kontaktvorm" <${FROM_EMAIL}>`,
-      to: CENTER_EMAIL,
-      subject: `Uus kontaktvormi sõnum: ${data.subject}`,
-      html: getEmailTemplate('Uus kontaktvormi sõnum', centerContent, false),
-    });
-
-    return { success: true };
+    })
   } catch (error) {
-    console.error('Email sending error:', error);
-    throw error;
+    console.error('Failed to create email transporter:', error)
+    throw new Error(`SMTP configuration error: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
-// Broneeringu emaili saatmine
-export async function sendBookingEmail(data: {
-  name: string;
-  email: string;
-  phone: string;
-  groupSize: number;
-  date?: Date;
-  timeSlot?: string;
-  groupType?: string;
-  message?: string;
-  totalPrice: number;
-  bookingId: string;
+// Send contact form email – identne PetsVilla loogikaga (üks email keskusele)
+export async function sendContactFormEmail(data: {
+  name: string
+  email: string
+  phone?: string
+  subject?: string
+  message: string
+  formType?: string
 }) {
-  if (!isEmailConfigured()) {
-    const err = new Error(
-      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: SMTP_HOST, SMTP_USER, SMTP_PASSWORD. Vaata EMAIL_SETUP.md'
-    );
-    console.error(err.message);
-    throw err;
-  }
   try {
-    const transporter = createTransporter();
-    const safeName = escapeHtml(data.name);
-    const safeEmail = escapeHtml(data.email);
-    const safePhone = escapeHtml(data.phone);
-    const safeTimeSlot = data.timeSlot ? escapeHtml(data.timeSlot) : '';
-    const safeBookingId = escapeHtml(data.bookingId);
-    const safeMessage = data.message ? escapeHtml(data.message).replace(/\n/g, '<br>') : '';
+    const transporter = createTransporter()
+
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        Uus kontaktvormi päring
+      </h2>
+      
+      <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 10px 0;"><strong>Nimi:</strong> ${data.name}</p>
+        <p style="margin: 10px 0;"><strong>E-post:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+        ${data.phone ? `<p style="margin: 10px 0;"><strong>Telefon:</strong> ${data.phone}</p>` : ''}
+        ${data.subject ? `<p style="margin: 10px 0;"><strong>Teema:</strong> ${data.subject}</p>` : ''}
+        ${data.formType ? `<p style="margin: 10px 0;"><strong>Vormi tüüp:</strong> ${data.formType}</p>` : ''}
+      </div>
+      
+      <div style="background-color: #fff; padding: 20px; border-left: 4px solid #43A047; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Sõnum:</h3>
+        <p style="white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
+      </div>
+      
+      <div style="color: #6b7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
+        <p>Papagoi Keskus - papagoi.ee</p>
+      </div>
+    </div>
+  `
+
+    const mailOptions = {
+      from: `"Papagoi Keskus Koduleht" <${process.env.SMTP_USER}>`,
+      to: 'keskus@papagoi.ee',
+      replyTo: data.email,
+      subject: `Kontaktvorm: ${data.subject || 'Uus päring'} - ${data.name}`,
+      html: htmlContent,
+      text: `
+Uus kontaktvormi päring
+
+Nimi: ${data.name}
+E-post: ${data.email}
+${data.phone ? `Telefon: ${data.phone}` : ''}
+${data.subject ? `Teema: ${data.subject}` : ''}
+${data.formType ? `Vormi tüüp: ${data.formType}` : ''}
+
+Sõnum:
+${data.message}
+
+Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
+      `.trim(),
+    }
+
+    await transporter.sendMail(mailOptions)
+    console.log(`Contact form email sent successfully to keskus@papagoi.ee from ${data.email}`)
+  } catch (error) {
+    console.error('Failed to send contact form email:', error)
+    throw new Error(
+      `Email saatmine ebaõnnestus: ${error instanceof Error ? error.message : 'Tundmatu viga'}. ` +
+      'Palun kontrollige SMTP seadeid või proovige hiljem uuesti.'
+    )
+  }
+}
+
+// Broneeringu email – saadab nii kliendile kui keskusele (nagu PetsVilla heinatellimus)
+export async function sendBookingEmail(data: {
+  name: string
+  email: string
+  phone: string
+  groupSize: number
+  date?: Date
+  timeSlot?: string
+  groupType?: string
+  message?: string
+  totalPrice: number
+  bookingId: string
+}) {
+  try {
+    const transporter = createTransporter()
 
     const formattedDate = data.date
       ? new Date(data.date).toLocaleDateString('et-EE', {
@@ -233,123 +131,82 @@ export async function sendBookingEmail(data: {
           month: 'long',
           day: 'numeric',
         })
-      : '';
+      : ''
 
-    const groupTypeLabel = 
-      data.groupType === 'perevisit' ? 'Perevisit' : 
-      data.groupType === 'kool' ? 'Kool/Lasteaed' : 
-      data.groupType === 'ettevote' ? 'Ettevõte' : 'Muu';
+    const groupTypeLabel =
+      data.groupType === 'perevisit' ? 'Perevisit' :
+      data.groupType === 'kool' ? 'Kool/Lasteaed' :
+      data.groupType === 'ettevote' ? 'Ettevõte' : 'Muu'
 
-    // Kliendi kinnitusemail
-    const clientContent = `
-      <h2>Tere, ${safeName}!</h2>
-      <p>Teie päring on edukalt esitatud. Võtame teiega ühendust 24 tunni jooksul külastuse aja kinnitamiseks.</p>
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        ✅ Broneeringu päring
+      </h2>
       
-      <div class="info-box">
-        <h3>Papagoi Keskuse külastuse päring (ID - ${safeBookingId}):</h3>
-        <p><strong>Asukoht:</strong> Tartu mnt 80, Soinaste, Kambja vald, Tartumaa 61709</p>
-        <p>
-          <strong>Google Maps:</strong>
-          <a href="https://www.google.com/maps/search/?api=1&query=Tartu%20mnt%2080%2C%20Soinaste%2C%20Kambja%20vald%2C%20Tartumaa%2061709">
-            Ava navigatsioon
-          </a>
-        </p>
-        ${data.date ? `<p><strong>Eelistatud kuupäev:</strong> ${formattedDate}</p>` : ''}
-        ${data.timeSlot ? `<p><strong>Eelistatud kellaaeg:</strong> ${safeTimeSlot}</p>` : ''}
-        ${data.timeSlot ? `<p>Palun saabuge 5–10 min varem. Kui hilinete, andke meile kindlasti teada tel 512 7938.</p>` : ''}
-        <p><strong>Grupi suurus:</strong> ${data.groupSize} inimest</p>
-        ${data.groupType ? `<p><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
-        <p><strong>Eeldatav hind:</strong> <strong style="color: #43A047; font-size: 1.2em;">${data.totalPrice.toFixed(2)} €</strong></p>
-        <p>Maksmine peale üritust sularahas või suuremad grupid arvega.</p>
-        ${data.message ? `<p><strong>Lisainfo:</strong> ${safeMessage}</p>` : ''}
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <h3 style="color: #059669; margin-top: 0;">Kliendi andmed:</h3>
+        <p style="margin: 10px 0;"><strong>Nimi:</strong> ${data.name}</p>
+        <p style="margin: 10px 0;"><strong>E-post:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+        <p style="margin: 10px 0;"><strong>Telefon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>
       </div>
       
-      <div class="highlight">
-        <strong>⚠️ Oluline:</strong>
-        <ul style="margin: 10px 0; padding-left: 20px;">
-          <li>Külastus jõustub AINULT, kui olete saanud meilt kinnituskirja.</li>
-          <li>Kui teil on küsimusi, helistage või kirjutage meile.</li>
-          <li>Tühistamine 24 h ette.</li>
-        </ul>
+      <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #f59e0b;">
+        <h3 style="color: #d97706; margin-top: 0;">Broneeringu üksikasjad:</h3>
+        <p style="margin: 10px 0;"><strong>ID:</strong> ${data.bookingId}</p>
+        ${data.date ? `<p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${formattedDate}</p>` : ''}
+        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot}</p>` : ''}
+        <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest</p>
+        ${data.groupType ? `<p style="margin: 10px 0;"><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
+        <p style="margin: 10px 0; font-size: 18px;"><strong>Hind:</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
       </div>
       
-      <p>Meie kontaktandmed:</p>
-      <p>
-        <strong>Telefon:</strong> +372 51 27 938<br>
-        <strong>Email:</strong> keskus@papagoi.ee
-      </p>
-    `;
-
-    await transporter.sendMail({
-      from: `"Papagoi Keskus" <${FROM_EMAIL}>`,
-      to: data.email,
-      subject: 'Broneeringu päring - Papagoi Keskus',
-      html: getEmailTemplate('Broneeringu päring', clientContent, true),
-    });
-
-    // Keskuse teavitusemail
-    const centerContent = `
-      <div style="background: #d4edda; padding: 20px; margin: 20px 0; border-left: 4px solid #28a745; border-radius: 5px; text-align: center;">
-        <h2 style="margin: 0; color: #155724;">Broneeringu ID: ${safeBookingId}</h2>
-      </div>
-      
-      <div class="info-box">
-        <strong>Nimi:</strong> ${safeName}
-      </div>
-      <div class="info-box">
-        <strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a>
-      </div>
-      <div class="info-box">
-        <strong>Telefon:</strong> <a href="tel:${safePhone}">${safePhone}</a>
-      </div>
-      ${data.date ? `
-      <div class="info-box">
-        <strong>Eelistatud kuupäev:</strong> ${formattedDate}
-      </div>
-      ` : ''}
-      ${data.timeSlot ? `
-      <div class="info-box">
-        <strong>Eelistatud kellaaeg:</strong> ${safeTimeSlot}
-      </div>
-      ` : ''}
-      <div class="info-box">
-        <strong>Grupi suurus:</strong> ${data.groupSize} inimest
-      </div>
-      ${data.groupType ? `
-      <div class="info-box">
-        <strong>Grupi tüüp:</strong> ${groupTypeLabel}
-      </div>
-      ` : ''}
-      <div class="info-box">
-        <strong>Eeldatav hind:</strong> <strong style="color: #28a745; font-size: 1.2em;">${data.totalPrice.toFixed(2)} €</strong>
-      </div>
       ${data.message ? `
-      <div class="highlight">
-        <strong>Lisainfo:</strong>
-        <p>${safeMessage}</p>
+      <div style="background-color: #fff; padding: 20px; border-left: 4px solid #43A047; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Lisainfo:</h3>
+        <p style="white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
       </div>
       ` : ''}
       
-      <p style="margin-top: 30px;">
-        <a href="mailto:${safeEmail}" style="background: #43A047; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-right: 10px;">
-          Vasta kliendile
-        </a>
-        <a href="tel:${safePhone}" style="background: #039BE5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-          Helista
-        </a>
-      </p>
-    `;
+      <div style="color: #6b7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
+        <p>Papagoi Keskus - papagoi.ee</p>
+      </div>
+    </div>
+  `
 
-    await transporter.sendMail({
-      from: `"Papagoi Keskus Broneering" <${FROM_EMAIL}>`,
-      to: CENTER_EMAIL,
-      subject: `Uus broneering: ${data.name}${data.date ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
-      html: getEmailTemplate('Uus broneering', centerContent, false),
-    });
+    const mailOptions = {
+      from: `"Papagoi Keskus Broneering" <${process.env.SMTP_USER}>`,
+      to: `${data.email}, keskus@papagoi.ee`,
+      replyTo: data.email,
+      subject: `Broneering: ${data.name}${data.date ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
+      html: htmlContent,
+      text: `
+BRONEERINGU PÄRING
 
-    return { success: true };
+Kliendi andmed:
+- Nimi: ${data.name}
+- E-post: ${data.email}
+- Telefon: ${data.phone}
+
+Broneeringu üksikasjad:
+- ID: ${data.bookingId}
+${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot}\n` : ''}- Grupi suurus: ${data.groupSize} inimest
+${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.totalPrice.toFixed(2)}€
+
+${data.message ? `Lisainfo:\n${data.message}\n\n` : ''}
+
+Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
+      `.trim(),
+    }
+
+    await transporter.sendMail(mailOptions)
+    console.log(`Booking email sent successfully to ${data.email} and keskus@papagoi.ee`)
   } catch (error) {
-    console.error('Email sending error:', error);
-    throw error;
+    console.error('Failed to send booking email:', error)
+    throw new Error(
+      `Email saatmine ebaõnnestus: ${error instanceof Error ? error.message : 'Tundmatu viga'}. ` +
+      'Palun kontrollige SMTP seadeid või proovige hiljem uuesti.'
+    )
   }
 }
