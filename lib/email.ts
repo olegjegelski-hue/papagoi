@@ -37,7 +37,7 @@ export const createTransporter = (): Transporter => {
   }
 }
 
-// Send contact form email – identne PetsVilla loogikaga (üks email keskusele)
+// Send contact form email – keskusele ja kliendile (klient saab koopia oma kirjast)
 export async function sendContactFormEmail(data: {
   name: string
   email: string
@@ -77,7 +77,7 @@ export async function sendContactFormEmail(data: {
 
     const mailOptions = {
       from: `"Papagoi Keskus Koduleht" <${process.env.SMTP_USER}>`,
-      to: 'keskus@papagoi.ee',
+      to: `${data.email}, keskus@papagoi.ee`,
       replyTo: data.email,
       subject: `Kontaktvorm: ${data.subject || 'Uus päring'} - ${data.name}`,
       html: htmlContent,
@@ -98,7 +98,7 @@ Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
     }
 
     await transporter.sendMail(mailOptions)
-    console.log(`Contact form email sent successfully to keskus@papagoi.ee from ${data.email}`)
+    console.log(`Contact form email sent to ${data.email} and keskus@papagoi.ee`)
   } catch (error) {
     console.error('Failed to send contact form email:', error)
     throw new Error(
