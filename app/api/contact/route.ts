@@ -93,13 +93,15 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     const errorId = captureError(error);
-    console.error('Contact form error:', error);
+    console.error('Contact form error:', error?.message || error);
+    // Log SMTP-specific errors for debugging (Vercel logs)
+    if (error?.code) console.error('Error code:', error.code);
     const message =
-      'Sõnumi saatmisel tekkis viga. Palun proovige uuesti või helistage meile otse.';
+      'Sõnumi saatmisel tekkis viga. Palun proovige uuesti või helistage meile otse: +372 51 27 938.';
     return NextResponse.json(
       errorResponse('SERVER_ERROR', message, {
         errorId,
-        details: error?.message,
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
       }),
       { status: 500 }
     );
