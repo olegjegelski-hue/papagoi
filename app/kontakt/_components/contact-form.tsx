@@ -69,10 +69,14 @@ export default function ContactForm() {
         });
       } else {
         console.error('API error:', result);
-        const errorMessage =
+        let errorMessage =
           typeof result.error === 'string'
             ? result.error
             : result?.error?.message || 'Sõnumi saatmisel tekkis viga. Palun proovige uuesti.';
+        // Kui server tagastab details (debug), näita ka seda
+        if (result?.error?.details) {
+          errorMessage += ` (${result.error.details})`;
+        }
         toast.error(errorMessage);
       }
     } catch (error: any) {

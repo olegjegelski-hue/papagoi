@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
 
 // Create reusable transporter with error handling – identne PetsVillaga
-const createTransporter = (): Transporter => {
+export const createTransporter = (): Transporter => {
   const host = process.env.SMTP_HOST
   const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587
   const user = process.env.SMTP_USER

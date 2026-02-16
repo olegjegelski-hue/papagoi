@@ -93,18 +93,19 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     const errorId = captureError(error);
-    console.error('Contact form error:', error?.message || error);
-    if (error?.code) console.error('Error code:', error.code);
-    // EDNS/ENOTFOUND = DNS ei leia SMTP hosti – kontrolli SMTP_HOST (soovitus: smtp.alfanetti.ee)
-    if (['EDNS', 'ENOTFOUND', 'EAI_AGAIN'].includes(error?.code)) {
+    const errMsg = error?.message || String(error);
+    const errCode = error?.code || '';
+    console.error('Contact form error:', errMsg, errCode ? `[${errCode}]` : '');
+    if (['EDNS', 'ENOTFOUND', 'EAI_AGAIN'].includes(errCode)) {
       console.error('SMTP DNS viga – kontrolli SMTP_HOST Vercelis. Soovitus: smtp.alfanetti.ee (Alfanet)');
     }
     const message =
       'Sõnumi saatmisel tekkis viga. Palun proovige uuesti või helistage meile otse: +372 51 27 938.';
+    const showDetails = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_EMAIL_ERRORS;
     return NextResponse.json(
       errorResponse('SERVER_ERROR', message, {
         errorId,
-        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
+        details: showDetails ? `${errCode ? `[${errCode}] ` : ''}${errMsg}` : undefined,
       }),
       { status: 500 }
     );

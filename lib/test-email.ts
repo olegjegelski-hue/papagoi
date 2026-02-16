@@ -1,37 +1,28 @@
 import nodemailer from 'nodemailer';
 
 /**
- * Testi funktsioon emaili saatmise kontrollimiseks
- * Kasuta seda, et kontrollida, kas SMTP seaded on õiged
+ * Testi funktsioon emaili saatmise kontrollimiseks.
+ * Kasutab samu keskkonnamuutujaid nagu lib/email.ts: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD.
  */
 export async function testEmailConnection() {
   const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = process.env.SMTP_PORT;
+  const smtpPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
   const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const fromEmail = process.env.FROM_EMAIL || 'noreply@papagoi.ee';
-  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee';
+  const smtpPass = process.env.SMTP_PASSWORD;
 
-  if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) {
-    throw new Error('SMTP seaded puuduvad! Lisa .env faili:\n' +
-      'SMTP_HOST=smtp.papagoi.ee\n' +
-      'SMTP_PORT=587\n' +
-      'SMTP_SECURE=false\n' +
-      'SMTP_USER=noreply@papagoi.ee\n' +
-      'SMTP_PASS=teie_parool\n' +
-      'FROM_EMAIL=noreply@papagoi.ee\n' +
-      'CENTER_EMAIL=keskus@papagoi.ee'
+  if (!smtpHost || !smtpUser || !smtpPass) {
+    throw new Error(
+      'SMTP seaded puuduvad! Lisa Vercelis (või .env): SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD. ' +
+      'Näide: SMTP_HOST=mail.papagoi.ee, SMTP_PORT=587, SMTP_USER=keskus@papagoi.ee'
     );
   }
 
   const transporter = nodemailer.createTransport({
     host: smtpHost,
-    port: parseInt(smtpPort),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
+    port: smtpPort,
+    secure: smtpPort === 465,
+    auth: { user: smtpUser, pass: smtpPass },
+    tls: { rejectUnauthorized: false, minVersion: 'TLSv1.2' },
   });
 
   // Testi ühendust
@@ -46,8 +37,8 @@ export async function testEmailConnection() {
   // Saada test email
   try {
     const info = await transporter.sendMail({
-      from: `"Papagoi Keskus Test" <${fromEmail}>`,
-      to: centerEmail,
+      from: `"Papagoi Keskus Test" <${smtpUser}>`,
+      to: 'keskus@papagoi.ee',
       subject: 'Test email - Papagoi Keskus',
       html: `
         <h2>Test email</h2>

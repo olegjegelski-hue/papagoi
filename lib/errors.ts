@@ -13,7 +13,7 @@ export function errorResponse(
 ) {
   const payload: any = { error: { code, message } };
   if (opts?.errorId) payload.error.errorId = opts.errorId;
-  if (process.env.NODE_ENV === 'development' && opts?.details !== undefined) {
+  if (opts?.details !== undefined) {
     payload.error.details = opts.details;
   }
   return payload;
