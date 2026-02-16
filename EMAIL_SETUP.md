@@ -1,10 +1,25 @@
 # Emaili saatmise seadistamine
 
-Papagoi Keskuse koduleht kasutab **Nodemailer'it** emaili saatmiseks. See võimaldab kasutada mitmeid emaili teenuseid ilma eraldi API teenust.
+Papagoi Keskuse koduleht kasutab **Nodemailer'it** – sama lahendus nagu PetsVilla.ee.
 
 ## Valikud emaili saatmiseks
 
-### 1. Gmail (Lihtsaim viis)
+### 1. Alfanet SMTP (Soovitatav – töötab Vercelis, nagu PetsVilla)
+
+Kui papagoi.ee on Alfaneti majutuses (või saate kasutada Alfaneti e-posti):
+
+```env
+SMTP_HOST=smtp.alfanetti.ee
+SMTP_PORT=465
+SMTP_USER=keskus@papagoi.ee
+SMTP_PASSWORD=teie_parool
+FROM_EMAIL=keskus@papagoi.ee
+CENTER_EMAIL=keskus@papagoi.ee
+```
+
+**Port 465** – SSL, `secure` seatakse automaatselt.
+
+### 2. Gmail (Lihtsaim viis)
 
 1. Loo Gmail konto või kasuta olemasolevat
 2. Loo **App Password** (mitte tavaline parool!):
@@ -20,7 +35,7 @@ FROM_EMAIL=teie@gmail.com
 CENTER_EMAIL=keskus@papagoi.ee
 ```
 
-### 2. Outlook/Hotmail
+### 3. Outlook/Hotmail
 
 1. Lisa `.env` faili:
 ```env
@@ -30,34 +45,33 @@ FROM_EMAIL=teie@outlook.com
 CENTER_EMAIL=keskus@papagoi.ee
 ```
 
-### 3. Oma SMTP server
+### 4. Oma SMTP server
 
-Kui teil on oma mailiserver (nt cPanel, Plesk, jne):
+Kui teil on oma mailiserver (nt cPanel, Plesk):
 
 ```env
-SMTP_HOST=smtp.papagoi.ee
-SMTP_PORT=587
-SMTP_SECURE=false
+SMTP_HOST=mail.papagoi.ee
+SMTP_PORT=465
 SMTP_USER=noreply@papagoi.ee
-SMTP_PASS=teie_parool
+SMTP_PASSWORD=teie_parool
 FROM_EMAIL=noreply@papagoi.ee
 CENTER_EMAIL=keskus@papagoi.ee
 ```
 
 **Portid:**
-- `587` - TLS (soovitatav)
-- `465` - SSL (määra `SMTP_SECURE=true`)
-- `25` - Tavaline SMTP (mitte soovitatav)
+- `465` – SSL (secure)
+- `587` – TLS
 
-### 4. Muud SMTP teenused
+**Märkus:** Mõned majutajad (nt oma VPS) blokeerivad Verceli ühendusi. Kui tekib ETIMEDOUT, kasutage Alfaneti SMTP (vt ülal).
+
+### 5. Muud SMTP teenused
 
 **SendGrid:**
 ```env
 SMTP_HOST=smtp.sendgrid.net
 SMTP_PORT=587
-SMTP_SECURE=false
 SMTP_USER=apikey
-SMTP_PASS=teie_sendgrid_api_key
+SMTP_PASSWORD=teie_sendgrid_api_key
 FROM_EMAIL=noreply@papagoi.ee
 CENTER_EMAIL=keskus@papagoi.ee
 ```
@@ -66,66 +80,55 @@ CENTER_EMAIL=keskus@papagoi.ee
 ```env
 SMTP_HOST=smtp.mailgun.org
 SMTP_PORT=587
-SMTP_SECURE=false
 SMTP_USER=postmaster@teie_domeen.mailgun.org
-SMTP_PASS=teie_mailgun_parool
+SMTP_PASSWORD=teie_mailgun_parool
 FROM_EMAIL=noreply@papagoi.ee
 CENTER_EMAIL=keskus@papagoi.ee
 ```
 
 ## Vercel (Production)
 
-Kui kasutate Vercelit, lisa **Settings → Environment Variables** järgmised muutujad:
+Kui kasutate Vercelit, lisa **Settings → Environment Variables**:
 
-**Gmail (soovitatav):**
-- `GMAIL_USER` – teie Gmail aadress
-- `GMAIL_APP_PASSWORD` – Gmail App Password (https://myaccount.google.com/apppasswords)
-- `FROM_EMAIL` – sama kui GMAIL_USER
-- `CENTER_EMAIL` – keskuse email (nt keskus@papagoi.ee)
+**Alfanet (soovitatav, nagu PetsVilla):**
+- `SMTP_HOST` = `smtp.alfanetti.ee`
+- `SMTP_PORT` = `465`
+- `SMTP_USER` = `keskus@papagoi.ee` (või teie Alfaneti email)
+- `SMTP_PASSWORD` = teie parool
+- `FROM_EMAIL` = `keskus@papagoi.ee`
+- `CENTER_EMAIL` = `keskus@papagoi.ee`
 
-**Või SMTP:**
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
-- `FROM_EMAIL`, `CENTER_EMAIL`
+**Või Gmail:** `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `FROM_EMAIL`, `CENTER_EMAIL`
 
 **Oluline:** Pärast muutujate lisamist tee uus deploy (Redeploy).
 
 ## Testimine
 
-Pärast seadistamist:
-
 1. Täida kontaktvorm või tee broneering kodulehel
 2. Kontrolli, et emailid saadetakse nii kliendile kui ka keskusele
-3. Kui emailid ei tule, kontrolli serveri logisid või brauseri konsooli
+3. Kui emailid ei tule, kontrolli Verceli Runtime Logs
 
 ## Troubleshooting
 
 **Emailid ei tule:**
-- Kontrolli, et `.env` fail on õigesti täidetud
-- Kontrolli, et emaili aadressid on õiged
+- Kontrolli, et keskkonnamuutujad on õigesti täidetud
 - Gmail puhul: kasuta App Password, mitte tavaline parool
-- Kontrolli serveri logisid veateadete jaoks
+- Kontrolli Verceli logisid veateadete jaoks
 
-**Gmail App Password:**
-- Kui ei näe "App Passwords" valikut, lülita 2FA sisse: https://myaccount.google.com/security
+**ETIMEDOUT (Vercel):**
+- Oma domeeni SMTP (mail.papagoi.ee) võib blokeerida Verceli IP-aadresse
+- **Lahendus:** kasutage Alfaneti SMTP (`smtp.alfanetti.ee`) – töötab nagu PetsVilla.ee
 
-**Port blokeeritud:**
-- Mõned hostingud blokeerivad väljaminevaid porte
-- Proovi porti 587 või 465
-- Või kasuta Gmail/Outlook teenust
+**SMTP_PASS vs SMTP_PASSWORD:**
+- Mõlemad on toetatud; soovitatav on `SMTP_PASSWORD` (PetsVilla stiilis)
 
 ## Keskkonna muutujad
 
 | Muutuja | Kirjeldus | Näide |
 |---------|-----------|-------|
-| `FROM_EMAIL` | Aadress, kust emailid saadetakse | `noreply@papagoi.ee` |
-| `CENTER_EMAIL` | Keskuse emaili aadress (kuhu saadetakse teavitused) | `keskus@papagoi.ee` |
-| `GMAIL_USER` | Gmail kasutajanimi | `teie@gmail.com` |
-| `GMAIL_APP_PASSWORD` | Gmail App Password | `xxxx xxxx xxxx xxxx` |
-| `SMTP_HOST` | SMTP serveri aadress | `smtp.papagoi.ee` |
-| `SMTP_PORT` | SMTP port | `587` |
-| `SMTP_SECURE` | Kas kasutada SSL/TLS | `false` |
-| `SMTP_USER` | SMTP kasutajanimi | `noreply@papagoi.ee` |
-| `SMTP_PASS` | SMTP parool | `teie_parool` |
-
-
-
+| `SMTP_HOST` | SMTP server | `smtp.alfanetti.ee` |
+| `SMTP_PORT` | Port | `465` või `587` |
+| `SMTP_USER` | SMTP kasutajanimi | `keskus@papagoi.ee` |
+| `SMTP_PASSWORD` | SMTP parool (või SMTP_PASS) | `teie_parool` |
+| `FROM_EMAIL` | Aadress, kust saadetakse | `keskus@papagoi.ee` |
+| `CENTER_EMAIL` | Keskuse email (teavitused) | `keskus@papagoi.ee` |

@@ -1,35 +1,45 @@
 import nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import { escapeHtml } from '@/lib/sanitize';
 
 // Keskuse emaili aadress
 const CENTER_EMAIL = process.env.CENTER_EMAIL || 'keskus@papagoi.ee';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@papagoi.ee';
 
+// SMTP parool – toetab nii SMTP_PASS kui SMTP_PASSWORD (nagu PetsVilla)
+const smtpPass = process.env.SMTP_PASSWORD || process.env.SMTP_PASS;
+
 // Kontrolli, kas email on seadistatud (Vercel, production)
 export function isEmailConfigured(): boolean {
   return !!(
-    (process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS) ||
+    (process.env.SMTP_HOST && process.env.SMTP_USER && smtpPass) ||
     (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ||
     (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD)
   );
 }
 
-// Loo emaili transporter
-function createTransporter() {
-  // SMTP seaded
-  if (process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS) {
+// Loo emaili transporter – PetsVilla stiilis (Alfanet smtp.alfanetti.ee töötab Vercelis)
+function createTransporter(): Transporter {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+  const user = process.env.SMTP_USER;
+  const password = smtpPass;
+
+  if (host && user && password) {
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass: password },
+      tls: {
+        rejectUnauthorized: false,
+        minVersion: 'TLSv1.2',
       },
+      debug: process.env.NODE_ENV === 'development',
+      logger: process.env.NODE_ENV === 'development',
     });
   }
 
-  // Gmail
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
     return nodemailer.createTransport({
       service: 'gmail',
@@ -40,7 +50,6 @@ function createTransporter() {
     });
   }
 
-  // Outlook/Hotmail
   if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD) {
     return nodemailer.createTransport({
       service: 'hotmail',
@@ -51,10 +60,8 @@ function createTransporter() {
     });
   }
 
-  return null;
+  throw new Error('Emaili seaded puuduvad. Vaata EMAIL_SETUP.md');
 }
-
-const transporter = createTransporter();
 
 // HTML emaili mall
 function getEmailTemplate(title: string, content: string, isClientEmail: boolean = true) {
@@ -101,14 +108,15 @@ export async function sendContactFormEmail(data: {
   message: string;
   formType?: string;
 }) {
-  if (!transporter || !isEmailConfigured()) {
+  if (!isEmailConfigured()) {
     const err = new Error(
-      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: GMAIL_USER + GMAIL_APP_PASSWORD või SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS. Vaata EMAIL_SETUP.md'
+      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: SMTP_HOST, SMTP_USER, SMTP_PASSWORD. Vaata EMAIL_SETUP.md'
     );
     console.error(err.message);
     throw err;
   }
   try {
+    const transporter = createTransporter();
     const safeName = escapeHtml(data.name);
     const safeSubject = escapeHtml(data.subject);
     const safeMessage = escapeHtml(data.message).replace(/\n/g, '<br>');
@@ -200,14 +208,15 @@ export async function sendBookingEmail(data: {
   totalPrice: number;
   bookingId: string;
 }) {
-  if (!transporter || !isEmailConfigured()) {
+  if (!isEmailConfigured()) {
     const err = new Error(
-      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad. Vaata EMAIL_SETUP.md'
+      'Emaili seaded puuduvad. Lisa Vercel keskkonnamuutujad: SMTP_HOST, SMTP_USER, SMTP_PASSWORD. Vaata EMAIL_SETUP.md'
     );
     console.error(err.message);
     throw err;
   }
   try {
+    const transporter = createTransporter();
     const safeName = escapeHtml(data.name);
     const safeEmail = escapeHtml(data.email);
     const safePhone = escapeHtml(data.phone);
