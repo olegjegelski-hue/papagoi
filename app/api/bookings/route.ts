@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     // Rate limit per IP
     const ip = getClientIp(request.headers);
-    const rl = rateLimit(ip, { windowMs: 10 * 60 * 1000, max: 5, minIntervalMs: 15 * 1000 });
+    const rl = rateLimit(ip, { windowMs: 10 * 60 * 1000, max: 10, minIntervalMs: 5 * 1000 });
     if (!rl.allowed) {
       return NextResponse.json(
         errorResponse('RATE_LIMITED', 'Päringuid on liiga palju. Palun proovige mõne hetke pärast uuesti.'),
