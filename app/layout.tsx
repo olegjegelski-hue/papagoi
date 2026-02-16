@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
+}
+
+export const viewport = {
   themeColor: '#0ea5e9',
 }
 
@@ -39,12 +42,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="et">
-      <body className={inter.className}>
+    <html lang="et" className="scroll-smooth">
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <LocalBusinessSchema />
         <TouristAttractionSchema />
         <Navigation />
-        <main className="min-h-screen">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
         <Footer />

@@ -17,6 +17,11 @@
   }
 }
 
+html {
+  /* Vältida võimalikku lehe ümberpööramist */
+  transform: none;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(

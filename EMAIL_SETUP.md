@@ -115,8 +115,9 @@ Kui kasutate Vercelit, lisa **Settings → Environment Variables**:
 - Gmail puhul: kasuta App Password, mitte tavaline parool
 - Kontrolli Verceli logisid veateadete jaoks
 
-**ETIMEDOUT (Vercel):**
-- Oma domeeni SMTP (mail.papagoi.ee) võib blokeerida Verceli IP-aadresse
+**ETIMEDOUT / EDNS (Vercel):**
+- **ETIMEDOUT:** Oma domeeni SMTP (mail.papagoi.ee) blokeerib Verceli ühendusi
+- **EDNS/ENOTFOUND:** DNS ei leia SMTP hosti – kontrolli, et SMTP_HOST on õige (nt `smtp.alfanetti.ee`)
 - **Lahendus:** kasutage Alfaneti SMTP (`smtp.alfanetti.ee`) – töötab nagu PetsVilla.ee
 
 **SMTP_PASS vs SMTP_PASSWORD:**

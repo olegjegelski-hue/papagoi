@@ -94,8 +94,11 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     const errorId = captureError(error);
     console.error('Contact form error:', error?.message || error);
-    // Log SMTP-specific errors for debugging (Vercel logs)
     if (error?.code) console.error('Error code:', error.code);
+    // EDNS/ENOTFOUND = DNS ei leia SMTP hosti – kontrolli SMTP_HOST (soovitus: smtp.alfanetti.ee)
+    if (['EDNS', 'ENOTFOUND', 'EAI_AGAIN'].includes(error?.code)) {
+      console.error('SMTP DNS viga – kontrolli SMTP_HOST Vercelis. Soovitus: smtp.alfanetti.ee (Alfanet)');
+    }
     const message =
       'Sõnumi saatmisel tekkis viga. Palun proovige uuesti või helistage meile otse: +372 51 27 938.';
     return NextResponse.json(

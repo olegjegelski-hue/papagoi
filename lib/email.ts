@@ -31,6 +31,8 @@ function createTransporter(): Transporter {
       port,
       secure: port === 465,
       auth: { user, pass: password },
+      connectionTimeout: 15000,
+      greetingTimeout: 10000,
       tls: {
         rejectUnauthorized: false,
         minVersion: 'TLSv1.2',
