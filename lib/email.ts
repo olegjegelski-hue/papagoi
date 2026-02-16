@@ -156,9 +156,12 @@ export async function sendBookingEmail(data: {
         <p style="margin: 10px 0;"><strong>ID:</strong> ${data.bookingId}</p>
         ${data.date ? `<p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${formattedDate}</p>` : ''}
         ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot}</p>` : ''}
-        <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest</p>
+        <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>
         ${data.groupType ? `<p style="margin: 10px 0;"><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
         <p style="margin: 10px 0; font-size: 18px;"><strong>Hind:</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
+        <p style="margin: 10px 0;"><strong>Maksmine toimub peale üritust</strong></p>
+        <p style="margin: 10px 0;">Makseviisid: sularaha (pangaterminal puudub)</p>
+        <p style="margin: 15px 0; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; font-weight: 600;">NB! Tegemist broneeringu päringuga! Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.</p>
       </div>
       
       ${data.message ? `
@@ -168,9 +171,17 @@ export async function sendBookingEmail(data: {
       </div>
       ` : ''}
       
-      <div style="color: #6b7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">Lugupidamisega</p>
+        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
+        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">www.papagoi.ee</a></p>
+        <p style="margin: 5px 0;">E-post: <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
+        <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
+      </div>
+      
+      <div style="color: #6b7280; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
         <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
-        <p>Papagoi Keskus - papagoi.ee</p>
       </div>
     </div>
   `
@@ -191,11 +202,24 @@ Kliendi andmed:
 
 Broneeringu üksikasjad:
 - ID: ${data.bookingId}
-${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot}\n` : ''}- Grupi suurus: ${data.groupSize} inimest
+${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot}\n` : ''}- Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)
 ${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.totalPrice.toFixed(2)}€
+- Maksmine toimub peale üritust
+- Makseviisid: sularaha (pangaterminal puudub)
+
+NB! Tegemist broneeringu päringuga! Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
 
 ${data.message ? `Lisainfo:\n${data.message}\n\n` : ''}
 
+Lugupidamisega
+Papagoi Keskus
+Tel +372 51 27 938
+
+www.papagoi.ee
+E-post: keskus@papagoi.ee
+https://www.facebook.com/PapagoiKeskus
+
+---
 Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
       `.trim(),
     }
