@@ -12,6 +12,9 @@ import CookieBanner from '@/components/CookieBanner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  verification: {
+    google: 'CPr-Db3uIhvMR38RI3_ligyrF_GVfUv6706fjQAWDpM',
+  },
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
   description: 'Tule külasta Papagoi Keskust! Meie juures elab üle 50 papagoi. Broneeri külastus – räägime papagoidest, teeme koos pilti ja võimalusel saad neid ka käest toita.',
   keywords: 'papagoi, papagoid keskus, külastus, pered, koolid, lasteaiad, lemmikloomad, Eesti, broneerida',
