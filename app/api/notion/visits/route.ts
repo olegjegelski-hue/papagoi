@@ -49,6 +49,13 @@ function extractGuests(property: any) {
   if (property.type === 'number') return property.number ?? null
   if (property.type === 'rollup') {
     if (property.rollup?.type === 'number') return property.rollup?.number ?? null
+    if (property.rollup?.type === 'array' && Array.isArray(property.rollup?.array)) {
+      const sum = property.rollup.array.reduce((acc: number, item: any) => {
+        const v = item?.number ?? item?.rollup?.number
+        return acc + (typeof v === 'number' ? v : 0)
+      }, 0)
+      return sum > 0 ? sum : null
+    }
     return null
   }
   if (property.type === 'rich_text') {
@@ -184,19 +191,23 @@ async function sumVisitorCountsByVisitId(
 function findGuestsPropertyName(properties: Record<string, any>) {
   const rollupProps = Object.keys(properties).filter((key) => properties[key]?.type === 'rollup')
   if (rollupProps.length >= 1) {
+    const priceLike = (n: string) => n.includes('summa') || n.includes('hind') || n.includes('price') || n.includes('euro')
     const kulastajadRollup = rollupProps.find((key) => {
       const n = normalizeKey(key)
+      if (priceLike(n)) return false
       return (
         n.includes('kulastaj') ||
         n.includes('kulal') ||
         n.includes('arv') ||
         n.includes('kokku') ||
         n.includes('inimest') ||
-        n.includes('summa')
+        n.includes('osalejad') ||
+        n.includes('kulastajate')
       )
     })
     if (kulastajadRollup) return kulastajadRollup
-    return rollupProps[0]
+    const nonPriceRollup = rollupProps.find((key) => !priceLike(normalizeKey(key)))
+    return nonPriceRollup ?? null
   }
 
   const directMatch = Object.keys(properties).find((key) => {
@@ -250,8 +261,10 @@ async function resolveDatabase(NOTION_API_KEY: string, inputId: string) {
   return { databaseId: baseId, data }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const debug = searchParams.get('debug') === '1'
     const NOTION_API_KEY = process.env.NOTION_API_KEY
     const NOTION_VISITS_DATABASE_ID = process.env.NOTION_VISITS_DATABASE_ID
     const NOTION_VISITORS_DATABASE_ID =
@@ -357,8 +370,32 @@ export async function GET() {
       )
     ).filter((b): b is NonNullable<typeof b> => b !== null)
 
+    const payload: Record<string, unknown> = { bookings }
+    if (debug) {
+      payload._debug = {
+        guestsPropertyName,
+        guestsRelationPropertyName,
+        visitorsDb: visitorsDb ? { databaseId: visitorsDb.databaseId, relationPropertyName: visitorsDb.relationPropertyName, countPropertyName: visitorsDb.countPropertyName } : null,
+        sampleVisit: (() => {
+          const page = results.find((p: any) => {
+            const dateVal = p.properties?.[datePropertyName]?.date?.start
+            return dateVal && dateVal.startsWith('2026-02-17') && dateVal.includes('12:00')
+          }) || results[0]
+          if (!page) return null
+          const props = page.properties || {}
+          const guestsProp = guestsPropertyName ? props[guestsPropertyName] : null
+          return {
+            date: props[datePropertyName]?.date?.start,
+            time: extractTime(props[timePropertyName] || props[datePropertyName]),
+            guestsPropertyRaw: guestsProp ? { type: guestsProp.type, rollup: guestsProp.rollup?.type, value: guestsProp.rollup?.number ?? guestsProp.number } : null,
+            relationIds: guestsRelationPropertyName ? (props[guestsRelationPropertyName]?.relation || []).map((r: any) => r.id) : [],
+          }
+        })(),
+      }
+    }
+
     return NextResponse.json(
-      { bookings },
+      payload,
       {
         headers: {
           'Cache-Control': 'no-store, max-age=0',
