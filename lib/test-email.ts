@@ -8,7 +8,7 @@ export async function testEmailConnection() {
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
   const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASSWORD;
+  const smtpPass = process.env.SMTP_PASSWORD || process.env.SMTP_PASS;
 
   if (!smtpHost || !smtpUser || !smtpPass) {
     throw new Error(

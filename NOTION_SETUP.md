@@ -119,6 +119,32 @@ Kui soovite lisada rohkem välju (nt "Sugu", "Sünniaeg", jne), lisage need:
 2. `route.ts` faili mapping'usse
 3. `ParrotsPageClient.tsx` faili kuvamisse
 
+## 10. Broneeringud – Külastused ja Külastajad
+
+Broneeringud salvestatakse automaatselt kahte andmebaasi:
+
+### Külastused (Visits)
+- **Kuupäev** (Date) – kohustuslik
+- **Kellaaeg** (Select või Rich text) – väärtused nt "10:00", "11:00", ... "18:00"
+- **Title** – kohustuslik
+- **Külastajad** (Relation → Külastajad)
+- Loogika: kui sama kuupäev + kellaaeg on juba olemas, lisatakse uus külastaja sinna juurde. Kui pole, luuakse uus külastus.
+
+### Külastajad (Visitors)
+- **Nimi** (Title) – kohustuslik
+- **Külastused** (Relation → Külastused) – kohustuslik
+- **Arv** (Number) – inimeste arv
+- **E-post** (Email või Rich text)
+- **Telefon** (Phone või Rich text)
+
+### Keskkonnamuutujad
+```env
+NOTION_VISITS_DATABASE_ID=...
+NOTION_VISITORS_DATABASE_ID=...
+```
+
+Veenduge, et mõlemad andmebaasid on jagatud Notion integration'iga (Connections).
+
 ## Abi
 
 Kui teil on küsimusi või probleeme, vaadake:

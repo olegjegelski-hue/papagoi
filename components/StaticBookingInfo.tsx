@@ -35,17 +35,9 @@ export default function StaticBookingInfo() {
   const canGoBack = isAfter(monthDate, currentMonth)
   const timeSlots = Array.from({ length: 9 }, (_, index) => `${String(10 + index).padStart(2, '0')}:00`)
   const selectedDateValue = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''
-  const getVisibleBookingsForDate = (date: Date, entries: { time: string; guests: number | null }[]) => {
-    const now = new Date()
-    if (!isSameDay(date, now)) return entries
-    return entries.filter((entry) => {
-      if (!/^\d{2}:\d{2}$/.test(entry.time)) return true
-      const [hour, minute] = entry.time.split(':').map(Number)
-      const slotStart = new Date(date)
-      slotStart.setHours(hour, minute, 0, 0)
-      const cutoff = addMinutes(slotStart, -30)
-      return isBefore(now, cutoff)
-    })
+  /** Kõik broneeringud kuupäeva kohta – blokeerimiseks (1h enne/järele) ja Liitu-nupu kuvamiseks. */
+  const getAllBookingsForDate = (date: Date, entries: { time: string; guests: number | null }[]) => {
+    return entries
   }
 
   const isTodayClosedForBooking = () => {
@@ -59,7 +51,7 @@ export default function StaticBookingInfo() {
   const bookedEntriesForSelectedDate = useMemo(() => {
     if (!selectedDateValue || !selectedDate) return []
     const entries = bookingsByDate[selectedDateValue] || []
-    return getVisibleBookingsForDate(selectedDate, entries)
+    return getAllBookingsForDate(selectedDate, entries)
   }, [bookingsByDate, selectedDate, selectedDateValue])
 
   useEffect(() => {
@@ -145,62 +137,58 @@ export default function StaticBookingInfo() {
     }
     return `+372${digits}`
   }
-  useEffect(() => {
-    let isMounted = true
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000)
-    const loadBookings = async () => {
-      setIsLoadingBookings(true)
-      setBookingsLoadError(null)
-      try {
-        const response = await fetch('/api/notion/visits', { signal: controller.signal })
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`)
-        }
-        const data = await response.json()
-        if (!isMounted) return
-        const grouped: Record<string, Record<string, number | null>> = {}
-        const bookings = Array.isArray(data?.bookings) ? data.bookings : []
-        bookings.forEach((booking: { date?: string; time?: string | null; guests?: number | null }) => {
-          if (!booking?.date) return
-          const key = booking.date.split('T')[0]
-          if (!grouped[key]) grouped[key] = {}
-          const timeKey = booking.time || 'Määramata'
-          const guestsValue = Number.isFinite(booking.guests) ? Number(booking.guests) : null
-          if (!(timeKey in grouped[key])) {
-            grouped[key][timeKey] = guestsValue
-          } else if (grouped[key][timeKey] !== null && guestsValue !== null) {
-            grouped[key][timeKey] = (grouped[key][timeKey] || 0) + guestsValue
-          } else {
-            grouped[key][timeKey] = null
-          }
-        })
-        const normalized: Record<string, { time: string; guests: number | null }[]> = {}
-        Object.keys(grouped).forEach((key) => {
-          normalized[key] = Object.entries(grouped[key])
-            .map(([time, guests]) => ({ time, guests }))
-            .sort((a, b) => {
-              if (a.time === 'Määramata') return 1
-              if (b.time === 'Määramata') return -1
-              return a.time.localeCompare(b.time)
-            })
-        })
-        setBookingsByDate(normalized)
-      } catch (error) {
-        if (!isMounted) return
-        console.error('Broneeringute laadimine ebaõnnestus', error)
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          setBookingsLoadError('Broneeringute laadimine võttis liiga kaua. Palun värskendage lehte.')
-        } else {
-          setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
-        }
-      } finally {
-        if (isMounted) setIsLoadingBookings(false)
+  const loadBookings = async (signal?: AbortSignal) => {
+    setIsLoadingBookings(true)
+    setBookingsLoadError(null)
+    try {
+      const response = await fetch('/api/notion/visits', signal ? { signal } : {})
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
       }
+      const data = await response.json()
+      const grouped: Record<string, Record<string, number | null>> = {}
+      const bookings = Array.isArray(data?.bookings) ? data.bookings : []
+      bookings.forEach((booking: { date?: string; time?: string | null; guests?: number | null }) => {
+        if (!booking?.date) return
+        const key = booking.date.split('T')[0]
+        if (!grouped[key]) grouped[key] = {}
+        const timeKey = booking.time || 'Määramata'
+        const guestsValue = Number.isFinite(booking.guests) ? Number(booking.guests) : null
+        if (!(timeKey in grouped[key])) {
+          grouped[key][timeKey] = guestsValue
+        } else if (grouped[key][timeKey] !== null && guestsValue !== null) {
+          grouped[key][timeKey] = (grouped[key][timeKey] || 0) + guestsValue
+        } else {
+          grouped[key][timeKey] = null
+        }
+      })
+      const normalized: Record<string, { time: string; guests: number | null }[]> = {}
+      Object.keys(grouped).forEach((key) => {
+        normalized[key] = Object.entries(grouped[key])
+          .map(([time, guests]) => ({ time, guests }))
+          .sort((a, b) => {
+            if (a.time === 'Määramata') return 1
+            if (b.time === 'Määramata') return -1
+            return a.time.localeCompare(b.time)
+          })
+      })
+      setBookingsByDate(normalized)
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        setBookingsLoadError('Broneeringute laadimine võttis liiga kaua. Palun värskendage lehte.')
+      } else {
+        setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
+      }
+    } finally {
+      setIsLoadingBookings(false)
     }
-    loadBookings()
+  }
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 45000)
+    loadBookings(controller.signal)
     return () => {
-      isMounted = false
       clearTimeout(timeoutId)
       controller.abort()
     }
@@ -252,11 +240,30 @@ export default function StaticBookingInfo() {
         })
         setHasConsent(false)
         setSelectedTime(null)
+        setBookingsByDate((prev) => {
+          const key = selectedDateValue
+          const entries = prev[key] || []
+          const existing = entries.find((e) => e.time === selectedTime)
+          const newEntries = existing
+            ? entries.map((e) =>
+                e.time === selectedTime
+                  ? { ...e, guests: (e.guests ?? 0) + groupSizeNum }
+                  : e
+              )
+            : [...entries, { time: selectedTime, guests: groupSizeNum }].sort((a, b) =>
+                a.time.localeCompare(b.time)
+              )
+          return { ...prev, [key]: newEntries }
+        })
+        loadBookings()
       } else {
-        const errorMessage =
+        let errorMessage =
           typeof result.error === 'string'
             ? result.error
             : result?.error?.message || 'Broneeringu saatmisel tekkis viga'
+        if (result?.error?.details) {
+          errorMessage += ` (${result.error.details})`
+        }
         setSubmitMessage(errorMessage)
       }
     } catch (error) {
@@ -324,6 +331,30 @@ export default function StaticBookingInfo() {
             <p className="text-warm-gray-600">💡 Soovid hommikust aega (kl 10 või 11)? Kirjuta meile ja leiame lahenduse!</p>
           </div>
 
+          {bookingsLoadError && !isLoadingBookings && (
+            <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-papagoi-red/30 bg-papagoi-red/5 p-3">
+              <p className="text-sm text-papagoi-red flex-1">{bookingsLoadError}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setBookingsLoadError(null)
+                  loadBookings()
+                }}
+                className="text-sm font-semibold text-papagoi-green hover:underline whitespace-nowrap"
+              >
+                Proovi uuesti
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingsLoadError(null)}
+                className="text-lg text-warm-gray-500 hover:text-warm-gray-700 leading-none"
+                aria-label="Sulge"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-7 text-center text-xs font-semibold text-warm-gray-500 mb-2">
             {['E', 'T', 'K', 'N', 'R', 'L', 'P'].map((day) => (
               <div key={day} className="py-2">
@@ -339,7 +370,7 @@ export default function StaticBookingInfo() {
               const isSelected = selectedDate ? format(day, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd') : false
               const dateKey = format(day, 'yyyy-MM-dd')
               const dayBookings = bookingsByDate[dateKey] || []
-              const hasBookings = Boolean(getVisibleBookingsForDate(day, dayBookings).length)
+              const hasBookings = Boolean(getAllBookingsForDate(day, dayBookings).length)
               const isPastDate = isBefore(startOfDay(day), startOfDay(new Date()))
               const isTodayClosed = isSameDay(day, new Date()) && isTodayClosedForBooking()
 
@@ -399,21 +430,25 @@ export default function StaticBookingInfo() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {visibleTimeSlots.map((time) => {
+                {timeSlots.map((time) => {
                   const isActive = selectedTime === time
                   const isBooked = bookedTimesForSelectedDate.includes(time)
+                  const isRestBlocked = restBlockedTimes.includes(time)
+                  const isAvailable = visibleTimeSlots.includes(time)
+                  const disabled = !isAvailable
                   return (
                     <button
                       key={time}
                       type="button"
                       onClick={() => handleTimeClick(time)}
-                      disabled={isBooked}
+                      disabled={disabled}
+                      title={isBooked ? 'Broneeritud' : isRestBlocked ? '1h puhkeaeg broneeringute vahel' : undefined}
                       className={[
                         'px-4 py-2 rounded-lg border font-semibold transition-colors',
-                        isBooked ? 'border-warm-gray-200 text-warm-gray-400 bg-warm-gray-50 cursor-not-allowed' : '',
+                        disabled ? 'border-warm-gray-200 text-warm-gray-400 bg-warm-gray-50 cursor-not-allowed' : '',
                         isActive
                           ? 'bg-papagoi-green text-white border-papagoi-green'
-                          : 'border-papagoi-green/30 text-papagoi-green hover:bg-papagoi-green hover:text-white',
+                          : !disabled ? 'border-papagoi-green/30 text-papagoi-green hover:bg-papagoi-green hover:text-white' : '',
                       ].join(' ')}
                     >
                       {time}
@@ -463,10 +498,6 @@ export default function StaticBookingInfo() {
               {isLoadingBookings && (
                 <p className="mt-4 text-sm text-warm-gray-500">Laen broneeringuid...</p>
               )}
-              {bookingsLoadError && !isLoadingBookings && (
-                <p className="mt-4 text-sm text-papagoi-red">{bookingsLoadError}</p>
-              )}
-
               {selectedTime && (
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">

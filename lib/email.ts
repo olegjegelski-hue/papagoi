@@ -7,11 +7,11 @@ export const createTransporter = (): Transporter => {
   const host = process.env.SMTP_HOST
   const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587
   const user = process.env.SMTP_USER
-  const password = process.env.SMTP_PASSWORD
+  const password = process.env.SMTP_PASSWORD || process.env.SMTP_PASS
 
   if (!host || !user || !password) {
     throw new Error(
-      'SMTP configuration is incomplete. Please set SMTP_HOST, SMTP_USER, and SMTP_PASSWORD environment variables.'
+      'SMTP configuration is incomplete. Please set SMTP_HOST, SMTP_USER, and SMTP_PASSWORD (or SMTP_PASS) environment variables.'
     )
   }
 

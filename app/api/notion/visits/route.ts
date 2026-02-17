@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { format } from 'date-fns'
+import { subDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const dynamic = 'force-dynamic'
@@ -8,7 +8,20 @@ function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 6000) {
+/** Normaliseerib kellaaja vorminguks HH:mm (nt "17" → "17:00") – kalendri ajaslotid vajavad täpset vasteid. */
+function normalizeTimeToHHmm(raw: string | null): string | null {
+  if (!raw || typeof raw !== 'string') return null
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+  const match = trimmed.match(/^(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?/)
+  if (!match) return null
+  const hour = parseInt(match[1], 10)
+  if (hour < 0 || hour > 23) return null
+  const minute = match[2] ? parseInt(match[2], 10) : 0
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
+
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 10000) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
   try {
@@ -245,7 +258,9 @@ export async function GET() {
     const guestsPropertyName = findGuestsPropertyName(properties)
     const guestsRelationPropertyName = findGuestsRelationPropertyName(properties)
 
-    const today = format(new Date(), 'yyyy-MM-dd')
+    const now = new Date()
+    const today = formatInTimeZone(now, 'Europe/Tallinn', 'yyyy-MM-dd')
+    const yesterday = formatInTimeZone(subDays(now, 1), 'Europe/Tallinn', 'yyyy-MM-dd')
     const queryResponse = await fetchWithTimeout(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
       headers: {
@@ -257,7 +272,7 @@ export async function GET() {
         filter: {
           property: datePropertyName,
           date: {
-            on_or_after: today,
+            on_or_after: yesterday,
           },
         },
       }),
@@ -269,40 +284,41 @@ export async function GET() {
     }
 
     const data = await queryResponse.json()
-    console.log('Notion visits: query results', data.results?.length || 0, 'rows')
+    const results = data.results || []
     const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
-    const bookings: { date: string; time: string | null; guests: number | null }[] = []
-    for (const page of data.results || []) {
-      const pageProperties = page.properties || {}
-      const dateValue = pageProperties[datePropertyName]?.date?.start || null
-      if (!dateValue) continue
-      const timeValue = timePropertyName ? extractTime(pageProperties[timePropertyName]) : null
-        const derivedTime = dateValue.includes('T')
-          ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
-          : null
-      let guestsValue = guestsPropertyName ? extractGuests(pageProperties[guestsPropertyName]) : null
-      if (guestsValue === null && guestsRelationPropertyName) {
-        const relation = pageProperties[guestsRelationPropertyName]?.relation || []
-        const relationIds = Array.isArray(relation) ? relation.map((item: any) => item.id) : []
-        if (relationIds.length > 0) {
-          guestsValue = await sumVisitorCountsByPageIds(NOTION_API_KEY, visitorsDb, relationIds)
-        } else {
-          guestsValue = null
-        }
-      }
-      if (guestsValue === null) {
-        guestsValue = await sumVisitorCountsByVisitId(NOTION_API_KEY, visitorsDb, page.id)
-      }
-      bookings.push({
-        date: dateValue,
-        time: timeValue || derivedTime,
-        guests: guestsValue,
-      })
-    }
+    const bookings: { date: string; time: string | null; guests: number | null }[] = (
+      await Promise.all(
+        results.map(async (page: any) => {
+          const pageProperties = page.properties || {}
+          const dateValue = pageProperties[datePropertyName]?.date?.start || null
+          if (!dateValue) return null
+          const dateKey = dateValue.split('T')[0]
+          if (dateKey < today) return null
+          const timeValue = timePropertyName ? extractTime(pageProperties[timePropertyName]) : null
+          const derivedTime = dateValue.includes('T')
+            ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
+            : null
+          const normalizedTime = normalizeTimeToHHmm(timeValue || derivedTime) || timeValue || derivedTime
+          let guestsValue = guestsPropertyName ? extractGuests(pageProperties[guestsPropertyName]) : null
+          if (guestsValue === null && guestsRelationPropertyName) {
+            const relation = pageProperties[guestsRelationPropertyName]?.relation || []
+            const relationIds = Array.isArray(relation) ? relation.map((item: any) => item.id) : []
+            if (relationIds.length > 0) {
+              guestsValue = await sumVisitorCountsByPageIds(NOTION_API_KEY, visitorsDb, relationIds)
+            }
+          }
+          if (guestsValue === null) {
+            guestsValue = await sumVisitorCountsByVisitId(NOTION_API_KEY, visitorsDb, page.id)
+          }
+          return { date: dateValue, time: normalizedTime, guests: guestsValue }
+        })
+      )
+    ).filter((b): b is NonNullable<typeof b> => b !== null)
 
     return NextResponse.json({ bookings })
   } catch (error: any) {
     console.error('Notion visits error:', error)
-    return NextResponse.json({ bookings: [] }, { status: 500 })
+    // Tagasta 200 tühja nimekirjaga – leht jätkab tööd, broneerimine toimub
+    return NextResponse.json({ bookings: [] })
   }
 }

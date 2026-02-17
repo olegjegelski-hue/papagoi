@@ -7,7 +7,7 @@ export default function Hero() {
   return (
     <section className="relative min-h-[115vh] flex items-center justify-center overflow-hidden">
       {/* Beautiful Ara Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Image
           src="https://cdn.abacus.ai/images/a53ad376-2734-41bc-b5f8-84dc65645611.png"
           alt="Meie kaunis Ara - tõeline Papagoi Keskuse elanik"
@@ -21,11 +21,11 @@ export default function Hero() {
       </div>
       
       {/* Floating Elements - brändi värvides, reduced opacity for subtle effect */}
-      <div className="absolute top-20 left-10 w-20 h-20 bg-papagoi-green-300 rounded-full opacity-20 animate-bounce shadow-lg"></div>
-      <div className="absolute top-40 right-20 w-16 h-16 bg-papagoi-blue-300 rounded-full opacity-20 animate-bounce delay-1000 shadow-lg"></div>
-      <div className="absolute bottom-40 left-20 w-24 h-24 bg-papagoi-orange-300 rounded-full opacity-20 animate-bounce delay-2000 shadow-lg"></div>
-      <div className="absolute top-60 right-40 w-12 h-12 bg-papagoi-red-300 rounded-full opacity-20 animate-bounce delay-500 shadow-lg"></div>
-      <div className="absolute bottom-60 right-10 w-18 h-18 bg-papagoi-yellow-300 rounded-full opacity-20 animate-bounce delay-1500 shadow-lg"></div>
+      <div className="absolute top-20 left-10 w-20 h-20 bg-papagoi-green-300 rounded-full opacity-20 animate-bounce shadow-lg pointer-events-none"></div>
+      <div className="absolute top-40 right-20 w-16 h-16 bg-papagoi-blue-300 rounded-full opacity-20 animate-bounce delay-1000 shadow-lg pointer-events-none"></div>
+      <div className="absolute bottom-40 left-20 w-24 h-24 bg-papagoi-orange-300 rounded-full opacity-20 animate-bounce delay-2000 shadow-lg pointer-events-none"></div>
+      <div className="absolute top-60 right-40 w-12 h-12 bg-papagoi-red-300 rounded-full opacity-20 animate-bounce delay-500 shadow-lg pointer-events-none"></div>
+      <div className="absolute bottom-60 right-10 w-18 h-18 bg-papagoi-yellow-300 rounded-full opacity-20 animate-bounce delay-1500 shadow-lg pointer-events-none"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         

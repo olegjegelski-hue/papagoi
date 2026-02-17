@@ -1,6 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sendBookingEmail } from '@/lib/email';
+import { findOrCreateVisit, createVisitor } from '@/lib/notion-booking';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { errorResponse } from '@/lib/errors';
 import { captureError } from '@/lib/sentry';
@@ -9,116 +10,36 @@ import { cleanText } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
 
-async function createNotionBooking(payload: {
+async function saveBookingToNotion(payload: {
   name: string;
   email: string;
   phone: string;
   date?: string;
   timeSlot?: string;
-  groupSize?: number;
+  groupSize: number;
   groupType?: string;
   message?: string;
   totalPrice?: number;
 }) {
-  const NOTION_API_KEY = process.env.NOTION_API_KEY;
-  const NOTION_VISITS_DATABASE_ID = process.env.NOTION_VISITS_DATABASE_ID;
-
-  if (!NOTION_API_KEY || !NOTION_VISITS_DATABASE_ID) {
-    return;
-  }
-
-  const databaseId = NOTION_VISITS_DATABASE_ID.replace(/-/g, '');
-  const dbResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${NOTION_API_KEY}`,
-      'Notion-Version': '2022-06-28',
-    },
-  });
-
-  if (!dbResponse.ok) {
-    const errorText = await dbResponse.text();
-    throw new Error(`Notion database viga: ${dbResponse.status} - ${errorText}`);
-  }
-
-  const dbData = await dbResponse.json();
-  const properties = dbData.properties || {};
-  const titlePropertyName = Object.keys(properties).find(
-    (key) => properties[key]?.type === 'title'
-  );
-  const datePropertyName = Object.keys(properties).find((key) => {
-    const normalized = key.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '');
-    return properties[key]?.type === 'date' && (normalized === 'kuupaev' || normalized.includes('kuupaev'));
-  });
-  const timePropertyName = Object.keys(properties).find((key) => {
-    const normalized = key.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '');
-    return normalized === 'kellaaeg' || normalized === 'aeg' || normalized.includes('kellaaeg');
-  });
-
-  if (!titlePropertyName) {
-    throw new Error('Notion database title property puudub.');
-  }
-
-  const titleParts = [
-    payload.name,
-    payload.date ? payload.date : 'Kuupäev määramata',
-    payload.timeSlot ? payload.timeSlot : '',
-  ].filter(Boolean);
-
-  const children = [
-    `Nimi: ${payload.name}`,
-    `E-post: ${payload.email}`,
-    `Telefon: ${payload.phone}`,
-    `Kuupäev: ${payload.date || '-'}`,
-    `Kellaaeg: ${payload.timeSlot || '-'}`,
-    `Inimeste arv: ${payload.groupSize ?? '-'}`,
-    `Grupi tüüp: ${payload.groupType || '-'}`,
-    `Lisainfo: ${payload.message || '-'}`,
-    `Hind: ${payload.totalPrice ? `${payload.totalPrice} EUR` : '-'}`,
-  ].map((text) => ({
-    object: 'block',
-    type: 'paragraph',
-    paragraph: {
-      rich_text: [{ type: 'text', text: { content: text } }],
-    },
-  }));
-
-  const notionProperties: Record<string, any> = {
-    [titlePropertyName]: {
-      title: [{ type: 'text', text: { content: titleParts.join(' — ') } }],
-    },
-  };
-
-  if (datePropertyName && payload.date) {
-    const dateWithTime = payload.timeSlot
-      ? `${payload.date}T${payload.timeSlot}:00`
-      : payload.date
-    notionProperties[datePropertyName] = {
-      date: { start: dateWithTime },
-    };
-  }
-
-  if (timePropertyName && payload.timeSlot) {
-    notionProperties[timePropertyName] = { select: { name: payload.timeSlot } };
-  }
-
-  const createResponse = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${NOTION_API_KEY}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      parent: { database_id: databaseId },
-      properties: notionProperties,
-      children,
-    }),
-  });
-
-  if (!createResponse.ok) {
-    const errorText = await createResponse.text();
-    throw new Error(`Notion create page viga: ${createResponse.status} - ${errorText}`);
+  try {
+    const visitId = await findOrCreateVisit({
+      date: payload.date || '',
+      timeSlot: payload.timeSlot,
+      totalPrice: payload.totalPrice,
+    });
+    if (!visitId) return;
+    await createVisitor({
+      visitPageId: visitId,
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone,
+      groupSize: payload.groupSize,
+      groupType: payload.groupType,
+      message: payload.message,
+      totalPrice: payload.totalPrice,
+    });
+  } catch (err) {
+    console.error('Notion broneering salvestamine ebaõnnestus:', err);
   }
 }
 
@@ -241,7 +162,7 @@ export async function POST(request: NextRequest) {
     const basePrice = 10; // EUR per person
     const totalPrice = groupSizeNum * basePrice;
 
-    // Send emails (ilma andmebaasi salvestuseta)
+    // Saada email
     await sendBookingEmail({
       name: cleaned.name,
       email: cleaned.email,
@@ -254,6 +175,22 @@ export async function POST(request: NextRequest) {
       totalPrice: Number(totalPrice),
       bookingId: `BKG-${Date.now()}`,
     });
+
+    // Salvesta Notioni (Külastused + Külastajad) – ei muuda olemasolevaid kirjeid
+    const dateStr = bookingDate ? bookingDate.toISOString().slice(0, 10) : cleaned.date;
+    if (dateStr) {
+      await saveBookingToNotion({
+      name: cleaned.name,
+      email: cleaned.email,
+      phone: cleaned.phone,
+      date: dateStr || undefined,
+      timeSlot: cleaned.timeSlot || undefined,
+      groupSize: groupSizeNum,
+      groupType: cleaned.groupType || undefined,
+      message: cleaned.message ? cleaned.message : undefined,
+      totalPrice: Number(totalPrice),
+    });
+    }
 
     return NextResponse.json(
       {
@@ -273,8 +210,9 @@ export async function POST(request: NextRequest) {
     console.error('Booking error:', error);
     const message =
       'Broneeringu saatmisel tekkis viga. Palun proovige uuesti või võtke meiega otse ühendust.';
+    const showDetails = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_EMAIL_ERRORS;
     return NextResponse.json(
-      errorResponse('SERVER_ERROR', message, { errorId, details: error?.message }),
+      errorResponse('SERVER_ERROR', message, { errorId, details: showDetails ? error?.message : undefined }),
       { status: 500 }
     );
   }
