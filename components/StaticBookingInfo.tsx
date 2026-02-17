@@ -159,9 +159,11 @@ export default function StaticBookingInfo() {
     }
     return `+372${digits}`
   }
-  const loadBookings = async (signal?: AbortSignal) => {
-    setIsLoadingBookings(true)
-    setBookingsLoadError(null)
+  const loadBookings = async (signal?: AbortSignal, silent = false) => {
+    if (!silent) {
+      setIsLoadingBookings(true)
+      setBookingsLoadError(null)
+    }
     try {
       const opts: RequestInit = { cache: 'no-store' }
       if (signal) opts.signal = signal
@@ -204,9 +206,15 @@ export default function StaticBookingInfo() {
         setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
       }
     } finally {
-      setIsLoadingBookings(false)
+      if (!silent) setIsLoadingBookings(false)
     }
   }
+
+  useEffect(() => {
+    if (selectedDate || selectedTime) {
+      loadBookings(undefined, true)
+    }
+  }, [selectedDate, selectedTime])
 
   useEffect(() => {
     const controller = new AbortController()
