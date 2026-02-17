@@ -3,6 +3,7 @@ import { subDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
@@ -181,24 +182,35 @@ async function sumVisitorCountsByVisitId(
 }
 
 function findGuestsPropertyName(properties: Record<string, any>) {
+  const rollupProps = Object.keys(properties).filter((key) => properties[key]?.type === 'rollup')
+  if (rollupProps.length >= 1) {
+    const kulastajadRollup = rollupProps.find((key) => {
+      const n = normalizeKey(key)
+      return (
+        n.includes('kulastaj') ||
+        n.includes('kulal') ||
+        n.includes('arv') ||
+        n.includes('kokku') ||
+        n.includes('inimest') ||
+        n.includes('summa')
+      )
+    })
+    if (kulastajadRollup) return kulastajadRollup
+    return rollupProps[0]
+  }
+
   const directMatch = Object.keys(properties).find((key) => {
     const normalized = normalizeKey(key)
     return (
       normalized === 'kulalised' ||
       normalized.includes('kulal') ||
       normalized === 'arv' ||
-      (normalized.includes('kulastaj') && normalized.includes('arv'))
+      (normalized.includes('kulastaj') && normalized.includes('arv')) ||
+      normalized.includes('inimest') ||
+      (normalized.includes('grupi') && normalized.includes('suurus'))
     )
   })
   if (directMatch) return directMatch
-
-  const rollupProps = Object.keys(properties).filter((key) => properties[key]?.type === 'rollup')
-  if (rollupProps.length === 1) return rollupProps[0]
-  const arvRollup = rollupProps.find((key) => {
-    const n = normalizeKey(key)
-    return n.includes('arv') || n.includes('kulal') || n.includes('kulastaj')
-  })
-  if (arvRollup) return arvRollup
 
   const numberProps = Object.keys(properties).filter((key) => properties[key]?.type === 'number')
   if (numberProps.length === 1) return numberProps[0]

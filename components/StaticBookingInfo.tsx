@@ -165,9 +165,9 @@ export default function StaticBookingInfo() {
       setBookingsLoadError(null)
     }
     try {
-      const opts: RequestInit = { cache: 'no-store' }
+      const opts: RequestInit = { cache: 'no-store', headers: { Pragma: 'no-cache', 'Cache-Control': 'no-cache' } }
       if (signal) opts.signal = signal
-      const response = await fetch('/api/notion/visits', opts)
+      const response = await fetch(`/api/notion/visits?t=${Date.now()}`, opts)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
@@ -214,6 +214,12 @@ export default function StaticBookingInfo() {
     if (selectedDate || selectedTime) {
       loadBookings(undefined, true)
     }
+  }, [selectedDate, selectedTime])
+
+  useEffect(() => {
+    if (!selectedDate || !selectedTime) return
+    const interval = setInterval(() => loadBookings(undefined, true), 30000)
+    return () => clearInterval(interval)
   }, [selectedDate, selectedTime])
 
   useEffect(() => {
