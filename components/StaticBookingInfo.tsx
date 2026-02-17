@@ -91,12 +91,34 @@ export default function StaticBookingInfo() {
       })
       .filter((time) => timeSlots.includes(time))
   }, [bookedTimesForSelectedDate, timeSlots])
+  const fullSlots = useMemo(() => {
+    return bookedEntriesForSelectedDate
+      .filter((e) => e.guests !== null && e.guests >= 20)
+      .map((e) => e.time)
+  }, [bookedEntriesForSelectedDate])
+
   const visibleTimeSlots = useMemo(() => {
     if (!selectedDate) return []
     const now = new Date()
     const isSelectedToday = isSameDay(selectedDate, now)
+    const canJoinSlot = (time: string) => {
+      if (!/^\d{2}:\d{2}$/.test(time)) return false
+      const [h, m] = time.split(':').map(Number)
+      const slotStart = new Date(selectedDate)
+      slotStart.setHours(h, m, 0, 0)
+      if (isBefore(slotStart, now)) return false
+      if (!isSelectedToday) return true
+      return isBefore(now, addMinutes(slotStart, -30))
+    }
     return timeSlots.filter((time) => {
       if (restBlockedTimes.includes(time)) return false
+      if (fullSlots.includes(time)) return false
+      const bookedEntry = bookedEntriesForSelectedDate.find((e) => e.time === time)
+      if (bookedEntry) {
+        const remaining = bookedEntry.guests === null ? null : Math.max(0, 20 - bookedEntry.guests)
+        if (remaining === 0) return false
+        return remaining !== null && remaining > 0 && canJoinSlot(time)
+      }
       const [hour, minute] = time.split(':').map(Number)
       const slotStart = new Date(selectedDate)
       slotStart.setHours(hour, minute, 0, 0)
@@ -105,7 +127,7 @@ export default function StaticBookingInfo() {
       const cutoff = addMinutes(slotStart, -30)
       return isBefore(now, cutoff)
     })
-  }, [restBlockedTimes, selectedDate, timeSlots])
+  }, [restBlockedTimes, selectedDate, timeSlots, fullSlots, bookedEntriesForSelectedDate])
 
   const isJoinableTime = (time: string) => {
     if (!selectedDate) return false
@@ -498,7 +520,13 @@ export default function StaticBookingInfo() {
               {isLoadingBookings && (
                 <p className="mt-4 text-sm text-warm-gray-500">Laen broneeringuid...</p>
               )}
-              {selectedTime && (
+              {selectedTime && selectedBookingEntry && remainingSeats === 0 && (
+                <div className="mt-6 rounded-lg border border-warm-gray-200 bg-warm-gray-50 p-4 text-center text-warm-gray-600">
+                  <p className="font-semibold">Grupp on täis</p>
+                  <p className="text-sm mt-1">Sellel ajal ei saa enam broneeringut teha ega gruppi liituda.</p>
+                </div>
+              )}
+              {selectedTime && !(selectedBookingEntry && remainingSeats === 0) && (
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
