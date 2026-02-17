@@ -161,7 +161,10 @@ export async function sendBookingEmail(data: {
         <p style="margin: 10px 0; font-size: 18px;"><strong>Hind:</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
         <p style="margin: 10px 0;"><strong>Maksmine toimub peale üritust</strong></p>
         <p style="margin: 10px 0;">Makseviisid: sularaha (pangaterminal puudub)</p>
-        <p style="margin: 15px 0; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; font-weight: 600;">NB! Tegemist broneeringu päringuga! Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.</p>
+        <p style="margin: 15px 0; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; font-weight: 600;">
+          NB! Tegemist broneeringu päringuga!<br>
+          Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
+        </p>
       </div>
       
       ${data.message ? `
@@ -207,7 +210,8 @@ ${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.tot
 - Maksmine toimub peale üritust
 - Makseviisid: sularaha (pangaterminal puudub)
 
-NB! Tegemist broneeringu päringuga! Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
+NB! Tegemist broneeringu päringuga!
+Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
 
 ${data.message ? `Lisainfo:\n${data.message}\n\n` : ''}
 
