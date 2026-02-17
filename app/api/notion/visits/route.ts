@@ -386,7 +386,7 @@ export async function GET(request: Request) {
           const guestsProp = guestsPropertyName ? props[guestsPropertyName] : null
           return {
             date: props[datePropertyName]?.date?.start,
-            time: extractTime(props[timePropertyName] || props[datePropertyName]),
+            time: extractTime((timePropertyName ? props[timePropertyName] : null) || props[datePropertyName]),
             guestsPropertyRaw: guestsProp ? { type: guestsProp.type, rollup: guestsProp.rollup?.type, value: guestsProp.rollup?.number ?? guestsProp.number } : null,
             relationIds: guestsRelationPropertyName ? (props[guestsRelationPropertyName]?.relation || []).map((r: any) => r.id) : [],
           }
