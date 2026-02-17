@@ -66,6 +66,7 @@ function extractGuests(property: any) {
 function extractCount(property: any) {
   if (!property) return 0
   if (property.type === 'number') return property.number ?? 0
+  if (property.type === 'rollup' && property.rollup?.type === 'number') return property.rollup?.number ?? 0
   if (property.type === 'rich_text') {
     const value = property.rich_text?.[0]?.plain_text
     const parsed = Number.parseInt(value, 10)
@@ -147,41 +148,57 @@ async function sumVisitorCountsByVisitId(
   const relationPropertyName = visitorsDb?.relationPropertyName
   const countPropertyName = visitorsDb?.countPropertyName
   if (!relationPropertyName || !countPropertyName) return null
-  const response = await fetchWithTimeout(`https://api.notion.com/v1/databases/${visitorsDb.databaseId}/query`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${NOTION_API_KEY}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  let total = 0
+  let cursor: string | undefined
+  do {
+    const body: Record<string, unknown> = {
       filter: {
         property: relationPropertyName,
-        relation: {
-          contains: visitPageId,
-        },
+        relation: { contains: visitPageId },
       },
-    }),
-  })
-
-  if (!response.ok) return null
-  const data = await response.json()
-  const pages = data.results || []
-  if (!pages.length) return null
-
-  return pages.reduce((sum: number, page: any) => {
-    const properties = page.properties || {}
-    const value = extractCount(properties[countPropertyName])
-    return sum + value
-  }, 0)
+      page_size: 100,
+    }
+    if (cursor) body.start_cursor = cursor
+    const response = await fetchWithTimeout(`https://api.notion.com/v1/databases/${visitorsDb.databaseId}/query`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${NOTION_API_KEY}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    const pages = data.results || []
+    total += pages.reduce((sum: number, page: any) => {
+      const value = extractCount(page.properties?.[countPropertyName])
+      return sum + value
+    }, 0)
+    cursor = data.has_more ? data.next_cursor : undefined
+  } while (cursor)
+  return total
 }
 
 function findGuestsPropertyName(properties: Record<string, any>) {
   const directMatch = Object.keys(properties).find((key) => {
     const normalized = normalizeKey(key)
-    return normalized === 'kulalised' || normalized.includes('kulal')
+    return (
+      normalized === 'kulalised' ||
+      normalized.includes('kulal') ||
+      normalized === 'arv' ||
+      (normalized.includes('kulastaj') && normalized.includes('arv'))
+    )
   })
   if (directMatch) return directMatch
+
+  const rollupProps = Object.keys(properties).filter((key) => properties[key]?.type === 'rollup')
+  if (rollupProps.length === 1) return rollupProps[0]
+  const arvRollup = rollupProps.find((key) => {
+    const n = normalizeKey(key)
+    return n.includes('arv') || n.includes('kulal') || n.includes('kulastaj')
+  })
+  if (arvRollup) return arvRollup
 
   const numberProps = Object.keys(properties).filter((key) => properties[key]?.type === 'number')
   if (numberProps.length === 1) return numberProps[0]
