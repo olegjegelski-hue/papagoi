@@ -240,11 +240,13 @@ export async function GET() {
 
     const { databaseId, data: dbData } = resolved
     const properties = dbData.properties || {}
-    const datePropertyName = Object.keys(properties).find(
-      (key) =>
-        properties[key]?.type === 'date' &&
-        (normalizeKey(key) === 'kuupaev' || normalizeKey(key).includes('kuupaev'))
-    )
+    const datePropertyName =
+      Object.keys(properties).find(
+        (key) =>
+          properties[key]?.type === 'date' &&
+          (normalizeKey(key) === 'kuupaev' || normalizeKey(key).includes('kuupaev'))
+      ) ||
+      Object.keys(properties).find((key) => properties[key]?.type === 'date')
 
     if (!datePropertyName) {
       console.warn('Notion visits: Kuupäev veerg puudub', Object.keys(properties))
@@ -260,31 +262,42 @@ export async function GET() {
 
     const now = new Date()
     const today = formatInTimeZone(now, 'Europe/Tallinn', 'yyyy-MM-dd')
-    const yesterday = formatInTimeZone(subDays(now, 1), 'Europe/Tallinn', 'yyyy-MM-dd')
-    const queryResponse = await fetchWithTimeout(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${NOTION_API_KEY}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const weekAgo = formatInTimeZone(subDays(now, 7), 'Europe/Tallinn', 'yyyy-MM-dd')
+    const allResults: any[] = []
+    let cursor: string | undefined
+
+    do {
+      const body: Record<string, unknown> = {
         filter: {
           property: datePropertyName,
-          date: {
-            on_or_after: yesterday,
-          },
+          date: { on_or_after: weekAgo },
         },
-      }),
-    })
+        sorts: [{ property: datePropertyName, direction: 'ascending' }],
+        page_size: 100,
+      }
+      if (cursor) body.start_cursor = cursor
 
-    if (!queryResponse.ok) {
-      const errorText = await queryResponse.text()
-      throw new Error(`Notion query viga: ${queryResponse.status} - ${errorText}`)
-    }
+      const queryResponse = await fetchWithTimeout(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${NOTION_API_KEY}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
 
-    const data = await queryResponse.json()
-    const results = data.results || []
+      if (!queryResponse.ok) {
+        const errorText = await queryResponse.text()
+        throw new Error(`Notion query viga: ${queryResponse.status} - ${errorText}`)
+      }
+
+      const data = await queryResponse.json()
+      allResults.push(...(data.results || []))
+      cursor = data.has_more ? data.next_cursor : undefined
+    } while (cursor)
+
+    const results = allResults
     const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
     const bookings: { date: string; time: string | null; guests: number | null }[] = (
       await Promise.all(
@@ -315,7 +328,14 @@ export async function GET() {
       )
     ).filter((b): b is NonNullable<typeof b> => b !== null)
 
-    return NextResponse.json({ bookings })
+    return NextResponse.json(
+      { bookings },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      }
+    )
   } catch (error: any) {
     console.error('Notion visits error:', error)
     // Tagasta 200 tühja nimekirjaga – leht jätkab tööd, broneerimine toimub

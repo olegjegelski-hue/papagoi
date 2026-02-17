@@ -163,7 +163,9 @@ export default function StaticBookingInfo() {
     setIsLoadingBookings(true)
     setBookingsLoadError(null)
     try {
-      const response = await fetch('/api/notion/visits', signal ? { signal } : {})
+      const opts: RequestInit = { cache: 'no-store' }
+      if (signal) opts.signal = signal
+      const response = await fetch('/api/notion/visits', opts)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
