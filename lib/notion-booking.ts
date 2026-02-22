@@ -86,11 +86,18 @@ export async function findOrCreateVisit(payload: {
     return null
   }
 
-  const dateValue = payload.date
+  let dateFilterValue = payload.date
+  if (payload.timeSlot) {
+    const utcDate = fromZonedTime(
+      `${payload.date}T${payload.timeSlot}:00`,
+      'Europe/Tallinn'
+    )
+    dateFilterValue = formatInTimeZone(utcDate, 'Europe/Tallinn', "yyyy-MM-dd'T'HH:mm:ssXXX")
+  }
   const andFilters: any[] = [
     {
       property: datePropName,
-      date: { equals: dateValue },
+      date: { equals: dateFilterValue },
     },
   ]
   if (timePropName && payload.timeSlot) {
