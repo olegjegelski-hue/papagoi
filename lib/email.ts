@@ -141,8 +141,13 @@ export async function sendBookingEmail(data: {
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        ✅ Broneeringu päring
+        Broneeringu päring
       </h2>
+      
+      <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
+        NB! Tegemist broneeringu päringuga!<br>
+        Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
+      </div>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
         <h3 style="color: #059669; margin-top: 0;">Kliendi andmed:</h3>
@@ -155,16 +160,13 @@ export async function sendBookingEmail(data: {
         <h3 style="color: #d97706; margin-top: 0;">Broneeringu üksikasjad:</h3>
         <p style="margin: 10px 0;"><strong>ID:</strong> ${data.bookingId}</p>
         ${data.date ? `<p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${formattedDate}</p>` : ''}
-        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot}</p>` : ''}
+        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} (alustame täistunnil, kutsume teid ise sisse)</p>` : ''}
+        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45-60 min</p>
         <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>
         ${data.groupType ? `<p style="margin: 10px 0;"><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
         <p style="margin: 10px 0; font-size: 18px;"><strong>Hind:</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
         <p style="margin: 10px 0;"><strong>Maksmine toimub peale üritust</strong></p>
         <p style="margin: 10px 0;">Makseviisid: sularaha (pangaterminal puudub)</p>
-        <p style="margin: 15px 0; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; font-weight: 600;">
-          NB! Tegemist broneeringu päringuga!<br>
-          Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
-        </p>
       </div>
       
       ${data.message ? `
@@ -193,10 +195,14 @@ export async function sendBookingEmail(data: {
       from: `"Papagoi Keskus Broneering" <${process.env.SMTP_USER}>`,
       to: `${data.email}, keskus@papagoi.ee`,
       replyTo: data.email,
-      subject: `Broneering: ${data.name}${data.date ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
+      subject: `Broneeringu päring: ${data.name}${data.date ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
       html: htmlContent,
       text: `
 BRONEERINGU PÄRING
+__________________________________
+
+NB! Tegemist broneeringu päringuga!
+Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
 
 Kliendi andmed:
 - Nimi: ${data.name}
@@ -205,13 +211,11 @@ Kliendi andmed:
 
 Broneeringu üksikasjad:
 - ID: ${data.bookingId}
-${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot}\n` : ''}- Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)
+${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot} (alustame täistunnil, kutsume teid ise sisse)\n` : ''}- Külastuse kestus: 45-60 min
+- Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)
 ${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.totalPrice.toFixed(2)}€
 - Maksmine toimub peale üritust
 - Makseviisid: sularaha (pangaterminal puudub)
-
-NB! Tegemist broneeringu päringuga!
-Broneering jõustub meie kinnituskirjaga, mille saadame eraldi.
 
 ${data.message ? `Lisainfo:\n${data.message}\n\n` : ''}
 
