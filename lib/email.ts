@@ -145,10 +145,9 @@ export async function sendBookingEmail(data: {
       </h2>
       
       <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
-        NB! Tegemist on broneeringu päringuga.<br>
-        Broneering jõustub pärast meie kinnituskirja.<br>
-        <br>
-        Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul). <em>(Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.)</em>
+        NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.<br>
+        Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul).<br>
+        <em>Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.</em>
       </div>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
@@ -202,10 +201,9 @@ export async function sendBookingEmail(data: {
 BRONEERINGU PÄRING
 __________________________________
 
-NB! Tegemist on broneeringu päringuga.
-Broneering jõustub pärast meie kinnituskirja.
-
-Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul). (Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.)
+NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.
+Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul).
+Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.
 
 Kliendi andmed:
 - Nimi: ${data.name}
