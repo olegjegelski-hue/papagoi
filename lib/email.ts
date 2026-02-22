@@ -145,8 +145,10 @@ export async function sendBookingEmail(data: {
       </h2>
       
       <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
-        NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.<br>
-        Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul)
+        NB! Tegemist on broneeringu päringuga.<br>
+        Broneering jõustub pärast meie kinnituskirja.<br>
+        <br>
+        Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul). <em>(Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.)</em>
       </div>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
@@ -160,7 +162,7 @@ export async function sendBookingEmail(data: {
         <h3 style="color: #d97706; margin-top: 0;">Broneeringu üksikasjad:</h3>
         <p style="margin: 10px 0;"><strong>ID:</strong> ${data.bookingId}</p>
         ${data.date ? `<p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${formattedDate}</p>` : ''}
-        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot}<br><span style="font-size: 0.95em;">Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</span></p>` : ''}
+        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>` : ''}
         <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45-60 min</p>
         <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>
         ${data.groupType ? `<p style="margin: 10px 0;"><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
@@ -200,8 +202,10 @@ export async function sendBookingEmail(data: {
 BRONEERINGU PÄRING
 __________________________________
 
-NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.
-Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul)
+NB! Tegemist on broneeringu päringuga.
+Broneering jõustub pärast meie kinnituskirja.
+
+Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul). (Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.)
 
 Kliendi andmed:
 - Nimi: ${data.name}
@@ -210,7 +214,7 @@ Kliendi andmed:
 
 Broneeringu üksikasjad:
 - ID: ${data.bookingId}
-${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot}\n  Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n` : ''}- Külastuse kestus: 45-60 min
+${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n` : ''}- Külastuse kestus: 45-60 min
 - Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)
 ${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.totalPrice.toFixed(2)}€
 - Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)
