@@ -52,8 +52,11 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
 
   visitorId =
     get(body, 'data.id', 'data.properties.VisitorId.formula.string') ||
-    get(body, 'VisitorId', 'visitorId', 'Visitorid', 'id', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
+    get(body, 'data.properties.Viiteband.formula.string', 'data.properties.Viiteband.rich_text.0.plain_text') ||
+    get(body, 'VisitorId', 'visitorId', 'Visitorid', 'Viiteband', 'id', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
     body?.data?.properties?.VisitorId?.formula?.string ||
+    body?.data?.properties?.Viiteband?.formula?.string ||
+    body?.data?.properties?.Viiteband?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.VisitorId?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.VisitorId?.title?.[0]?.plain_text ||
     body?.record?.properties?.Visitorid?.rich_text?.[0]?.plain_text ||
@@ -176,7 +179,11 @@ export async function POST(request: NextRequest) {
     const confirmationSentAtPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
       return (
-        (n === 'confirmationsentat' || n.includes('confirmationsentat') || n.includes('confirmation_sent')) &&
+        (n === 'confirmationsentat' ||
+          n.includes('confirmationsentat') ||
+          n === 'confirmationsent' ||
+          n.includes('confirmationsent') ||
+          n.includes('confirmation_sent')) &&
         props[k]?.type === 'date'
       )
     })
