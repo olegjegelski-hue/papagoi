@@ -95,7 +95,6 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
 }
 
 export async function GET() {
-  console.log('[visitor-confirm-webhook] GET ping at', new Date().toISOString())
   return NextResponse.json({
     ok: true,
     message: 'Webhook endpoint active. Use POST with Notion payload.',
@@ -103,7 +102,6 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('[visitor-confirm-webhook] Request received at', new Date().toISOString())
   try {
     let body: any = {}
     try {
@@ -112,15 +110,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 })
     }
 
-    if (process.env.NODE_ENV === 'development' || process.env.DEBUG_WEBHOOK) {
-      console.log('[visitor-confirm-webhook] Raw payload:', JSON.stringify(body, null, 2))
-    }
-
     const { visitorId, sig } = extractFromPayload(body)
     const debug = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_WEBHOOK
 
     if (!visitorId) {
-      console.log('[visitor-confirm-webhook] Rejected: Missing visitorId')
       const err: Record<string, unknown> = { ok: false, error: 'Missing visitorId' }
       if (debug) err.debug = { receivedKeys: Object.keys(body), extracted: { visitorId, sig } }
       return NextResponse.json(err, { status: 400 })
@@ -134,7 +127,6 @@ export async function POST(request: NextRequest) {
         request.headers.get('x-notion-signature') === webhookSecret)
 
     if (!hasValidSig && !hasValidSecret) {
-      console.log('[visitor-confirm-webhook] Rejected: Missing or invalid signature')
       const err: Record<string, unknown> = {
         ok: false,
         error: 'Missing or invalid sig. Provide Signature in payload or X-Webhook-Secret header.',
@@ -232,19 +224,11 @@ export async function POST(request: NextRequest) {
       )
     })
 
-    console.log('[visitor-confirm-webhook] Props found:', {
-      confirmationSentAtPropName: confirmationSentAtPropName ?? '(not found)',
-      confirmationStatusPropName: confirmationStatusPropName ?? '(not found)',
-      confirmationErrorPropName: confirmationErrorPropName ?? '(not found)',
-      allProps: Object.keys(props),
-    })
-
     const alreadySent =
       (confirmationSentAtPropName && extractDate(props[confirmationSentAtPropName])) ||
       (confirmationStatusPropName && extractText(props[confirmationStatusPropName])?.toLowerCase() === 'sent')
 
     if (alreadySent) {
-      console.log('[visitor-confirm-webhook] Already confirmed, skipping (idempotent)')
       return NextResponse.json({ ok: true, message: 'Already confirmed (idempotent)' }, { status: 200 })
     }
 
@@ -355,7 +339,6 @@ export async function POST(request: NextRequest) {
           timeSlot,
           cc: ADMIN_EMAIL,
         })
-        console.log('[visitor-confirm-webhook] Email sent to', email)
       } catch (err: any) {
         console.error('[visitor-confirm-webhook] Email send failed:', err)
         if (confirmationStatusPropName) {
@@ -414,14 +397,6 @@ export async function POST(request: NextRequest) {
     const filteredPatch = Object.fromEntries(
       Object.entries(patchProps).filter(([k, v]) => k && v != null)
     )
-    console.log('[visitor-confirm-webhook] Patching Notion:', {
-      pageId,
-      patchKeys: Object.keys(filteredPatch),
-      hasConfirmationFields:
-        !!confirmationSentAtPropName ||
-        !!confirmationStatusPropName ||
-        !!confirmationErrorPropName,
-    })
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
       headers: {
