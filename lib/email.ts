@@ -275,12 +275,10 @@ export async function sendConfirmationEmail(data: {
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Broneeringu kinnitus
+        Papagoi Keskuse broneeringu kinnitus
       </h2>
       
       <p style="font-size: 16px; line-height: 1.6;">Tere, ${data.name}!</p>
-      
-      <p style="font-size: 16px; line-height: 1.6;">Teie Broneering Papagoi Keskuses on kinnitatud.</p>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
         <h3 style="color: #059669; margin-top: 0;">Broneeringu andmed</h3>
@@ -345,9 +343,9 @@ export async function sendConfirmationEmail(data: {
     const priceText =
       data.price != null ? `* Hind: ${data.price.toFixed(2)} €\n` : ''
     const textContent =
-      'BRONEERINGU KINNITUS\n\nTere, ' +
+      'PAPAGOI KESKUSE BRONEERINGU KINNITUS\n\nTere, ' +
       data.name +
-      '!\n\nTeie Broneering Papagoi Keskuses on kinnitatud.\n\nBroneeringu andmed\n* Asukoht: Papagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald\n  Google Maps: https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald\n* Kuupäev: ' +
+      '!\n\nBroneeringu andmed\n* Asukoht: Papagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald\n  Google Maps: https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald\n* Kuupäev: ' +
       data.date +
       '\n' +
       timeSlotText +
