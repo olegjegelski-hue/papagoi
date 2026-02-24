@@ -324,7 +324,10 @@ export async function sendConfirmationEmail(data: {
     </div>
   `
 
-    const subjectDate = data.dateForSubject || (data.date + (data.timeSlot ? ` ${data.timeSlot}` : ''))
+    const baseDate = data.dateForSubject || data.date
+    const subjectDate = data.timeSlot && !baseDate.match(/\d{1,2}:\d{2}/)
+      ? `${baseDate} ${data.timeSlot}`
+      : baseDate
     const mailOptions: Record<string, unknown> = {
       from: `"Papagoi Keskus" <${process.env.SMTP_USER}>`,
       to: data.email,
