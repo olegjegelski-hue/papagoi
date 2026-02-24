@@ -318,6 +318,13 @@ export async function POST(request: NextRequest) {
     let debugVisit: Record<string, unknown> | undefined
     let debugVisitRaw: Record<string, unknown> | undefined
 
+    if (process.env.DEBUG_WEBHOOK && !visitId) {
+      const relationProps = Object.entries(props)
+        .filter(([, v]) => (v as { type?: string })?.type === 'relation')
+        .map(([k, v]) => ({ name: k, ids: (v as { relation?: { id: string }[] })?.relation?.map((r) => r.id) }))
+      debugVisitRaw = { relationPropName, visitId, relationProps, visitorPropKeys: Object.keys(props) }
+    }
+
     // Kuupäev ja kellaaeg tulevad seotud Külastused-lehelt (relation)
     if (visitId) {
       const visitPageRes = await fetchNotion(
