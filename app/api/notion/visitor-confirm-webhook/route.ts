@@ -385,6 +385,7 @@ export async function POST(request: NextRequest) {
               timeFromAny,
               dateValue: dateValue?.slice?.(0, 30),
             }
+            console.log('[visitor-confirm-webhook] DEBUG visit:', JSON.stringify(debugVisit, null, 2))
           }
         }
       }
@@ -498,6 +499,7 @@ export async function POST(request: NextRequest) {
     const resBody: Record<string, unknown> = { ok: true }
     if (process.env.DEBUG_WEBHOOK) {
       resBody._debug = { timeSlot, dateForSubject, visit: debugVisit }
+      console.log('[visitor-confirm-webhook] DEBUG result:', { timeSlot, dateForSubject })
     }
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
