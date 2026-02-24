@@ -324,7 +324,20 @@ export async function POST(request: NextRequest) {
           const derivedTime = dateValue.includes('T')
             ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
             : null
-          timeSlot = rawTime || derivedTime || undefined
+          let extractedTime = rawTime || derivedTime
+          if (!extractedTime) {
+            for (const [, prop] of Object.entries(visitProps) as [string, any][]) {
+              const txt = extractText(prop) || prop?.formula?.string
+              if (txt && typeof txt === 'string') {
+                const match = txt.match(/\b(\d{1,2}:\d{2})\b/)
+                if (match) {
+                  extractedTime = match[1]
+                  break
+                }
+              }
+            }
+          }
+          timeSlot = extractedTime || undefined
           const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
           dateForSubject = timeSlot ? `${dStr} ${timeSlot}` : dStr
         }
