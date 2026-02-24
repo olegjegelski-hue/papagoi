@@ -244,3 +244,93 @@ Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
     )
   }
 }
+
+// Kinnituskiri – saadetakse kliendile pärast broneeringu kinnitamist Notionis
+export async function sendConfirmationEmail(data: {
+  name: string
+  email: string
+  date: string
+  timeSlot?: string
+  cc?: string
+  adminOnly?: boolean
+}) {
+  try {
+    const transporter = createTransporter()
+
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        ✅ Broneering kinnitatud
+      </h2>
+      
+      <p style="font-size: 16px; line-height: 1.6;">Tere, ${data.name}!</p>
+      
+      <p style="font-size: 16px; line-height: 1.6;">Teie broneering on kinnitatud. Ootame teid meil külla!</p>
+      
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <h3 style="color: #059669; margin-top: 0;">Külastuse andmed:</h3>
+        <p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${data.date}</p>
+        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>` : ''}
+        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45-60 min</p>
+        <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
+      </div>
+      
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">Lugupidamisega</p>
+        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
+        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">www.papagoi.ee</a></p>
+        <p style="margin: 5px 0;">E-post: <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
+      </div>
+      
+      <div style="color: #6b7280; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+        <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
+      </div>
+    </div>
+  `
+
+    const mailOptions: Record<string, unknown> = {
+      from: `"Papagoi Keskus" <${process.env.SMTP_USER}>`,
+      to: data.email,
+      subject: data.adminOnly
+        ? `[Admin] Broneering kinnitatud – puudub kliendi e-post: ${data.name}`
+        : `Broneering kinnitatud – Papagoi Keskus ${data.date}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
+      html: htmlContent,
+    }
+    if (data.cc && !data.adminOnly) {
+      mailOptions.cc = data.cc
+    }
+
+    Object.assign(mailOptions, {
+      text: `
+BRONEERING KINNITATUD
+
+Tere, ${data.name}!
+
+Teie broneering on kinnitatud. Ootame teid meil külla!
+
+Külastuse andmed:
+- Kuupäev: ${data.date}
+${data.timeSlot ? `- Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n` : ''}- Külastuse kestus: 45-60 min
+- Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)
+
+Lugupidamisega
+Papagoi Keskus
+Tel +372 51 27 938
+www.papagoi.ee
+E-post: keskus@papagoi.ee
+
+---
+Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
+      `.trim(),
+    }
+
+    await transporter.sendMail(mailOptions)
+    console.log(`Confirmation email sent to ${data.email}`)
+  } catch (error) {
+    console.error('Failed to send confirmation email:', error)
+    throw new Error(
+      `Kinnituskirja saatmine ebaõnnestus: ${error instanceof Error ? error.message : 'Tundmatu viga'}`
+    )
+  }
+}

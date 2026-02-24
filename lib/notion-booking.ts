@@ -4,6 +4,7 @@
  * EI muuda ega kustuta olemasolevaid kirjeid.
  */
 
+import { randomBytes } from 'crypto'
 import { fromZonedTime, formatInTimeZone } from 'date-fns-tz'
 
 function normalizeKey(value: string) {
@@ -238,6 +239,7 @@ export async function createVisitor(payload: {
       return n === 'arv' || n.includes('arv')
     })
   const emailPropName = findProperty(properties, [
+    { normalizedEquals: 'email' },
     { normalizedEquals: 'e-post' },
     { normalizedIncludes: ['email', 'epost'] },
   ])
@@ -287,6 +289,23 @@ export async function createVisitor(payload: {
         rich_text: [{ type: 'text', text: { content: payload.phone } }],
       }
     }
+  }
+
+  const confirmedPropName = Object.keys(properties).find((k) => {
+    const n = normalizeKey(k)
+    return properties[k]?.type === 'checkbox' && (n === 'kinnitatud' || n.includes('kinnitatud'))
+  })
+  if (confirmedPropName) {
+    visitorProps[confirmedPropName] = { checkbox: false }
+  }
+
+  const signaturePropName = Object.keys(properties).find((k) => {
+    const n = normalizeKey(k)
+    return (n === 'signature' || n.includes('signature')) && properties[k]?.type === 'rich_text'
+  })
+  if (signaturePropName) {
+    const signature = randomBytes(24).toString('hex')
+    visitorProps[signaturePropName] = { rich_text: [{ type: 'text', text: { content: signature } }] }
   }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {
