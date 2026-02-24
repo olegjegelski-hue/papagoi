@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
 
     const alreadySent =
       (confirmationSentAtPropName && extractDate(props[confirmationSentAtPropName])) ||
-      (confirmationStatusPropName && extractText(props[confirmationStatusPropName]) === 'sent')
+      (confirmationStatusPropName && extractText(props[confirmationStatusPropName])?.toLowerCase() === 'sent')
 
     if (alreadySent) {
       console.log('[visitor-confirm-webhook] Already confirmed, skipping (idempotent)')
@@ -314,7 +314,7 @@ export async function POST(request: NextRequest) {
       patchProps[confirmationSentAtPropName] = { date: { start: nowIso } }
     }
     if (confirmationStatusPropName) {
-      const statusVal = { name: 'sent' }
+      const statusVal = { name: 'Sent' }
       patchProps[confirmationStatusPropName] =
         confirmationStatusType === 'status'
           ? { status: statusVal }
@@ -339,8 +339,8 @@ export async function POST(request: NextRequest) {
         if (confirmationStatusPropName) {
           patchProps[confirmationStatusPropName] =
             confirmationStatusType === 'status'
-              ? { status: { name: 'failed' } }
-              : { select: { name: 'failed' } }
+              ? { status: { name: 'Failed' } }
+              : { select: { name: 'Failed' } }
         }
         if (confirmationErrorPropName) {
           patchProps[confirmationErrorPropName] = {
@@ -368,8 +368,8 @@ export async function POST(request: NextRequest) {
       if (confirmationStatusPropName) {
         patchProps[confirmationStatusPropName] =
           confirmationStatusType === 'status'
-            ? { status: { name: 'failed' } }
-            : { select: { name: 'failed' } }
+            ? { status: { name: 'Failed' } }
+            : { select: { name: 'Failed' } }
       }
       if (confirmationErrorPropName) {
         patchProps[confirmationErrorPropName] = {
