@@ -316,6 +316,7 @@ export async function POST(request: NextRequest) {
     let timeSlot: string | undefined
     let dateForSubject = ''
     let debugVisit: Record<string, unknown> | undefined
+    let debugVisitRaw: Record<string, unknown> | undefined
 
     // Kuupäev ja kellaaeg tulevad seotud Külastused-lehelt (relation)
     if (visitId) {
@@ -348,14 +349,14 @@ export async function POST(request: NextRequest) {
 
         const dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
         if (process.env.DEBUG_WEBHOOK) {
-          console.log('[visitor-confirm-webhook] visit raw:', {
+          debugVisitRaw = {
             datePropName,
             dateValue,
             hasT: dateValue?.includes?.('T'),
             timePropName,
             timePropValue: timePropName ? extractText(visitProps[timePropName]) : null,
             visitPropKeys: Object.keys(visitProps),
-          })
+          }
         }
         if (dateValue) {
           dateStr = new Date(dateValue).toLocaleDateString('et-EE', {
@@ -395,7 +396,6 @@ export async function POST(request: NextRequest) {
               timeFromAny,
               dateValue: dateValue?.slice?.(0, 30),
             }
-            console.log('[visitor-confirm-webhook] DEBUG visit:', JSON.stringify(debugVisit, null, 2))
           }
         }
       }
@@ -508,8 +508,8 @@ export async function POST(request: NextRequest) {
     )
     const resBody: Record<string, unknown> = { ok: true }
     if (process.env.DEBUG_WEBHOOK) {
-      resBody._debug = { timeSlot, dateForSubject, visit: debugVisit }
-      console.log('[visitor-confirm-webhook] DEBUG result:', { timeSlot, dateForSubject })
+      resBody._debug = { timeSlot, dateForSubject, visit: debugVisit, visitRaw: debugVisitRaw }
+      console.log('[visitor-confirm-webhook] DEBUG:', JSON.stringify({ timeSlot, dateForSubject, visitRaw: debugVisitRaw, visit: debugVisit }))
     }
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
