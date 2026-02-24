@@ -347,6 +347,16 @@ export async function POST(request: NextRequest) {
         )
 
         const dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
+        if (process.env.DEBUG_WEBHOOK) {
+          console.log('[visitor-confirm-webhook] visit raw:', {
+            datePropName,
+            dateValue,
+            hasT: dateValue?.includes?.('T'),
+            timePropName,
+            timePropValue: timePropName ? extractText(visitProps[timePropName]) : null,
+            visitPropKeys: Object.keys(visitProps),
+          })
+        }
         if (dateValue) {
           dateStr = new Date(dateValue).toLocaleDateString('et-EE', {
             weekday: 'long',
