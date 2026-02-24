@@ -7,7 +7,12 @@ export const dynamic = 'force-dynamic'
 const ADMIN_EMAIL = 'keskus@papagoi.ee'
 
 function normalizeKey(value: string) {
-  return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
+  return value
+    .toLowerCase()
+    .replace(/ä/g, 'a')
+    .replace(/ö/g, 'o')
+    .replace(/ü/g, 'u')
+    .replace(/\s+/g, '')
 }
 
 function extractText(property: any): string | null {
@@ -35,6 +40,21 @@ function extractTimeFromText(txt: string | null): string | null {
     const parts = m.split(/[.:]/)
     const h = parseInt(parts[0], 10)
     const min = parseInt(parts[1], 10)
+    if (h >= 0 && h <= 23 && min >= 0 && min <= 59) return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+  }
+  return null
+}
+
+/** Võtab kellaaja datetime-stringist (ISO või "YYYY-MM-DD HH:mm"). */
+function extractTimeFromDateValue(dateValue: string | null): string | null {
+  if (!dateValue || typeof dateValue !== 'string') return null
+  // ISO: 2025-02-25T16:00:00.000+02:00
+  if (dateValue.includes('T')) return formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
+  // Alternatiiv: 2025-02-25 16:00 või 2025-02-25 16:00:00
+  const spaceMatch = dateValue.match(/\s+(\d{1,2})[.:](\d{2})/)
+  if (spaceMatch) {
+    const h = parseInt(spaceMatch[1], 10)
+    const min = parseInt(spaceMatch[2], 10)
     if (h >= 0 && h <= 23 && min >= 0 && min <= 59) return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
   }
   return null
@@ -340,11 +360,13 @@ export async function POST(request: NextRequest) {
       if (visitPageRes.ok) {
         const visitPage = await visitPageRes.json()
         const visitProps = visitPage.properties || {}
+
+        // Kuupäev: otsi Kuupäev, Date või esimene date-tüüpi tulp
         const datePropName =
           Object.keys(visitProps).find(
             (k) =>
               visitProps[k]?.type === 'date' &&
-              (normalizeKey(k).includes('kuupaev') || normalizeKey(k) === 'kuupaev')
+              (normalizeKey(k).includes('kuupaev') || normalizeKey(k) === 'kuupaev' || normalizeKey(k) === 'date')
           ) || Object.keys(visitProps).find((k) => visitProps[k]?.type === 'date')
         const timePropName = Object.keys(visitProps).find(
           (k) =>
@@ -354,12 +376,29 @@ export async function POST(request: NextRequest) {
             normalizeKey(k).includes('time')
         )
 
-        const dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
+        // dateValue: date.start või formula.date.start
+        let dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
+        if (!dateValue && datePropName) {
+          const prop = visitProps[datePropName] as { formula?: { date?: { start?: string } } }
+          dateValue = prop?.formula?.date?.start ?? null
+        }
+        // Fallback: leia esimene date-tüüpi väärtus kõikidest tulpadest
+        if (!dateValue) {
+          for (const [, prop] of Object.entries(visitProps) as [string, any][]) {
+            const start = prop?.date?.start ?? prop?.formula?.date?.start
+            if (start && typeof start === 'string' && /^\d{4}-\d{2}-\d{2}/.test(start)) {
+              dateValue = start
+              break
+            }
+          }
+        }
+
         if (process.env.DEBUG_WEBHOOK) {
           debugVisitRaw = {
             datePropName,
             dateValue,
             hasT: dateValue?.includes?.('T'),
+            hasSpaceTime: dateValue?.includes?.(' ') && /\d{1,2}[.:]\d{2}/.test(dateValue ?? ''),
             timePropName,
             timePropValue: timePropName ? extractText(visitProps[timePropName]) : null,
             visitPropKeys: Object.keys(visitProps),
@@ -372,9 +411,8 @@ export async function POST(request: NextRequest) {
             month: 'long',
             day: 'numeric',
           })
-          // Kellaaeg: 1) Kuupäev datetime-st, 2) Kellaaeg-tulp, 3) pealkirjast, 4) kõik Külastuse tulbad
-          const timeFromDate =
-            dateValue.includes('T') ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm') : null
+          // Kellaaeg: 1) Kuupäev datetime-st (T või tühik), 2) Kellaaeg-tulp, 3) pealkirjast, 4) kõik Külastuse tulbad
+          const timeFromDate = extractTimeFromDateValue(dateValue)
           const timeFromProp = timePropName ? normalizeTime(extractText(visitProps[timePropName])) : null
           const titleProp = Object.keys(visitProps).find((k) => visitProps[k]?.type === 'title')
           const timeFromTitle = titleProp ? extractTimeFromText(extractText(visitProps[titleProp])) : null
@@ -405,6 +443,9 @@ export async function POST(request: NextRequest) {
             }
           }
         }
+      } else if (process.env.DEBUG_WEBHOOK) {
+        const errText = await visitPageRes.text()
+        debugVisitRaw = { ...debugVisitRaw, visitFetchError: visitPageRes.status, visitFetchErrorText: errText?.slice(0, 200) }
       }
     }
 
