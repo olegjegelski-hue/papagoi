@@ -205,17 +205,12 @@ export async function POST(request: NextRequest) {
       )
     })
 
-    if (process.env.DEBUG_WEBHOOK) {
-      console.log('[visitor-confirm-webhook] Found props:', {
-        confirmationSentAtPropName,
-        confirmationStatusPropName,
-        confirmationStatusType,
-        confirmationErrorPropName,
-        allPropTypes: Object.fromEntries(
-          Object.entries(props).map(([k, v]) => [k, (v as { type?: string })?.type])
-        ),
-      })
-    }
+    console.log('[visitor-confirm-webhook] Props found:', {
+      confirmationSentAtPropName: confirmationSentAtPropName ?? '(not found)',
+      confirmationStatusPropName: confirmationStatusPropName ?? '(not found)',
+      confirmationErrorPropName: confirmationErrorPropName ?? '(not found)',
+      allProps: Object.keys(props),
+    })
 
     const alreadySent =
       (confirmationSentAtPropName && extractDate(props[confirmationSentAtPropName])) ||
@@ -392,6 +387,14 @@ export async function POST(request: NextRequest) {
     const filteredPatch = Object.fromEntries(
       Object.entries(patchProps).filter(([k, v]) => k && v != null)
     )
+    console.log('[visitor-confirm-webhook] Patching Notion:', {
+      pageId,
+      patchKeys: Object.keys(filteredPatch),
+      hasConfirmationFields:
+        !!confirmationSentAtPropName ||
+        !!confirmationStatusPropName ||
+        !!confirmationErrorPropName,
+    })
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
       headers: {
