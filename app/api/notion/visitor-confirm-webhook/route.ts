@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     })
     if (!confirmedPropName) {
       const propList = Object.entries(props)
-        .filter(([, v]) => v?.type === 'checkbox')
+        .filter(([, v]) => (v as { type?: string })?.type === 'checkbox')
         .map(([k]) => k)
       const err: Record<string, unknown> = {
         ok: false,
