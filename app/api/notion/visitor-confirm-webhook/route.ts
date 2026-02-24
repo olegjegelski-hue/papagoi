@@ -51,7 +51,9 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
   }
 
   visitorId =
+    get(body, 'data.id', 'data.properties.VisitorId.formula.string') ||
     get(body, 'VisitorId', 'visitorId', 'Visitorid', 'id', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
+    body?.data?.properties?.VisitorId?.formula?.string ||
     body?.record?.properties?.VisitorId?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.VisitorId?.title?.[0]?.plain_text ||
     body?.record?.properties?.Visitorid?.rich_text?.[0]?.plain_text ||
@@ -59,6 +61,7 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
     null
 
   sig =
+    body?.data?.properties?.Signature?.rich_text?.[0]?.plain_text ||
     get(body, 'Signature', 'sig', 'record.Signature') ||
     body?.record?.properties?.Signature?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.Signature?.title?.[0]?.plain_text ||
