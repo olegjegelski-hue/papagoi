@@ -75,6 +75,14 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
   return { visitorId, sig }
 }
 
+export async function GET() {
+  console.log('[visitor-confirm-webhook] GET ping at', new Date().toISOString())
+  return NextResponse.json({
+    ok: true,
+    message: 'Webhook endpoint active. Use POST with Notion payload.',
+  })
+}
+
 export async function POST(request: NextRequest) {
   console.log('[visitor-confirm-webhook] Request received at', new Date().toISOString())
   try {
