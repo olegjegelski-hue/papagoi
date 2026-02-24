@@ -329,9 +329,21 @@ export async function POST(request: NextRequest) {
             for (const [, prop] of Object.entries(visitProps) as [string, any][]) {
               const txt = extractText(prop) || prop?.formula?.string
               if (txt && typeof txt === 'string') {
-                const match = txt.match(/\b(\d{1,2}:\d{2})\b/)
+                const match = txt.match(/(\d{1,2})[.:](\d{2})\b/)
                 if (match) {
-                  extractedTime = match[1]
+                  extractedTime = `${match[1]}:${match[2]}`
+                  break
+                }
+              }
+            }
+          }
+          if (!extractedTime) {
+            for (const [, prop] of Object.entries(props) as [string, any][]) {
+              const txt = extractText(prop) || prop?.formula?.string
+              if (txt && typeof txt === 'string') {
+                const match = txt.match(/(\d{1,2})[.:](\d{2})\b/)
+                if (match) {
+                  extractedTime = `${match[1]}:${match[2]}`
                   break
                 }
               }
