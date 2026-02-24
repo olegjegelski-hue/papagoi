@@ -51,15 +51,18 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
   }
 
   visitorId =
-    get(body, 'VisitorId', 'visitorId', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
+    get(body, 'VisitorId', 'visitorId', 'Visitorid', 'id', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
     body?.record?.properties?.VisitorId?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.VisitorId?.title?.[0]?.plain_text ||
+    body?.record?.properties?.Visitorid?.rich_text?.[0]?.plain_text ||
+    body?.record?.properties?.Visitorid?.title?.[0]?.plain_text ||
     null
 
   sig =
     get(body, 'Signature', 'sig', 'record.Signature') ||
     body?.record?.properties?.Signature?.rich_text?.[0]?.plain_text ||
     body?.record?.properties?.Signature?.title?.[0]?.plain_text ||
+    body?.record?.properties?.signature?.rich_text?.[0]?.plain_text ||
     null
 
   return { visitorId, sig }
@@ -79,9 +82,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { visitorId, sig } = extractFromPayload(body)
+    const debug = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_WEBHOOK
 
     if (!visitorId) {
-      return NextResponse.json({ ok: false, error: 'Missing visitorId' }, { status: 400 })
+      const err: Record<string, unknown> = { ok: false, error: 'Missing visitorId' }
+      if (debug) err.debug = { receivedKeys: Object.keys(body), extracted: { visitorId, sig } }
+      return NextResponse.json(err, { status: 400 })
     }
 
     const webhookSecret = process.env.NOTION_WEBHOOK_SECRET
@@ -92,10 +98,12 @@ export async function POST(request: NextRequest) {
         request.headers.get('x-notion-signature') === webhookSecret)
 
     if (!hasValidSig && !hasValidSecret) {
-      return NextResponse.json(
-        { ok: false, error: 'Missing or invalid sig. Provide Signature in payload or X-Webhook-Secret header.' },
-        { status: 403 }
-      )
+      const err: Record<string, unknown> = {
+        ok: false,
+        error: 'Missing or invalid sig. Provide Signature in payload or X-Webhook-Secret header.',
+      }
+      if (debug) err.debug = { extracted: { visitorId, sig: sig ? '[present]' : null } }
+      return NextResponse.json(err, { status: 403 })
     }
 
     const NOTION_API_KEY = process.env.NOTION_API_KEY
