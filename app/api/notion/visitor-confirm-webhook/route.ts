@@ -153,10 +153,21 @@ export async function POST(request: NextRequest) {
 
     const confirmedPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
-      return props[k]?.type === 'checkbox' && (n === 'kinnitatud' || n.includes('kinnitatud'))
+      return (
+        props[k]?.type === 'checkbox' &&
+        (n === 'kinnitatud' || n.includes('kinnitatud') || n === 'kinnitus' || n.includes('kinnitus'))
+      )
     })
     if (!confirmedPropName) {
-      return NextResponse.json({ ok: false, error: 'Kinnitatud field missing' }, { status: 500 })
+      const propList = Object.entries(props)
+        .filter(([, v]) => v?.type === 'checkbox')
+        .map(([k]) => k)
+      const err: Record<string, unknown> = {
+        ok: false,
+        error: 'Kinnitatud field missing',
+        ...(process.env.DEBUG_WEBHOOK && { debug: { checkboxProps: propList } }),
+      }
+      return NextResponse.json(err, { status: 500 })
     }
 
     const confirmationSentAtPropName = Object.keys(props).find((k) => {
@@ -362,10 +373,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true }, { status: 200 })
   } catch (error: any) {
+    const msg = error?.message || 'Internal server error'
     console.error('[visitor-confirm-webhook] Error:', error)
-    return NextResponse.json(
-      { ok: false, error: error?.message || 'Internal server error' },
-      { status: 500 }
-    )
+    const body: Record<string, unknown> = { ok: false, error: msg }
+    if (process.env.DEBUG_WEBHOOK) {
+      body.stack = error?.stack
+    }
+    return NextResponse.json(body, { status: 500 })
   }
 }
