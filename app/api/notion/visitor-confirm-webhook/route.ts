@@ -306,11 +306,14 @@ export async function POST(request: NextRequest) {
     })
     const price = summaPropName ? extractNumber(props[summaPropName]) : null
 
-    const relationPropName = Object.keys(props).find((k) => {
-      const n = normalizeKey(k)
-      return props[k]?.type === 'relation' && n.includes('kulastus')
-    })
-    const visitId = relationPropName && props[relationPropName]?.relation?.[0]?.id
+    const relationProps = Object.entries(props)
+      .filter(([, v]) => (v as { type?: string })?.type === 'relation')
+      .map(([k, v]) => {
+        const rel = (v as { relation?: { id: string }[] })?.relation
+        return { name: k, ids: rel?.map((r) => r.id) ?? [] }
+      })
+    const visitRelation = relationProps.find((rp) => normalizeKey(rp.name).includes('kulastus'))
+    let visitId = visitRelation?.ids?.[0] ?? null
 
     let dateStr = ''
     let timeSlot: string | undefined
@@ -318,11 +321,8 @@ export async function POST(request: NextRequest) {
     let debugVisit: Record<string, unknown> | undefined
     let debugVisitRaw: Record<string, unknown> | undefined
 
-    if (process.env.DEBUG_WEBHOOK && !visitId) {
-      const relationProps = Object.entries(props)
-        .filter(([, v]) => (v as { type?: string })?.type === 'relation')
-        .map(([k, v]) => ({ name: k, ids: (v as { relation?: { id: string }[] })?.relation?.map((r) => r.id) }))
-      debugVisitRaw = { relationPropName, visitId, relationProps, visitorPropKeys: Object.keys(props) }
+    if (process.env.DEBUG_WEBHOOK) {
+      debugVisitRaw = { relationProps, visitId, visitorPropKeys: Object.keys(props) }
     }
 
     // Kuupäev ja kellaaeg tulevad seotud Külastused-lehelt (relation)
