@@ -286,7 +286,7 @@ export async function sendConfirmationEmail(data: {
         <h3 style="color: #059669; margin-top: 0;">Broneeringu andmed</h3>
         <p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${data.date}</p>
         ${timeSlotLine}
-        <p style="margin: 10px 0;"><strong>Kestus:</strong> 45–60 min</p>
+        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45–60 min</p>
         ${groupSizeLine}
         ${priceLine}
         <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
@@ -326,7 +326,7 @@ export async function sendConfirmationEmail(data: {
 
     const baseDate = data.dateForSubject || data.date
     const subjectDate = data.timeSlot && !baseDate.match(/\d{1,2}:\d{2}/)
-      ? `${baseDate} ${data.timeSlot}`
+      ? `${baseDate} kell ${data.timeSlot}`
       : baseDate
     const mailOptions: Record<string, unknown> = {
       from: `"Papagoi Keskus" <${process.env.SMTP_USER}>`,
@@ -356,7 +356,7 @@ export async function sendConfirmationEmail(data: {
       data.date +
       '\n' +
       timeSlotText +
-      '* Kestus: 45–60 min\n' +
+      '* Külastuse kestus: 45–60 min\n' +
       groupSizeText +
       priceText +
       '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n\nAsukoht\nPapagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald\nGoogle Maps: https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald\n\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nKui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +

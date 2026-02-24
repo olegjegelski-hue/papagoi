@@ -339,7 +339,7 @@ export async function POST(request: NextRequest) {
           }
           timeSlot = extractedTime || undefined
           const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
-          dateForSubject = timeSlot ? `${dStr} ${timeSlot}` : dStr
+          dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
         }
       }
     }
@@ -354,7 +354,7 @@ export async function POST(request: NextRequest) {
       })
       if (!dateForSubject) {
         const dStr = formatInTimeZone(fallback, 'Europe/Tallinn', 'dd.MM')
-        dateForSubject = timeSlot ? `${dStr} ${timeSlot}` : dStr
+        dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
       }
     }
 
