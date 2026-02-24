@@ -51,18 +51,28 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
     return null
   }
 
+  const PAGE_ID_REGEX = /^[a-f0-9]{32}$/i
+  const extractPageId = (v: string | null) => (v && PAGE_ID_REGEX.test(v.replace(/-/g, '')) ? v.replace(/-/g, '') : null)
+
   visitorId =
-    get(body, 'data.id', 'data.properties.VisitorId.formula.string') ||
-    get(body, 'data.properties.Viiteband.formula.string', 'data.properties.Viiteband.rich_text.0.plain_text') ||
-    get(body, 'VisitorId', 'visitorId', 'Visitorid', 'Viiteband', 'id', 'record.id', 'entity.id', 'page_id', 'data.page_id') ||
-    body?.data?.properties?.VisitorId?.formula?.string ||
-    body?.data?.properties?.Viiteband?.formula?.string ||
-    body?.data?.properties?.Viiteband?.rich_text?.[0]?.plain_text ||
-    body?.record?.properties?.VisitorId?.rich_text?.[0]?.plain_text ||
-    body?.record?.properties?.VisitorId?.title?.[0]?.plain_text ||
-    body?.record?.properties?.Visitorid?.rich_text?.[0]?.plain_text ||
-    body?.record?.properties?.Visitorid?.title?.[0]?.plain_text ||
+    extractPageId(get(body, 'data.id', 'data.page_id', 'entity.id', 'page_id')) ||
+    extractPageId(body?.data?.properties?.VisitorId?.formula?.string) ||
+    extractPageId(body?.data?.properties?.Viiteband?.formula?.string) ||
+    extractPageId(body?.data?.properties?.Viiteband?.rich_text?.[0]?.plain_text) ||
+    extractPageId(body?.data?.properties?.VisitorId?.rich_text?.[0]?.plain_text) ||
+    extractPageId(get(body, 'data.properties.VisitorId.formula.string', 'data.properties.Viiteband.formula.string')) ||
+    extractPageId(get(body, 'VisitorId', 'visitorId', 'Visitorid', 'Viiteband', 'id', 'record.id')) ||
+    extractPageId(body?.record?.properties?.VisitorId?.rich_text?.[0]?.plain_text) ||
+    extractPageId(body?.record?.properties?.VisitorId?.title?.[0]?.plain_text) ||
     null
+
+  if (!visitorId && body?.data?.properties) {
+    for (const [, prop] of Object.entries(body.data.properties) as [string, any][]) {
+      const val = prop?.formula?.string ?? prop?.rich_text?.[0]?.plain_text ?? prop?.title?.[0]?.plain_text
+      visitorId = extractPageId(val)
+      if (visitorId) break
+    }
+  }
 
   sig =
     body?.data?.properties?.Signature?.rich_text?.[0]?.plain_text ||
@@ -71,6 +81,15 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
     body?.record?.properties?.Signature?.title?.[0]?.plain_text ||
     body?.record?.properties?.signature?.rich_text?.[0]?.plain_text ||
     null
+
+  if (!sig && body?.data?.properties) {
+    for (const [key, prop] of Object.entries(body.data.properties) as [string, any][]) {
+      if (/signature/i.test(key)) {
+        sig = prop?.rich_text?.[0]?.plain_text ?? prop?.title?.[0]?.plain_text ?? null
+        if (sig) break
+      }
+    }
+  }
 
   return { visitorId, sig }
 }
