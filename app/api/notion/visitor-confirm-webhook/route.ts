@@ -17,7 +17,38 @@ function extractText(property: any): string | null {
   if (property.type === 'email') return property.email || null
   if (property.type === 'select') return property.select?.name || null
   if (property.type === 'status') return property.status?.name || null
+  if (property.type === 'multi_select') return property.multi_select?.[0]?.name || null
+  if (property.type === 'formula') return property.formula?.string ?? property.formula?.number?.toString() ?? null
+  if (property.type === 'rollup' && property.rollup?.type === 'array' && property.rollup?.array?.[0]) {
+    const first = property.rollup.array[0]
+    return first?.title?.[0]?.plain_text ?? first?.rich_text?.[0]?.plain_text ?? null
+  }
   return null
+}
+
+/** Otsib tekstist kehtiva kellaaja (HH:mm, 0–23:00–59). Vältib kuupäeva 25.02. */
+function extractTimeFromText(txt: string | null): string | null {
+  if (!txt || typeof txt !== 'string') return null
+  const match = txt.match(/(\d{1,2})[.:](\d{2})\b/g)
+  if (!match) return null
+  for (const m of match) {
+    const parts = m.split(/[.:]/)
+    const h = parseInt(parts[0], 10)
+    const min = parseInt(parts[1], 10)
+    if (h >= 0 && h <= 23 && min >= 0 && min <= 59) return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+  }
+  return null
+}
+
+/** Normaliseerib kellaaja HH:mm (nt "16" → "16:00"). */
+function normalizeTime(raw: string | null): string | null {
+  if (!raw || typeof raw !== 'string') return null
+  const m = raw.trim().match(/^(\d{1,2})(?::(\d{2}))?/)
+  if (!m) return extractTimeFromText(raw)
+  const h = parseInt(m[1], 10)
+  const min = m[2] ? parseInt(m[2], 10) : 0
+  if (h < 0 || h > 23 || min < 0 || min > 59) return null
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
 }
 
 function extractDate(property: any): string | null {
@@ -284,7 +315,9 @@ export async function POST(request: NextRequest) {
     let dateStr = ''
     let timeSlot: string | undefined
     let dateForSubject = ''
+    let debugVisit: Record<string, unknown> | undefined
 
+    // Kuupäev ja kellaaeg tulevad seotud Külastused-lehelt (relation)
     if (visitId) {
       const visitPageRes = await fetchNotion(
         `https://api.notion.com/v1/pages/${visitId.replace(/-/g, '')}`,
@@ -309,7 +342,8 @@ export async function POST(request: NextRequest) {
           (k) =>
             normalizeKey(k) === 'kellaaeg' ||
             normalizeKey(k) === 'aeg' ||
-            normalizeKey(k).includes('kellaaeg')
+            normalizeKey(k).includes('kellaaeg') ||
+            normalizeKey(k).includes('time')
         )
 
         const dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
@@ -320,38 +354,38 @@ export async function POST(request: NextRequest) {
             month: 'long',
             day: 'numeric',
           })
-          const rawTime = timePropName ? extractText(visitProps[timePropName]) : null
-          const derivedTime = dateValue.includes('T')
-            ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
-            : null
-          let extractedTime = rawTime || derivedTime
-          if (!extractedTime) {
+          // Kellaaeg: 1) Kuupäev datetime-st, 2) Kellaaeg-tulp, 3) pealkirjast, 4) kõik Külastuse tulbad
+          const timeFromDate =
+            dateValue.includes('T') ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm') : null
+          const timeFromProp = timePropName ? normalizeTime(extractText(visitProps[timePropName])) : null
+          const titleProp = Object.keys(visitProps).find((k) => visitProps[k]?.type === 'title')
+          const timeFromTitle = titleProp ? extractTimeFromText(extractText(visitProps[titleProp])) : null
+          let timeFromAny: string | null = null
+          if (!timeFromDate && !timeFromProp && !timeFromTitle) {
             for (const [, prop] of Object.entries(visitProps) as [string, any][]) {
-              const txt = extractText(prop) || prop?.formula?.string
-              if (txt && typeof txt === 'string') {
-                const match = txt.match(/(\d{1,2})[.:](\d{2})\b/)
-                if (match) {
-                  extractedTime = `${match[1]}:${match[2]}`
-                  break
-                }
-              }
+              const txt = extractText(prop) ?? (prop as { formula?: { string?: string } })?.formula?.string ?? null
+              timeFromAny = extractTimeFromText(txt)
+              if (timeFromAny) break
             }
           }
-          if (!extractedTime) {
-            for (const [, prop] of Object.entries(props) as [string, any][]) {
-              const txt = extractText(prop) || prop?.formula?.string
-              if (txt && typeof txt === 'string') {
-                const match = txt.match(/(\d{1,2})[.:](\d{2})\b/)
-                if (match) {
-                  extractedTime = `${match[1]}:${match[2]}`
-                  break
-                }
-              }
-            }
-          }
-          timeSlot = extractedTime || undefined
+          timeSlot = timeFromDate || timeFromProp || timeFromTitle || timeFromAny || undefined
           const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
           dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
+          if (process.env.DEBUG_WEBHOOK) {
+            const sample: Record<string, string | null> = {}
+            for (const [k, v] of Object.entries(visitProps) as [string, any][]) {
+              sample[k] = extractText(v) ?? v?.formula?.string ?? (v?.date?.start ?? null)
+            }
+            debugVisit = {
+              props: Object.keys(visitProps),
+              sample,
+              timeFromDate,
+              timeFromProp,
+              timeFromTitle,
+              timeFromAny,
+              dateValue: dateValue?.slice?.(0, 30),
+            }
+          }
         }
       }
     }
@@ -461,6 +495,10 @@ export async function POST(request: NextRequest) {
     const filteredPatch = Object.fromEntries(
       Object.entries(patchProps).filter(([k, v]) => k && v != null)
     )
+    const resBody: Record<string, unknown> = { ok: true }
+    if (process.env.DEBUG_WEBHOOK) {
+      resBody._debug = { timeSlot, dateForSubject, visit: debugVisit }
+    }
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
       headers: {
@@ -477,7 +515,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Notion update failed' }, { status: 500 })
     }
 
-    return NextResponse.json({ ok: true }, { status: 200 })
+    return NextResponse.json(resBody, { status: 200 })
   } catch (error: any) {
     const msg = error?.message || 'Internal server error'
     console.error('[visitor-confirm-webhook] Error:', error)
