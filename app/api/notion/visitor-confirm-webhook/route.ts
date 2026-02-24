@@ -16,6 +16,7 @@ function extractText(property: any): string | null {
   if (property.type === 'title') return property.title?.[0]?.plain_text || null
   if (property.type === 'email') return property.email || null
   if (property.type === 'select') return property.select?.name || null
+  if (property.type === 'status') return property.status?.name || null
   return null
 }
 
@@ -191,9 +192,11 @@ export async function POST(request: NextRequest) {
       const n = normalizeKey(k)
       return (
         (n === 'confirmationstatus' || n.includes('confirmationstatus') || n.includes('confirmation_status')) &&
-        props[k]?.type === 'select'
+        (props[k]?.type === 'select' || props[k]?.type === 'status')
       )
     })
+    const confirmationStatusType =
+      confirmationStatusPropName && props[confirmationStatusPropName]?.type
     const confirmationErrorPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
       return (
@@ -201,6 +204,18 @@ export async function POST(request: NextRequest) {
         (props[k]?.type === 'rich_text' || props[k]?.type === 'title')
       )
     })
+
+    if (process.env.DEBUG_WEBHOOK) {
+      console.log('[visitor-confirm-webhook] Found props:', {
+        confirmationSentAtPropName,
+        confirmationStatusPropName,
+        confirmationStatusType,
+        confirmationErrorPropName,
+        allPropTypes: Object.fromEntries(
+          Object.entries(props).map(([k, v]) => [k, (v as { type?: string })?.type])
+        ),
+      })
+    }
 
     const alreadySent =
       (confirmationSentAtPropName && extractDate(props[confirmationSentAtPropName])) ||
@@ -299,7 +314,11 @@ export async function POST(request: NextRequest) {
       patchProps[confirmationSentAtPropName] = { date: { start: nowIso } }
     }
     if (confirmationStatusPropName) {
-      patchProps[confirmationStatusPropName] = { select: { name: 'sent' } }
+      const statusVal = { name: 'sent' }
+      patchProps[confirmationStatusPropName] =
+        confirmationStatusType === 'status'
+          ? { status: statusVal }
+          : { select: statusVal }
     }
     if (confirmationErrorPropName) {
       patchProps[confirmationErrorPropName] = { rich_text: [] }
@@ -318,7 +337,10 @@ export async function POST(request: NextRequest) {
       } catch (err: any) {
         console.error('[visitor-confirm-webhook] Email send failed:', err)
         if (confirmationStatusPropName) {
-          patchProps[confirmationStatusPropName] = { select: { name: 'failed' } }
+          patchProps[confirmationStatusPropName] =
+            confirmationStatusType === 'status'
+              ? { status: { name: 'failed' } }
+              : { select: { name: 'failed' } }
         }
         if (confirmationErrorPropName) {
           patchProps[confirmationErrorPropName] = {
@@ -344,7 +366,10 @@ export async function POST(request: NextRequest) {
       }
     } else {
       if (confirmationStatusPropName) {
-        patchProps[confirmationStatusPropName] = { select: { name: 'failed' } }
+        patchProps[confirmationStatusPropName] =
+          confirmationStatusType === 'status'
+            ? { status: { name: 'failed' } }
+            : { select: { name: 'failed' } }
       }
       if (confirmationErrorPropName) {
         patchProps[confirmationErrorPropName] = {
