@@ -25,6 +25,19 @@ function extractDate(property: any): string | null {
   return property.date.start
 }
 
+function extractNumber(property: any): number | null {
+  if (!property) return null
+  if (typeof property.number === 'number') return property.number
+  if (property.formula?.number != null) return property.formula.number
+  if (property.rollup?.number != null) return property.rollup.number
+  const str = property.formula?.string ?? extractText(property)
+  if (str && typeof str === 'string') {
+    const num = parseFloat(str.replace(/[^\d.,]/g, '').replace(',', '.'))
+    return isNaN(num) ? null : num
+  }
+  return null
+}
+
 async function fetchNotion(url: string, options: RequestInit) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 10000)
@@ -250,6 +263,18 @@ export async function POST(request: NextRequest) {
       Object.keys(props).find((k) => normalizeKey(k).includes('nimi'))
     const name = namePropName ? extractText(props[namePropName]) : null
 
+    const arvPropName = Object.keys(props).find((k) => {
+      const n = normalizeKey(k)
+      return (n === 'arv' || n.includes('arv')) && (props[k]?.type === 'number' || props[k]?.type === 'formula')
+    })
+    const groupSize = arvPropName ? extractNumber(props[arvPropName]) : null
+
+    const summaPropName = Object.keys(props).find((k) => {
+      const n = normalizeKey(k)
+      return (n === 'summa' || n.includes('summa')) && (props[k]?.type === 'number' || props[k]?.type === 'formula' || props[k]?.type === 'rollup')
+    })
+    const price = summaPropName ? extractNumber(props[summaPropName]) : null
+
     const relationPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
       return props[k]?.type === 'relation' && n.includes('kulastus')
@@ -258,6 +283,7 @@ export async function POST(request: NextRequest) {
 
     let dateStr = ''
     let timeSlot: string | undefined
+    let dateForSubject = ''
 
     if (visitId) {
       const visitPageRes = await fetchNotion(
@@ -299,17 +325,24 @@ export async function POST(request: NextRequest) {
             ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
             : null
           timeSlot = rawTime || derivedTime || undefined
+          const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
+          dateForSubject = timeSlot ? `${dStr} ${timeSlot}` : dStr
         }
       }
     }
 
     if (!dateStr) {
-      dateStr = new Date().toLocaleDateString('et-EE', {
+      const fallback = new Date()
+      dateStr = fallback.toLocaleDateString('et-EE', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       })
+      if (!dateForSubject) {
+        const dStr = formatInTimeZone(fallback, 'Europe/Tallinn', 'dd.MM')
+        dateForSubject = timeSlot ? `${dStr} ${timeSlot}` : dStr
+      }
     }
 
     const nowIso = new Date().toISOString()
@@ -337,6 +370,9 @@ export async function POST(request: NextRequest) {
           email,
           date: dateStr,
           timeSlot,
+          groupSize: groupSize ?? undefined,
+          price: price ?? undefined,
+          dateForSubject: dateForSubject || undefined,
           cc: ADMIN_EMAIL,
         })
       } catch (err: any) {
@@ -387,6 +423,9 @@ export async function POST(request: NextRequest) {
           email: ADMIN_EMAIL,
           date: dateStr,
           timeSlot,
+          groupSize: groupSize ?? undefined,
+          price: price ?? undefined,
+          dateForSubject: dateForSubject || undefined,
           adminOnly: true,
         })
       } catch {

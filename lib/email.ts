@@ -251,36 +251,71 @@ export async function sendConfirmationEmail(data: {
   email: string
   date: string
   timeSlot?: string
+  groupSize?: number
+  price?: number
+  dateForSubject?: string
   cc?: string
   adminOnly?: boolean
 }) {
   try {
     const transporter = createTransporter()
 
+    const groupSizeLine =
+      data.groupSize != null
+        ? `<p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>`
+        : ''
+    const priceLine =
+      data.price != null
+        ? `<p style="margin: 10px 0;"><strong>Hind:</strong> ${data.price.toFixed(2)} €</p>`
+        : ''
+    const timeSlotLine = data.timeSlot
+      ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>`
+      : ''
+
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        ✅ Broneering kinnitatud
+        Broneeringu kinnitus
       </h2>
       
       <p style="font-size: 16px; line-height: 1.6;">Tere, ${data.name}!</p>
       
-      <p style="font-size: 16px; line-height: 1.6;">Teie broneering on kinnitatud. Ootame teid meil külla!</p>
+      <p style="font-size: 16px; line-height: 1.6;">Teie Broneering Papagoi Keskuses on kinnitatud.</p>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <h3 style="color: #059669; margin-top: 0;">Külastuse andmed:</h3>
+        <h3 style="color: #059669; margin-top: 0;">Broneeringu andmed</h3>
         <p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${data.date}</p>
-        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>` : ''}
-        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45-60 min</p>
+        ${timeSlotLine}
+        <p style="margin: 10px 0;"><strong>Kestus:</strong> 45–60 min</p>
+        ${groupSizeLine}
+        ${priceLine}
         <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
+      </div>
+      
+      <div style="background-color: #fff; padding: 20px; border-left: 4px solid #43A047; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Asukoht</h3>
+        <p style="margin: 10px 0;">Papagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald</p>
+        <p style="margin: 10px 0;"><a href="https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald">Google Maps</a></p>
+      </div>
+      
+      <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #333; margin-top: 0;">Palume enne külastust arvestada</h3>
+        <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
+          <li>Palume olla kohal 5–10 min varem.</li>
+          <li>Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).</li>
+          <li>Soovitame kanda tumedamaid sokke (mitte valgeid). Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.</li>
+          <li>Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette, et saaksime aja teistele külastajatele pakkuda.</li>
+        </ul>
+        <p style="margin: 15px 0 0 0;"><strong>Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.</strong></p>
       </div>
       
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         <p style="margin: 5px 0;">Lugupidamisega</p>
         <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
         <p style="margin: 5px 0;">Tel +372 51 27 938</p>
-        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">www.papagoi.ee</a></p>
-        <p style="margin: 5px 0;">E-post: <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
+        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">https://www.papagoi.ee/</a></p>
+        <p style="margin: 5px 0;">keskus@papagoi.ee</p>
+        <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
       </div>
       
       <div style="color: #6b7280; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
@@ -289,35 +324,44 @@ export async function sendConfirmationEmail(data: {
     </div>
   `
 
+    const subjectDate = data.dateForSubject || (data.date + (data.timeSlot ? ` ${data.timeSlot}` : ''))
     const mailOptions: Record<string, unknown> = {
       from: `"Papagoi Keskus" <${process.env.SMTP_USER}>`,
       to: data.email,
       subject: data.adminOnly
-        ? `[Admin] Broneering kinnitatud – puudub kliendi e-post: ${data.name}`
-        : `Broneering kinnitatud – Papagoi Keskus ${data.date}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
+        ? `[Admin] Broneeringu kinnitus – puudub kliendi e-post: ${data.name}`
+        : `Broneeringu kinnitus – Papagoi Keskus (${subjectDate})`,
       html: htmlContent,
     }
     if (data.cc && !data.adminOnly) {
       mailOptions.cc = data.cc
     }
 
-    const timeLine = data.timeSlot
-      ? '- Kellaaeg: ' + data.timeSlot + ' Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n'
+    const timeSlotText = data.timeSlot
+      ? `* Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n`
       : ''
+    const groupSizeText =
+      data.groupSize != null
+        ? `* Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)\n`
+        : ''
+    const priceText =
+      data.price != null ? `* Hind: ${data.price.toFixed(2)} €\n` : ''
     const textContent =
-      'BRONEERING KINNITATUD\n\nTere, ' +
+      'BRONEERINGU KINNITUS\n\nTere, ' +
       data.name +
-      '!\n\nTeie broneering on kinnitatud. Ootame teid meil külla!\n\nKülastuse andmed:\n- Kuupäev: ' +
+      '!\n\nTeie Broneering Papagoi Keskuses on kinnitatud.\n\nBroneeringu andmed\n* Kuupäev: ' +
       data.date +
       '\n' +
-      timeLine +
-      '- Külastuse kestus: 45-60 min\n- Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nwww.papagoi.ee\nE-post: keskus@papagoi.ee\n\n---\nSaadetud: ' +
+      timeSlotText +
+      '* Kestus: 45–60 min\n' +
+      groupSizeText +
+      priceText +
+      '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n\nAsukoht\nPapagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald\nGoogle Maps: https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald\n\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nKui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
       new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
 
     mailOptions.text = textContent
 
     await transporter.sendMail(mailOptions as Parameters<typeof transporter.sendMail>[0])
-    console.log(`Confirmation email sent to ${data.email}`)
   } catch (error) {
     console.error('Failed to send confirmation email:', error)
     throw new Error(
