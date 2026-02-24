@@ -72,6 +72,7 @@ function extractFromPayload(body: any): { visitorId: string | null; sig: string 
 }
 
 export async function POST(request: NextRequest) {
+  console.log('[visitor-confirm-webhook] Request received at', new Date().toISOString())
   try {
     let body: any = {}
     try {
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
     const debug = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_WEBHOOK
 
     if (!visitorId) {
+      console.log('[visitor-confirm-webhook] Rejected: Missing visitorId')
       const err: Record<string, unknown> = { ok: false, error: 'Missing visitorId' }
       if (debug) err.debug = { receivedKeys: Object.keys(body), extracted: { visitorId, sig } }
       return NextResponse.json(err, { status: 400 })
@@ -101,6 +103,7 @@ export async function POST(request: NextRequest) {
         request.headers.get('x-notion-signature') === webhookSecret)
 
     if (!hasValidSig && !hasValidSecret) {
+      console.log('[visitor-confirm-webhook] Rejected: Missing or invalid signature')
       const err: Record<string, unknown> = {
         ok: false,
         error: 'Missing or invalid sig. Provide Signature in payload or X-Webhook-Secret header.',
@@ -197,6 +200,7 @@ export async function POST(request: NextRequest) {
       (confirmationStatusPropName && extractText(props[confirmationStatusPropName]) === 'sent')
 
     if (alreadySent) {
+      console.log('[visitor-confirm-webhook] Already confirmed, skipping (idempotent)')
       return NextResponse.json({ ok: true, message: 'Already confirmed (idempotent)' }, { status: 200 })
     }
 
@@ -303,6 +307,7 @@ export async function POST(request: NextRequest) {
           timeSlot,
           cc: ADMIN_EMAIL,
         })
+        console.log('[visitor-confirm-webhook] Email sent to', email)
       } catch (err: any) {
         console.error('[visitor-confirm-webhook] Email send failed:', err)
         if (confirmationStatusPropName) {
