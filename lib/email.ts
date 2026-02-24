@@ -301,31 +301,22 @@ export async function sendConfirmationEmail(data: {
       mailOptions.cc = data.cc
     }
 
-    Object.assign(mailOptions, {
-      text: `
-BRONEERING KINNITATUD
+    const timeLine = data.timeSlot
+      ? '- Kellaaeg: ' + data.timeSlot + ' Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n'
+      : ''
+    const textContent =
+      'BRONEERING KINNITATUD\n\nTere, ' +
+      data.name +
+      '!\n\nTeie broneering on kinnitatud. Ootame teid meil külla!\n\nKülastuse andmed:\n- Kuupäev: ' +
+      data.date +
+      '\n' +
+      timeLine +
+      '- Külastuse kestus: 45-60 min\n- Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nwww.papagoi.ee\nE-post: keskus@papagoi.ee\n\n---\nSaadetud: ' +
+      new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
 
-Tere, ${data.name}!
+    mailOptions.text = textContent
 
-Teie broneering on kinnitatud. Ootame teid meil külla!
-
-Külastuse andmed:
-- Kuupäev: ${data.date}
-${data.timeSlot ? `- Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n` : ''}- Külastuse kestus: 45-60 min
-- Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)
-
-Lugupidamisega
-Papagoi Keskus
-Tel +372 51 27 938
-www.papagoi.ee
-E-post: keskus@papagoi.ee
-
----
-Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
-      `.trim(),
-    }
-
-    await transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions as Parameters<typeof transporter.sendMail>[0])
     console.log(`Confirmation email sent to ${data.email}`)
   } catch (error) {
     console.error('Failed to send confirmation email:', error)
