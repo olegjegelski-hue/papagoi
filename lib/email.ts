@@ -348,16 +348,15 @@ export async function sendConfirmationEmail(data: {
         <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
       </div>
       ${calendarSection}
-      <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
-        <p style="margin: 0; color: #92400e;">Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.</p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <p style="margin: 0; font-weight: 600; color: #059669;">Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale või helista tel <a href="tel:+3725127938" style="color: #059669;">+372 512 7938</a>.</p>
       </div>
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 0;">Palume enne külastust arvestada</h3>
+        <h3 style="color: #333; margin-top: 0;">Infoks</h3>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
-          <li>Palume olla kohal 5–10 min varem.</li>
+          <li>Papagoid lendavad vabalt ringi ja teevad palju hääli. Kui tulete lastega, valmistage nad veidi ette.</li>
           <li>Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).</li>
-          <li>Soovitame kanda tumedamaid sokke (mitte valgeid). Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.</li>
-          <li>Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette, et saaksime aja teistele külastajatele pakkuda.</li>
+          <li><strong style="color: #059669;">Soovitame kanda tumedamaid sokke (mitte valgeid).</strong> Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.</li>
         </ul>
         <p style="margin: 15px 0 0 0;"><strong>Reeglid, ohutus ja praktiline info</strong> – kõik oluline enne külastust: <a href="${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised" style="color: #059669; text-decoration: underline;">www.papagoi.ee/kulastajatele</a></p>
       </div>
@@ -421,7 +420,7 @@ export async function sendConfirmationEmail(data: {
       priceText +
       '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n' +
       calendarText +
-      '\n*** Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale. ***\n\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
+      '\n*** Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale või helista tel +372 512 7938. ***\n\nInfoks\n* Papagoid lendavad vabalt ringi ja teevad palju hääli. Kui tulete lastega, valmistage nad veidi ette.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* **Soovitame kanda tumedamaid sokke (mitte valgeid).** Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
       `${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised` +
       '\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
       new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
