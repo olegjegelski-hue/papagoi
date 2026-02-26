@@ -98,7 +98,7 @@ export default function VisitorsPage() {
           <VisitProcess />
 
           {/* Reeglid ja juhised */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
+          <div id="reeglid-ja-juhised" className="bg-white rounded-2xl shadow-lg p-8 mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <Shield className="w-6 h-6 text-blue-600 mr-2" />
               Reeglid ja juhised

@@ -2,6 +2,44 @@
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
 
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee'
+const CALENDAR_TITLE = 'Broneering Papagoi Keskuses'
+const CALENDAR_LOCATION = 'Tartu mnt 80, Soinaste, Kambja vald'
+const CALENDAR_DESCRIPTION = 'Külastus Papagoi Keskuses. Külastuse kestus: 45–60 min. Palume olla kohal 5–10 min varem.'
+
+function buildCalendarUrls(startIso: string, endIso: string) {
+  const start = new Date(startIso)
+  const end = new Date(endIso)
+  const toGoogleFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  const startStr = toGoogleFormat(start)
+  const endStr = toGoogleFormat(end)
+
+  const googleUrl =
+    'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    `&text=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `&dates=${startStr}/${endStr}` +
+    `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
+    `&details=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+
+  const outlookUrl =
+    'https://outlook.live.com/calendar/0/action/compose' +
+    `?subject=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `&startdt=${encodeURIComponent(startIso)}` +
+    `&enddt=${encodeURIComponent(endIso)}` +
+    `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
+    `&body=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+
+  const icsUrl =
+    `${SITE_URL.replace(/\/$/, '')}/api/calendar/event` +
+    `?start=${encodeURIComponent(startIso)}` +
+    `&end=${encodeURIComponent(endIso)}` +
+    `&title=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
+    `&description=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+
+  return { googleUrl, outlookUrl, icsUrl }
+}
+
 // Create reusable transporter with error handling – identne PetsVillaga
 export const createTransporter = (): Transporter => {
   const host = process.env.SMTP_HOST
@@ -254,6 +292,8 @@ export async function sendConfirmationEmail(data: {
   groupSize?: number
   price?: number
   dateForSubject?: string
+  calendarStartIso?: string
+  calendarEndIso?: string
   cc?: string
   adminOnly?: boolean
 }) {
@@ -271,6 +311,23 @@ export async function sendConfirmationEmail(data: {
     const timeSlotLine = data.timeSlot
       ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>`
       : ''
+
+    const calendarUrls =
+      data.calendarStartIso && data.calendarEndIso
+        ? buildCalendarUrls(data.calendarStartIso, data.calendarEndIso)
+        : null
+    const calendarSection =
+      calendarUrls
+        ? `
+      <div style="background-color: #f0fdf4; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #43A047;">
+        <p style="margin: 0 0 10px 0; font-weight: 600; color: #059669;">Lisa broneering kalendrisse</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;">
+          <a href="${calendarUrls.googleUrl}" style="color: #059669; text-decoration: underline;">Lisa Google Calendrisse</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.outlookUrl}" style="color: #059669; text-decoration: underline;">Lisa Outlook'i</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.icsUrl}" style="color: #059669; text-decoration: underline;">Laadi alla .ics</a> (sobib enamustele kalendritele)
+        </p>
+      </div>`
+        : ''
 
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -290,7 +347,7 @@ export async function sendConfirmationEmail(data: {
         ${priceLine}
         <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
       </div>
-      
+      ${calendarSection}
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Palume enne külastust arvestada</h3>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
@@ -300,6 +357,7 @@ export async function sendConfirmationEmail(data: {
           <li>Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette, et saaksime aja teistele külastajatele pakkuda.</li>
         </ul>
         <p style="margin: 15px 0 0 0;"><strong>Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.</strong></p>
+        <p style="margin: 15px 0 0 0;"><strong>Reeglid, ohutus ja praktiline info</strong> – kõik oluline enne külastust: <a href="${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised" style="color: #059669; text-decoration: underline;">www.papagoi.ee/kulastajatele</a></p>
       </div>
       
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
@@ -342,6 +400,13 @@ export async function sendConfirmationEmail(data: {
         : ''
     const priceText =
       data.price != null ? `* Hind: ${data.price.toFixed(2)} €\n` : ''
+    const calendarText =
+      data.calendarStartIso && data.calendarEndIso
+        ? (() => {
+            const urls = buildCalendarUrls(data.calendarStartIso, data.calendarEndIso)
+            return `\nLisa broneering kalendrisse:\n* Google Calendar: ${urls.googleUrl}\n* Outlook: ${urls.outlookUrl}\n* Laadi alla .ics: ${urls.icsUrl}\n`
+          })()
+        : ''
     const textContent =
       'PAPAGOI KESKUSE BRONEERINGU KINNITUS\n\nTere, ' +
       data.name +
@@ -352,7 +417,11 @@ export async function sendConfirmationEmail(data: {
       '* Külastuse kestus: 45–60 min\n' +
       groupSizeText +
       priceText +
-      '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nKui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
+      '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n' +
+      calendarText +
+      '\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nKui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
+      `${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised` +
+      '\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
       new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
 
     mailOptions.text = textContent

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { sendConfirmationEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
@@ -338,6 +338,8 @@ export async function POST(request: NextRequest) {
     let dateStr = ''
     let timeSlot: string | undefined
     let dateForSubject = ''
+    let calendarStartIso: string | undefined
+    let calendarEndIso: string | undefined
     let debugVisit: Record<string, unknown> | undefined
     let debugVisitRaw: Record<string, unknown> | undefined
 
@@ -427,6 +429,17 @@ export async function POST(request: NextRequest) {
           timeSlot = timeFromDate || timeFromProp || timeFromTitle || timeFromAny || undefined
           const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
           dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
+          // Kalendri sündmuse algus ja lõpp (ISO)
+          const datePart = dateValue.split('T')[0].split(' ')[0]
+          const startDt =
+            dateValue.includes('T') || (dateValue.includes(' ') && /\d{1,2}[.:]\d{2}/.test(dateValue))
+              ? new Date(dateValue)
+              : timeSlot
+                ? fromZonedTime(`${datePart} ${timeSlot}:00`, 'Europe/Tallinn')
+                : fromZonedTime(`${datePart} 12:00:00`, 'Europe/Tallinn')
+          const endDt = new Date(startDt.getTime() + 60 * 60 * 1000)
+          calendarStartIso = startDt.toISOString()
+          calendarEndIso = endDt.toISOString()
           if (process.env.DEBUG_WEBHOOK) {
             const sample: Record<string, string | null> = {}
             for (const [k, v] of Object.entries(visitProps) as [string, any][]) {
@@ -491,6 +504,8 @@ export async function POST(request: NextRequest) {
           groupSize: groupSize ?? undefined,
           price: price ?? undefined,
           dateForSubject: dateForSubject || undefined,
+          calendarStartIso,
+          calendarEndIso,
           cc: ADMIN_EMAIL,
         })
       } catch (err: any) {
@@ -544,6 +559,8 @@ export async function POST(request: NextRequest) {
           groupSize: groupSize ?? undefined,
           price: price ?? undefined,
           dateForSubject: dateForSubject || undefined,
+          calendarStartIso,
+          calendarEndIso,
           adminOnly: true,
         })
       } catch {

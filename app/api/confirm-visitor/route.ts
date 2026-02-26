@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { sendConfirmationEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
@@ -151,6 +151,8 @@ export async function GET(request: NextRequest) {
 
     let dateStr = ''
     let timeSlot: string | undefined
+    let calendarStartIso: string | undefined
+    let calendarEndIso: string | undefined
 
     if (visitId) {
       const visitPageRes = await fetchNotion(`https://api.notion.com/v1/pages/${visitId.replace(/-/g, '')}`, {
@@ -183,6 +185,16 @@ export async function GET(request: NextRequest) {
             ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
             : null
           timeSlot = rawTime || derivedTime || undefined
+          const datePart = dateValue.split('T')[0].split(' ')[0]
+          const startDt =
+            dateValue.includes('T') || (dateValue.includes(' ') && /\d{1,2}[.:]\d{2}/.test(dateValue))
+              ? new Date(dateValue)
+              : timeSlot
+                ? fromZonedTime(`${datePart} ${timeSlot}:00`, 'Europe/Tallinn')
+                : fromZonedTime(`${datePart} 12:00:00`, 'Europe/Tallinn')
+          const endDt = new Date(startDt.getTime() + 60 * 60 * 1000)
+          calendarStartIso = startDt.toISOString()
+          calendarEndIso = endDt.toISOString()
         }
       }
     }
@@ -217,6 +229,8 @@ export async function GET(request: NextRequest) {
       email,
       date: dateStr,
       timeSlot,
+      calendarStartIso,
+      calendarEndIso,
       cc: 'keskus@papagoi.ee',
     })
 
