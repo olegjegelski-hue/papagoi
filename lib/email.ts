@@ -319,12 +319,12 @@ export async function sendConfirmationEmail(data: {
     const calendarSection =
       calendarUrls
         ? `
-      <div style="background-color: #f0fdf4; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #43A047;">
-        <p style="margin: 0 0 10px 0; font-weight: 600; color: #059669;">Lisa broneering kalendrisse</p>
-        <p style="margin: 0 0 8px 0; font-size: 14px;">
-          <a href="${calendarUrls.googleUrl}" style="color: #059669; text-decoration: underline;">Lisa Google Calendrisse</a> &nbsp;|&nbsp;
-          <a href="${calendarUrls.outlookUrl}" style="color: #059669; text-decoration: underline;">Lisa Outlook'i</a> &nbsp;|&nbsp;
-          <a href="${calendarUrls.icsUrl}" style="color: #059669; text-decoration: underline;">Laadi alla .ics</a> (sobib enamustele kalendritele)
+      <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
+        <p style="margin: 0 0 10px 0; font-weight: 600; color: #92400e;">Lisa broneering kalendrisse</p>
+        <p style="margin: 0; font-size: 14px; font-weight: 500;">
+          <a href="${calendarUrls.googleUrl}" style="color: #d97706; text-decoration: underline;">Lisa Google Calendrisse</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.outlookUrl}" style="color: #d97706; text-decoration: underline;">Lisa Outlook'i</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.icsUrl}" style="color: #d97706; text-decoration: underline;">Laadi alla .ics</a> (sobib enamustele kalendritele)
         </p>
       </div>`
         : ''
@@ -348,6 +348,9 @@ export async function sendConfirmationEmail(data: {
         <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
       </div>
       ${calendarSection}
+      <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
+        <p style="margin: 0; color: #92400e;">Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.</p>
+      </div>
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Palume enne külastust arvestada</h3>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
@@ -356,7 +359,6 @@ export async function sendConfirmationEmail(data: {
           <li>Soovitame kanda tumedamaid sokke (mitte valgeid). Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.</li>
           <li>Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette, et saaksime aja teistele külastajatele pakkuda.</li>
         </ul>
-        <p style="margin: 15px 0 0 0;"><strong>Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.</strong></p>
         <p style="margin: 15px 0 0 0;"><strong>Reeglid, ohutus ja praktiline info</strong> – kõik oluline enne külastust: <a href="${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised" style="color: #059669; text-decoration: underline;">www.papagoi.ee/kulastajatele</a></p>
       </div>
       
@@ -419,7 +421,7 @@ export async function sendConfirmationEmail(data: {
       priceText +
       '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n' +
       calendarText +
-      '\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nKui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
+      '\n*** Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale. ***\n\nPalume enne külastust arvestada\n* Palume olla kohal 5–10 min varem.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* Soovitame kanda tumedamaid sokke (mitte valgeid).\n* Kui plaan muutub, palume külastuse tühistamisest või aja muutmisest teada anda esimesel võimalusel, ideaalis vähemalt 24 tundi ette.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
       `${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised` +
       '\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
       new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
