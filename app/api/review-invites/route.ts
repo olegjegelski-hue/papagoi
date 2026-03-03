@@ -19,8 +19,13 @@ export async function GET(request: Request) {
 
   try {
     // Optional dry-run flag via query (?dry=1)
-    if (url.searchParams.get('dry') === '1') {
+    const dry = url.searchParams.get('dry')
+    if (dry === '1') {
       process.env.REVIEW_DRY_RUN = '1'
+    } else if (dry === '0') {
+      process.env.REVIEW_DRY_RUN = '0'
+    } else if (process.env.REVIEW_DRY_RUN) {
+      delete process.env.REVIEW_DRY_RUN
     }
 
     await runReviewInvitesFromEnv()

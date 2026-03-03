@@ -321,6 +321,7 @@ async function markReviewSent(
 export async function sendReviewEmail(to: string, name: string | null, visitDateIso: string | null) {
   const transporter = createTransporter()
   const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
   const reviewLink =
     process.env.REVIEW_GOOGLE_URL || 'https://g.page/r/CXfsGh_UtN6-EBM/review'
 
@@ -389,6 +390,7 @@ keskus@papagoi.ee
   await transporter.sendMail({
     from: `"Papagoi Keskus" <${fromAddress}>`,
     to,
+    cc: centerEmail,
     subject,
     html,
     text,
