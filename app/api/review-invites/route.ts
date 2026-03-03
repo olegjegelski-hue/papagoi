@@ -6,10 +6,15 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const token = url.searchParams.get('token')
-  const expected = process.env.REVIEW_CRON_SECRET
+  const expected = process.env.REVIEW_CRON_SECRET || process.env.CRON_SECRET
+  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization')
 
-  if (expected && token !== expected) {
-    return new NextResponse('Unauthorized', { status: 401 })
+  if (expected) {
+    const headerOk = authHeader === `Bearer ${expected}`
+    const tokenOk = token === expected
+    if (!headerOk && !tokenOk) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
   }
 
   try {
