@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts"
   },
   "devDependencies": {
     "@next/swc-wasm-nodejs": "13.5.1",
