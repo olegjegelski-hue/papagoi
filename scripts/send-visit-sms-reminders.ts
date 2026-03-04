@@ -479,10 +479,19 @@ export async function runVisitSmsRemindersFromEnv() {
     return
   }
 
+  console.log('Resolving Külastajad DB, id suffix:', NOTION_VISITORS_DATABASE_ID.replace(/-/g, '').slice(-8))
   const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
   if (!visitorsDb) {
     console.error('Could not resolve visitors database metadata.')
     process.exit(1)
+  }
+
+  // Ohutus: kui "SMS saadetud" veergu ei leita, EI SAADA ÜHTEGI SMS-i (vältida topeltsõnumeid).
+  if (!visitorsDb.smsReminderSentPropertyName) {
+    console.error(
+      'ABORT: Külastajate andmebaasist ei leitud "SMS saadetud" checkbox-veergu. SMS-e ei saadeta – võimalik topeltsaatmine. Kontrolli NOTION_VISITORS_DATABASE_ID ja veeru nime Notionis.'
+    )
+    return
   }
 
   const uniqueByPhone = new Map<string, VisitorRecord[]>()
