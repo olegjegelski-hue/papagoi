@@ -267,6 +267,13 @@ async function resolveVisitorsDatabase(
     null
 
   const smsReminderSentPropertyName =
+    (properties['SMS saadetud']?.type === 'checkbox' ? 'SMS saadetud' : null) ||
+    Object.keys(properties).find((key) => {
+      const prop = properties[key]
+      if (prop?.type !== 'checkbox') return false
+      const normalized = normalizeKey(key)
+      return normalized === 'smssaadetud'
+    }) ||
     Object.keys(properties).find((key) => {
       const prop = properties[key]
       if (prop?.type !== 'checkbox') return false
@@ -278,6 +285,14 @@ async function resolveVisitorsDatabase(
         normalized.includes('teavitus')
       )
     }) || null
+
+  if (!smsReminderSentPropertyName) {
+    console.warn(
+      'Visitors database: no checkbox property found for "SMS saadetud". SMS filter and marking will be skipped – risk of duplicate SMS.'
+    )
+  } else {
+    console.log('Using SMS checkbox property:', smsReminderSentPropertyName)
+  }
 
   if (!relationPropertyName) {
     console.error('Visitors database has no relation to visits (Külastused)')
@@ -388,7 +403,10 @@ async function markSmsReminderSent(
   visitorPageId: string
 ) {
   const { smsReminderSentPropertyName } = visitorsDb
-  if (!smsReminderSentPropertyName) return
+  if (!smsReminderSentPropertyName) {
+    console.warn('markSmsReminderSent: no checkbox property configured, skipping')
+    return
+  }
 
   const pageId = visitorPageId.replace(/-/g, '')
   const response = await fetchWithTimeout(`https://api.notion.com/v1/pages/${pageId}`, {
@@ -408,6 +426,8 @@ async function markSmsReminderSent(
   if (!response.ok) {
     const text = await response.text()
     console.error('Failed to mark SMS reminder sent:', response.status, text)
+  } else {
+    console.log('Marked SMS saadetud=true for page', pageId)
   }
 }
 
