@@ -284,11 +284,21 @@ async function resolveVisitorsDatabase(
         normalized.includes('reminder') ||
         normalized.includes('teavitus')
       )
-    }) || null
+    }) ||
+    // Fallback: any checkbox whose name normalizes to contain "saadetud" (e.g. "SMS  saadetud" or different encoding)
+    Object.keys(properties).find((key) => {
+      const prop = properties[key]
+      if (prop?.type !== 'checkbox') return false
+      const normalized = normalizeKey(key)
+      return normalized.includes('saadetud')
+    }) ||
+    null
 
   if (!smsReminderSentPropertyName) {
+    const checkboxKeys = Object.keys(properties).filter((k) => properties[k]?.type === 'checkbox')
     console.warn(
-      'Visitors database: no checkbox property found for "SMS saadetud". SMS filter and marking will be skipped – risk of duplicate SMS.'
+      'Visitors database: no checkbox property found for "SMS saadetud". SMS filter and marking will be skipped – risk of duplicate SMS. Checkbox columns in DB:',
+      checkboxKeys.length ? checkboxKeys.join(', ') : '(none)'
     )
   } else {
     console.log('Using SMS checkbox property:', smsReminderSentPropertyName)
