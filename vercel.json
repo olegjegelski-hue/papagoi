@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/visit-sms-reminders?token=visit-sms-2026-secret-xyz",
-      "schedule": "0 19 * * *"
+      "schedule": "0 17 * * *"
     }
   ]
 }
