@@ -6,7 +6,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts"
+    "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts",
+    "send-visit-sms-reminders": "VISIT_SMS_CLI=1 tsx scripts/send-visit-sms-reminders.ts",
+    "send-test-sms": "TEST_SMS_CLI=1 tsx scripts/send-test-sms.ts"
   },
   "devDependencies": {
     "@next/swc-wasm-nodejs": "13.5.1",
