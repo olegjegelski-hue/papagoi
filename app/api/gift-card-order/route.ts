@@ -47,6 +47,8 @@ export async function POST(request: Request) {
       amountEur: amountNum,
     })
 
+    console.log('[gift-card-order] Notion leht loodud:', result.pageId, 'kood:', result.code, 'DB:', NOTION_GIFT_CARDS_DATABASE_ID.replace(/-/g, '').slice(-8))
+
     await sendGiftCardOrderEmail({
       to: email.trim(),
       buyerName: name.trim(),
@@ -54,7 +56,7 @@ export async function POST(request: Request) {
       code: result.code,
     })
 
-    return NextResponse.json({ ok: true, code: result.code })
+    return NextResponse.json({ ok: true, code: result.code, pageId: result.pageId })
   } catch (error) {
     console.error('Gift card order error:', error)
     const message = error instanceof Error ? error.message : 'Tundmatu viga'

@@ -162,7 +162,8 @@ export async function createGiftCardOrder(
 
   if (!createRes.ok) {
     const text = await createRes.text()
-    throw new Error(`Notion Kinkekaardid lehe loomine ebaõnnestus: ${createRes.status} ${text}`)
+    console.error('[notion-gift-cards] Lehe loomine ebaõnnestus:', createRes.status, text)
+    throw new Error(`Notion: ${createRes.status} – ${text.slice(0, 200)}`)
   }
 
   const page = await createRes.json()
