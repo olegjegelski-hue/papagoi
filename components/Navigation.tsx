@@ -127,6 +127,9 @@ export default function Navigation() {
           <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
             Broneeri
           </Link>
+          <Link href="/kinkekaart" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+            Kinkekaart
+          </Link>
           <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
             Kontakt
           </Link>
@@ -176,6 +179,13 @@ export default function Navigation() {
               onClick={() => setIsOpen(false)}
             >
               Broneeri
+            </Link>
+            <Link 
+              href="/kinkekaart" 
+              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              Kinkekaart
             </Link>
             <Link 
               href="/kontakt" 

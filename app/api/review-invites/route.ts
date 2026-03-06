@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         ok: true,
         test: true,
         sentTo: to,
-        message: 'Näidiskiri saadetud keskuse mailile.',
+        message: 'Naidiskiri saadetud keskuse mailile.',
       })
     }
 

@@ -435,3 +435,71 @@ export async function sendConfirmationEmail(data: {
     )
   }
 }
+
+// Kinkekaardi tellimuse kinnitus – tellijale ja koopia Papagoi Keskusele
+export async function sendGiftCardOrderEmail(data: {
+  to: string
+  buyerName: string
+  amountEur: number
+  code: string
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  const subject = `Kinkekaardi tellimus – Papagoi Keskus (${data.amountEur} €)`
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        Kinkekaardi tellimus kinnitatud
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">Tere, <strong>${data.buyerName}</strong>!</p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        Täname teid kinkekaardi tellimuse eest. Oleme tellimuse kinnitanud ja võtame peagi ühendust maksmise ja kinkekaardi vormistamise osas.
+      </p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <h3 style="color: #059669; margin-top: 0;">Tellimuse andmed</h3>
+        <p style="margin: 10px 0;"><strong>Väärtus:</strong> ${data.amountEur} € (${data.amountEur / 10} külastust)</p>
+        <p style="margin: 10px 0;"><strong>Kinkekaardi kood:</strong> <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-size: 1.1em;">${data.code}</code></p>
+        <p style="margin: 10px 0; font-size: 14px; color: #4b5563;">Seda koodi kasutatakse kinkekaardi tuvastamiseks. Kinkekaardi saaja saab selle koodiga külastuse broneerida.</p>
+      </div>
+      <p style="font-size: 14px; color: #4b5563;">
+        Kui teil on küsimusi, võtke ühendust: <a href="tel:+3725127938">+372 512 7938</a> või <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>.
+      </p>
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">Lugupidamisega</p>
+        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
+        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 5px 0;"><a href="https://www.papagoi.ee/">https://www.papagoi.ee/</a></p>
+      </div>
+    </div>
+  `
+
+  const text = `
+Tere, ${data.buyerName}!
+
+Täname kinkekaardi tellimuse eest. Oleme tellimuse kinnitanud ja võtame peagi ühendust maksmise ja kinkekaardi vormistamise osas.
+
+Tellimuse andmed:
+- Väärtus: ${data.amountEur} € (${data.amountEur / 10} külastust)
+- Kinkekaardi kood: ${data.code}
+
+Seda koodi kasutatakse kinkekaardi tuvastamiseks. Kinkekaardi saaja saab selle koodiga külastuse broneerida.
+
+Küsimuste korral: +372 512 7938 või keskus@papagoi.ee
+
+Lugupidamisega
+Papagoi Keskus
+Tel +372 51 27 938
+https://www.papagoi.ee/
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: data.to,
+    cc: centerEmail,
+    subject,
+    html,
+    text,
+  })
+}
