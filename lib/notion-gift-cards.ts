@@ -86,34 +86,34 @@ export async function createGiftCardOrder(
   const properties = dbData.properties || {}
 
   const ostjaNimiKey =
-    findProp(properties, ['Ostja nimi'], 'title') ||
+    findProp(properties, ['Ostja nimi', 'Name', 'Nimi', 'Ostja'], 'title') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'title') ||
     null
   const ostjaTelefonKey =
-    findProp(properties, ['Ostja telefon'], 'phone_number') ||
+    findProp(properties, ['Ostja telefon', 'Telefon', 'Phone'], 'phone_number') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'phone_number') ||
     null
   const ostjaEmailKey =
-    findProp(properties, ['Ostja email', 'Ostja e-post'], 'email') ||
+    findProp(properties, ['Ostja email', 'Ostja e-post', 'Email', 'E-post'], 'email') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'email') ||
     null
   const ostuKuupaevKey =
-    findProp(properties, ['Ostu kuupäev', 'Ostu kuupaev'], 'date') ||
+    findProp(properties, ['Ostu kuupäev', 'Ostu kuupaev', 'Kuupäev', 'Date'], 'date') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'date') ||
     null
   const vaartusKey =
-    findProp(properties, ['Väärtus', 'Vaartus'], 'number') ||
+    findProp(properties, ['Väärtus', 'Vaartus', 'Summa', 'Amount'], 'number') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'number') ||
     null
   const koodKey =
-    findProp(properties, ['Kinkekaardi kood', 'Kood'], 'rich_text') ||
+    findProp(properties, ['Kinkekaardi kood', 'Kood', 'Code'], 'rich_text') ||
     Object.keys(properties).find((k) =>
       properties[k]?.type === 'rich_text' &&
-      (normalizeKey(k).includes('kood') || normalizeKey(k).includes('kinkekaart'))
+      (normalizeKey(k).includes('kood') || normalizeKey(k).includes('kinkekaart') || normalizeKey(k).includes('code'))
     ) ||
     null
   const staatusKey =
-    findProp(properties, ['Staatus'], 'select') ||
+    findProp(properties, ['Staatus', 'Status'], 'select') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'select') ||
     null
 
@@ -145,7 +145,15 @@ export async function createGiftCardOrder(
   if (ostuKuupaevKey) pageProps[ostuKuupaevKey] = { date: { start: orderDate } }
   if (vaartusKey) pageProps[vaartusKey] = { number: payload.amountEur }
   if (koodKey) pageProps[koodKey] = { rich_text: [{ type: 'text', text: { content: code } }] }
-  if (staatusKey) pageProps[staatusKey] = { select: { name: 'Tellitud' } }
+  if (staatusKey) {
+    const selectProp = properties[staatusKey]
+    const options = selectProp?.select?.options || []
+    const tellitudOption = options.find((o: { name?: string }) =>
+      /tellitud|ordered/i.test((o.name || '').trim())
+    )
+    const statusName = tellitudOption?.name ?? 'Tellitud'
+    pageProps[staatusKey] = { select: { name: statusName } }
+  }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {
     method: 'POST',

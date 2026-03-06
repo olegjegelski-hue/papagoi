@@ -352,6 +352,9 @@ export async function sendReviewEmail(to: string, name: string | null, visitDate
       <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
         <strong>Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.</strong>
       </p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – <strong>Papagoi Keskuse kinkekaardiga</strong> saab kingisaaja ise valida endale sobiva aja ja külastuse. Kinkekaardi leiate siit: <a href="https://www.papagoi.ee/kinkekaart">https://www.papagoi.ee/kinkekaart</a>
+      </p>
       <p style="margin-top: 16px; font-size: 14px; color: #4b5563;">
         Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.
       </p>
@@ -376,6 +379,8 @@ Jäta arvustus siia:
 ${reviewLink}
 
 Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.
+
+Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – Papagoi Keskuse kinkekaardiga saab kingisaaja ise valida endale sobiva aja ja külastuse. Kinkekaardi leiate siit: https://www.papagoi.ee/kinkekaart
 
 Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.
 
