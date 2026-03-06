@@ -88,6 +88,7 @@ interface VisitorsDbMeta {
   relationPropertyName: string | null
   phonePropertyName: string | null
   namePropertyName: string | null
+  countPropertyName: string | null
   smsReminderSentPropertyName: string | null
 }
 
@@ -97,6 +98,9 @@ interface VisitorRecord {
   name: string | null
   visitDate: string | null
   visitTime: string | null
+  groupSize: number | null
+  /** Kas sellel rea real on juba "SMS saadetud" linnuke (true = ära saada) */
+  smsAlreadySent: boolean
 }
 
 async function resolveVisitsDatabase(notionApiKey: string, visitsDatabaseId: string) {
@@ -266,6 +270,16 @@ async function resolveVisitorsDatabase(
     }) ||
     null
 
+  const countPropertyName =
+    (properties['Arv']?.type === 'number' ? 'Arv' : null) ||
+    Object.keys(properties).find((key) => {
+      const prop = properties[key]
+      if (prop?.type !== 'number') return false
+      const normalized = normalizeKey(key)
+      return normalized === 'arv' || normalized.includes('arv')
+    }) ||
+    null
+
   const smsReminderSentPropertyName =
     (properties['SMS saadetud']?.type === 'checkbox' ? 'SMS saadetud' : null) ||
     Object.keys(properties).find((key) => {
@@ -316,40 +330,33 @@ async function resolveVisitorsDatabase(
     relationPropertyName,
     phonePropertyName,
     namePropertyName,
+    countPropertyName,
     smsReminderSentPropertyName,
   }
 }
 
+/** Tagastab kõik selle külastusega seotud külastajad; linnukese kontrollitakse iga rea pealt eraldi. */
 async function getVisitorsForVisit(
   notionApiKey: string,
   visitorsDb: VisitorsDbMeta,
   visitId: string,
   visitDate: string | null,
   visitTime: string | null
-): Promise<VisitorRecord[]> {
-  const { databaseId, relationPropertyName, phonePropertyName, namePropertyName, smsReminderSentPropertyName } =
+): Promise<{ visitors: VisitorRecord[]; smsSentPropertyKey: string | null }> {
+  const { databaseId, relationPropertyName, phonePropertyName, namePropertyName, countPropertyName, smsReminderSentPropertyName } =
     visitorsDb
-  if (!relationPropertyName || !phonePropertyName) return []
+  if (!relationPropertyName || !phonePropertyName) return { visitors: [], smsSentPropertyKey: null }
 
   const allVisitors: VisitorRecord[] = []
+  let discoveredSmsKey: string | null = smsReminderSentPropertyName || null
   let cursor: string | undefined
 
   do {
-    const relationFilter: any = {
-      property: relationPropertyName,
-      relation: { contains: visitId.replace(/-/g, '') },
-    }
-
-    const andFilters: any[] = [relationFilter]
-    if (smsReminderSentPropertyName) {
-      andFilters.push({
-        property: smsReminderSentPropertyName,
-        checkbox: { equals: false },
-      })
-    }
-
     const body: Record<string, unknown> = {
-      filter: andFilters.length === 1 ? andFilters[0] : { and: andFilters },
+      filter: {
+        property: relationPropertyName,
+        relation: { contains: visitId.replace(/-/g, '') },
+      },
       page_size: 100,
     }
     if (cursor) body.start_cursor = cursor
@@ -392,31 +399,49 @@ async function getVisitorsForVisit(
         nameProp?.rich_text?.[0]?.plain_text ??
         null
 
+      const smsSentKey =
+        discoveredSmsKey ||
+        Object.keys(props).find(
+          (k) => props[k]?.type === 'checkbox' && normalizeKey(k).includes('saadetud')
+        ) ||
+        null
+      if (smsSentKey && !discoveredSmsKey) discoveredSmsKey = smsSentKey
+
+      let smsAlreadySent = true
+      if (smsSentKey) {
+        const checkboxVal = props[smsSentKey]?.checkbox
+        smsAlreadySent = checkboxVal === true
+      }
+
+      let groupSize: number | null = null
+      if (countPropertyName) {
+        const n = props[countPropertyName]?.number
+        if (typeof n === 'number' && Number.isInteger(n) && n >= 1) groupSize = n
+      }
+
       allVisitors.push({
         id: page.id,
         phone: normalizedPhone,
         name: nameValue,
         visitDate,
         visitTime,
+        groupSize,
+        smsAlreadySent,
       })
     }
 
     cursor = data.has_more ? data.next_cursor : undefined
   } while (cursor)
 
-  return allVisitors
+  return { visitors: allVisitors, smsSentPropertyKey: discoveredSmsKey }
 }
 
 async function markSmsReminderSent(
   notionApiKey: string,
-  visitorsDb: VisitorsDbMeta,
-  visitorPageId: string
+  visitorPageId: string,
+  smsSentPropertyKey: string
 ) {
-  const { smsReminderSentPropertyName } = visitorsDb
-  if (!smsReminderSentPropertyName) {
-    console.warn('markSmsReminderSent: no checkbox property configured, skipping')
-    return
-  }
+  if (!smsSentPropertyKey) return
 
   const pageId = visitorPageId.replace(/-/g, '')
   const response = await fetchWithTimeout(`https://api.notion.com/v1/pages/${pageId}`, {
@@ -428,7 +453,7 @@ async function markSmsReminderSent(
     },
     body: JSON.stringify({
       properties: {
-        [smsReminderSentPropertyName]: { checkbox: true },
+        [smsSentPropertyKey]: { checkbox: true },
       },
     }),
   })
@@ -441,22 +466,22 @@ async function markSmsReminderSent(
   }
 }
 
-function buildReminderMessage(visitDateIso: string | null, visitTime: string | null) {
-  const mapUrl =
-    process.env.VISIT_SMS_MAP_URL ||
-    'https://maps.app.goo.gl/xxxxxxxx' // soovitatav asendada lühikese Google Maps lingiga
-
+function buildReminderMessage(
+  visitDateIso: string | null,
+  visitTime: string | null,
+  groupSize: number | null
+) {
   let datePart = 'homme'
   if (visitDateIso) {
     datePart = formatInTimeZone(visitDateIso, 'Europe/Tallinn', 'dd.MM.yyyy')
   }
 
   const timePart = visitTime || 'kokkulepitud ajal'
+  const countPart =
+    groupSize != null && groupSize >= 1 ? ` (${groupSize} inimest)` : ''
 
   return (
-    `Tere! Tuletame meelde, et Papagoi Keskuse külastus on ${datePart} kell ${timePart}. ` +
-    `Kui plaanid muutuvad, palun helistage tühistamiseks või aja muutmiseks: +372 512 7938. ` +
-    `Papagoid ootavad teid! Google Maps: ${mapUrl}`
+    `Tere! Meeldetuletus: Papagoi Keskus ${datePart} kell ${timePart}.${countPart} Papagoid ootavad! Kui plaanid muutuvad, palun helistada: +372 512 7938.`
   )
 }
 
@@ -486,25 +511,20 @@ export async function runVisitSmsRemindersFromEnv() {
     process.exit(1)
   }
 
-  // Ohutus: kui "SMS saadetud" veergu ei leita, EI SAADA ÜHTEGI SMS-i (vältida topeltsõnumeid).
-  if (!visitorsDb.smsReminderSentPropertyName) {
-    console.error(
-      'ABORT: Külastajate andmebaasist ei leitud "SMS saadetud" checkbox-veergu. SMS-e ei saadeta – võimalik topeltsaatmine. Kontrolli NOTION_VISITORS_DATABASE_ID ja veeru nime Notionis.'
-    )
-    return
-  }
-
   const uniqueByPhone = new Map<string, VisitorRecord[]>()
+  let effectiveSmsSentPropertyKey: string | null = visitorsDb.smsReminderSentPropertyName || null
 
   for (const visit of visits) {
-    const visitors = await getVisitorsForVisit(
+    const { visitors, smsSentPropertyKey } = await getVisitorsForVisit(
       NOTION_API_KEY,
       visitorsDb,
       visit.id,
       visit.date || null,
       visit.time || null
     )
+    if (smsSentPropertyKey && !effectiveSmsSentPropertyKey) effectiveSmsSentPropertyKey = smsSentPropertyKey
     for (const v of visitors) {
+      if (v.smsAlreadySent) continue
       const phone = v.phone.trim()
       if (!phone) continue
       const list = uniqueByPhone.get(phone) ?? []
@@ -513,8 +533,15 @@ export async function runVisitSmsRemindersFromEnv() {
     }
   }
 
+  if (!effectiveSmsSentPropertyKey) {
+    console.error(
+      'ABORT: Ei leitud ühtegi "SMS saadetud" tüüpi veergu (ei skeemist ega külastaja lehtedelt). SMS-e ei saadeta.'
+    )
+    return
+  }
+
   if (!uniqueByPhone.size) {
-    console.log('No visitors with phone numbers found for tomorrow. Nothing to do.')
+    console.log('No visitors without linnuke (SMS saadetud) found for tomorrow. Nothing to do.')
     return
   }
 
@@ -529,7 +556,7 @@ export async function runVisitSmsRemindersFromEnv() {
 
   for (const [phone, visitors] of uniqueByPhone.entries()) {
     const first = visitors[0]
-    const message = buildReminderMessage(first.visitDate, first.visitTime)
+    const message = buildReminderMessage(first.visitDate, first.visitTime, first.groupSize)
 
     if (dryRun) {
       console.log(
@@ -546,7 +573,7 @@ export async function runVisitSmsRemindersFromEnv() {
       console.log(`SMS reminder sent to ${phone}`)
 
       for (const v of visitors) {
-        await markSmsReminderSent(NOTION_API_KEY, visitorsDb, v.id)
+        await markSmsReminderSent(NOTION_API_KEY, v.id, effectiveSmsSentPropertyKey!)
       }
     } catch (error) {
       errorCount++
