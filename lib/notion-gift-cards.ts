@@ -114,10 +114,25 @@ export async function createGiftCardOrder(
     null
   const staatusKey =
     findProp(properties, ['Staatus', 'Status'], 'select') ||
+    findProp(properties, ['Staatus', 'Status'], 'status') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'select') ||
+    Object.keys(properties).find((k) => properties[k]?.type === 'status') ||
     null
 
-  if (!ostjaNimiKey) throw new Error('Notion Kinkekaardid: Ostja nimi veerg puudub')
+  // Notion nõuab select/status puhul täpset valikut – kasutame nime või id (id on stabiilsem)
+  function resolveTellitudOption(prop: {
+    select?: { options?: Array<{ id?: string; name?: string }> }
+    status?: { options?: Array<{ id?: string; name?: string }> }
+  }): { name: string; id?: string } {
+    const options = prop?.select?.options || prop?.status?.options || []
+    const match = options.find((o) => /tellitud/i.test((o.name || '').trim()))
+    if (match) {
+      return { name: (match.name || 'Tellitud').trim(), id: match.id }
+    }
+    return { name: 'Tellitud' }
+  }
+
+  const staatusOption = staatusKey ? resolveTellitudOption(properties[staatusKey]) : { name: 'Tellitud' }
 
   const pageProps: Record<string, unknown> = {}
 
@@ -152,7 +167,14 @@ export async function createGiftCardOrder(
       pageProps[koodKey] = { rich_text: [{ type: 'text', text: { content: code } }] }
   }
   if (staatusKey) {
-    pageProps[staatusKey] = { select: { name: 'Tellitud' } }
+    const p = properties[staatusKey]
+    const value = staatusOption.id
+      ? { [p?.type === 'status' ? 'status' : 'select']: { id: staatusOption.id } }
+      : { [p?.type === 'status' ? 'status' : 'select']: { name: staatusOption.name } }
+    pageProps[staatusKey] = value
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[notion-gift-cards] Staatus:', staatusKey, p?.type, staatusOption.id ? 'id' : 'name', staatusOption.name)
+    }
   }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {
