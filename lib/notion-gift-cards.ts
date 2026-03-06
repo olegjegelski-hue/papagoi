@@ -33,19 +33,15 @@ function findProp(
   exactNames: string[],
   typeFilter?: string
 ): string | null {
-  for (const name of exactNames) {
-    if (properties[name] && (!typeFilter || properties[name].type === typeFilter))
-      return name
-  }
   const normalizedTargets = exactNames.map((n) => normalizeKey(n))
-  return (
-    Object.keys(properties).find((key) => {
-      const prop = properties[key]
-      if (typeFilter && prop?.type !== typeFilter) return false
-      const n = normalizeKey(key)
-      return normalizedTargets.some((t) => n === t || n.includes(t) || t.includes(n))
-    }) || null
-  )
+  for (const [key, prop] of Object.entries(properties)) {
+    if (typeFilter && prop?.type !== typeFilter) continue
+    const propName = (prop?.name ?? key).toString()
+    const n = normalizeKey(propName)
+    if (normalizedTargets.some((t) => n === t || n.includes(t) || t.includes(n)))
+      return key
+  }
+  return null
 }
 
 export interface CreateGiftCardOrderPayload {
@@ -151,7 +147,7 @@ export async function createGiftCardOrder(
     const tellitudOption = options.find((o: { name?: string }) =>
       /tellitud|ordered/i.test((o.name || '').trim())
     )
-    const statusName = tellitudOption?.name ?? 'Tellitud'
+    const statusName = tellitudOption ? tellitudOption.name : 'Tellitud'
     pageProps[staatusKey] = { select: { name: statusName } }
   }
 
