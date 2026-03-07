@@ -78,7 +78,7 @@ export default function VisitFAQ() {
     : faqs.filter(faq => faq.category === selectedCategory);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-white" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-white" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -87,7 +87,7 @@ export default function VisitFAQ() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Korduma kippuvad <span className="text-blue-600">küsimused</span>
+            Korduma kippuvad <span className="text-papagoi-blue">küsimused</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Siin on vastused kõige sagedasematele küsimustele meie külastuse kohta
@@ -103,8 +103,8 @@ export default function VisitFAQ() {
               onClick={() => setSelectedCategory(category.key)}
               className={`${
                 selectedCategory === category.key
-                  ? 'bg-blue-500 hover:bg-blue-600'
-                  : 'hover:bg-blue-50 border-blue-200'
+                  ? 'bg-papagoi-blue hover:bg-papagoi-blue-600'
+                  : 'hover:bg-papagoi-blue-50 border-papagoi-blue-200'
               } font-semibold`}
             >
               <category.icon className="mr-2 h-4 w-4" />
@@ -134,8 +134,8 @@ export default function VisitFAQ() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="bg-blue-100 rounded-full p-2">
-                      <faq.icon className="h-5 w-5 text-blue-600" />
+                    <div className="bg-papagoi-blue-100 rounded-full p-2">
+                      <faq.icon className="h-5 w-5 text-papagoi-blue" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 text-left">
                       {faq.question}
@@ -173,14 +173,14 @@ export default function VisitFAQ() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-16 text-center bg-gradient-to-r from-green-50 to-blue-50 rounded-3xl p-8"
+          className="mt-16 text-center bg-gradient-to-r from-papagoi-green-50 to-papagoi-blue-50 rounded-3xl p-8"
         >
           <div className="mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-full mb-4">
               <Phone className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              Ikka jäi <span className="text-green-600">küsimusi?</span>
+              Ikka jäi <span className="text-papagoi-green">küsimusi?</span>
             </h3>
             <p className="text-lg text-gray-600 mb-6">
               Ärge kartke küsida! Oleme alati nõus põhjalikumalt selgitama ja teie muresid arutama.
@@ -188,21 +188,15 @@ export default function VisitFAQ() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:+37251279380">
-              <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold">
-                <Phone className="mr-2 h-4 w-4" />
-                Helistage +372 512 7938
-              </Button>
+            <a href="tel:+37251279380" className="papagoi-cta inline-flex items-center justify-center">
+              <Phone className="mr-2 h-4 w-4" />
+              Helistage +372 512 7938
             </a>
-            <Link href="/kontakt">
-              <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
-                Kirjutage meile
-              </Button>
+            <Link href="/kontakt" className="inline-flex items-center justify-center border-2 border-papagoi-green text-papagoi-green hover:bg-papagoi-green-50 font-semibold px-8 py-3 rounded-full transition-all">
+              Kirjutage meile
             </Link>
-            <Link href="/broneeri">
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-                Broneeri kohe külastus
-              </Button>
+            <Link href="/broneeri" className="papagoi-cta inline-flex items-center justify-center">
+              Broneeri kohe külastus
             </Link>
           </div>
         </motion.div>

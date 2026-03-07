@@ -9,7 +9,7 @@ export default function LocationMap() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-white" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-white" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -18,7 +18,7 @@ export default function LocationMap() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Kuidas meie <span className="text-green-600">juurde jõuda?</span>
+            Kuidas meie <span className="text-papagoi-green">juurde jõuda?</span>
           </h2>
           <p className="text-lg text-gray-600">
             Asume Tartu lähistel, hõlpsa ligipääsuga nii autoga kui ühistranspordiga
@@ -43,7 +43,7 @@ export default function LocationMap() {
                   href="https://maps.google.com/?q=Tartu+mnt+80+Soinaste+Kambja+vald"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="inline-flex items-center bg-papagoi-green hover:bg-papagoi-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
                 >
                   <Navigation className="mr-2 h-4 w-4" />
                   Vaata Google Mapsist
@@ -61,7 +61,7 @@ export default function LocationMap() {
           >
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
-                <Car className="h-6 w-6 text-blue-500" />
+                <Car className="h-6 w-6 text-papagoi-blue" />
                 <h3 className="text-xl font-semibold text-gray-900">Autoga</h3>
               </div>
               <div className="space-y-3 text-gray-700">
@@ -75,10 +75,10 @@ export default function LocationMap() {
                 <div>
                   <strong>Sõiduaeg Tartust:</strong> ~15 minutit
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="bg-papagoi-blue-50 border border-papagoi-blue-200 rounded-lg p-3">
                   <div className="flex items-center space-x-2">
-                    <Info className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-800 font-semibold text-sm">
+                    <Info className="h-4 w-4 text-papagoi-blue" />
+                    <span className="text-papagoi-blue-800 font-semibold text-sm">
                       Parkimine tasuta maja ees või tee äärde
                     </span>
                   </div>
@@ -88,7 +88,7 @@ export default function LocationMap() {
 
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
-                <Navigation className="h-6 w-6 text-green-500" />
+                <Navigation className="h-6 w-6 text-papagoi-green" />
                 <h3 className="text-xl font-semibold text-gray-900">Kasulikud nipid</h3>
               </div>
               <div className="space-y-3 text-gray-700 text-sm">
@@ -99,12 +99,12 @@ export default function LocationMap() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+            <div className="bg-papagoi-yellow-50 border border-papagoi-yellow-200 rounded-2xl p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <Info className="h-6 w-6 text-yellow-600" />
-                <h3 className="text-lg font-semibold text-yellow-800">Oluline!</h3>
+                <Info className="h-6 w-6 text-papagoi-yellow-600" />
+                <h3 className="text-lg font-semibold text-papagoi-yellow-800">Oluline!</h3>
               </div>
-              <div className="text-yellow-700 space-y-2">
+              <div className="text-papagoi-yellow-700 space-y-2">
                 <div>
                   <strong>Kohtumiskoht:</strong> Tuleme teid vastu õue või ukse juurde
                 </div>
@@ -120,7 +120,7 @@ export default function LocationMap() {
             <div className="text-center">
               <a
                 href="tel:+37251279380"
-                className="inline-flex items-center bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                className="inline-flex items-center bg-gradient-to-r from-papagoi-green to-papagoi-blue hover:from-papagoi-green-600 hover:to-papagoi-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Helistage, kui tekivad küsimused
               </a>

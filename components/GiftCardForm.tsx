@@ -165,7 +165,7 @@ export default function GiftCardForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+          className="w-full sm:w-auto papagoi-cta disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
         >
           <Gift className="w-5 h-5 mr-2" />
           {loading ? 'Saadan…' : `Soovin kinkekaarti (${amount} €)`}

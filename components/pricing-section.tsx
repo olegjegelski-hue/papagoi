@@ -165,15 +165,11 @@ export default function PricingSection() {
                     ))}
                   </ul>
                   
-                  <Link href="/broneeri" className="block">
-                    <Button 
-                      className={`w-full bg-gradient-to-r ${service.color} hover:opacity-90 text-white font-semibold py-3 text-lg`}
-                    >
-                      {service.id === 'visit' ? 'Broneeri külastus' : 
-                       service.id === 'mobile' ? 'Tellige kohale' :
-                       service.id === 'center-event' ? 'Broneeri üritus' :
-                       'Broneeri majutus'}
-                    </Button>
+                  <Link href="/broneeri" className="papagoi-cta w-full inline-flex justify-center">
+                    {service.id === 'visit' ? 'Broneeri külastus' : 
+                     service.id === 'mobile' ? 'Tellige kohale' :
+                     service.id === 'center-event' ? 'Broneeri üritus' :
+                     'Broneeri majutus'}
                   </Link>
                 </CardContent>
               </Card>
@@ -222,7 +218,7 @@ export default function PricingSection() {
               <strong>Grupihinnangud:</strong> Koolidele ja ettevõtetele erisoodustused!
             </p>
             <Link href="/kontakt">
-              <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+              <Button variant="outline" className="border-papagoi-green text-papagoi-green hover:bg-papagoi-green-50">
                 Küsi gruppide kohta
               </Button>
             </Link>

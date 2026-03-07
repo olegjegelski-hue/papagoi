@@ -38,7 +38,7 @@ export default function KinkekaartPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">
               Kinkekaart
             </span>
           </h1>
@@ -52,7 +52,7 @@ export default function KinkekaartPage() {
           {/* Main: gift card offer + form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-green/10">
-              <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white text-center">
+              <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue p-8 text-white text-center">
                 <Gift className="w-12 h-12 mx-auto mb-4 opacity-90" />
                 <h2 className="text-2xl md:text-3xl font-bold">Digitaalne kinkekaart</h2>
               </div>
@@ -124,11 +124,11 @@ export default function KinkekaartPage() {
             </div>
 
             {/* CTA Broneeri */}
-            <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white text-center">
+            <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-6 text-white text-center">
               <p className="font-semibold mb-4">Kinkekaardi saaja soovib aega broneerida?</p>
               <Link
                 href="/broneeri"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold bg-white text-green-600 hover:shadow-lg transition-all"
+                className="papagoi-cta-white inline-flex items-center justify-center"
               >
                 <Calendar className="w-5 h-5 mr-2" />
                 Broneeri külastus

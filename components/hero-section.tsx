@@ -3,7 +3,6 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, MapPin, Clock, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import CountUp from '@/components/count-up';
@@ -97,20 +96,12 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 1.0 }}
               className="flex flex-col sm:flex-row gap-4 mt-8 justify-center lg:justify-start"
             >
-              <Link href="/broneeri">
-                <Button size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 py-3 text-lg group btn-hover-lift">
-                  Broneeri külastus
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+              <Link href="/broneeri" className="papagoi-cta inline-flex items-center">
+                <span>Broneeri külastus</span>
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/papagoid">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 border-green-500 text-green-600 hover:bg-green-50 font-semibold px-8 py-3 text-lg btn-hover-lift"
-                >
-                  Tutvuge papagoidega
-                </Button>
+              <Link href="/papagoid" className="inline-flex items-center border-2 border-papagoi-green text-papagoi-green hover:bg-papagoi-green-50 font-semibold px-8 py-3 text-lg rounded-full transition-all">
+                Tutvuge papagoidega
               </Link>
             </motion.div>
           </motion.div>

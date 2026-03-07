@@ -9,6 +9,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      /* Brändi tüpograafia: pealkirjad = font-heading (Nunito), põhitekst = font-sans (Open Sans) */
       fontFamily: {
         sans: ['var(--font-open-sans)', 'system-ui', 'sans-serif'],
         heading: ['var(--font-nunito)', 'system-ui', 'sans-serif'],

@@ -598,7 +598,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 </a>
                 <a
                   href="/broneeri"
-                  className="text-green-600 border-2 border-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-600 hover:text-white transition-all duration-300"
+                  className="papagoi-cta"
                 >
                   Broneeri külastus
                 </a>

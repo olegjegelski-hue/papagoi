@@ -4,6 +4,7 @@ import GiftCardCTA from '@/components/GiftCardCTA'
 import BookingCTA from '@/components/BookingCTA'
 import Statistics from '@/components/Statistics'
 import TestimonialsSection from '@/components/testimonials-section'
+import SectionDivider from '@/components/SectionDivider'
 import type { Metadata } from 'next'
 
 function getSiteUrl() {
@@ -38,10 +39,15 @@ export default async function Home() {
   return (
     <>
       <Hero />
+      <SectionDivider variant="wave" />
       <WhyVisit />
+      <SectionDivider />
       <GiftCardCTA />
+      <SectionDivider variant="wave" />
       <Statistics />
+      <SectionDivider />
       <TestimonialsSection />
+      <SectionDivider variant="wave" />
       <BookingCTA />
     </>
   )

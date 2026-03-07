@@ -12,7 +12,7 @@ export default function CTASection() {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
 
   return (
-    <section className="py-20 relative overflow-hidden" ref={ref}>
+    <section className="py-20 relative overflow-hidden papagoi-feathers-bg" ref={ref}>
       {/* Background */}
       <div className="absolute inset-0 cta-gradient" />
       <div className="absolute inset-0 bg-black/20" />
@@ -87,7 +87,7 @@ export default function CTASection() {
             <Link href="/broneeri">
               <Button 
                 size="lg" 
-                className="bg-white text-green-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-xl group btn-hover-lift"
+                className="papagoi-cta-white shadow-xl group"
               >
                 <Calendar className="mr-2 h-5 w-5" />
                 Broneeri kohe külastus

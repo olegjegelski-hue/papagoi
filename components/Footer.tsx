@@ -21,7 +21,7 @@ export default function Footer() {
                 className="rounded-lg shadow-lg border-2 border-papagoi-green/30"
               />
               <div>
-                <h3 className="text-xl font-bold text-deep-anthracite">Papagoi Keskus</h3>
+                <h3 className="font-heading text-xl font-bold text-deep-anthracite">Papagoi Keskus</h3>
                 <p className="papagoi-text-gradient font-medium">Elu täis värve ja hääli</p>
               </div>
             </div>

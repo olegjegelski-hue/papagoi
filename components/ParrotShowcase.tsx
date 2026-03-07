@@ -228,13 +228,13 @@ export default function ParrotShowcase({ parrots: parrotsProp }: ParrotShowcaseP
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 href="/broneeri"
-                className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:shadow-lg transition text-sm"
+                className="papagoi-cta"
               >
                 Broneeri külastus
               </a>
               <a
                 href="/papagoid"
-                className="text-green-600 border-2 border-green-600 px-6 py-2 rounded-full font-semibold hover:bg-green-600 hover:text-white transition text-sm"
+                className="inline-flex items-center justify-center border-2 border-papagoi-green text-papagoi-green px-6 py-2 rounded-full font-semibold hover:bg-papagoi-green hover:text-white transition text-sm"
               >
                 Vaata kõiki papagoie
               </a>

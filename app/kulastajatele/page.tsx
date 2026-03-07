@@ -41,7 +41,7 @@ export default function VisitorsPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Külastajatele</span>
+              <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">Külastajatele</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">
               Sujuvaks külastuseks tutvu alloleva infoga.
@@ -68,26 +68,26 @@ export default function VisitorsPage() {
 
           {/* Quick Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-green-500">
-              <Clock className="w-8 h-8 text-green-500 mx-auto mb-4" />
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-green">
+              <Clock className="w-8 h-8 text-papagoi-green mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Lahtiolekuajad</h3>
               <p className="text-gray-600 font-medium">E-P 12-18</p>
               <p className="text-sm text-gray-500 mt-1">algusega täistunnil</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-blue-500">
-              <Users className="w-8 h-8 text-blue-500 mx-auto mb-4" />
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-blue">
+              <Users className="w-8 h-8 text-papagoi-blue mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Grupi suurus</h3>
               <p className="text-gray-600 font-medium">kuni 20 inimest</p>
               <p className="text-sm text-gray-500 mt-1">min 3 inimest</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-yellow-500">
-              <Euro className="w-8 h-8 text-yellow-500 mx-auto mb-4" />
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-yellow">
+              <Euro className="w-8 h-8 text-papagoi-yellow mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Hind</h3>
               <p className="text-gray-600 font-medium">10€ inimene</p>
               <p className="text-sm text-gray-500 mt-1">ca 1 tund</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-purple-500">
-              <Camera className="w-8 h-8 text-purple-500 mx-auto mb-4" />
+            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-orange">
+              <Camera className="w-8 h-8 text-papagoi-orange mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Fotod</h3>
               <p className="text-gray-600 font-medium">Lubatud</p>
               <p className="text-sm text-gray-500 mt-1">ja soovitatud!</p>
@@ -100,89 +100,89 @@ export default function VisitorsPage() {
           {/* Reeglid ja juhised */}
           <div id="reeglid-ja-juhised" className="bg-white rounded-2xl shadow-lg p-8 mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <Shield className="w-6 h-6 text-blue-600 mr-2" />
+              <Shield className="w-6 h-6 text-papagoi-blue mr-2" />
               Reeglid ja juhised
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <div className="bg-papagoi-green-50 rounded-xl p-6 border border-papagoi-green-200">
                 <div className="flex items-center mb-4">
-                  <CheckCircle className="w-6 h-6 text-green-600 mr-2" />
+                  <CheckCircle className="w-6 h-6 text-papagoi-green mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">✅ Lubatud:</h3>
                 </div>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
-                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-green font-bold mt-1">•</span>
                     <span>Fotode ja videote tegemine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-green font-bold mt-1">•</span>
                     <span>Papagoidega suhtlemine järelevalve all</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-green font-bold mt-1">•</span>
                     <span>Küsimuste esitamine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-green font-bold mt-1">•</span>
                     <span>Rahulik käitumine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-green-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-green font-bold mt-1">•</span>
                     <span>Papagoide toitmine (ainult loa korral)</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+              <div className="bg-papagoi-red-50 rounded-xl p-6 border border-papagoi-red-200">
                 <div className="flex items-center mb-4">
-                  <XCircle className="w-6 h-6 text-red-600 mr-2" />
+                  <XCircle className="w-6 h-6 text-papagoi-red mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">❌ Keelatud:</h3>
                 </div>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Vali käitumine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Loomadele stressi tekitamine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Loata loomade puutumine</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Loomade hirmutamine</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200">
                 <div className="flex items-center mb-4">
-                  <Info className="w-6 h-6 text-blue-600 mr-2" />
+                  <Info className="w-6 h-6 text-papagoi-blue mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">🎒 Soovitused:</h3>
                 </div>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-blue font-bold mt-1">•</span>
                     <span>Kandke mugavaid riideid</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-blue font-bold mt-1">•</span>
                     <span>Ehted ära võtta</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-blue font-bold mt-1">•</span>
                     <span>Kandke tumedaid sokke</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-blue font-bold mt-1">•</span>
                     <span>Tulge avatud meelega</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-blue font-bold mt-1">•</span>
                     <span>Jälgige oma lapsi</span>
                   </li>
                 </ul>
@@ -190,22 +190,22 @@ export default function VisitorsPage() {
             </div>
 
             {/* Väikelapsed ja ohutus */}
-            <div className="mt-8 bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+            <div className="mt-8 bg-papagoi-yellow-50 rounded-xl p-6 border border-papagoi-yellow-200">
               <div className="flex items-center mb-4">
-                <Baby className="w-6 h-6 text-yellow-600 mr-2" />
+                <Baby className="w-6 h-6 text-papagoi-yellow-600 mr-2" />
                 <h3 className="font-semibold text-gray-800 text-lg">👶 Väikelapsed ja ohutus:</h3>
               </div>
               <ul className="space-y-2 text-gray-700">
                 <li className="flex items-start space-x-2">
-                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span className="text-papagoi-yellow-600 font-bold mt-1">•</span>
                   <span>Vanemad peavad jälgima oma lapsi kogu külastuse ajal</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span className="text-papagoi-yellow-600 font-bold mt-1">•</span>
                   <span>Ohutus nii lindudele kui lastele on meie prioriteet</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-yellow-600 font-bold mt-1">•</span>
+                  <span className="text-papagoi-yellow-600 font-bold mt-1">•</span>
                   <span>Väikelapsed peavad käituma rahulikult ja järgima juhiseid</span>
                 </li>
               </ul>
@@ -215,62 +215,62 @@ export default function VisitorsPage() {
           {/* Praktiline info külastuseks */}
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <Info className="w-6 h-6 text-green-600 mr-2" />
+              <Info className="w-6 h-6 text-papagoi-green mr-2" />
               Praktiline info külastuseks
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Parkimine */}
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <div className="bg-papagoi-green-50 rounded-xl p-6 border border-papagoi-green-200">
                 <div className="flex items-center mb-4">
-                  <Car className="w-6 h-6 text-green-600 mr-2" />
+                  <Car className="w-6 h-6 text-papagoi-green mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">🚗 Parkimine:</h3>
                 </div>
                 <p className="text-gray-700">
                   Parkimine maja ees. Palume järgida viisakat parkimist ja jätta piisavalt ruumi teiste külastajatele.
                 </p>
-                <p className="text-gray-700 mt-2 font-semibold text-red-600">
+                <p className="text-gray-700 mt-2 font-semibold text-papagoi-red">
                   NB! Tee ääres murul parkimine KEELATUD!
                 </p>
               </div>
 
               {/* Maksmine */}
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200">
                 <div className="flex items-center mb-4">
-                  <Euro className="w-6 h-6 text-blue-600 mr-2" />
+                  <Euro className="w-6 h-6 text-papagoi-blue mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">💳 Maksmine:</h3>
                 </div>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Maksmine toimub peale üritust</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <span className="text-red-600 font-bold mt-1">•</span>
+                    <span className="text-papagoi-red font-bold mt-1">•</span>
                     <span>Makseviisid: sularaha (pangaterminal puudub)</span>
                   </li>
                 </ul>
               </div>
 
               {/* Hilinemine */}
-              <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+              <div className="bg-papagoi-orange-50 rounded-xl p-6 border border-papagoi-orange-200">
                 <div className="flex items-center mb-4">
-                  <Clock className="w-6 h-6 text-orange-600 mr-2" />
+                  <Clock className="w-6 h-6 text-papagoi-orange mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">⏰ Hilinemine:</h3>
                 </div>
                 <p className="text-gray-700">
-                  Hilinemisest palume teada anda telefoni teel: <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
+                  Hilinemisest palume teada anda telefoni teel: <a href="tel:+3725127938" className="text-papagoi-red font-semibold hover:underline">+372 512 7938</a>
                 </p>
               </div>
 
               {/* Tühistamine */}
-              <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+              <div className="bg-papagoi-red-50 rounded-xl p-6 border border-papagoi-red-200">
                 <div className="flex items-center mb-4">
-                  <XCircle className="w-6 h-6 text-red-600 mr-2" />
+                  <XCircle className="w-6 h-6 text-papagoi-red mr-2" />
                   <h3 className="font-semibold text-gray-800 text-lg">❌ Tühistamine:</h3>
                 </div>
                 <p className="text-gray-700">
-                  Palume külastuse tühistamisel sellest aegsasti teada anda, kuna pererahvas planeerib vastavaid töid ja ettevalmistusi ning teie broneeritud aega ei saa pärast keegi teine kasutada. <a href="tel:+3725127938" className="text-red-600 font-semibold hover:underline">+372 512 7938</a>
+                  Palume külastuse tühistamisel sellest aegsasti teada anda, kuna pererahvas planeerib vastavaid töid ja ettevalmistusi ning teie broneeritud aega ei saa pärast keegi teine kasutada. <a href="tel:+3725127938" className="text-papagoi-red font-semibold hover:underline">+372 512 7938</a>
                 </p>
               </div>
 
@@ -516,7 +516,7 @@ export default function VisitorsPage() {
           </div>
 
           {/* CTA */}
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-12 text-white text-center">
+          <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-12 text-white text-center">
             <h2 className="text-3xl font-bold mb-6">
               Valmis meie pere külastama?
             </h2>
@@ -526,14 +526,14 @@ export default function VisitorsPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/broneeri"
-                className="bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all text-lg inline-flex items-center justify-center"
+                className="papagoi-cta-white inline-flex items-center justify-center"
               >
                 <Calendar className="w-5 h-5 mr-2" />
                 Broneeri külastus
               </Link>
               <a
                 href="tel:+3725127938"
-                className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-green-600 transition-all text-lg inline-flex items-center justify-center"
+                className="papagoi-cta-outline inline-flex items-center justify-center"
               >
                 <Phone className="w-5 h-5 mr-2" />
                 Helista: +372 512 7938

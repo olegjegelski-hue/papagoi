@@ -24,8 +24,10 @@ html {
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  font-family: var(--font-open-sans), system-ui, sans-serif;
 }
 
+/* Brändi tüpograafia: pealkirjad Nunito, põhitekst Open Sans */
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-nunito), system-ui, sans-serif;
@@ -69,6 +71,10 @@ body {
     radial-gradient(circle at 60% 40%, rgba(255, 235, 59, 0.05) 0%, transparent 50%);
 }
 
+.cta-gradient {
+  background: linear-gradient(135deg, rgba(67, 160, 71, 0.85) 0%, rgba(3, 155, 229, 0.8) 50%, rgba(255, 152, 0, 0.75) 100%);
+}
+
 /* Kerge sulgede/okste motiiv sektsioonide taustadele (brändi visuaal) */
 .papagoi-section-pattern {
   position: relative;
@@ -78,6 +84,16 @@ body {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' opacity='0.06'%3E%3Cpath d='M40 5 Q55 20 50 40 Q45 55 40 75 Q35 55 30 40 Q25 20 40 5' fill='none' stroke='%23263238' stroke-width='0.8'/%3E%3Cpath d='M20 25 Q35 35 30 55' fill='none' stroke='%23263238' stroke-width='0.5'/%3E%3Cpath d='M60 30 Q48 42 55 60' fill='none' stroke='%23263238' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Teine kiht: värvilised suled brändi värvides (roheline, sinine, oranž) */
+.papagoi-section-pattern::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 10 Q75 30 70 55 Q65 75 60 95' fill='none' stroke='%2343A047' stroke-width='0.6' opacity='0.08'/%3E%3Cpath d='M25 40 Q45 50 40 75' fill='none' stroke='%23039BE5' stroke-width='0.5' opacity='0.07'/%3E%3Cpath d='M95 35 Q80 55 85 80' fill='none' stroke='%23FF9800' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M10 70 Q30 60 50 85' fill='none' stroke='%2343A047' stroke-width='0.4' opacity='0.05'/%3E%3Cpath d='M110 75 Q95 85 75 95' fill='none' stroke='%23FFEB3B' stroke-width='0.4' opacity='0.05'/%3E%3C/svg%3E");
   background-repeat: repeat;
   pointer-events: none;
   z-index: 0;
@@ -94,6 +110,36 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' opacity='0.06'%3E%3Cpath d='M40 5 Q55 20 50 40 Q45 55 40 75 Q35 55 30 40 Q25 20 40 5' fill='none' stroke='%23263238' stroke-width='0.8'/%3E%3Cpath d='M20 25 Q35 35 30 55' fill='none' stroke='%23263238' stroke-width='0.5'/%3E%3Cpath d='M60 30 Q48 42 55 60' fill='none' stroke='%23263238' stroke-width='0.5'/%3E%3C/svg%3E");
   background-repeat: repeat;
   pointer-events: none;
+  z-index: 1;
+}
+
+/* Sektsioonide eraldaja: kergelt värviline riba (sulgede motiiv) */
+.papagoi-section-divider {
+  width: 100%;
+  height: 24px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(67, 160, 71, 0.12) 20%, rgba(3, 155, 229, 0.1) 50%, rgba(255, 152, 0, 0.1) 80%, transparent 100%);
+}
+.papagoi-section-divider--wave {
+  height: 32px;
+  background: linear-gradient(135deg, rgba(67, 160, 71, 0.08) 0%, rgba(3, 155, 229, 0.08) 50%, rgba(255, 152, 0, 0.06) 100%);
+}
+
+/* Taust rohkemate sulgedega (nt erisektsioonid) */
+.papagoi-feathers-bg {
+  position: relative;
+}
+.papagoi-feathers-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M80 5 Q100 25 95 50 Q90 70 80 95 Q70 70 65 50 Q60 25 80 5' fill='none' stroke='%2343A047' stroke-width='1' opacity='0.1'/%3E%3Cpath d='M40 30 Q60 45 55 75' fill='none' stroke='%23039BE5' stroke-width='0.8' opacity='0.09'/%3E%3Cpath d='M120 25 Q105 50 110 80' fill='none' stroke='%23FF9800' stroke-width='0.8' opacity='0.08'/%3E%3Cpath d='M20 90 Q45 80 70 100' fill='none' stroke='%2343A047' stroke-width='0.6' opacity='0.07'/%3E%3Cpath d='M140 85 Q120 95 95 110' fill='none' stroke='%23FFEB3B' stroke-width='0.6' opacity='0.06'/%3E%3Cpath d='M0 50 Q25 55 50 45' fill='none' stroke='%23039BE5' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M160 55 Q135 60 110 50' fill='none' stroke='%2343A047' stroke-width='0.5' opacity='0.06'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+.papagoi-feathers-bg > * {
+  position: relative;
   z-index: 1;
 }
 
@@ -125,4 +171,76 @@ body {
   background: linear-gradient(135deg, #CC7A00 0%, #F4D100 100%);
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+}
+
+/* Ühtne CTA-nupp: põhivariant (gradient), sama kuju ja suurus */
+.papagoi-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  background: linear-gradient(135deg, #43A047 0%, #039BE5 100%);
+  color: #fff;
+  box-shadow: 0 25px 50px -12px rgba(67, 160, 71, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.papagoi-cta:hover {
+  background: linear-gradient(135deg, #368038 0%, #027CB7 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(67, 160, 71, 0.35);
+  color: #fff;
+}
+
+.papagoi-cta-white {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  background: #fff;
+  color: #43A047;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.2s ease, color 0.2s ease;
+}
+.papagoi-cta-white:hover {
+  background: #f9fafb;
+  color: #368038;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.papagoi-cta-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border: 2px solid #fff;
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent;
+  color: #fff;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.papagoi-cta-outline:hover {
+  background: #fff;
+  color: #43A047;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }

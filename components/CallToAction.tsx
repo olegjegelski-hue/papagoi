@@ -30,16 +30,16 @@ export default function CallToAction() {
         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
           <Link
             href="/broneeri"
-            className="bg-white text-deep-anthracite px-8 py-4 rounded-full text-xl font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 border-2 border-transparent hover:border-papagoi-yellow"
+            className="papagoi-cta-white inline-flex items-center justify-center space-x-2"
           >
-            <Calendar className="w-6 h-6 text-papagoi-green" />
+            <Calendar className="w-6 h-6" />
             <span>Broneeri külastus</span>
-            <ArrowRight className="w-5 h-5 text-papagoi-orange" />
+            <ArrowRight className="w-5 h-5" />
           </Link>
           
           <Link
             href="/kontakt"
-            className="border-2 border-white text-white px-8 py-4 rounded-full text-xl font-bold hover:bg-white hover:text-deep-anthracite transition-all duration-300 flex items-center justify-center space-x-2 hover:border-papagoi-yellow"
+            className="papagoi-cta-outline inline-flex items-center justify-center space-x-2"
           >
             <Phone className="w-6 h-6" />
             <span>Küsi lisainfot</span>

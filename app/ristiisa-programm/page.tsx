@@ -328,13 +328,13 @@ export default function SponsorshipProgramPage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <a
               href="/papagoid"
-              className="bg-white text-green-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="papagoi-cta-white inline-flex items-center justify-center"
             >
               Vaata kõiki papagoie
             </a>
             <a
               href="/kontakt"
-              className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-green-600 transition-all duration-300"
+              className="papagoi-cta-outline inline-flex items-center justify-center"
             >
               Võta ühendust
             </a>

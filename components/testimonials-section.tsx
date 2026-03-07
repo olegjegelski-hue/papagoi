@@ -50,7 +50,7 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="pt-0 pb-12 bg-gradient-to-b from-blue-50 to-yellow-50 papagoi-section-pattern" ref={ref}>
+    <section className="pt-0 pb-12 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-yellow-50 papagoi-section-pattern" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -59,7 +59,7 @@ export default function TestimonialsSection() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">
               Mida ütlevad meie külastajad?
             </span>
           </h2>
@@ -70,7 +70,7 @@ export default function TestimonialsSection() {
 
         {/* Üldine Google reiting enne arvustuste loendit */}
         <div className="mt-1 mb-3 flex justify-center">
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl px-6 py-4 text-white inline-block shadow-lg">
+          <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-3xl px-6 py-4 text-white inline-block shadow-lg">
             <GoogleRating />
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function TestimonialsSection() {
                         {review.relative_time_description}
                       </div>
                     )}
-                    <div className="text-xs text-blue-600 mt-1">
+                    <div className="text-xs text-papagoi-blue mt-1">
                       Allikas: Google&apos;i arvustused (Google Maps)
                     </div>
                   </div>
@@ -123,7 +123,7 @@ export default function TestimonialsSection() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="text-center mt-12"
         >
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
+          <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-3xl p-8 md:p-12 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Jaga oma kogemust teistega!</h3>
 
             <p className="text-lg mb-6 opacity-90 max-w-2xl mx-auto">
@@ -133,7 +133,7 @@ export default function TestimonialsSection() {
               href="https://g.page/r/CXfsGh_UtN6-EAE/review"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center space-x-2 bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-lg"
+              className="papagoi-cta-white inline-flex items-center justify-center space-x-2"
             >
               <Star className="w-5 h-5 fill-current text-yellow-400" />
               <span>Jäta meile arvustus Google'is</span>

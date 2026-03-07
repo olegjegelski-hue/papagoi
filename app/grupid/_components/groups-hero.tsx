@@ -3,7 +3,6 @@
 
 import { motion } from 'framer-motion';
 import { GraduationCap, Building, Users, Star, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useInView } from 'react-intersection-observer';
@@ -54,20 +53,13 @@ export default function GroupsHero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Link href="/broneeri">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 py-3 text-lg"
-                >
-                  <Users className="mr-2 h-5 w-5" />
-                  Broneeri grupikülastus
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+              <Link href="/broneeri" className="papagoi-cta inline-flex items-center">
+                <Users className="mr-2 h-5 w-5" />
+                Broneeri grupikülastus
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-              <a href="tel:+37251279380">
-                <Button variant="outline" size="lg" className="border-green-500 text-green-600 hover:bg-green-50 font-semibold px-8 py-3 text-lg">
-                  Helista konsultatsiooni
-                </Button>
+              <a href="tel:+37251279380" className="inline-flex items-center justify-center border-2 border-papagoi-green text-papagoi-green hover:bg-papagoi-green-50 font-semibold px-8 py-3 text-lg rounded-full transition-all">
+                Helista konsultatsiooni
               </a>
             </div>
 

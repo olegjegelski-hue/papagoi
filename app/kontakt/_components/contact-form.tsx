@@ -102,8 +102,8 @@ export default function ContactForm() {
         >
             <Card className="shadow-2xl rounded-2xl overflow-hidden">
               <CardContent className="p-12 text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Send className="h-10 w-10 text-green-600" />
+                <div className="w-20 h-20 bg-papagoi-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Send className="h-10 w-10 text-papagoi-green" />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
                   Täname! Teie sõnum on saadetud
@@ -111,7 +111,7 @@ export default function ContactForm() {
                 <p className="text-lg text-gray-600 mb-6">
                   Võtame teiega lähiajal ühendust ja vastame teile esimesel võimalusel.
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-6 text-left">
+                <div className="bg-papagoi-blue-50 border-l-4 border-papagoi-blue p-4 rounded mb-6 text-left">
                   <p className="text-gray-700">
                     <strong>Mida järgmisena?</strong>
                   </p>
@@ -144,7 +144,7 @@ export default function ContactForm() {
       >
 
           <Card className="shadow-2xl rounded-2xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-center">
+            <CardHeader className="bg-gradient-to-r from-papagoi-blue to-papagoi-green text-white text-center">
               <CardTitle className="text-2xl font-bold flex items-center justify-center space-x-3">
                 <Mail className="h-6 w-6" />
                 <span>Kontaktvorm</span>
@@ -244,7 +244,7 @@ export default function ContactForm() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-3 text-lg"
+                  className="w-full bg-gradient-to-r from-papagoi-blue to-papagoi-green hover:from-papagoi-blue-600 hover:to-papagoi-green-600 text-white font-semibold py-3 text-lg"
                 >
                   {isSubmitting ? (
                     'Saadame...'

@@ -12,20 +12,20 @@ export default function WhyVisit() {
   ]
 
   return (
-    <section className="py-12 bg-gradient-to-br from-green-50 to-blue-50 papagoi-section-pattern">
+    <section className="py-12 bg-gradient-to-br from-papagoi-green-50 to-papagoi-blue-50 papagoi-section-pattern">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left side - Content */}
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-8">
-              Miks külastada <span className="bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">Papagoi Keskust Tartus?</span>
+              Miks külastada <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">Papagoi Keskust Tartus?</span>
             </h2>
             
             <div className="space-y-4">
               {reasons.map((reason, index) => (
                 <div key={index} className="flex items-start gap-4 bg-white/60 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/30 hover:bg-white/80 transition-all duration-300">
-                  <div className="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-1">
+                  <div className="flex-shrink-0 w-6 h-6 bg-papagoi-green rounded-full flex items-center justify-center mt-1">
                     <Check className="w-4 h-4 text-white" />
                   </div>
                   <p className="text-gray-700 font-medium leading-relaxed">

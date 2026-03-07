@@ -15,9 +15,9 @@ export default function Navigation() {
         {/* Centered Logo Row with Papagoi [LOGO] Keskus */}
         <div className="flex justify-center items-center py-4 relative">
           <Link href="/" className="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 group">
-            {/* Papagoi text */}
+            {/* Papagoi text - Nunito Bold (brändi logo font) */}
             <div className="text-right">
-              <h1 className="text-2xl md:text-3xl font-bold papagoi-text-gradient">Papagoi</h1>
+              <h1 className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Papagoi</h1>
             </div>
             
             {/* Logo with integrated slogan */}
@@ -29,9 +29,9 @@ export default function Navigation() {
               className="drop-shadow-md group-hover:scale-110 transition-transform duration-300"
             />
             
-            {/* Keskus text */}
+            {/* Keskus text - Nunito Bold (brändi logo font) */}
             <div className="text-left">
-              <h1 className="text-2xl md:text-3xl font-bold papagoi-text-gradient">Keskus</h1>
+              <h1 className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Keskus</h1>
             </div>
           </Link>
 
@@ -42,7 +42,7 @@ export default function Navigation() {
               className="group hover:scale-110 transition-transform duration-300"
               title="Blogi"
             >
-              <div className="bg-gradient-to-b from-green-600 to-blue-600 rounded-full px-2 py-3 shadow-sm group-hover:shadow-md flex flex-col items-center justify-center">
+              <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-full px-2 py-3 shadow-sm group-hover:shadow-md flex flex-col items-center justify-center">
                 <div className="text-white text-xs font-bold leading-none space-y-0.5">
                   <div className="text-center">B</div>
                   <div className="text-center">L</div>

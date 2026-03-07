@@ -44,7 +44,7 @@ const CountUp = ({ end, duration = 2000 }: { end: number; duration?: number }) =
 
 export default function Statistics() {
   return (
-    <section className="pt-4 pb-16 bg-gradient-to-br from-green-50 to-blue-50 papagoi-section-pattern">
+    <section className="pt-4 pb-16 bg-gradient-to-br from-papagoi-green-50 to-papagoi-blue-50 papagoi-section-pattern">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -58,7 +58,7 @@ export default function Statistics() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {/* Papagoid */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
-            <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl md:text-5xl font-bold text-papagoi-green mb-2 group-hover:scale-110 transition-transform duration-300">
               <noscript>50</noscript>
               <CountUp end={50} />+
             </div>
@@ -72,7 +72,7 @@ export default function Statistics() {
 
           {/* Puurivabalt */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
-            <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl md:text-5xl font-bold text-papagoi-blue mb-2 group-hover:scale-110 transition-transform duration-300">
               <noscript>40</noscript>
               <CountUp end={40} />
             </div>
@@ -86,7 +86,7 @@ export default function Statistics() {
 
           {/* Kogemus */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
-            <div className="text-4xl md:text-5xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl md:text-5xl font-bold text-papagoi-orange mb-2 group-hover:scale-110 transition-transform duration-300">
               <noscript>11</noscript>
               <CountUp end={11} />
             </div>
@@ -100,7 +100,7 @@ export default function Statistics() {
 
           {/* Facebook järgijad */}
           <div className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 group">
-            <div className="text-4xl md:text-5xl font-bold text-pink-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl md:text-5xl font-bold text-papagoi-red mb-2 group-hover:scale-110 transition-transform duration-300">
               <noscript>5600</noscript>
               <CountUp end={5600} />
             </div>

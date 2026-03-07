@@ -88,7 +88,7 @@ export default function ContactPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Kontakt</span>
+            <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">Kontakt</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Võtke meiega ühendust broneeringu tegemiseks või küsimuste esitamiseks. 
@@ -107,14 +107,14 @@ export default function ContactPage() {
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-papagoi-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-papagoi-green" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Telefon</h3>
                     <a
                       href="tel:+3725127938" 
-                      className="text-gray-600 hover:text-green-600 transition-colors mb-2 block font-medium"
+                      className="text-gray-600 hover:text-papagoi-green transition-colors mb-2 block font-medium"
                     >
                       +372 512 7938
                     </a>
@@ -122,14 +122,14 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-papagoi-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-papagoi-blue" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">E-post</h3>
                     <a 
                       href="mailto:keskus@papagoi.ee" 
-                      className="text-gray-600 hover:text-blue-600 transition-colors mb-2 block font-medium"
+                      className="text-gray-600 hover:text-papagoi-blue transition-colors mb-2 block font-medium"
                     >
                       keskus@papagoi.ee
                     </a>
@@ -138,8 +138,8 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-papagoi-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-papagoi-orange" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Asukoht</h3>
@@ -152,7 +152,7 @@ export default function ContactPage() {
                       href="https://maps.google.com/?q=Tartu+mnt+80,+Soinaste,+Kambja+vald,+Tartumaa+61709,+Eesti"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm text-purple-600 hover:text-purple-800 transition-colors font-medium"
+                      className="inline-flex items-center text-sm text-papagoi-orange hover:text-papagoi-orange-600 transition-colors font-medium"
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
                       Vaata Google Maps'is
@@ -161,8 +161,8 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-yellow-600" />
+                  <div className="w-12 h-12 bg-papagoi-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-papagoi-yellow-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Lahtiolekuajad</h3>
@@ -181,7 +181,7 @@ export default function ContactPage() {
 
         {/* Quick Actions - Full Width */}
         <div className="mb-16">
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white">
+          <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-6 text-white">
             <h3 className="text-2xl font-bold mb-4 text-center">Kiired toimingud</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <a
@@ -228,7 +228,7 @@ export default function ContactPage() {
               href="https://www.facebook.com/PapagoiKeskus" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-blue-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-blue-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#1877F2] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className="text-center">
-                <h3 className="font-semibold text-gray-800 group-hover:text-blue-600">Facebook</h3>
+                <h3 className="font-semibold text-gray-800 group-hover:text-papagoi-blue">Facebook</h3>
                 <p className="text-sm text-gray-500">Uudised ja fotod</p>
               </div>
             </a>
@@ -245,7 +245,7 @@ export default function ContactPage() {
               href="https://www.instagram.com/papagoikeskus" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-pink-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-orange-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -253,7 +253,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className="text-center">
-                <h3 className="font-semibold text-gray-800 group-hover:text-pink-600">Instagram</h3>
+                <h3 className="font-semibold text-gray-800 group-hover:text-papagoi-orange">Instagram</h3>
                 <p className="text-sm text-gray-500">Igapäevased hetked</p>
               </div>
             </a>
@@ -262,7 +262,7 @@ export default function ContactPage() {
               href="https://www.youtube.com/@PetsVillaTartu" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-red-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-red-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#FF0000] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -270,7 +270,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className="text-center">
-                <h3 className="font-semibold text-gray-800 group-hover:text-red-600">YouTube</h3>
+                <h3 className="font-semibold text-gray-800 group-hover:text-papagoi-red">YouTube</h3>
                 <p className="text-sm text-gray-500">Videod ja tutvustused</p>
               </div>
             </a>

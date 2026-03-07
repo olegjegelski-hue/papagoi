@@ -85,10 +85,8 @@ export default function PricingInfo() {
                   </ul>
                 </div>
 
-                <Link href="/broneeri" className="block">
-                  <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 text-lg">
-                    Broneeri külastus
-                  </Button>
+                <Link href="/broneeri" className="papagoi-cta w-full inline-flex justify-center">
+                  Broneeri külastus
                 </Link>
               </CardContent>
             </Card>

@@ -55,7 +55,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="et" className="scroll-smooth">
-      <body className={`${nunito.variable} ${openSans.variable} ${openSans.className} flex flex-col min-h-screen`}>
+      <body className={`${nunito.variable} ${openSans.variable} font-sans flex flex-col min-h-screen`}>
         <LocalBusinessSchema />
         <TouristAttractionSchema />
         <Navigation />

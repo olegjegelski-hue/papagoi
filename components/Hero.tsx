@@ -56,7 +56,7 @@ export default function Hero() {
         <div className="flex justify-center items-center mb-12">
           <Link 
             href="/broneeri"
-            className="papagoi-button-primary text-white px-8 py-4 rounded-full text-lg font-semibold shadow-2xl flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
+            className="papagoi-cta text-white shadow-2xl"
           >
             <Calendar className="w-5 h-5" />
             <span>Broneeri külastus</span>
