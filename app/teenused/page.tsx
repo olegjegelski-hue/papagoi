@@ -1,6 +1,7 @@
 import { Clock, Euro, Users, GraduationCap, Building, Heart, PartyPopper, Utensils, Feather, ExternalLink, Calendar, Phone } from 'lucide-react'
 import Link from 'next/link'
 import ServiceSchema from '@/components/ServiceSchema'
+import GiftCardCTA from '@/components/GiftCardCTA'
 import type { Metadata } from 'next'
 
 function getSiteUrl() {
@@ -9,15 +10,15 @@ function getSiteUrl() {
 }
 
 export const metadata: Metadata = {
-  title: 'Teenused - Papagoi Keskus Tartus | Külastus, sünnipäev, grupikülastused',
-  description: 'Papagoi Keskuse teenused: külastus 10€, sünnipäev 350€, õhtusöök papagoidega, grupikülastused koolidele. Väliüritused ja linnuhotell. Broneeri täna!',
-  keywords: 'Papagoi Keskus teenused, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, linnuhotell, ekskursioon papagoidega, kooli ekskursioon Tartu, papagoidega fotod Tartu, laste tegevused Tartu',
+  title: 'Teenused - Papagoi Keskus Tartus | Külastus, kinkekaart, sünnipäev, grupikülastused',
+  description: 'Papagoi Keskuse teenused: külastus 10€, digitaalne kinkekaart, sünnipäev 350€, VIP külastus, üritused papagoidega väljas, grupikülastused koolidele ja ettevõtetele. Broneeri või osta kinkekaart!',
+  keywords: 'Papagoi Keskus teenused, kinkekaart, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus, VIP külastus, ekskursioon papagoidega, kooli ekskursioon Tartu, laste tegevused Tartu',
   alternates: {
     canonical: `${getSiteUrl()}/teenused`,
   },
   openGraph: {
     title: 'Teenused - Papagoi Keskus Tartus',
-    description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega, grupikülastused.',
+    description: 'Külastus 10€, kinkekaart, sünnipäevad, VIP külastus, grupikülastused. Broneeri või kingi kinkekaart.',
     type: 'website',
     locale: 'et_EE',
     url: `${getSiteUrl()}/teenused`,
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary',
     title: 'Teenused - Papagoi Keskus Tartus',
-    description: 'Papagoi Keskuse teenused Tartus: külastus broneerimisega, sünnipäevad papagoidega.',
+    description: 'Külastus 10€, kinkekaart, sünnipäevad, grupikülastused. Broneeri või kingi kinkekaart.',
     images: ['/logo.png'],
   },
 }
@@ -198,6 +199,9 @@ export default function TeenusedPage() {
               </div>
             </div>
           </div>
+
+          {/* Kinkekaart CTA */}
+          <GiftCardCTA variant="service" />
 
           {/* 3. SÜNNIPÄEV KESKUSES */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">

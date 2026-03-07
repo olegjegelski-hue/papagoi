@@ -9,21 +9,23 @@ function getSiteUrl() {
 }
 
 export const metadata: Metadata = {
-  title: 'Kinkekaart - Papagoi Keskus | Kingi külastus',
-  description: 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Vali summa 10 € sammuga. Ideaalse kingituseks sünnipäevaks või juubeliks.',
-  keywords: 'kinkekaart Papagoi Keskus, kingi külastus, papagoidekeskus kinkekaart, Tartu kinkekaart',
+  title: 'Kinkekaart - Papagoi Keskus Tartus | Kingi külastus',
+  description: 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Vali summa 10 € sammuga. Ideaalse kingituseks sünnipäevaks või juubeliks. Kiire tellimine ja kinnitus e-kirjaga.',
+  keywords: 'kinkekaart Papagoi Keskus, kingi külastus, papagoidekeskus kinkekaart, Tartu kinkekaart, digitaalne kinkekaart, kingi elamus',
   alternates: {
     canonical: `${getSiteUrl()}/kinkekaart`,
   },
   openGraph: {
-    title: 'Kinkekaart - Papagoi Keskus',
-    description: 'Kingi külastus Papagoi Keskuses. Digitaalne kinkekaart 10 € sammuga.',
+    title: 'Kinkekaart - Papagoi Keskus Tartus',
+    description: 'Kingi külastus Papagoi Keskuses. Digitaalne kinkekaart 10 € sammuga. Sünnipäevaks või juubeliks.',
+    type: 'website',
+    locale: 'et_EE',
     url: `${getSiteUrl()}/kinkekaart`,
     images: ['/logo.png'],
   },
   twitter: {
     card: 'summary',
-    title: 'Kinkekaart - Papagoi Keskus',
+    title: 'Kinkekaart - Papagoi Keskus Tartus',
     description: 'Kingi külastus Papagoi Keskuses. Digitaalne kinkekaart 10 € sammuga.',
     images: ['/logo.png'],
   },

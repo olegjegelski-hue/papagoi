@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react'
+import { KINKEKAART_PATH, KINKEKAART_LABEL } from '@/lib/site-links'
 
 export default function Footer() {
   return (
@@ -100,6 +101,11 @@ export default function Footer() {
               <li>
                 <Link href="/broneeri" className="text-warm-gray-300 hover:text-papagoi-orange transition-colors duration-300">
                   Broneeri
+                </Link>
+              </li>
+              <li>
+                <Link href={KINKEKAART_PATH} className="text-warm-gray-300 hover:text-papagoi-orange transition-colors duration-300">
+                  {KINKEKAART_LABEL}
                 </Link>
               </li>
               <li>

@@ -6,7 +6,7 @@ export default function TouristAttractionSchema() {
     '@type': 'TouristAttraction',
     name: 'Papagoi Keskus',
     description:
-      'Eesti esimene papagoidekeskus üle 50 papagoiga. Giidiga ekskursioonid, fotod ja interaktiivne kogemus.',
+      'Eesti esimene papagoidekeskus Tartus, üle 50 papagoiga. Külastus broneerimisega, digitaalne kinkekaart, giidiga ekskursioonid ja interaktiivne kogemus.',
     image: `${normalizedBaseUrl}/logo.png`,
     address: {
       '@type': 'PostalAddress',

@@ -9,21 +9,24 @@ function getSiteUrl() {
 }
 
 export const metadata: Metadata = {
-  title: 'Blogi | Papagoi Keskus',
-  description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+  title: 'Blogi | Papagoi Keskus Tartus',
+  description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses. Külastus, kinkekaart ja teavitused.',
+  keywords: 'Papagoi Keskus blogi, papagoid, papagoide hooldus, papagoidekeskus Tartus',
   alternates: {
     canonical: `${getSiteUrl()}/blogi`,
   },
   openGraph: {
-    title: 'Blogi | Papagoi Keskus',
-    description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+    title: 'Blogi | Papagoi Keskus Tartus',
+    description: 'Loe meie blogi papagoidest ja Papagoi Keskuse uudiseid. Külastus ja kinkekaart.',
+    type: 'website',
+    locale: 'et_EE',
     url: `${getSiteUrl()}/blogi`,
     images: ['/logo.png'],
   },
   twitter: {
     card: 'summary',
-    title: 'Blogi | Papagoi Keskus',
-    description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses',
+    title: 'Blogi | Papagoi Keskus Tartus',
+    description: 'Loe meie blogi papagoidest ja Papagoi Keskuse uudiseid.',
     images: ['/logo.png'],
   },
 }

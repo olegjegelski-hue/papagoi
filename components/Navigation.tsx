@@ -1,9 +1,9 @@
-
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
+import { KINKEKAART_PATH, KINKEKAART_LABEL } from '@/lib/site-links'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -127,8 +127,8 @@ export default function Navigation() {
           <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
             Broneeri
           </Link>
-          <Link href="/kinkekaart" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Kinkekaart
+          <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+            {KINKEKAART_LABEL}
           </Link>
           <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
             Kontakt
@@ -181,11 +181,11 @@ export default function Navigation() {
               Broneeri
             </Link>
             <Link 
-              href="/kinkekaart" 
+              href={KINKEKAART_PATH} 
               className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300"
               onClick={() => setIsOpen(false)}
             >
-              Kinkekaart
+              {KINKEKAART_LABEL}
             </Link>
             <Link 
               href="/kontakt" 

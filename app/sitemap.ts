@@ -25,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${normalizedBaseUrl}/kinkekaart`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${normalizedBaseUrl}/kontakt`,
       lastModified: now,
       changeFrequency: 'monthly',

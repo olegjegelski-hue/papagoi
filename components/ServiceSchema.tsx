@@ -72,6 +72,32 @@ export default function ServiceSchema() {
         "availability": "https://schema.org/InStock"
       },
       "duration": "PT1H"
+    },
+    {
+      "@type": "Service",
+      "serviceType": "Digitaalne kinkekaart",
+      "name": "Papagoi Keskuse kinkekaart",
+      "description": "Digitaalne kinkekaart Papagoi Keskuse külastuseks. 10 € = 1 külastus. Ideaalse kingituseks sünnipäevaks või juubeliks.",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "Papagoi Keskus"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Eesti"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "10",
+        "priceCurrency": "EUR",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "10",
+          "priceCurrency": "EUR",
+          "unitText": "külastus"
+        },
+        "availability": "https://schema.org/InStock"
+      }
     }
   ]
 

@@ -1,29 +1,33 @@
 
 import StaticBookingInfo from '@/components/StaticBookingInfo'
+import GiftCardCTA from '@/components/GiftCardCTA'
 import { Calendar, Users, Clock, Euro, Phone, AlertCircle } from 'lucide-react'
+import type { Metadata } from 'next'
 
 function getSiteUrl() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
 }
 
-export const metadata = {
-  title: 'Broneeri külastus - Papagoi Keskus',
-  description: 'Broneeri külastus Papagoi Keskusesse Tartus! Interaktiivne kalender, vastus 24h jooksul. Külastused E-P 12-18, hind 10€/inimene. Min 3 inimest.',
-  keywords: 'broneeri külastus, papagoidekeskus Tartus, papagoid Tartus, perepuhkus Tartu, lapsesõbralik tegevus Tartu, ekskursioon papagoidega',
+export const metadata: Metadata = {
+  title: 'Broneeri külastus - Papagoi Keskus Tartus',
+  description: 'Broneeri külastus Papagoi Keskusesse Tartus! Vastus 24h jooksul. Külastused E-P 12-18, hind 10€/inimene. Min 3 inimest. Või kingi digitaalne kinkekaart – osta kinkekaart.',
+  keywords: 'broneeri külastus, papagoidekeskus Tartus, papagoid Tartus, kinkekaart, perepuhkus Tartu, lapsesõbralik tegevus Tartu, ekskursioon papagoidega',
   alternates: {
     canonical: `${getSiteUrl()}/broneeri`,
   },
   openGraph: {
-    title: 'Broneeri külastus - Papagoi Keskus',
-    description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+    title: 'Broneeri külastus - Papagoi Keskus Tartus',
+    description: 'Broneeri külastus Eesti ainulaadsesse papagoidekeskusesse. Vastus 24h jooksul. Või osta kinkekaart.',
+    type: 'website',
+    locale: 'et_EE',
     url: `${getSiteUrl()}/broneeri`,
     images: ['/logo.png'],
   },
   twitter: {
     card: 'summary',
-    title: 'Broneeri külastus - Papagoi Keskus',
-    description: 'Broneerige külastus Eesti ainulaadsesse papagoidekeskusesse. Lihtne broneerimisprotsess ja kiire vastus.',
+    title: 'Broneeri külastus - Papagoi Keskus Tartus',
+    description: 'Broneeri külastus papagoidekeskusesse. Vastus 24h jooksul. Või osta kinkekaart.',
     images: ['/logo.png'],
   },
 }
@@ -151,6 +155,8 @@ export default function BookingPage() {
             </div>
           </div>
         </div>
+
+        <GiftCardCTA />
       </div>
     </div>
   )

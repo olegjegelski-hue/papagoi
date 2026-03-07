@@ -8,21 +8,24 @@ function getSiteUrl() {
 }
 
 export const metadata = {
-  title: 'Ristiisa Programm - Papagoi Keskus',
-  description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+  title: 'Ristiisa Programm - Papagoi Keskus Tartus',
+  description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega. Või kingi kinkekaart külastuseks.',
+  keywords: 'ristiisa programm, papagoi ristiisa, Papagoi Keskus, toeta papagoid, papagoid Tartus',
   alternates: {
     canonical: `${getSiteUrl()}/ristiisa-programm`,
   },
   openGraph: {
-    title: 'Ristiisa Programm - Papagoi Keskus',
-    description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+    title: 'Ristiisa Programm - Papagoi Keskus Tartus',
+    description: 'Hakka meie papagoi ristiisaks! Kvartaalsed privaatsed kohtumised. Või kingi kinkekaart.',
+    type: 'website',
+    locale: 'et_EE',
     url: `${getSiteUrl()}/ristiisa-programm`,
     images: ['/logo.png'],
   },
   twitter: {
     card: 'summary',
-    title: 'Ristiisa Programm - Papagoi Keskus',
-    description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega.',
+    title: 'Ristiisa Programm - Papagoi Keskus Tartus',
+    description: 'Hakka meie papagoi ristiisaks! Kvartaalsed privaatsed kohtumised.',
     images: ['/logo.png'],
   },
 }

@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     google: 'CPr-Db3uIhvMR38RI3_ligyrF_GVfUv6706fjQAWDpM',
   },
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
-  description: 'Tule külasta Papagoi Keskust! Meie juures elab üle 50 papagoi. Broneeri külastus – räägime papagoidest, teeme koos pilti ja võimalusel saad neid ka käest toita.',
-  keywords: 'papagoi, papagoid keskus, külastus, pered, koolid, lasteaiad, lemmikloomad, Eesti, broneerida',
+  description: 'Tule külasta Papagoi Keskust Tartus! Üle 50 papagoi, broneeri külastus või osta digitaalne kinkekaart. Giidiga ekskursioonid, sünnipäevad, grupikülastused. Eesti esimene papagoidekeskus alates 2015.',
+  keywords: 'papagoi, papagoid keskus, Papagoi Keskus Tartus, külastus, kinkekaart, broneeri, pered, koolid, lasteaiad, papagoidekeskus, Eesti',
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   openGraph: {
     title: 'Papagoi Keskus – Elu täis värve ja hääli',
-    description: 'Tule külasta Papagoi Keskust! Broneeri külastus juba täna.',
+    description: 'Eesti esimene papagoidekeskus Tartus. Broneeri külastus või kingi kinkekaart. Üle 50 papagoi.',
     images: ['/logo.png'],
   },
   icons: {

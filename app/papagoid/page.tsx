@@ -1,20 +1,21 @@
 import ParrotsPageClient from './ParrotsPageClient'
+import type { Metadata } from 'next'
 
 function getSiteUrl() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
 }
 
-export const metadata = {
-  title: 'Meie papagoid - Papagoi Keskus',
-  description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
-  keywords: 'papagoid Tartus, papagoid Eestis, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus',
+export const metadata: Metadata = {
+  title: 'Meie papagoid - Papagoi Keskus Tartus',
+  description: 'Tutvuge meie papagoidega. Üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks või kingi kinkekaart külastuseks!',
+  keywords: 'papagoid Tartus, papagoid Eestis, Papagoi Keskus papagoid, ristiisa programm, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus',
   alternates: {
     canonical: `${getSiteUrl()}/papagoid`,
   },
   openGraph: {
-    title: 'Meie papagoid - Papagoi Keskus',
-    description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
+    title: 'Meie papagoid - Papagoi Keskus Tartus',
+    description: 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',
     type: 'website',
     locale: 'et_EE',
     url: `${getSiteUrl()}/papagoid`,
@@ -22,8 +23,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Meie papagoid - Papagoi Keskus',
-    description: 'Tutvuge meie papagoidega. Meie juures elab üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks!',
+    title: 'Meie papagoid - Papagoi Keskus Tartus',
+    description: 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',
     images: ['/logo.png'],
   },
 }
