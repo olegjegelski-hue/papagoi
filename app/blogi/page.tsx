@@ -80,7 +80,7 @@ export default async function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-papagoi-beige-50 via-papagoi-beige to-green-50/80">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <script
           type="application/ld+json"

@@ -372,7 +372,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const post = await getPostBySlug(params.slug)
   if (!post) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-papagoi-beige-50 via-papagoi-beige to-green-50/80">
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
           <h1 className="text-3xl font-bold text-gray-800">Postitust ei leitud</h1>
           <p className="text-gray-600 mt-4">See postitus ei ole avaldatud või seda ei ole olemas.</p>
@@ -420,7 +420,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-papagoi-beige-50 via-papagoi-beige to-green-50/80">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <script
           type="application/ld+json"

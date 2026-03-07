@@ -18,6 +18,7 @@ export default function Hero() {
         {/* Overlay for better text readability with brand colors */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20"></div>
+        <div className="papagoi-pattern-overlay" aria-hidden="true" />
       </div>
       
       {/* Floating Elements - brändi värvides, reduced opacity for subtle effect */}

@@ -78,7 +78,7 @@ export default function ContactPage() {
     },
   }
   return (
-    <div className="min-h-screen bg-gray-50 pt-12 pb-20">
+    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

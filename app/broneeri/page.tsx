@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function BookingPage() {
   return (
-    <div className="min-h-screen bg-warm-gray-50 pt-12 pb-20">
+    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -120,7 +120,7 @@ export default function BookingPage() {
             </div>
 
             {/* What to Include */}
-            <div className="bg-warm-gray-50 rounded-xl p-6 border border-papagoi-blue/20">
+            <div className="bg-papagoi-beige-50 rounded-xl p-6 border border-papagoi-blue/20">
               <h4 className="text-lg font-semibold text-deep-anthracite mb-4">Broneerides palun lisage:</h4>
               <ul className="space-y-3">
                 <li className="flex items-start space-x-3">

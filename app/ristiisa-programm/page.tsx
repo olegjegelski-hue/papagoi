@@ -139,7 +139,7 @@ export default function SponsorshipProgramPage() {
     },
   }
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-papagoi-beige-50">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

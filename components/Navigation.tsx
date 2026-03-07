@@ -9,7 +9,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-papagoi-green/20">
+    <nav className="bg-papagoi-beige-300/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-papagoi-green/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Centered Logo Row with Papagoi [LOGO] Keskus */}
@@ -137,7 +137,7 @@ export default function Navigation() {
 
         {/* Mobile Navigation - UUS LIHTSUSTATUD VERSIOON */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2 bg-white/80 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/20">
+          <div className="md:hidden pb-4 space-y-2 bg-papagoi-beige-300/98 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/30">
             <Link 
               href="/" 
               className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300"

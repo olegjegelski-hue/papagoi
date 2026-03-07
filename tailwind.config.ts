@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-open-sans)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-nunito)', 'system-ui', 'sans-serif'],
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -151,6 +155,15 @@ const config: Config = {
           700: '#546E7A',
           800: '#455A64',
           900: '#263238'
+        },
+        /* Logo beebevärv – soe taust (logole vastav) */
+        'papagoi-beige': {
+          DEFAULT: '#E8E4DF',
+          50: '#F5F3F0',
+          100: '#E8E4DF',
+          200: '#DDD8D2',
+          300: '#C9C3BC',
+          400: '#B5AEA5'
         }
       },
       keyframes: {

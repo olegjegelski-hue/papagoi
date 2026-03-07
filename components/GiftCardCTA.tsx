@@ -28,7 +28,7 @@ export default function GiftCardCTA({ variant = 'default' }: { variant?: GiftCar
   }
 
   return (
-    <section className="py-12 bg-gradient-to-b from-blue-50 to-yellow-50">
+    <section className="py-12 bg-gradient-to-b from-blue-50 to-yellow-50 papagoi-section-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-3xl p-8 md:p-12 text-white">

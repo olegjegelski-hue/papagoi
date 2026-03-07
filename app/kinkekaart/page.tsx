@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function KinkekaartPage() {
   return (
-    <div className="min-h-screen bg-warm-gray-50 pt-12 pb-20">
+    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">

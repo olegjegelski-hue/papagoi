@@ -1,6 +1,6 @@
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Nunito, Open_Sans } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -9,7 +9,16 @@ import LocalBusinessSchema from '@/components/LocalBusinessSchema'
 import TouristAttractionSchema from '@/components/TouristAttractionSchema'
 import CookieBanner from '@/components/CookieBanner'
 
-const inter = Inter({ subsets: ['latin'] })
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-nunito',
+  display: 'swap',
+})
+const openSans = Open_Sans({
+  subsets: ['latin'],
+  variable: '--font-open-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   verification: {
@@ -36,7 +45,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport = {
-  themeColor: '#0ea5e9',
+  themeColor: '#039BE5',
 }
 
 export default function RootLayout({
@@ -46,11 +55,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="et" className="scroll-smooth">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
+      <body className={`${nunito.variable} ${openSans.variable} ${openSans.className} flex flex-col min-h-screen`}>
         <LocalBusinessSchema />
         <TouristAttractionSchema />
         <Navigation />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col bg-papagoi-beige">
           {children}
         </main>
         <Footer />

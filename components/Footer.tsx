@@ -6,7 +6,7 @@ import { KINKEKAART_PATH, KINKEKAART_LABEL } from '@/lib/site-links'
 
 export default function Footer() {
   return (
-    <footer className="bg-deep-anthracite text-white border-t-4 border-papagoi-green">
+    <footer className="bg-papagoi-beige-300 border-t-4 border-papagoi-green/40 text-deep-anthracite papagoi-section-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
@@ -18,14 +18,14 @@ export default function Footer() {
                 alt="Papagoi Keskus logo - kolm kaunist papagoid"
                 width={50}
                 height={50}
-                className="rounded-lg shadow-lg border-2 border-papagoi-green/20"
+                className="rounded-lg shadow-lg border-2 border-papagoi-green/30"
               />
               <div>
-                <h3 className="text-xl font-bold text-white">Papagoi Keskus</h3>
+                <h3 className="text-xl font-bold text-deep-anthracite">Papagoi Keskus</h3>
                 <p className="papagoi-text-gradient font-medium">Elu täis värve ja hääli</p>
               </div>
             </div>
-            <p className="text-warm-gray-300 mb-6 max-w-md leading-relaxed">
+            <p className="text-deep-anthracite mb-6 max-w-md leading-relaxed">
               Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015.
               Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!
             </p>
@@ -67,6 +67,11 @@ export default function Footer() {
                 </div>
               </a>
             </div>
+            <div className="mt-8 flex justify-center">
+              <Link href="/privaatsus" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                Privaatsus ja küpsised
+              </Link>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -74,48 +79,43 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-papagoi-green">Kiirlingid</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   Avaleht
                 </Link>
               </li>
               <li>
-                <Link href="/teenused" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   Teenused
                 </Link>
               </li>
               <li>
-                <Link href="/meist" className="text-warm-gray-300 hover:text-papagoi-blue transition-colors duration-300">
+                <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300">
                   Meist
                 </Link>
               </li>
               <li>
-                <Link href="/papagoid" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   Meie papagoid
                 </Link>
               </li>
               <li>
-                <Link href="/kulastajatele" className="text-warm-gray-300 hover:text-papagoi-orange transition-colors duration-300">
+                <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   Külastajatele
                 </Link>
               </li>
               <li>
-                <Link href="/broneeri" className="text-warm-gray-300 hover:text-papagoi-orange transition-colors duration-300">
+                <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   Broneeri
                 </Link>
               </li>
               <li>
-                <Link href={KINKEKAART_PATH} className="text-warm-gray-300 hover:text-papagoi-orange transition-colors duration-300">
+                <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   {KINKEKAART_LABEL}
                 </Link>
               </li>
               <li>
-                <Link href="/kontakt" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   Kontakt
-                </Link>
-              </li>
-              <li>
-                <Link href="/privaatsus" className="text-warm-gray-300 hover:text-papagoi-green transition-colors duration-300">
-                  Privaatsus ja küpsised
                 </Link>
               </li>
             </ul>
@@ -127,7 +127,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <MapPin className="w-5 h-5 text-papagoi-green mt-0.5 flex-shrink-0" />
-                <div className="text-warm-gray-300">
+                <div className="text-deep-anthracite">
                   <div>Tartu mnt 80, Soinaste</div>
                   <div>Kambja vald, Tartumaa</div>
                   <div>61709, Eesti</div>
@@ -146,7 +146,7 @@ export default function Footer() {
                 <Phone className="w-5 h-5 text-papagoi-blue" />
                 <a 
                   href="tel:+37251279338" 
-                  className="text-warm-gray-300 hover:text-papagoi-blue transition-colors duration-300"
+                  className="text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300"
                 >
                   +372 51 27 938
                 </a>
@@ -155,16 +155,16 @@ export default function Footer() {
                 <Mail className="w-5 h-5 text-papagoi-yellow" />
                 <a 
                   href="mailto:keskus@papagoi.ee" 
-                  className="text-warm-gray-300 hover:text-papagoi-yellow transition-colors duration-300"
+                  className="text-deep-anthracite hover:text-papagoi-yellow transition-colors duration-300"
                 >
                   keskus@papagoi.ee
                 </a>
               </li>
               <li className="flex items-start space-x-2">
                 <Clock className="w-5 h-5 text-papagoi-orange mt-0.5" />
-                <div className="text-warm-gray-300">
+                <div className="text-deep-anthracite">
                   <div>Ainult eelneval kokkuleppel</div>
-                  <div className="text-sm text-warm-gray-400">Broneerimine vajalik</div>
+                  <div className="text-sm text-deep-anthracite-700">Broneerimine vajalik</div>
                 </div>
               </li>
             </ul>
@@ -173,8 +173,8 @@ export default function Footer() {
 
 
         {/* Bottom Bar */}
-        <div className="border-t border-papagoi-green/20 pt-6">
-          <div className="text-warm-gray-400 text-sm text-center space-y-2">
+        <div className="border-t border-papagoi-green/30 pt-6">
+          <div className="text-deep-anthracite text-sm text-center space-y-2">
             <p>
               Koduinfo OÜ | Reg nr. 11105156
             </p>

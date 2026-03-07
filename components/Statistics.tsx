@@ -44,7 +44,7 @@ const CountUp = ({ end, duration = 2000 }: { end: number; duration?: number }) =
 
 export default function Statistics() {
   return (
-    <section className="pt-4 pb-16 bg-gradient-to-br from-green-50 to-blue-50">
+    <section className="pt-4 pb-16 bg-gradient-to-br from-green-50 to-blue-50 papagoi-section-pattern">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
