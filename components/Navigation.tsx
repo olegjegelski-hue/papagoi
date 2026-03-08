@@ -112,32 +112,34 @@ export default function Navigation() {
         </div>
 
         {/* Desktop Navigation Menu Row - centered below logo - UUS LIHTSUSTATUD VERSIOON */}
-        <div className="hidden md:flex justify-center items-center space-x-6 lg:space-x-8 pb-4 border-t border-papagoi-green/10 pt-4">
-          <Link href="/" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('home')}
-          </Link>
-          <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('services')}
-          </Link>
-          <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('about')}
-          </Link>
-          <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('parrots')}
-          </Link>
-          <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('visitors')}
-          </Link>
-          <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('book')}
-          </Link>
-          <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('giftCard')}
-          </Link>
-          <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {t('contact')}
-          </Link>
-          <div className="pl-6 lg:pl-8 border-l border-papagoi-green/20">
+        <div className="hidden md:flex md:items-center md:justify-between w-full pb-4 border-t border-papagoi-green/10 pt-4">
+          <div className="flex-1 flex justify-center items-center space-x-6 lg:space-x-8">
+            <Link href="/" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('home')}
+            </Link>
+            <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('services')}
+            </Link>
+            <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('about')}
+            </Link>
+            <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('parrots')}
+            </Link>
+            <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('visitors')}
+            </Link>
+            <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('book')}
+            </Link>
+            <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('giftCard')}
+            </Link>
+            <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
+              {t('contact')}
+            </Link>
+          </div>
+          <div className="pl-6 lg:pl-8 border-l border-papagoi-green/20 shrink-0">
             <LanguageSwitcher />
           </div>
         </div>
