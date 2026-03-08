@@ -1,7 +1,6 @@
 
 'use client'
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { Heart, Star, Users, Clock, Euro, Check, Gift, Phone, Mail, X, Eye, Calendar } from 'lucide-react'
 
 const getStatusColor = (status: string) => {
@@ -251,11 +250,10 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             <div className="relative">
               <div className="relative h-64 md:h-96">
                 {selectedParrot.image ? (
-                  <Image
+                  <img
                     src={selectedParrot.image}
                     alt={`${selectedParrot.name} - ${selectedParrot.species}`}
-                    fill
-                    className="object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
@@ -458,14 +456,13 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             {filteredParrots.map((parrot, index) => (
             <div key={parrot.id} className="bg-card text-card-foreground border rounded-xl shadow-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
               
-              {/* Image - väiksem */}
+              {/* Image - väiksem (img otse Notionist, et Vercel/productionis pildid töötaksid) */}
               <div className="relative h-48">
                 {parrot.image ? (
-                  <Image
+                  <img
                     src={parrot.image}
                     alt={`${parrot.name} - ${parrot.species}`}
-                    fill
-                    className="object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
