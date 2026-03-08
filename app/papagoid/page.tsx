@@ -173,15 +173,20 @@ const fallbackParrots = [
 // Server-side funktsioon, mis toob andmed Notion'ist
 async function getParrotsFromNotion() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/notion/parrots`, {
+    // Productionis (nt Vercel) võib NEXT_PUBLIC_BASE_URL puududa – kasutame VERCEL_URL
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+      'http://localhost:3000'
+    const url = baseUrl.endsWith('/') ? `${baseUrl.slice(0, -1)}/api/notion/parrots` : `${baseUrl}/api/notion/parrots`
+    const response = await fetch(url, {
       next: { revalidate: 300 }, // värskendame 5 minuti järel
     })
-    
+
     if (!response.ok) {
       throw new Error('Notion API viga')
     }
-    
+
     const data = await response.json()
     return data.parrots || []
   } catch (error) {
