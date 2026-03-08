@@ -66,7 +66,7 @@ export default function VisitInfo() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-green-50" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-papagoi-beige-50 to-green-50" ref={ref}>
       <div className="container-custom">
         {/* What to expect */}
         <motion.div
@@ -91,7 +91,7 @@ export default function VisitInfo() {
               initial={{ opacity: 0, y: 50 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
+              className="bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl hover:shadow-xl transition-shadow duration-300 text-center"
             >
               <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
                 <item.icon className="h-8 w-8 text-green-600 mx-auto" />
@@ -122,7 +122,7 @@ export default function VisitInfo() {
                 </div>
                 
                 {/* Icon */}
-                <div className="bg-white rounded-full p-3 w-16 h-16 mx-auto mb-4 shadow-lg">
+                <div className="bg-card rounded-full p-3 w-16 h-16 mx-auto mb-4 shadow-lg">
                   <step.icon className="h-10 w-10 text-gray-700 mx-auto" />
                 </div>
                 
@@ -145,7 +145,7 @@ export default function VisitInfo() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="bg-white rounded-3xl shadow-xl overflow-hidden"
+          className="bg-card text-card-foreground border rounded-3xl shadow-2xl overflow-hidden"
         >
           <div className="grid lg:grid-cols-2 gap-0">
             <div className="relative aspect-[4/3] lg:aspect-auto">

@@ -48,7 +48,7 @@ export default function FeaturesSection() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-papagoi-green-50 papagoi-section-pattern" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-white to-papagoi-green-50" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

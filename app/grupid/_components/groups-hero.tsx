@@ -97,7 +97,7 @@ export default function GroupsHero() {
               initial={{ opacity: 0, y: 50 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
-              className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              className="bg-card text-card-foreground border rounded-3xl shadow-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               <div className={`h-2 bg-gradient-to-r ${group.color}`} />
               <div className="p-8 text-center">

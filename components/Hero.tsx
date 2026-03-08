@@ -18,7 +18,6 @@ export default function Hero() {
         {/* Overlay for better text readability with brand colors */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20"></div>
-        <div className="papagoi-pattern-overlay" aria-hidden="true" />
       </div>
       
       {/* Floating Elements - brändi värvides, reduced opacity for subtle effect */}
@@ -65,15 +64,15 @@ export default function Hero() {
 
         {/* Key Information Cards - enhanced for better visibility */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300">
+          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300">
             <h3 className="font-bold text-lg text-papagoi-green mb-2">Peredele</h3>
             <p className="text-deep-anthracite-700">Põnevate mälestuste loomine igale vanuseastmele</p>
           </div>
-          <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-blue hover:scale-105 transition-transform duration-300">
+          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-blue hover:scale-105 transition-transform duration-300">
             <h3 className="font-bold text-lg text-papagoi-blue mb-2">Koolidele & lasteaedadele</h3>
             <p className="text-deep-anthracite-700">Õppimine läbi praktilise kogemuse</p>
           </div>
-          <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-orange hover:scale-105 transition-transform duration-300">
+          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-orange hover:scale-105 transition-transform duration-300">
             <h3 className="font-bold text-lg text-papagoi-orange mb-2">Ettevõtetele</h3>
             <p className="text-deep-anthracite-700">Ainulaadne meeskonnaüritus või meeldejääv kliendielamus</p>
           </div>

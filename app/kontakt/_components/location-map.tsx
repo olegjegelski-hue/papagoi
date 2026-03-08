@@ -9,7 +9,7 @@ export default function LocationMap() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-white" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-beige-50" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -59,7 +59,7 @@ export default function LocationMap() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="space-y-6"
           >
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <div className="flex items-center space-x-3 mb-4">
                 <Car className="h-6 w-6 text-papagoi-blue" />
                 <h3 className="text-xl font-semibold text-gray-900">Autoga</h3>
@@ -86,7 +86,7 @@ export default function LocationMap() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <div className="flex items-center space-x-3 mb-4">
                 <Navigation className="h-6 w-6 text-papagoi-green" />
                 <h3 className="text-xl font-semibold text-gray-900">Kasulikud nipid</h3>

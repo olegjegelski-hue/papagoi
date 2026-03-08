@@ -47,7 +47,7 @@ export default function BlogPostsClient({ posts }: Props) {
                 'px-4 py-2 rounded-full text-sm font-semibold transition-colors border',
                 isActive
                   ? 'bg-papagoi-green text-white border-papagoi-green'
-                  : 'bg-white/80 text-gray-700 border-white/60 hover:bg-white',
+                  : 'bg-papagoi-beige-100 text-gray-700 border-papagoi-beige-300 hover:bg-card',
               ].join(' ')}
             >
               {category}
@@ -67,7 +67,7 @@ export default function BlogPostsClient({ posts }: Props) {
             : ''
 
           return (
-            <article key={post.id} className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden border border-white/60">
+            <article key={post.id} className="bg-card text-card-foreground border rounded-3xl shadow-2xl overflow-hidden border-border">
               {post.cover && (
                 <div className="h-56 w-full overflow-hidden">
                   <img

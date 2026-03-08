@@ -7,7 +7,7 @@ type GiftCardCTAVariant = 'default' | 'service'
 export default function GiftCardCTA({ variant = 'default' }: { variant?: GiftCardCTAVariant }) {
   if (variant === 'service') {
     return (
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+      <div className="bg-papagoi-beige-50 rounded-2xl shadow-xl overflow-hidden mb-12 border border-papagoi-beige-200">
         <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue p-8 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">🎁 Papagoi Keskuse kinkekaart</h2>
           <p className="text-xl opacity-90 max-w-2xl mx-auto">
@@ -28,7 +28,7 @@ export default function GiftCardCTA({ variant = 'default' }: { variant?: GiftCar
   }
 
   return (
-    <section className="py-12 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-yellow-50 papagoi-section-pattern">
+    <section className="py-12 mt-12 bg-papagoi-beige-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-3xl p-8 md:p-12 text-white">

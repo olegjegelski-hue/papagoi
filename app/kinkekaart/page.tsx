@@ -51,7 +51,7 @@ export default function KinkekaartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main: gift card offer + form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-green/10">
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden border border-papagoi-green/10">
               <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue p-8 text-white text-center">
                 <Gift className="w-12 h-12 mx-auto mb-4 opacity-90" />
                 <h2 className="text-2xl md:text-3xl font-bold">Digitaalne kinkekaart</h2>
@@ -65,7 +65,7 @@ export default function KinkekaartPage() {
           {/* Sidebar */}
           <div className="space-y-8">
             {/* Kuidas see töötab */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-papagoi-green/10">
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-6 border border-papagoi-green/10">
               <h3 className="text-xl font-bold text-deep-anthracite mb-4">Kuidas see töötab?</h3>
               <ol className="space-y-4">
                 <li className="flex items-start space-x-3">
@@ -99,7 +99,7 @@ export default function KinkekaartPage() {
             </div>
 
             {/* QR-kood ja kasutamine */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-papagoi-blue/10">
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-6 border border-papagoi-blue/10">
               <div className="flex items-center space-x-3 mb-4">
                 <QrCode className="w-6 h-6 text-papagoi-blue" />
                 <h3 className="text-xl font-bold text-deep-anthracite">QR-kood</h3>
@@ -110,7 +110,7 @@ export default function KinkekaartPage() {
             </div>
 
             {/* Contact */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-papagoi-green/10">
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-6 border border-papagoi-green/10">
               <h3 className="text-xl font-bold text-deep-anthracite mb-4">Küsimused?</h3>
               <div className="space-y-3">
                 <p className="text-warm-gray-700">

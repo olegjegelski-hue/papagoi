@@ -32,7 +32,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="teenused" className="py-20 bg-gray-50">
+    <section id="teenused" className="py-20 bg-papagoi-beige-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -46,7 +46,7 @@ export default function Services() {
         </div>
 
         {/* Main Service */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
+        <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-16">
           <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white text-center">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">🦜 Külastus Papagoi Keskuses</h3>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8">
@@ -73,7 +73,7 @@ export default function Services() {
               {services.map((service, index) => {
                 const IconComponent = service.icon
                 return (
-                  <div key={index} className="text-center p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                  <div key={index} className="text-center p-6 bg-papagoi-beige-100 rounded-xl hover:bg-papagoi-beige-200 transition-colors">
                     <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${service.color} text-white mb-4`}>
                       <IconComponent className="w-8 h-8" />
                     </div>
@@ -87,7 +87,7 @@ export default function Services() {
         </div>
 
         {/* Event Services */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
+        <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-16">
           <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-8 text-white text-center">
             <h3 className="text-3xl md:text-4xl font-bold">🎉 Üritus Papagoi Keskuses</h3>
           </div>
@@ -155,7 +155,7 @@ export default function Services() {
             </div>
             
             {/* Contact Info for Events */}
-            <div className="mt-8 text-center bg-gray-50 rounded-xl p-6">
+            <div className="bg-papagoi-beige-100 rounded-xl p-6">
               <h5 className="font-bold text-gray-800 mb-3">📞 Ürituste broneerimiseks võta meiega ühendust:</h5>
               <p className="text-gray-700">Küsi hinnainfot ja vaba aega!</p>
             </div>
@@ -163,7 +163,7 @@ export default function Services() {
         </div>
 
         {/* Mobile Event Service */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
+        <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-16">
           <div className="bg-gradient-to-r from-green-500 to-teal-600 p-8 text-white text-center">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">🪶 Üritus papagoidega väljas</h3>
             <p className="text-xl opacity-90">Papagoid tulevad teie juurde</p>
@@ -209,7 +209,7 @@ export default function Services() {
             </div>
             
             {/* Contact Info */}
-            <div className="mt-8 text-center bg-gray-50 rounded-xl p-6">
+            <div className="bg-papagoi-beige-100 rounded-xl p-6">
               <h5 className="font-bold text-gray-800 mb-3">📞 Broneerimiseks võta meiega ühendust:</h5>
               <p className="text-gray-700">Küsi hinnainfot ja vaba aega!</p>
             </div>
@@ -217,7 +217,7 @@ export default function Services() {
         </div>
 
         {/* PetsVilla link (müük/kasvatus eraldi lehel) */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
+        <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-16">
           <div className="bg-gradient-to-r from-orange-500 to-red-600 p-8 text-white text-center">
             <h3 className="text-3xl md:text-4xl font-bold mb-2">Papagoide ja merisigade müük</h3>
             <p className="text-lg opacity-90">
@@ -261,13 +261,13 @@ export default function Services() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="/broneeri"
-                className="bg-white text-green-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+                className="papagoi-cta-white inline-flex items-center justify-center px-8 py-3"
               >
                 Broneeri külastus
               </a>
               <a
                 href="/papagoid"
-                className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-green-600 transition-all"
+                className="papagoi-cta-outline inline-flex items-center justify-center px-8 py-3"
               >
                 Vaata meie papagoie
               </a>

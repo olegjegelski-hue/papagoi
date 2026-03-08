@@ -48,7 +48,7 @@ export default function MeistPage() {
           </div>
 
           {/* Meie lugu */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Meie lugu</h2>
             </div>
@@ -75,7 +75,7 @@ export default function MeistPage() {
           </div>
 
           {/* Meie ruumid */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white">
               <div className="flex items-center justify-center space-x-3">
                 <Home className="w-8 h-8" />
@@ -109,7 +109,7 @@ export default function MeistPage() {
           </div>
 
           {false && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-12">
               <div className="p-8 md:p-12">
                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
                   <p className="text-gray-700">

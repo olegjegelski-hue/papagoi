@@ -12,7 +12,7 @@ export default function CTASection() {
   const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
 
   return (
-    <section className="py-20 relative overflow-hidden papagoi-feathers-bg" ref={ref}>
+    <section className="py-20 relative overflow-hidden" ref={ref}>
       {/* Background */}
       <div className="absolute inset-0 cta-gradient" />
       <div className="absolute inset-0 bg-black/20" />

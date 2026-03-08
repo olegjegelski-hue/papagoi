@@ -321,7 +321,6 @@ async function markReviewSent(
 export async function sendReviewEmail(to: string, name: string | null, visitDateIso: string | null) {
   const transporter = createTransporter()
   const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
-  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
   const reviewLink =
     process.env.REVIEW_GOOGLE_URL || 'https://g.page/r/CXfsGh_UtN6-EBM/review'
 
@@ -392,14 +391,54 @@ https://www.papagoi.ee/
 keskus@papagoi.ee
   `.trim()
 
-  await transporter.sendMail({
+  const mailOptions: Parameters<typeof transporter.sendMail>[0] = {
     from: `"Papagoi Keskus" <${fromAddress}>`,
     to,
-    cc: centerEmail,
     subject,
     html,
     text,
-  })
+  }
+  if (process.env.REVIEW_CC_CENTER === '1') {
+    mailOptions.cc = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  }
+
+  await transporter.sendMail(mailOptions)
+}
+
+/** Saadab keskusele kokkuvõtte iga croni käivitusest. */
+async function sendReviewCronSummaryEmail(params: {
+  visitsCount: number
+  uniqueEmailsCount: number
+  sentCount: number
+  errorCount: number
+  dryRun: boolean
+  earlyReason?: string
+  errorMessage?: string
+}) {
+  const { visitsCount, uniqueEmailsCount, sentCount, errorCount, dryRun, earlyReason, errorMessage } = params
+  const to = process.env.CENTER_EMAIL || process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const now = formatInTimeZone(new Date(), 'Europe/Tallinn', 'dd.MM.yyyy HH:mm')
+  const subject = earlyReason
+    ? `[Papagoi] Arvustuskutsete cron – ${earlyReason}`
+    : `[Papagoi] Arvustuskutsete cron: ${sentCount} kirja saadetud`
+  const lines = [
+    `Käivitus: ${now} (Tallinna aeg)`,
+    dryRun ? 'Režiim: DRY RUN' : '',
+    earlyReason ? `Põhjus: ${earlyReason}` : '',
+    `Külastusi täna: ${visitsCount}`,
+    `E-posti aadresse: ${uniqueEmailsCount}`,
+    `Saadetud: ${sentCount}`,
+    `Ebaõnnestus: ${errorCount}`,
+    errorMessage ? `Viga: ${errorMessage}` : '',
+  ].filter(Boolean)
+  const html = `<div style="font-family: Arial, sans-serif; max-width: 560px;"><h2 style="color: #333; border-bottom: 2px solid #43A047;">Arvustuskutsete cron – kokkuvõte</h2><pre style="background: #f5f5f5; padding: 16px; border-radius: 8px;">${lines.join('\n')}</pre><p style="font-size: 13px; color: #666;">See kiri saadetakse iga kord, kui cron käivitatakse.</p></div>`
+  try {
+    const transporter = createTransporter()
+    const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+    await transporter.sendMail({ from: `"Papagoi Keskus" <${fromAddress}>`, to, subject, html, text: lines.join('\n') })
+  } catch (err) {
+    console.error('Failed to send cron summary email:', err)
+  }
 }
 
 export async function runReviewInvitesFromEnv() {
@@ -414,16 +453,34 @@ export async function runReviewInvitesFromEnv() {
     process.exit(1)
   }
 
+  const dryRun = process.env.REVIEW_DRY_RUN === '1'
+
   console.log('Fetching today visits from Notion...')
   const visits = await getTodayVisitIds(NOTION_API_KEY, NOTION_VISITS_DATABASE_ID)
   if (!visits.length) {
     console.log('No visits found for today in Notion. Nothing to do.')
+    await sendReviewCronSummaryEmail({
+      visitsCount: 0,
+      uniqueEmailsCount: 0,
+      sentCount: 0,
+      errorCount: 0,
+      dryRun,
+      earlyReason: 'Täna külastusi pole (Notion)',
+    })
     return
   }
 
   const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
   if (!visitorsDb) {
     console.error('Could not resolve visitors database metadata.')
+    await sendReviewCronSummaryEmail({
+      visitsCount: visits.length,
+      uniqueEmailsCount: 0,
+      sentCount: 0,
+      errorCount: 0,
+      dryRun,
+      earlyReason: 'Külastajate andmebaasi ei õnnestunud laadida',
+    })
     process.exit(1)
   }
 
@@ -445,10 +502,17 @@ export async function runReviewInvitesFromEnv() {
 
   if (!uniqueByEmail.size) {
     console.log('No visitors with email found for today. Nothing to do.')
+    await sendReviewCronSummaryEmail({
+      visitsCount: visits.length,
+      uniqueEmailsCount: 0,
+      sentCount: 0,
+      errorCount: 0,
+      dryRun,
+      earlyReason: 'Külastajatel pole e-maili või arvustuskutse juba saadetud',
+    })
     return
   }
 
-  const dryRun = process.env.REVIEW_DRY_RUN === '1'
   console.log(
     `Found ${uniqueByEmail.size} unique email(s) for today.` +
       (dryRun ? ' DRY RUN: will not send emails or update Notion.' : ' Sending review emails...')
@@ -485,6 +549,14 @@ export async function runReviewInvitesFromEnv() {
   console.log(
     `Done. Successfully sent ${successCount} email(s). Failed: ${errorCount}.`
   )
+
+  await sendReviewCronSummaryEmail({
+    visitsCount: visits.length,
+    uniqueEmailsCount: uniqueByEmail.size,
+    sentCount: successCount,
+    errorCount,
+    dryRun,
+  })
 }
 
 if (process.env.REVIEW_CLI === '1') {

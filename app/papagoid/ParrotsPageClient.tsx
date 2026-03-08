@@ -132,7 +132,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               <select
                 value={nameFilter}
                 onChange={(e) => setNameFilter(e.target.value)}
-                className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 bg-white"
+                className="w-full px-4 py-3 rounded-full border-2 border-papagoi-beige-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 bg-papagoi-beige-50"
               >
                 <option value="all">Kõik nimed</option>
                 {allNames.map((name) => (
@@ -148,7 +148,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               <select
                 value={speciesFilter}
                 onChange={(e) => setSpeciesFilter(e.target.value)}
-                className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 bg-white"
+                className="w-full px-4 py-3 rounded-full border-2 border-papagoi-beige-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 bg-papagoi-beige-50"
               >
                 <option value="all">Kõik liigid</option>
                 {allSpecies.map((species) => (
@@ -174,7 +174,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
                 filter === 'all' 
                   ? 'bg-blue-600 text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  : 'bg-papagoi-beige-100 text-deep-anthracite hover:bg-papagoi-beige-200'
               }`}
             >
               Kõik papagoid ({baseParrots.length})
@@ -189,7 +189,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
                 filter === 'available' 
                   ? 'bg-green-600 text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  : 'bg-papagoi-beige-100 text-deep-anthracite hover:bg-papagoi-beige-200'
               }`}
             >
               Otsivad ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'available').length})
@@ -204,7 +204,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
                 filter === 'sponsored' 
                   ? 'bg-gray-600 text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  : 'bg-papagoi-beige-100 text-deep-anthracite hover:bg-papagoi-beige-200'
               }`}
             >
               On ristiisa ({baseParrots.filter(p => p.sponsorship?.status === 'sponsored').length})
@@ -214,19 +214,19 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          <div className="bg-white rounded-xl p-6 text-center shadow-lg">
+          <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-green-600 mb-2">{baseParrots.length}+</div>
             <p className="text-gray-600">Papagoid</p>
           </div>
-          <div className="bg-white rounded-xl p-6 text-center shadow-lg">
+          <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-blue-600 mb-2">10+</div>
             <p className="text-gray-600">Erinevat liiki</p>
           </div>
-          <div className="bg-white rounded-xl p-6 text-center shadow-lg">
+          <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-red-600 mb-2">{baseParrots.filter(p => p.sponsorship?.status === 'available').length}</div>
             <p className="text-gray-600">Otsib ristiisa</p>
           </div>
-          <div className="bg-white rounded-xl p-6 text-center shadow-lg">
+          <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-yellow-600 mb-2">100%</div>
             <p className="text-gray-600">Armastust</p>
           </div>
@@ -245,7 +245,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
         {selectedParrot && (
           <div 
             id="parrot-detail"
-            className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12"
+            className="bg-card text-card-foreground border rounded-2xl shadow-2xl overflow-hidden mb-12"
           >
             {/* Detail Header */}
             <div className="relative">
@@ -264,7 +264,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 )}
                 <button
                   onClick={() => setSelectedParrot(null)}
-                  className="absolute top-4 right-4 bg-white/90 hover:bg-white rounded-full p-2 transition-colors"
+                  className="absolute top-4 right-4 bg-papagoi-beige-100 hover:bg-papagoi-beige-200 rounded-full p-2 transition-colors"
                 >
                   <X className="w-6 h-6 text-gray-800" />
                 </button>
@@ -387,7 +387,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 <div className="border-t pt-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-4">Ristiisa programm</h3>
                   {selectedParrot.sponsorship.status === 'sponsored' ? (
-                    <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="bg-papagoi-beige-100 rounded-xl p-6">
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-2xl font-bold text-gray-800">{selectedParrot.sponsorship.monthlyAmount}/kuus</span>
                         <span className="text-green-600 font-medium flex items-center">
@@ -456,7 +456,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
         {filteredParrots.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
             {filteredParrots.map((parrot, index) => (
-            <div key={parrot.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div key={parrot.id} className="bg-card text-card-foreground border rounded-xl shadow-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
               
               {/* Image - väiksem */}
               <div className="relative h-48">
@@ -549,7 +549,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="bg-white rounded-2xl p-12 max-w-md mx-auto shadow-lg">
+            <div className="bg-card text-card-foreground border rounded-2xl p-12 max-w-md mx-auto shadow-2xl">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Tulemusi ei leitud</h3>
               <p className="text-gray-600 mb-6">
@@ -581,7 +581,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
               </p>
             </div>
             
-            <div className="bg-white rounded-2xl p-8 max-w-2xl mx-auto">
+            <div className="bg-card text-card-foreground border rounded-2xl p-8 max-w-2xl mx-auto shadow-2xl">
               <div className="flex items-center justify-center mb-4">
                 <Heart className="w-8 h-8 text-red-500 fill-current mr-3" />
                 <h3 className="text-xl font-semibold text-gray-800">Soovite aidata kaasa?</h3>

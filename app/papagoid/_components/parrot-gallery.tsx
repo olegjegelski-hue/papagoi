@@ -33,7 +33,7 @@ export default function ParrotGallery() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-green-50">
+    <section className="py-20 bg-gradient-to-b from-papagoi-beige-50 to-green-50">
       <div className="container-custom">
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -78,7 +78,7 @@ export default function ParrotGallery() {
                   whileHover={{ y: -5 }}
                   className="group"
                 >
-                  <Card className="h-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-0">
+                  <Card className="h-full bg-card text-card-foreground border shadow-2xl hover:shadow-xl transition-all duration-300 overflow-hidden">
                     {/* Image */}
                     <div className="relative aspect-[4/3] bg-gradient-to-br from-green-100 to-blue-100">
                       <Image
@@ -127,7 +127,7 @@ export default function ParrotGallery() {
                       </p>
 
                       {/* Personality */}
-                      <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                      <div className="bg-papagoi-beige-100 rounded-lg p-3 mb-4">
                         <div className="flex items-center mb-1">
                           <Star className="h-4 w-4 text-yellow-500 mr-1" />
                           <span className="text-xs font-semibold text-gray-700">Isiksus</span>

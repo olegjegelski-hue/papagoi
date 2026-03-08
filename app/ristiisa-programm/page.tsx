@@ -161,7 +161,7 @@ export default function SponsorshipProgramPage() {
           {/* Benefits Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
             {benefits.map((benefit, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div key={index} className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl mb-6">
                   <benefit.icon className="w-8 h-8 text-white" />
                 </div>
@@ -195,7 +195,7 @@ export default function SponsorshipProgramPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {sponsorshipTiers.map((tier, index) => (
-              <div key={index} className={`relative bg-white rounded-3xl shadow-xl p-8 transition-all duration-300 transform hover:scale-105 ${
+              <div key={index} className={`relative bg-card text-card-foreground border rounded-3xl shadow-2xl p-8 transition-all duration-300 transform hover:scale-105 ${
                 tier.popular ? 'ring-4 ring-blue-500 scale-110' : ''
               }`}>
                 {tier.popular && (
@@ -238,7 +238,7 @@ export default function SponsorshipProgramPage() {
                 <button className={`w-full py-3 rounded-full font-semibold transition-all duration-300 ${
                   tier.popular
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg transform hover:scale-105'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    : 'bg-papagoi-beige-100 text-gray-800 hover:bg-papagoi-beige-200'
                 }`}>
                   Vali see tase
                 </button>
@@ -283,7 +283,7 @@ export default function SponsorshipProgramPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gray-100">
+      <section className="py-20 bg-papagoi-beige-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800 mb-6">
@@ -293,7 +293,7 @@ export default function SponsorshipProgramPage() {
 
           <div className="space-y-6">
             {faqItems.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6">
+              <div key={index} className="bg-card text-card-foreground border rounded-xl shadow-2xl p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">{item.question}</h3>
                 <p className="text-gray-600 leading-relaxed">{item.answer}</p>
               </div>

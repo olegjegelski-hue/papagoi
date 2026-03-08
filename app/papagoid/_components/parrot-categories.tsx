@@ -40,7 +40,7 @@ export default function ParrotCategories() {
   ];
 
   return (
-    <section className="py-16 bg-white" ref={ref}>
+    <section className="py-16 bg-papagoi-beige-50" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -65,7 +65,7 @@ export default function ParrotCategories() {
               transition={{ duration: 0.8, delay: index * 0.2 }}
               className="group cursor-pointer"
             >
-              <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="bg-card text-card-foreground border rounded-3xl shadow-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image

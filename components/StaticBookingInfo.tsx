@@ -312,23 +312,21 @@ export default function StaticBookingInfo() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border border-papagoi-green/10">
-      <h2 className="text-2xl font-bold text-deep-anthracite mb-8">Broneerimine</h2>
+    <div className="bg-papagoi-beige-100 rounded-2xl shadow-2xl p-8 border border-papagoi-beige-200">
+      <h2 className="text-2xl font-bold text-deep-anthracite mb-8 font-heading">Broneerimine</h2>
       
       {/* Important Notice */}
-      <div className="bg-papagoi-yellow-100 border-l-4 border-papagoi-yellow-500 rounded-r-lg p-6 mb-8">
+      <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-6 mb-8">
         <div className="flex items-center space-x-3 mb-3">
-          <AlertCircle className="w-6 h-6 text-papagoi-yellow-600" />
-          <h3 className="text-lg font-semibold text-papagoi-yellow-800">⚠️ OLULINE!</h3>
+          <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+          <h3 className="text-xl font-bold text-amber-800 font-heading">⚠️ OLULINE!</h3>
         </div>
-        <div className="text-papagoi-yellow-700 space-y-2">
-          <p><strong>Külastused toimuvad AINULT eelneval kokkuleppel!</strong></p>
-          <p>Ilma broneeringuta ei saa meid külastada.</p>
-        </div>
+        <p className="text-amber-800 font-medium mb-1">Külastused toimuvad AINULT eelneval kokkuleppel!</p>
+        <p className="text-amber-800">Ilma broneeringuta ei saa meid külastada.</p>
       </div>
 
         {/* Calendar */}
-        <div className="bg-white rounded-xl p-6 border border-papagoi-green/20 shadow-sm">
+        <div className="bg-papagoi-beige-50 rounded-xl p-6 border border-papagoi-green/20 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-xl font-bold text-deep-anthracite">Kalender</h3>
@@ -356,11 +354,11 @@ export default function StaticBookingInfo() {
             </div>
           </div>
 
-          <div className="mb-6 rounded-lg border border-papagoi-blue/20 bg-papagoi-blue/10 p-3 text-sm text-deep-anthracite">
+          <div className="mb-6 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
             <p className="font-semibold mb-1">Vali endale sobiv kuupäev ja aeg</p>
             <p className="text-warm-gray-600">🕐 Tüüpilised külastusajad: 12:00, 14:00, 16:00</p>
             <div className="h-2" />
-            <blockquote className="border-l-2 border-papagoi-blue/40 pl-3 text-warm-gray-600 italic">
+            <blockquote className="border-l-2 border-papagoi-green/40 pl-3 text-warm-gray-600 italic">
               Meie papagoid vajavad külastuste vahel puhkeaega, et olla energilised ja sõbralikud.
               Seetõttu jätame külastuste vahele vähemalt 1-tunnise pausi. Kui päeval on vähe broneeringuid,
               võime pakkuda ka vahepealset aega.
@@ -429,7 +427,7 @@ export default function StaticBookingInfo() {
                       : isCurrentMonth
                         ? 'text-deep-anthracite border-papagoi-green/20 hover:bg-papagoi-green/10'
                         : 'text-warm-gray-400 border-papagoi-green/10 hover:bg-papagoi-green/5',
-                    isTodayDate ? 'bg-papagoi-green text-white border-papagoi-green' : 'bg-white',
+                    isTodayDate ? 'bg-papagoi-green text-white border-papagoi-green' : 'bg-papagoi-beige-50',
                     isSelected && !isTodayDate ? 'bg-papagoi-green/20 border-papagoi-green text-deep-anthracite' : '',
                   ].join(' ')}
                 >
@@ -462,7 +460,7 @@ export default function StaticBookingInfo() {
                 </button>
               </div>
 
-              <div className="mb-4 rounded-lg border border-papagoi-blue/20 bg-papagoi-blue/10 p-3 text-sm text-deep-anthracite">
+              <div className="mb-4 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
                 <span className="font-semibold">NB!</span> Tavakülastused iga päev 12:00-18:00.
                 Varasemad kellaajad ainult eelneval kokkuleppel!
               </div>
@@ -509,7 +507,7 @@ export default function StaticBookingInfo() {
                       return (
                         <div
                           key={entry.time}
-                          className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/80 px-3 py-2"
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-papagoi-beige-100 px-3 py-2"
                         >
                           <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
                           <span className="text-xs text-warm-gray-600">

@@ -431,7 +431,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             ← Tagasi blogi lehele
           </Link>
         </div>
-        <article className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/60">
+        <article className="bg-card text-card-foreground border rounded-3xl shadow-2xl overflow-hidden border-border">
           {post.cover && (
             <div className="h-80 w-full overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}

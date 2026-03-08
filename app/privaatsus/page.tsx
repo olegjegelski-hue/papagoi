@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 1. Sissejuhatus */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <FileText className="w-6 h-6 text-green-600 mr-2" />
               1. Sissejuhatus
@@ -73,7 +73,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 2. Andmekontroller */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <Shield className="w-6 h-6 text-blue-600 mr-2" />
               2. Andmekontroller
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 3. Kogutavad andmed */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <Lock className="w-6 h-6 text-purple-600 mr-2" />
               3. Milliseid isikuandmeid me kogume?
@@ -137,7 +137,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 4. Andmete kasutamise eesmärgid */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               4. Milleks me teie andmeid kasutame?
             </h2>
@@ -156,7 +156,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 5. Andmete säilitamine */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               5. Kui kaua me teie andmeid säilitame?
             </h2>
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 6. Andmete jagamine */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               6. Kas me jagame teie andmeid kolmandate osapooltega?
             </h2>
@@ -193,7 +193,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 7. Teie õigused */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               7. Teie õigused
             </h2>
@@ -217,7 +217,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 8. Küpsised (Cookies) */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <Cookie className="w-6 h-6 text-yellow-600 mr-2" />
               8. Küpsised (Cookies)
@@ -261,13 +261,13 @@ export default function PrivacyPage() {
                 Te saate oma brauseri seadetes kontrollida ja kustutada küpsiseid. Palun pange tähele, et mõned küpsised on veebilehe töötamiseks vajalikud ja nende keelamine võib mõjutada lehe funktsionaalsust.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Teie küpsiste nõusolekut saate muuta või tühistada, kustutades brauseri seadetest küpsise <code className="bg-gray-100 px-2 py-1 rounded">papagoi-cookie-consent</code>.
+                Teie küpsiste nõusolekut saate muuta või tühistada, kustutades brauseri seadetest küpsise <code className="bg-papagoi-beige-100 px-2 py-1 rounded">papagoi-cookie-consent</code>.
               </p>
             </div>
           </div>
 
           {/* 9. Turvalisus */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               9. Andmete turvalisus
             </h2>
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* 10. Muudatused privaatsuspoliitikas */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               10. Muudatused privaatsuspoliitikas
             </h2>

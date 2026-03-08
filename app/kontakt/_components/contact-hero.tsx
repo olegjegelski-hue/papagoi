@@ -25,7 +25,7 @@ export default function ContactHero() {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <div className="bg-white/70 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Phone className="h-8 w-8 text-green-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 mb-2">Telefon</h3>
               <a href="tel:+37251279380" className="text-green-600 hover:text-green-700 font-medium">
@@ -33,7 +33,7 @@ export default function ContactHero() {
               </a>
             </div>
 
-            <div className="bg-white/70 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Mail className="h-8 w-8 text-blue-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 mb-2">E-mail</h3>
               <a href="mailto:keskus@papagoi.ee" className="text-blue-600 hover:text-blue-700 font-medium">
@@ -41,7 +41,7 @@ export default function ContactHero() {
               </a>
             </div>
 
-            <div className="bg-white/70 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <MapPin className="h-8 w-8 text-yellow-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 mb-2">Asukoht</h3>
               <div className="text-gray-600 text-sm">
@@ -50,7 +50,7 @@ export default function ContactHero() {
               </div>
             </div>
 
-            <div className="bg-white/70 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Clock className="h-8 w-8 text-purple-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 mb-2">Lahtiolekuajad</h3>
               <div className="text-gray-600 text-sm">

@@ -51,33 +51,16 @@ export default function TeenusedPage() {
           </div>
 
           {/* 1. PÕHITEENUS: Külastus Papagoi Keskuses */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 text-card-foreground border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">🦜 Külastus Papagoi Keskuses</h2>
-              <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-6 h-6" />
-                  <span className="text-xl font-semibold">ca 1 tund</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Euro className="w-6 h-6" />
-                  <span className="text-xl font-semibold">10€ inimene</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="w-6 h-6" />
-                  <span className="text-xl font-semibold">kuni 20 inimest</span>
-                </div>
-              </div>
-              <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 inline-block">
-                <p className="text-white text-sm font-medium">
-                  ℹ️ Tavakülastus on minimaalselt 3 inimese jaoks
-                </p>
-              </div>
+              <p className="text-xl opacity-90">ca 1 tund · 10€ inimene · kuni 20 inimest</p>
+              <p className="text-sm opacity-90 mt-2">Tavakülastus on minimaalselt 3 inimese jaoks</p>
             </div>
             
             <div className="p-8">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">Mida külastus sisaldab?</h3>
+              <div className="bg-green-50 rounded-xl p-6 mb-6">
+                <h4 className="font-semibold mb-4 text-green-700 text-lg">🦜 Mida külastus sisaldab?</h4>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-start space-x-3">
                     <span className="text-green-600 font-bold mt-1">•</span>
@@ -107,22 +90,22 @@ export default function TeenusedPage() {
               </div>
 
               <div className="bg-green-50 rounded-xl p-6 mb-6">
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Sobib kõigile:</h4>
+                <h4 className="font-semibold mb-4 text-green-700 text-lg">👥 Sobib kõigile:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-white rounded-lg">
+                  <div className="text-center p-4 bg-papagoi-beige-100 rounded-lg">
                     <Users className="w-8 h-8 text-blue-500 mx-auto mb-2" />
                     <p className="font-semibold text-gray-800">Eraisikud</p>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-lg">
+                  <div className="text-center p-4 bg-papagoi-beige-100 rounded-lg">
                     <GraduationCap className="w-8 h-8 text-green-500 mx-auto mb-2" />
                     <p className="font-semibold text-gray-800">Koolid</p>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-lg">
+                  <div className="text-center p-4 bg-papagoi-beige-100 rounded-lg">
                     <Users className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                     <p className="font-semibold text-gray-800">Lasteaiad</p>
                     <p className="text-sm text-gray-600">(kuni 30 last)</p>
                   </div>
-                  <div className="text-center p-4 bg-white rounded-lg">
+                  <div className="text-center p-4 bg-papagoi-beige-100 rounded-lg">
                     <Heart className="w-8 h-8 text-red-500 mx-auto mb-2" />
                     <p className="font-semibold text-gray-800">Erivajadustega</p>
                     <p className="text-sm text-gray-600">asutused</p>
@@ -130,21 +113,16 @@ export default function TeenusedPage() {
                 </div>
               </div>
 
-              <div className="bg-blue-50 rounded-xl p-6">
-                <div className="flex items-start space-x-3">
-                  <Calendar className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-bold text-gray-800 mb-2">Lahtiolekuajad:</h4>
-                    <p className="text-gray-700">E-P (esmaspäevast pühapäevani) kell 12-18, algusega täistunnil</p>
-                    <p className="text-sm text-gray-600 mt-2">⚠️ Külastus ainult ette helistades: <a href="tel:+3725127938" className="text-blue-600 hover:underline">+372 512 7938</a></p>
-                  </div>
-                </div>
+              <div className="bg-green-50 rounded-xl p-4 mb-6">
+                <p className="text-gray-700">
+                  <strong>Hind:</strong> 10€ inimene
+                </p>
               </div>
             </div>
           </div>
 
           {/* 2. VIP KÜLASTUS */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">⭐ VIP külastus</h2>
               <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8 mb-4">
@@ -204,24 +182,15 @@ export default function TeenusedPage() {
           <GiftCardCTA variant="service" />
 
           {/* 3. SÜNNIPÄEV KESKUSES */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">🎉 Sünnipäev Papagoi Keskuses</h2>
-              <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-6 h-6" />
-                  <span className="text-xl font-semibold">2.5 tundi</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Euro className="w-6 h-6" />
-                  <span className="text-xl font-semibold">350€</span>
-                </div>
-              </div>
+              <p className="text-xl opacity-90">2.5 tundi koos papagoidega</p>
             </div>
             
             <div className="p-8">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">Programm sisaldab:</h3>
+              <div className="bg-pink-50 rounded-xl p-6 mb-6">
+                <h4 className="font-semibold mb-4 text-pink-700 text-lg">🎉 Programm sisaldab:</h4>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-start space-x-3">
                     <span className="text-pink-600 font-bold mt-1">•</span>
@@ -245,11 +214,16 @@ export default function TeenusedPage() {
                   </li>
                 </ul>
               </div>
+              <div className="bg-pink-50 rounded-xl p-4">
+                <p className="text-gray-700">
+                  <strong>Hind:</strong> 350 EUR
+                </p>
+              </div>
             </div>
           </div>
 
           {/* 4. ÜRITUS PAPAGOIDEGA VÄLJAS */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-green-500 to-teal-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">🪶 Üritus papagoidega väljas</h2>
               <p className="text-xl opacity-90">Papagoid tulevad teie juurde</p>
@@ -285,7 +259,7 @@ export default function TeenusedPage() {
                 </ul>
               </div>
 
-              <div className="bg-blue-50 rounded-xl p-4">
+              <div className="bg-green-50 rounded-xl p-4">
                 <p className="text-gray-700">
                   <strong>Hind:</strong> 250 EUR (lisandub kohalesõidutasu). Kestus ca 1 tund.
                 </p>
@@ -294,7 +268,7 @@ export default function TeenusedPage() {
           </div>
 
           {/* 5. GRUPIKÜLASTUSED */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">👥 Grupikülastused</h2>
               <p className="text-xl opacity-90">Koolid, lasteaiad, ettevõtted</p>
@@ -316,7 +290,7 @@ export default function TeenusedPage() {
                   </ul>
                 </div>
 
-                <div className="bg-purple-50 rounded-xl p-6">
+                <div className="bg-blue-50 rounded-xl p-6">
                   <div className="flex items-center mb-4">
                     <Building className="w-8 h-8 text-purple-600 mr-3" />
                     <h3 className="text-xl font-bold text-gray-800">Ettevõtted</h3>
@@ -332,7 +306,7 @@ export default function TeenusedPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-blue-50 rounded-xl p-4">
                 <p className="text-gray-700">
                   <strong>Hind:</strong> 10€ inimene
                 </p>
@@ -341,7 +315,7 @@ export default function TeenusedPage() {
           </div>
 
           {/* 6. PAPAGOIDE MÜÜK */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-2">🦜 Papagoide müük</h2>
               <p className="text-lg opacity-90">Võta meiega ühendust, kui soovid endale papagoid soetada</p>

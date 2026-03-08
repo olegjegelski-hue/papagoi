@@ -58,7 +58,7 @@ export default function BookingPage() {
           {/* Information Sidebar */}
           <div className="space-y-8">
             {/* Contact */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-papagoi-blue/10">
+            <div className="bg-card text-card-foreground rounded-2xl shadow-2xl p-6 border border-papagoi-blue/10">
               <h3 className="text-xl font-bold text-deep-anthracite mb-4">Otse kontakt</h3>
               <div className="space-y-3">
                 <p className="text-warm-gray-700">
@@ -74,7 +74,7 @@ export default function BookingPage() {
             </div>
 
             {/* Quick Info */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-papagoi-green/10">
+            <div className="bg-card text-card-foreground rounded-2xl shadow-2xl p-6 border border-papagoi-green/10">
               <h3 className="text-xl font-bold text-deep-anthracite mb-6">Külastuse info</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">

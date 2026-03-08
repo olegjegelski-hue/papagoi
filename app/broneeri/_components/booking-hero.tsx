@@ -29,22 +29,22 @@ export default function BookingHero() {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white/70 rounded-xl p-4 shadow-lg">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
               <Clock className="h-6 w-6 text-blue-500 mx-auto mb-2" />
               <div className="text-sm font-semibold text-gray-900">Aeg</div>
               <div className="text-xs text-gray-600">E-P 12-18</div>
             </div>
-            <div className="bg-white/70 rounded-xl p-4 shadow-lg">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
               <Euro className="h-6 w-6 text-green-500 mx-auto mb-2" />
               <div className="text-sm font-semibold text-gray-900">Hind</div>
               <div className="text-xs text-gray-600">10 EUR/inimene</div>
             </div>
-            <div className="bg-white/70 rounded-xl p-4 shadow-lg">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
               <Users className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
               <div className="text-sm font-semibold text-gray-900">Minim</div>
               <div className="text-xs text-gray-600">30 EUR kokku</div>
             </div>
-            <div className="bg-white/70 rounded-xl p-4 shadow-lg">
+            <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
               <Calendar className="h-6 w-6 text-purple-500 mx-auto mb-2" />
               <div className="text-sm font-semibold text-gray-900">Ette</div>
               <div className="text-xs text-gray-600">Broneerimine</div>

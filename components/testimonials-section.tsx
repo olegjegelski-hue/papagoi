@@ -50,7 +50,7 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="pt-0 pb-12 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-yellow-50 papagoi-section-pattern" ref={ref}>
+    <section className="pt-0 pb-12 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-yellow-50" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -87,7 +87,7 @@ export default function TestimonialsSection() {
               {googleReviews.map((review, index) => (
                 <div
                   key={`${review.author_name}-${index}`}
-                  className="bg-white rounded-3xl shadow-lg p-6 flex flex-col justify-between"
+                  className="bg-card text-card-foreground border rounded-3xl shadow-2xl p-6 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center mb-3">

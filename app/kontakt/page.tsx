@@ -101,8 +101,8 @@ export default function ContactPage() {
           {/* Contact Information */}
           <div className="space-y-8">
             
-            {/* Contact Cards */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
+            {/* Contact Cards - sama taust ja kuju mis Kontaktvormil (Card) */}
+            <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-8">Kontaktandmed</h2>
               
               <div className="space-y-6">
@@ -218,7 +218,7 @@ export default function ContactPage() {
         </div>
 
         {/* Social Media */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
+        <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">
             Jälgi meid sotsiaalvõrgustikes
           </h2>
@@ -228,7 +228,7 @@ export default function ContactPage() {
               href="https://www.facebook.com/PapagoiKeskus" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-blue-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-blue-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#1877F2] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -245,7 +245,7 @@ export default function ContactPage() {
               href="https://www.instagram.com/papagoikeskus" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-orange-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-orange-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -262,7 +262,7 @@ export default function ContactPage() {
               href="https://www.youtube.com/@PetsVillaTartu" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-gray-50 hover:bg-papagoi-red-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-red-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#FF0000] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -278,7 +278,7 @@ export default function ContactPage() {
         </div>
 
         {/* FAQs */}
-        <div id="faqs" className="bg-white rounded-2xl shadow-lg p-8">
+        <div id="faqs" className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
             Korduma kippuvad küsimused
           </h2>

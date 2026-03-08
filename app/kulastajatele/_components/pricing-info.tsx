@@ -19,7 +19,7 @@ export default function PricingInfo() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-green-50 to-white" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-green-50 to-papagoi-beige-50" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -99,7 +99,7 @@ export default function PricingInfo() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="space-y-6"
           >
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <div className="flex items-center space-x-3 mb-6">
                 <Calculator className="h-6 w-6 text-blue-500" />
                 <h3 className="text-2xl font-bold text-gray-900">Hinna kalkulaator</h3>
@@ -107,7 +107,7 @@ export default function PricingInfo() {
 
               <div className="space-y-4">
                 {pricingExamples.map((example, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-4 bg-papagoi-beige-100 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="bg-blue-100 rounded-full p-2">
                         <Users className="h-4 w-4 text-blue-600" />

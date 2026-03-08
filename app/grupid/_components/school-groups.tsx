@@ -150,7 +150,7 @@ export default function SchoolGroups() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
+          className="bg-card text-card-foreground border rounded-3xl shadow-2xl p-8 md:p-12"
         >
           <h3 className="text-3xl font-bold text-gray-900 text-center mb-8">
             Miks valida meie <span className="text-blue-600">haridusprogramm?</span>

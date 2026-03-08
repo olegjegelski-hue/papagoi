@@ -12,7 +12,7 @@ export default function WhyVisit() {
   ]
 
   return (
-    <section className="py-12 bg-gradient-to-br from-papagoi-green-50 to-papagoi-blue-50 papagoi-section-pattern">
+    <section className="py-12 bg-gradient-to-br from-papagoi-green-50 to-papagoi-blue-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           

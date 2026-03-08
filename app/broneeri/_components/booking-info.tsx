@@ -9,7 +9,7 @@ export default function BookingInfo() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   return (
-    <section className="py-16 bg-gradient-to-b from-papagoi-green-50 to-white" ref={ref}>
+    <section className="py-16 bg-gradient-to-b from-papagoi-green-50 to-papagoi-beige-50" ref={ref}>
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -45,19 +45,19 @@ export default function BookingInfo() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center bg-white rounded-2xl p-6 shadow-lg">
+            <div className="text-center bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <Clock className="h-12 w-12 text-papagoi-green mx-auto mb-4" />
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Kinnitus 24h</h4>
               <p className="text-gray-600 text-sm">Võtame teiega ühendust ja täpsustame detailid</p>
             </div>
             
-            <div className="text-center bg-white rounded-2xl p-6 shadow-lg">
+            <div className="text-center bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <Phone className="h-12 w-12 text-papagoi-blue mx-auto mb-4" />
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Kiire abi</h4>
               <p className="text-gray-600 text-sm">Helistage +372 512 7938, kui on küsimusi</p>
             </div>
             
-            <div className="text-center bg-white rounded-2xl p-6 shadow-lg">
+            <div className="text-center bg-card text-card-foreground border rounded-2xl p-6 shadow-2xl">
               <CheckCircle className="h-12 w-12 text-papagoi-yellow mx-auto mb-4" />
               <h4 className="text-lg font-semibold text-gray-900 mb-2">100% kindel</h4>
               <p className="text-gray-600 text-sm">Teie külastus on kinnitatud ja oodatud</p>

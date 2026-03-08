@@ -68,25 +68,25 @@ export default function VisitorsPage() {
 
           {/* Quick Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-green">
+            <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-green">
               <Clock className="w-8 h-8 text-papagoi-green mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Lahtiolekuajad</h3>
               <p className="text-gray-600 font-medium">E-P 12-18</p>
               <p className="text-sm text-gray-500 mt-1">algusega täistunnil</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-blue">
+            <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-blue">
               <Users className="w-8 h-8 text-papagoi-blue mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Grupi suurus</h3>
               <p className="text-gray-600 font-medium">kuni 20 inimest</p>
               <p className="text-sm text-gray-500 mt-1">min 3 inimest</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-yellow">
+            <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-yellow">
               <Euro className="w-8 h-8 text-papagoi-yellow mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Hind</h3>
               <p className="text-gray-600 font-medium">10€ inimene</p>
               <p className="text-sm text-gray-500 mt-1">ca 1 tund</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-lg text-center border-t-4 border-papagoi-orange">
+            <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-orange">
               <Camera className="w-8 h-8 text-papagoi-orange mx-auto mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">Fotod</h3>
               <p className="text-gray-600 font-medium">Lubatud</p>
@@ -98,7 +98,7 @@ export default function VisitorsPage() {
           <VisitProcess />
 
           {/* Reeglid ja juhised */}
-          <div id="reeglid-ja-juhised" className="bg-white rounded-2xl shadow-lg p-8 mb-16">
+          <div id="reeglid-ja-juhised" className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <Shield className="w-6 h-6 text-papagoi-blue mr-2" />
               Reeglid ja juhised
@@ -213,7 +213,7 @@ export default function VisitorsPage() {
           </div>
 
           {/* Praktiline info külastuseks */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
+          <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <Info className="w-6 h-6 text-papagoi-green mr-2" />
               Praktiline info külastuseks
@@ -293,7 +293,7 @@ export default function VisitorsPage() {
             {/* Group Types */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
               {/* Koolid & Lasteaiad */}
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-green/10">
+              <div className="bg-card text-card-foreground border rounded-2xl shadow-xl overflow-hidden border border-papagoi-green/10">
                 <div className="bg-papagoi-green p-6 text-white">
                   <div className="flex items-center space-x-4 mb-4">
                     <GraduationCap className="w-8 h-8" />
@@ -348,7 +348,7 @@ export default function VisitorsPage() {
               </div>
 
               {/* Ettevõtted */}
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-blue/10">
+              <div className="bg-card text-card-foreground border rounded-2xl shadow-xl overflow-hidden border border-papagoi-blue/10">
                 <div className="bg-papagoi-blue p-6 text-white">
                   <div className="flex items-center space-x-4 mb-4">
                     <Building className="w-8 h-8" />
@@ -403,7 +403,7 @@ export default function VisitorsPage() {
               </div>
 
               {/* Suured perekonnad */}
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-orange/10">
+              <div className="bg-card text-card-foreground border rounded-2xl shadow-xl overflow-hidden border border-papagoi-orange/10">
                 <div className="bg-papagoi-orange p-6 text-white">
                   <div className="flex items-center space-x-4 mb-4">
                     <Users className="w-8 h-8" />
@@ -458,7 +458,7 @@ export default function VisitorsPage() {
               </div>
 
               {/* Erivajadused */}
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-papagoi-red/10">
+              <div className="bg-card text-card-foreground border rounded-2xl shadow-xl overflow-hidden border border-papagoi-red/10">
                 <div className="bg-papagoi-red p-6 text-white">
                   <div className="flex items-center space-x-4 mb-4">
                     <Heart className="w-8 h-8" />

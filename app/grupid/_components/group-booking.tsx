@@ -100,10 +100,11 @@ export default function GroupBooking() {
                 <Phone className="h-8 w-8 mb-3 mx-auto" />
                 <h4 className="text-lg font-semibold mb-2">Helistage kohe</h4>
                 <p className="text-sm opacity-90 mb-4">Kiireim viis pakkumise saamiseks</p>
-                <a href="tel:+37251279380">
-                  <Button className="bg-white text-green-600 hover:bg-gray-100 font-semibold w-full">
-                    +372 512 7938
-                  </Button>
+                <a
+                  href="tel:+37251279380"
+                  className="papagoi-cta-white inline-flex w-full justify-center font-semibold"
+                >
+                  +372 512 7938
                 </a>
               </div>
               
