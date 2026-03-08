@@ -1,12 +1,16 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
-import { KINKEKAART_PATH, KINKEKAART_LABEL } from '@/lib/site-links'
+import { useTranslations } from 'next-intl'
+import { KINKEKAART_PATH } from '@/lib/site-links'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const t = useTranslations('Nav')
+  const tCommon = useTranslations('Common')
 
   return (
     <nav className="bg-papagoi-beige-300/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-papagoi-green/30">
@@ -23,7 +27,7 @@ export default function Navigation() {
             {/* Logo with integrated slogan */}
             <Image
               src="https://cdn.abacus.ai/images/2dd96a54-c671-447e-a717-998d5712858f.png"
-              alt="Papagoi Keskus - kolm kaunist papagoid oksal - Elu täis värve ja hääli"
+              alt={tCommon('logoAlt')}
               width={90}
               height={90}
               className="drop-shadow-md group-hover:scale-110 transition-transform duration-300"
@@ -40,7 +44,7 @@ export default function Navigation() {
             <Link 
               href="/blogi" 
               className="group hover:scale-110 transition-transform duration-300"
-              title="Blogi"
+              title={t('blog')}
             >
               <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-full px-2 py-3 shadow-sm group-hover:shadow-md flex flex-col items-center justify-center">
                 <div className="text-white text-xs font-bold leading-none space-y-0.5">
@@ -110,90 +114,65 @@ export default function Navigation() {
         {/* Desktop Navigation Menu Row - centered below logo - UUS LIHTSUSTATUD VERSIOON */}
         <div className="hidden md:flex justify-center items-center space-x-6 lg:space-x-8 pb-4 border-t border-papagoi-green/10 pt-4">
           <Link href="/" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Avaleht
+            {t('home')}
           </Link>
           <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Teenused
+            {t('services')}
           </Link>
           <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Meist
+            {t('about')}
           </Link>
           <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Meie papagoid
+            {t('parrots')}
           </Link>
           <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Külastajatele
+            {t('visitors')}
           </Link>
           <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Broneeri
+            {t('book')}
           </Link>
           <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            {KINKEKAART_LABEL}
+            {t('giftCard')}
           </Link>
           <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-            Kontakt
+            {t('contact')}
           </Link>
+          <div className="pl-6 lg:pl-8 border-l border-papagoi-green/20">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {/* Mobile Navigation - UUS LIHTSUSTATUD VERSIOON */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2 bg-papagoi-beige-300/98 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/30">
-            <Link 
-              href="/" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Avaleht
+            <Link href="/" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('home')}
             </Link>
-            <Link 
-              href="/teenused" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Teenused
+            <Link href="/teenused" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('services')}
             </Link>
-            <Link 
-              href="/meist" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-blue font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Meist
+            <Link href="/meist" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-blue font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('about')}
             </Link>
-            <Link 
-              href="/papagoid" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Meie papagoid
+            <Link href="/papagoid" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('parrots')}
             </Link>
-            <Link 
-              href="/kulastajatele" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Külastajatele
+            <Link href="/kulastajatele" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('visitors')}
             </Link>
-            <Link 
-              href="/broneeri" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Broneeri
+            <Link href="/broneeri" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('book')}
             </Link>
-            <Link 
-              href={KINKEKAART_PATH} 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              {KINKEKAART_LABEL}
+            <Link href={KINKEKAART_PATH} className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('giftCard')}
             </Link>
-            <Link 
-              href="/kontakt" 
-              className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300"
-              onClick={() => setIsOpen(false)}
-            >
-              Kontakt
+            <Link href="/kontakt" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
+              {t('contact')}
             </Link>
+            <div className="px-3 pt-3 mt-3 border-t border-papagoi-green/20">
+              <span className="text-sm text-warm-gray-600 font-medium block mb-2">{t('language')}</span>
+              <LanguageSwitcher />
+            </div>
           </div>
         )}
       </div>

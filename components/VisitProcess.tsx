@@ -2,6 +2,7 @@
 'use client'
 
 import { Clock, Camera, Heart, Sparkles, Users, Gift } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const visitSteps = [
   {
@@ -49,6 +50,15 @@ const visitSteps = [
 ]
 
 export default function VisitProcess() {
+  const t = useTranslations('VisitProcess')
+  const visitSteps = [
+    { icon: Users, color: 'bg-blue-500', titleKey: 'step1Title', descKey: 'step1Desc', detailsKey: 'step1Details' },
+    { icon: Sparkles, color: 'bg-green-500', titleKey: 'step2Title', descKey: 'step2Desc', detailsKey: 'step2Details' },
+    { icon: Gift, color: 'bg-yellow-500', titleKey: 'step3Title', descKey: 'step3Desc', detailsKey: 'step3Details' },
+    { icon: Camera, color: 'bg-red-500', titleKey: 'step4Title', descKey: 'step4Desc', detailsKey: 'step4Details' },
+    { icon: Heart, color: 'bg-purple-500', titleKey: 'step5Title', descKey: 'step5Desc', detailsKey: 'step5Details' },
+    { icon: Clock, color: 'bg-indigo-500', titleKey: 'step6Title', descKey: 'step6Desc', detailsKey: 'step6Details' },
+  ]
   return (
     <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,24 +67,24 @@ export default function VisitProcess() {
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
             <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-              Külastuse käik
+              {t('sectionTitle')}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Iga külastus on ainulaadne kogemus! Tutvu sellega, mida võid oodata oma külaskäigult.
+            {t('sectionIntro')}
           </p>
           
           {/* Panoramic Image */}
           <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-8">
             <img 
               src="https://cdn.abacus.ai/images/0f9d7ce0-d271-49fa-ba78-0220eb17d36f.png" 
-              alt="Papagoi keskuse siseruum panoraampilt" 
+              alt={t('roomImageAlt')} 
               className="w-full h-64 md:h-80 lg:h-96 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             <div className="absolute bottom-6 left-6 text-white">
-              <p className="text-lg font-semibold">Meie hubane ja turvaline ruum</p>
-              <p className="text-sm opacity-90">Kus toimuvad kõik külastused</p>
+              <p className="text-lg font-semibold">{t('roomCaption1')}</p>
+              <p className="text-sm opacity-90">{t('roomCaption2')}</p>
             </div>
           </div>
           
@@ -87,9 +97,9 @@ export default function VisitProcess() {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-800 mb-3">🏡 Puurivaba elu</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-3">{t('cageFreeTitle')}</h3>
                 <p className="text-gray-600 leading-relaxed text-lg">
-                  Papagoid elavad puurivaba elu, kus neile on kasutada <strong className="text-green-600">suur tuba (50m²)</strong>. Piki seinu on palju erinevaid oksi ronimiseks ja istumiseks. Kui papagoid ronivad ja lendavad kõrgustes, siis põrandapinnal elavad spetsiaalsetelt ehitatud suuremates kodukestes <strong className="text-blue-600">tõumerisead (50+ notsikut, 5 erinevat tõugu)</strong>. Vahest käib neid külastamas ka pere <strong className="text-purple-600">küülikupoiss</strong>. <span className="text-orange-600 font-semibold">Peremehe juhendamisel saab linde ja merisigu käest toita.</span>
+                  {t('cageFreeDesc')}
                 </p>
               </div>
             </div>
@@ -109,12 +119,12 @@ export default function VisitProcess() {
                       {index + 1}
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-lg opacity-90">{step.description}</p>
+                  <h3 className="text-xl font-bold mb-2">{t(step.titleKey)}</h3>
+                  <p className="text-lg opacity-90">{t(step.descKey)}</p>
                 </div>
                 
                 <div className="p-6">
-                  <p className="text-gray-600 leading-relaxed">{step.details}</p>
+                  <p className="text-gray-600 leading-relaxed">{t(step.detailsKey)}</p>
                 </div>
               </div>
             )
@@ -126,48 +136,48 @@ export default function VisitProcess() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                💡 Oluline teada
+                {t('importantKnowTitle')}
               </h3>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Külastuse kestvus:</strong> 45-60 minutit</span>
+                  <span>{t('importantDuration')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Grupid:</strong> kokkuleppel (min 3 inimest)</span>
+                  <span>{t('importantGroups')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Vanus:</strong> Sobib kõigile vanuseastmetele</span>
+                  <span>{t('importantAge')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Fotod:</strong> Võtke kaasa telefonid või fotokad!</span>
+                  <span>{t('importantPhotos')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span><strong>Turvaline:</strong> Kõik loomad on harjunud inimestega</span>
+                  <span>{t('importantSafe')}</span>
                 </li>
               </ul>
             </div>
             
             <div className="bg-gradient-to-br from-green-100 to-blue-100 rounded-xl p-6">
               <h4 className="text-xl font-bold text-gray-800 mb-4">
-                🌟 Meie eripära
+                {t('specialTitle')}
               </h4>
               <div className="space-y-3">
                 <div className="bg-white/70 rounded-lg p-3">
-                  <p className="font-semibold text-gray-800">Individuaalpilt aaraga</p>
-                  <p className="text-sm text-gray-600">Ainulaadne kogemus suure papagoiga!</p>
+                  <p className="font-semibold text-gray-800">{t('special1Title')}</p>
+                  <p className="text-sm text-gray-600">{t('special1Desc')}</p>
                 </div>
                 <div className="bg-white/70 rounded-lg p-3">
-                  <p className="font-semibold text-gray-800">Personaalne lähenemine</p>
-                  <p className="text-sm text-gray-600">Kogu külastus toimub peremehe juhendamisel</p>
+                  <p className="font-semibold text-gray-800">{t('special2Title')}</p>
+                  <p className="text-sm text-gray-600">{t('special2Desc')}</p>
                 </div>
                 <div className="bg-white/70 rounded-lg p-3">
-                  <p className="font-semibold text-gray-800">Hariduslik väärtus</p>
-                  <p className="text-sm text-gray-600">Õpite palju uut eksootiliste loomade kohta</p>
+                  <p className="font-semibold text-gray-800">{t('special3Title')}</p>
+                  <p className="text-sm text-gray-600">{t('special3Desc')}</p>
                 </div>
               </div>
             </div>

@@ -2,12 +2,6 @@
 import type { Metadata } from 'next'
 import { Nunito, Open_Sans } from 'next/font/google'
 import './globals.css'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
-import { Toaster } from 'sonner'
-import LocalBusinessSchema from '@/components/LocalBusinessSchema'
-import TouristAttractionSchema from '@/components/TouristAttractionSchema'
-import CookieBanner from '@/components/CookieBanner'
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -56,15 +50,7 @@ export default function RootLayout({
   return (
     <html lang="et" className="scroll-smooth">
       <body className={`${nunito.variable} ${openSans.variable} font-sans flex flex-col min-h-screen`}>
-        <LocalBusinessSchema />
-        <TouristAttractionSchema />
-        <Navigation />
-        <main className="flex-1 flex flex-col bg-papagoi-beige">
-          {children}
-        </main>
-        <Footer />
-        <CookieBanner />
-        <Toaster position="top-center" richColors />
+        {children}
       </body>
     </html>
   )

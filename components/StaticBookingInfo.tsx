@@ -2,11 +2,19 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { addMinutes, addMonths, eachDayOfInterval, endOfMonth, endOfWeek, format, isAfter, isBefore, isSameDay, isSameMonth, isToday, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
-import { et } from 'date-fns/locale'
+import { et, enUS as en, ru } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 
 export default function StaticBookingInfo() {
+  const t = useTranslations('StaticBookingInfo')
+  const locale = useLocale()
+  const dateFnsLocale = locale === 'ru' ? ru : locale === 'en' ? en : et
+  const weekDayLetters = useMemo(
+    () => [1, 2, 3, 4, 5, 6, 7].map((d) => format(new Date(2024, 0, d), 'EEEEE', { locale: dateFnsLocale })),
+    [dateFnsLocale]
+  )
   const currentMonth = startOfMonth(new Date())
   const [monthDate, setMonthDate] = useState(() => currentMonth)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -201,9 +209,9 @@ export default function StaticBookingInfo() {
       setBookingsByDate(normalized)
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        setBookingsLoadError('Broneeringute laadimine võttis liiga kaua. Palun värskendage lehte.')
+        setBookingsLoadError(t('bookingsLoadTimeout'))
       } else {
-        setBookingsLoadError('Broneeringute laadimine ebaõnnestus. Palun värskendage lehte.')
+        setBookingsLoadError(t('bookingsLoadError'))
       }
     } finally {
       if (!silent) setIsLoadingBookings(false)
@@ -236,15 +244,15 @@ export default function StaticBookingInfo() {
     if (!selectedDate || !selectedTime) return
     const groupSizeNum = Number(formData.groupSize)
     if (!Number.isFinite(groupSizeNum) || groupSizeNum <= 0) {
-      toast.error('Palun sisestage inimeste arv')
+      toast.error(t('errorEnterGroupSize'))
       return
     }
     if (remainingSeats !== null && groupSizeNum > remainingSeats) {
-      toast.error(`Vabu kohti on ainult ${remainingSeats} inimest`)
+      toast.error(t('errorSeatsLeft', { count: remainingSeats }))
       return
     }
     if (!hasConsent) {
-      setSubmitMessage('Palun kinnitage nõusolek andmete kasutamiseks.')
+      setSubmitMessage(t('submitConsentError'))
       return
     }
     setIsSubmitting(true)
@@ -266,7 +274,7 @@ export default function StaticBookingInfo() {
       const result = await response.json()
 
       if (response.ok) {
-        setSubmitMessage(result.message || 'Broneering edukalt esitatud!')
+        setSubmitMessage(result.message || t('submitSuccess'))
         setFormData({
           name: '',
           email: '',
@@ -298,14 +306,14 @@ export default function StaticBookingInfo() {
         let errorMessage =
           typeof result.error === 'string'
             ? result.error
-            : result?.error?.message || 'Broneeringu saatmisel tekkis viga'
+            : result?.error?.message || t('errorSubmit')
         if (result?.error?.details) {
           errorMessage += ` (${result.error.details})`
         }
         setSubmitMessage(errorMessage)
       }
     } catch (error) {
-      setSubmitMessage('Võrguühenduse viga. Palun proovige uuesti.')
+      setSubmitMessage(t('submitNetworkError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -313,25 +321,25 @@ export default function StaticBookingInfo() {
 
   return (
     <div className="bg-papagoi-beige-100 rounded-2xl shadow-2xl p-8 border border-papagoi-beige-200">
-      <h2 className="text-2xl font-bold text-deep-anthracite mb-8 font-heading">Broneerimine</h2>
+      <h2 className="text-2xl font-bold text-deep-anthracite mb-8 font-heading">{t('title')}</h2>
       
       {/* Important Notice */}
       <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-6 mb-8">
         <div className="flex items-center space-x-3 mb-3">
           <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
-          <h3 className="text-xl font-bold text-amber-800 font-heading">⚠️ OLULINE!</h3>
+          <h3 className="text-xl font-bold text-amber-800 font-heading">{t('importantTitle')}</h3>
         </div>
-        <p className="text-amber-800 font-medium mb-1">Külastused toimuvad AINULT eelneval kokkuleppel!</p>
-        <p className="text-amber-800">Ilma broneeringuta ei saa meid külastada.</p>
+        <p className="text-amber-800 font-medium mb-1">{t('importantLine1')}</p>
+        <p className="text-amber-800">{t('importantLine2')}</p>
       </div>
 
         {/* Calendar */}
         <div className="bg-papagoi-beige-50 rounded-xl p-6 border border-papagoi-green/20 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xl font-bold text-deep-anthracite">Kalender</h3>
+              <h3 className="text-xl font-bold text-deep-anthracite">{t('calendar')}</h3>
               <p className="text-sm text-warm-gray-600">
-                {format(monthDate, 'MMMM yyyy', { locale: et })}
+                {format(monthDate, 'MMMM yyyy', { locale: dateFnsLocale })}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -341,7 +349,7 @@ export default function StaticBookingInfo() {
                   onClick={() => setMonthDate(currentMonth)}
                   className="px-4 py-2 rounded-full border border-papagoi-green text-papagoi-green text-sm font-semibold hover:bg-papagoi-green/10 transition-colors"
                 >
-                  Tagasi jooksva kuu juurde
+                  {t('backToCurrentMonth')}
                 </button>
               )}
               <button
@@ -349,22 +357,20 @@ export default function StaticBookingInfo() {
                 onClick={() => setMonthDate((current) => addMonths(current, 1))}
                 className="px-4 py-2 rounded-full bg-papagoi-green text-white text-sm font-semibold hover:bg-papagoi-green/90 transition-colors"
               >
-                Järgmine kuu
+                {t('nextMonth')}
               </button>
             </div>
           </div>
 
           <div className="mb-6 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
-            <p className="font-semibold mb-1">Vali endale sobiv kuupäev ja aeg</p>
-            <p className="text-warm-gray-600">🕐 Tüüpilised külastusajad: 12:00, 14:00, 16:00</p>
+            <p className="font-semibold mb-1">{t('selectDateAndTime')}</p>
+            <p className="text-warm-gray-600">{t('typicalTimes')}</p>
             <div className="h-2" />
             <blockquote className="border-l-2 border-papagoi-green/40 pl-3 text-warm-gray-600 italic">
-              Meie papagoid vajavad külastuste vahel puhkeaega, et olla energilised ja sõbralikud.
-              Seetõttu jätame külastuste vahele vähemalt 1-tunnise pausi. Kui päeval on vähe broneeringuid,
-              võime pakkuda ka vahepealset aega.
+              {t('parrotsRestQuote')}
             </blockquote>
             <div className="h-2" />
-            <p className="text-warm-gray-600">💡 Soovid hommikust aega (kl 10 või 11)? Kirjuta meile ja leiame lahenduse!</p>
+            <p className="text-warm-gray-600">{t('morningTip')}</p>
           </div>
 
           {bookingsLoadError && !isLoadingBookings && (
@@ -378,13 +384,13 @@ export default function StaticBookingInfo() {
                 }}
                 className="text-sm font-semibold text-papagoi-green hover:underline whitespace-nowrap"
               >
-                Proovi uuesti
+                {t('tryAgain')}
               </button>
               <button
                 type="button"
                 onClick={() => setBookingsLoadError(null)}
                 className="text-lg text-warm-gray-500 hover:text-warm-gray-700 leading-none"
-                aria-label="Sulge"
+                aria-label={t('close')}
               >
                 ×
               </button>
@@ -392,7 +398,7 @@ export default function StaticBookingInfo() {
           )}
 
           <div className="grid grid-cols-7 text-center text-xs font-semibold text-warm-gray-500 mb-2">
-            {['E', 'T', 'K', 'N', 'R', 'L', 'P'].map((day) => (
+            {weekDayLetters.map((day) => (
               <div key={day} className="py-2">
                 {day}
               </div>
@@ -446,9 +452,9 @@ export default function StaticBookingInfo() {
             <div className="mt-6 border-t border-warm-gray-200 pt-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h4 className="text-lg font-semibold text-deep-anthracite">Valitud kuupäev</h4>
+                  <h4 className="text-lg font-semibold text-deep-anthracite">{t('selectedDate')}</h4>
                   <p className="text-sm text-warm-gray-600">
-                    {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: et })}
+                    {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: dateFnsLocale })}
                   </p>
                 </div>
                 <button
@@ -456,13 +462,12 @@ export default function StaticBookingInfo() {
                   onClick={() => setSelectedDate(null)}
                   className="text-sm text-warm-gray-500 hover:text-warm-gray-700"
                 >
-                  Sulge
+                  {t('close')}
                 </button>
               </div>
 
               <div className="mb-4 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
-                <span className="font-semibold">NB!</span> Tavakülastused iga päev 12:00-18:00.
-                Varasemad kellaajad ainult eelneval kokkuleppel!
+                {t('nbTimes')}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -478,7 +483,7 @@ export default function StaticBookingInfo() {
                       type="button"
                       onClick={() => handleTimeClick(time)}
                       disabled={disabled}
-                      title={isBooked ? 'Broneeritud' : isRestBlocked ? '1h puhkeaeg broneeringute vahel' : undefined}
+                      title={isBooked ? t('titleBooked') : isRestBlocked ? t('titleRestBlocked') : undefined}
                       className={[
                         'px-4 py-2 rounded-lg border font-semibold transition-colors',
                         disabled ? 'border-warm-gray-200 text-warm-gray-400 bg-warm-gray-50 cursor-not-allowed' : '',
@@ -495,7 +500,7 @@ export default function StaticBookingInfo() {
 
               {bookedEntriesForSelectedDate.length > 0 && (
                 <div className="mt-4 rounded-lg border border-papagoi-orange/30 bg-papagoi-orange/10 p-4">
-                  <p className="text-sm font-semibold text-deep-anthracite mb-2">Broneeritud ajad</p>
+                  <p className="text-sm font-semibold text-deep-anthracite mb-2">{t('bookedSlots')}</p>
                   <div className="space-y-2">
                     {bookedEntriesForSelectedDate.map((entry) => {
                       const remaining = entry.guests === null ? null : Math.max(0, 20 - entry.guests)
@@ -512,8 +517,8 @@ export default function StaticBookingInfo() {
                           <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
                           <span className="text-xs text-warm-gray-600">
                             {remaining === null
-                              ? 'Külaliste arv pole määratud'
-                              : `Veel saab liituda: ${remaining} inimest`}
+                              ? t('guestsNotSet')
+                              : t('joinPlaces', { count: remaining })}
                           </span>
                           {canJoin && (
                             <button
@@ -521,7 +526,7 @@ export default function StaticBookingInfo() {
                               onClick={() => setSelectedTime(entry.time)}
                               className="px-3 py-1 rounded-full text-xs font-semibold bg-papagoi-green text-white hover:bg-papagoi-green/90 transition-colors"
                             >
-                              Liitu
+                              {t('join')}
                             </button>
                           )}
                         </div>
@@ -532,12 +537,12 @@ export default function StaticBookingInfo() {
               )}
 
               {isLoadingBookings && (
-                <p className="mt-4 text-sm text-warm-gray-500">Laen broneeringuid...</p>
+                <p className="mt-4 text-sm text-warm-gray-500">{t('loadingBookings')}</p>
               )}
               {selectedTime && selectedBookingEntry && remainingSeats === 0 && (
                 <div className="mt-6 rounded-lg border border-warm-gray-200 bg-warm-gray-50 p-4 text-center text-warm-gray-600">
-                  <p className="font-semibold">Grupp on täis</p>
-                  <p className="text-sm mt-1">Sellel ajal ei saa enam broneeringut teha ega gruppi liituda.</p>
+                  <p className="font-semibold">{t('groupFull')}</p>
+                  <p className="text-sm mt-1">{t('groupFullDesc')}</p>
                 </div>
               )}
               {selectedTime && !(selectedBookingEntry && remainingSeats === 0) && (
@@ -545,28 +550,28 @@ export default function StaticBookingInfo() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="booking-name" className="text-sm font-semibold text-deep-anthracite">
-                        Nimi *
+                        {t('labelName')}
                       </label>
                       <input
                         id="booking-name"
                         type="text"
                         value={formData.name}
                         onChange={(event) => handleInputChange('name', event.target.value)}
-                        placeholder="Teie nimi"
+                        placeholder={t('placeholderName')}
                         required
                         className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                       />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="booking-email" className="text-sm font-semibold text-deep-anthracite">
-                        E-post *
+                        {t('labelEmail')}
                       </label>
                       <input
                         id="booking-email"
                         type="email"
                         value={formData.email}
                         onChange={(event) => handleInputChange('email', event.target.value)}
-                        placeholder="teie@email.ee"
+                        placeholder={t('placeholderEmail')}
                         required
                         className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                       />
@@ -576,7 +581,7 @@ export default function StaticBookingInfo() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="booking-phone" className="text-sm font-semibold text-deep-anthracite">
-                        Telefon *
+                        {t('labelPhone')}
                       </label>
                       <input
                         id="booking-phone"
@@ -588,15 +593,15 @@ export default function StaticBookingInfo() {
                             handleInputChange('phone', '+372')
                           }
                         }}
-                        placeholder="+372 ..."
+                        placeholder={t('placeholderPhone')}
                         required
                         className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                       />
-                      <p className="text-xs text-warm-gray-500">Telefon peab algama suunakoodiga +372</p>
+                      <p className="text-xs text-warm-gray-500">{t('phoneHint')}</p>
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="booking-group-size" className="text-sm font-semibold text-deep-anthracite">
-                        Inimeste arv{minGroupSize === 3 ? ' (min 3 inimest)' : ' (min 1 inimene)'} *
+                        {t('labelGroupSize')}{minGroupSize === 3 ? ` (${t('labelGroupSizeMin', { min: 3 })})` : ` (${t('labelGroupSizeMinOne')})`} *
                       </label>
                       <input
                         id="booking-group-size"
@@ -605,26 +610,26 @@ export default function StaticBookingInfo() {
                         max={remainingSeats ?? 50}
                         value={formData.groupSize}
                         onChange={(event) => handleInputChange('groupSize', event.target.value)}
-                        placeholder="Mitu inimest?"
+                        placeholder={t('placeholderGroupSize')}
                         required
                         className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                       />
                       <p className="text-xs text-warm-gray-500">
-                        Minimaalne grupi suurus: {minGroupSize} {minGroupSize === 1 ? 'inimene' : 'inimest'}
-                        {remainingSeats !== null ? ` • Vabu kohti: ${remainingSeats}` : ''}
+                        {t('minGroupSize', { min: minGroupSize })}
+                        {remainingSeats !== null ? ` • ${t('freePlaces', { count: remainingSeats })}` : ''}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-deep-anthracite">Kuupäev</label>
+                      <label className="text-sm font-semibold text-deep-anthracite">{t('labelDate')}</label>
                       <div className="rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite">
                         {selectedDateValue}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-deep-anthracite">Kellaaeg</label>
+                      <label className="text-sm font-semibold text-deep-anthracite">{t('labelTime')}</label>
                       <div className="rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite">
                         {selectedTime}
                       </div>
@@ -633,7 +638,7 @@ export default function StaticBookingInfo() {
 
                   <div className="space-y-2">
                     <label htmlFor="booking-group-type" className="text-sm font-semibold text-deep-anthracite">
-                      Grupi tüüp
+                      {t('labelGroupType')}
                     </label>
                     <select
                       id="booking-group-type"
@@ -641,23 +646,23 @@ export default function StaticBookingInfo() {
                       onChange={(event) => handleInputChange('groupType', event.target.value)}
                       className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                     >
-                      <option value="">Valige tüüp</option>
-                      <option value="perevisit">Perevisit</option>
-                      <option value="kool">Kool/Lasteaed</option>
-                      <option value="ettevote">Ettevõte</option>
-                      <option value="muu">Muu</option>
+                      <option value="">{t('groupTypePlaceholder')}</option>
+                      <option value="perevisit">{t('groupTypeFamily')}</option>
+                      <option value="kool">{t('groupTypeSchool')}</option>
+                      <option value="ettevote">{t('groupTypeBusiness')}</option>
+                      <option value="muu">{t('groupTypeOther')}</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="booking-message" className="text-sm font-semibold text-deep-anthracite">
-                      Lisainfo või soovid
+                      {t('labelMessage')}
                     </label>
                     <textarea
                       id="booking-message"
                       value={formData.message}
                       onChange={(event) => handleInputChange('message', event.target.value)}
-                      placeholder="Kirjutage siia oma soovid, küsimused või lisainfo..."
+                      placeholder={t('placeholderMessage')}
                       rows={4}
                       className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
                     />
@@ -682,7 +687,7 @@ export default function StaticBookingInfo() {
                       onChange={(event) => setHasConsent(event.target.checked)}
                       className="mt-1 h-4 w-4 rounded border-warm-gray-300"
                     />
-                    <span>Nõustun, et minu andmeid kasutatakse päringule vastamiseks. *</span>
+                    <span>{t('consent')}</span>
                   </label>
 
                   <button
@@ -690,7 +695,7 @@ export default function StaticBookingInfo() {
                     disabled={isSubmitting}
                     className="w-full rounded-lg bg-papagoi-green text-white font-semibold py-3 hover:bg-papagoi-green/90 transition-colors"
                   >
-                    {isSubmitting ? 'Saadan...' : 'Saada broneering'}
+                    {isSubmitting ? t('submitting') : t('submitButton')}
                   </button>
 
                 </form>

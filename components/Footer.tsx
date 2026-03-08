@@ -1,10 +1,15 @@
 
-import Link from 'next/link'
+'use client'
+
+import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react'
-import { KINKEKAART_PATH, KINKEKAART_LABEL } from '@/lib/site-links'
+import { useTranslations } from 'next-intl'
+import { KINKEKAART_PATH } from '@/lib/site-links'
 
 export default function Footer() {
+  const t = useTranslations('Footer')
+  const tNav = useTranslations('Nav')
   return (
     <footer className="bg-papagoi-beige-300 border-t-4 border-papagoi-green/40 text-deep-anthracite">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -22,12 +27,11 @@ export default function Footer() {
               />
               <div>
                 <h3 className="font-heading text-xl font-bold text-deep-anthracite">Papagoi Keskus</h3>
-                <p className="papagoi-text-gradient font-medium">Elu täis värve ja hääli</p>
+                <p className="papagoi-text-gradient font-medium">{t('tagline')}</p>
               </div>
             </div>
             <p className="text-deep-anthracite mb-6 max-w-md leading-relaxed">
-              Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015.
-              Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!
+              {t('description')}
             </p>
             <div className="flex items-center justify-center space-x-4">
               <a 
@@ -69,53 +73,53 @@ export default function Footer() {
             </div>
             <div className="mt-8 flex justify-center">
               <Link href="/privaatsus" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
-                Privaatsus ja küpsised
+                {t('privacy')}
               </Link>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-papagoi-green">Kiirlingid</h4>
+            <h4 className="text-lg font-semibold mb-4 text-papagoi-green">{t('quickLinks')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
-                  Avaleht
+                  {tNav('home')}
                 </Link>
               </li>
               <li>
                 <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
-                  Teenused
+                  {tNav('services')}
                 </Link>
               </li>
               <li>
                 <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300">
-                  Meist
+                  {tNav('about')}
                 </Link>
               </li>
               <li>
                 <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
-                  Meie papagoid
+                  {tNav('parrots')}
                 </Link>
               </li>
               <li>
                 <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
-                  Külastajatele
+                  {tNav('visitors')}
                 </Link>
               </li>
               <li>
                 <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
-                  Broneeri
+                  {tNav('book')}
                 </Link>
               </li>
               <li>
                 <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
-                  {KINKEKAART_LABEL}
+                  {tNav('giftCard')}
                 </Link>
               </li>
               <li>
                 <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
-                  Kontakt
+                  {tNav('contact')}
                 </Link>
               </li>
             </ul>
@@ -123,7 +127,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-papagoi-blue">Kontakt</h4>
+            <h4 className="text-lg font-semibold mb-4 text-papagoi-blue">{t('contact')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <MapPin className="w-5 h-5 text-papagoi-green mt-0.5 flex-shrink-0" />
@@ -138,7 +142,7 @@ export default function Footer() {
                     className="inline-flex items-center text-sm text-papagoi-green hover:text-papagoi-blue transition-colors duration-300 mt-1"
                   >
                     <ExternalLink className="w-3 h-3 mr-1" />
-                    Vaata kaardil
+                    {t('viewOnMap')}
                   </a>
                 </div>
               </li>
@@ -163,8 +167,8 @@ export default function Footer() {
               <li className="flex items-start space-x-2">
                 <Clock className="w-5 h-5 text-papagoi-orange mt-0.5" />
                 <div className="text-deep-anthracite">
-                  <div>Ainult eelneval kokkuleppel</div>
-                  <div className="text-sm text-deep-anthracite-700">Broneerimine vajalik</div>
+                  <div>{t('byAppointmentOnly')}</div>
+                  <div className="text-sm text-deep-anthracite-700">{t('bookingRequired')}</div>
                 </div>
               </li>
             </ul>
@@ -179,7 +183,7 @@ export default function Footer() {
               Koduinfo OÜ | Reg nr. 11105156
             </p>
             <p>
-              © 2015 - {new Date().getFullYear()} Papagoi Keskus. Kõik õigused kaitstud.
+              © 2015 - {new Date().getFullYear()} Papagoi Keskus. {t('rightsReserved')}
             </p>
           </div>
         </div>
