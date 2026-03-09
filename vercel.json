@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/review-invites",
-      "schedule": "45 18 * * *"
+      "schedule": "45 16 * * *"
     },
     {
       "path": "/api/visit-sms-reminders?dry=0&token=visit-sms-2026-secret-xyz",
