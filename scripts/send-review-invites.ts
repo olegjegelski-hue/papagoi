@@ -23,7 +23,6 @@ interface VisitorsDbMeta {
   relationPropertyName: string | null
   emailPropertyName: string | null
   namePropertyName: string | null
-  reviewSentPropertyName: string | null
 }
 
 async function resolveVisitsDatabase(notionApiKey: string, visitsDatabaseId: string) {
@@ -166,22 +165,6 @@ async function resolveVisitorsDatabase(
     }) ||
     null
 
-  const reviewSentPropertyName =
-    Object.keys(properties).find((key) => {
-      const prop = properties[key]
-      if (prop?.type !== 'checkbox') return false
-      const normalized = normalizeKey(key)
-      return (
-        normalized.includes('review') ||
-        normalized.includes('arvustus') ||
-        normalized.includes('tagasiside') ||
-        normalized.includes('tagasisidekutse') ||
-        normalized.includes('reviewkutse') ||
-        normalized.includes('kutsu') ||
-        normalized.includes('saadetud')
-      )
-    }) || null
-
   if (!relationPropertyName) {
     console.error('Visitors database has no relation to visits (Külastused)')
   }
@@ -194,7 +177,6 @@ async function resolveVisitorsDatabase(
     relationPropertyName,
     emailPropertyName,
     namePropertyName,
-    reviewSentPropertyName,
   }
 }
 
@@ -211,8 +193,7 @@ async function getVisitorsForVisit(
   visitId: string,
   visitDate: string | null
 ): Promise<VisitorRecord[]> {
-  const { databaseId, relationPropertyName, emailPropertyName, namePropertyName, reviewSentPropertyName } =
-    visitorsDb
+  const { databaseId, relationPropertyName, emailPropertyName, namePropertyName } = visitorsDb
   if (!relationPropertyName || !emailPropertyName) return []
 
   const allVisitors: VisitorRecord[] = []
@@ -224,16 +205,8 @@ async function getVisitorsForVisit(
       relation: { contains: visitId.replace(/-/g, '') },
     }
 
-    const andFilters: any[] = [filter]
-    if (reviewSentPropertyName) {
-      andFilters.push({
-        property: reviewSentPropertyName,
-        checkbox: { equals: false },
-      })
-    }
-
     const body: Record<string, unknown> = {
-      filter: andFilters.length === 1 ? andFilters[0] : { and: andFilters },
+      filter,
       page_size: 100,
     }
     if (cursor) body.start_cursor = cursor
@@ -287,35 +260,6 @@ async function getVisitorsForVisit(
   } while (cursor)
 
   return allVisitors
-}
-
-async function markReviewSent(
-  notionApiKey: string,
-  visitorsDb: VisitorsDbMeta,
-  visitorPageId: string
-) {
-  const { reviewSentPropertyName } = visitorsDb
-  if (!reviewSentPropertyName) return
-
-  const pageId = visitorPageId.replace(/-/g, '')
-  const response = await fetchWithTimeout(`https://api.notion.com/v1/pages/${pageId}`, {
-    method: 'patch',
-    headers: {
-      Authorization: `Bearer ${notionApiKey}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      properties: {
-        [reviewSentPropertyName]: { checkbox: true },
-      },
-    }),
-  })
-
-  if (!response.ok) {
-    const text = await response.text()
-    console.error('Failed to mark review sent:', response.status, text)
-  }
 }
 
 export async function sendReviewEmail(to: string, name: string | null, visitDateIso: string | null) {
@@ -457,6 +401,7 @@ export async function runReviewInvitesFromEnv() {
 
   console.log('Fetching today visits from Notion...')
   const visits = await getTodayVisitIds(NOTION_API_KEY, NOTION_VISITS_DATABASE_ID)
+  // Loogika: tänased külastused → kõik seotud külastajad → kõigile, kellel on täidetud Email-tulp, saadetakse kiri.
   if (!visits.length) {
     console.log('No visits found for today in Notion. Nothing to do.')
     await sendReviewCronSummaryEmail({
@@ -508,7 +453,7 @@ export async function runReviewInvitesFromEnv() {
       sentCount: 0,
       errorCount: 0,
       dryRun,
-      earlyReason: 'Külastajatel pole e-maili või arvustuskutse juba saadetud',
+      earlyReason: 'Külastajatel pole e-maili (täidetud Email-tulp)',
     })
     return
   }
@@ -535,11 +480,6 @@ export async function runReviewInvitesFromEnv() {
       await sendReviewEmail(email, first.name, first.visitDate)
       successCount++
       console.log(`Review email sent to ${email}`)
-
-      // Mark all corresponding visitor pages as "review sent" if property exists
-      for (const v of visitors) {
-        await markReviewSent(NOTION_API_KEY, visitorsDb, v.id)
-      }
     } catch (error) {
       errorCount++
       console.error(`Failed to send review email to ${email}:`, error)

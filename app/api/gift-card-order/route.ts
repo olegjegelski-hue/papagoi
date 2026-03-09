@@ -1,30 +1,59 @@
 import { NextResponse } from 'next/server'
 import { createGiftCardOrder } from '@/lib/notion-gift-cards'
 import { sendGiftCardOrderEmail } from '@/lib/email'
+import { cleanText } from '@/lib/sanitize'
 
 export const dynamic = 'force-dynamic'
+const MAX_AMOUNT = 1000
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, phone, amount } = body
+    const { name, email, phone, amount, confirm, botField } = body
 
-    if (!name || typeof name !== 'string' || !name.trim()) {
+    const cleanedName = cleanText(name, { max: 120 })
+    const cleanedEmail = cleanText(email, { max: 254 })
+    const cleanedPhone = cleanText(phone || '', { max: 40 })
+
+    if (!cleanedName) {
       return NextResponse.json(
         { ok: false, error: 'Nimi on kohustuslik' },
         { status: 400 }
       )
     }
-    if (!email || typeof email !== 'string' || !email.trim()) {
+    if (!cleanedEmail) {
       return NextResponse.json(
         { ok: false, error: 'E-post on kohustuslik' },
         { status: 400 }
       )
     }
-    const amountNum = typeof amount === 'number' ? amount : parseInt(String(amount), 10)
-    if (Number.isNaN(amountNum) || amountNum < 10 || amountNum % 10 !== 0) {
+
+    // Honeypot: kui see väli on täidetud, eeldame, et tegemist on robotiga.
+    if (typeof botField === 'string' && botField.trim() !== '') {
+      console.log('[gift-card-order] Honeypot täidetud, päring vahele jäetud')
+      return NextResponse.json({ ok: true })
+    }
+
+    if (confirm !== true) {
       return NextResponse.json(
-        { ok: false, error: 'Väärtus peab olema vähemalt 10 € ja 10 € kordne' },
+        { ok: false, error: 'Palun kinnita linnukesega, et see ei ole roboti tehtud päring.' },
+        { status: 400 }
+      )
+    }
+
+    // Emaili formaadi kontroll
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(cleanedEmail)) {
+      return NextResponse.json(
+        { ok: false, error: 'Palun sisestage kehtiv e-posti aadress' },
+        { status: 400 }
+      )
+    }
+
+    const amountNum = typeof amount === 'number' ? amount : parseInt(String(amount), 10)
+    if (Number.isNaN(amountNum) || amountNum < 10 || amountNum % 10 !== 0 || amountNum > MAX_AMOUNT) {
+      return NextResponse.json(
+        { ok: false, error: `Väärtus peab olema vahemikus 10–${MAX_AMOUNT} € ja 10 € kordne` },
         { status: 400 }
       )
     }
@@ -41,17 +70,17 @@ export async function POST(request: Request) {
     }
 
     const result = await createGiftCardOrder(NOTION_API_KEY, NOTION_GIFT_CARDS_DATABASE_ID, {
-      buyerName: name.trim(),
-      buyerEmail: email.trim(),
-      buyerPhone: typeof phone === 'string' ? phone.trim() : '',
+      buyerName: cleanedName,
+      buyerEmail: cleanedEmail,
+      buyerPhone: cleanedPhone,
       amountEur: amountNum,
     })
 
     console.log('[gift-card-order] Notion leht loodud:', result.pageId, 'kood:', result.code, 'DB:', NOTION_GIFT_CARDS_DATABASE_ID.replace(/-/g, '').slice(-8))
 
     await sendGiftCardOrderEmail({
-      to: email.trim(),
-      buyerName: name.trim(),
+      to: cleanedEmail,
+      buyerName: cleanedName,
       amountEur: amountNum,
       code: result.code,
     })

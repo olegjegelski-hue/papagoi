@@ -5,9 +5,11 @@ import { Gift, ChevronUp, ChevronDown } from 'lucide-react'
 
 const STEP = 10
 const MIN = 10
+const MAX = 1000
 
 function roundToStep(value: number): number {
-  return Math.max(MIN, Math.round(value / STEP) * STEP)
+  const rounded = Math.round(value / STEP) * STEP
+  return Math.min(MAX, Math.max(MIN, rounded))
 }
 
 export default function GiftCardForm() {
@@ -18,6 +20,8 @@ export default function GiftCardForm() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [confirm, setConfirm] = useState(false)
+  const [botField, setBotField] = useState('') // honeypot
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,7 +31,14 @@ export default function GiftCardForm() {
       const res = await fetch('/api/gift-card-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), phone: phone.trim(), amount }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          amount,
+          confirm,
+          botField,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -42,7 +53,7 @@ export default function GiftCardForm() {
     }
   }
 
-  const increment = () => setAmount((a) => a + STEP)
+  const increment = () => setAmount((a) => Math.min(MAX, a + STEP))
   const decrement = () => setAmount((a) => Math.max(MIN, a - STEP))
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseInt(e.target.value, 10)
@@ -51,6 +62,7 @@ export default function GiftCardForm() {
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const v = parseInt(e.target.value, 10)
     if (Number.isNaN(v) || v < MIN) setAmount(MIN)
+    else if (v > MAX) setAmount(MAX)
     else setAmount(roundToStep(v))
   }
 
@@ -107,7 +119,7 @@ export default function GiftCardForm() {
           </button>
         </div>
         <p className="mt-2 text-warm-gray-600 text-sm">
-          {amount} € = {amount / 10} külastust
+          {amount} € = {amount / 10} külastust (maksimaalselt {MAX} €)
         </p>
       </div>
 
@@ -155,16 +167,42 @@ export default function GiftCardForm() {
         </div>
       </div>
 
+      {/* Honeypot väli robotite vastu – inimkasutajale ei kuvata */}
+      <div className="hidden" aria-hidden="true">
+        <label htmlFor="gift-company">Ettevõte</label>
+        <input
+          id="gift-company"
+          type="text"
+          value={botField}
+          onChange={(e) => setBotField(e.target.value)}
+          autoComplete="off"
+        />
+      </div>
+
       {error && (
         <p className="text-red-600 text-sm text-center bg-red-50 border border-red-200 rounded-xl py-2 px-4">
           {error}
         </p>
       )}
 
+      <div className="flex items-start gap-3 bg-papagoi-beige-100 border border-papagoi-beige-300 rounded-xl px-4 py-3">
+        <input
+          id="gift-confirm"
+          type="checkbox"
+          checked={confirm}
+          required
+          onChange={(e) => setConfirm(e.target.checked)}
+          className="mt-1 h-4 w-4 rounded border-papagoi-green/60 text-papagoi-green focus:ring-papagoi-green"
+        />
+        <label htmlFor="gift-confirm" className="text-sm text-deep-anthracite text-left">
+          Kinnitan, et soovin päriselt kinkekaarti ja see ei ole test ega roboti tehtud päring.
+        </label>
+      </div>
+
       <div className="flex justify-center">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !confirm}
           className="w-full sm:w-auto papagoi-cta disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
         >
           <Gift className="w-5 h-5 mr-2" />
