@@ -2,8 +2,8 @@ import 'dotenv/config'
 import { sendReviewEmail } from './send-review-invites'
 
 async function main() {
-  const to = 'oleg.jegelski@gmail.com'
-  const name = 'Oleg'
+  const to = 'keskus@papagoi.ee'
+  const name = 'Papagoi sõber'
   const visitDateIso = new Date().toISOString()
 
   console.log(`Sending example review email to ${to}...`)
