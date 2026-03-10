@@ -84,6 +84,16 @@ export default function StaticBookingInfo() {
     if (selectedBookingEntry.guests === null) return null
     return Math.max(0, 20 - selectedBookingEntry.guests)
   }, [selectedBookingEntry, selectedTime])
+  const formatJoinPlaces = (remaining: number | null) => {
+    if (remaining === null) return t('guestsNotSet')
+    if (locale === 'ru') {
+      return `Можно присоединиться: ${remaining} мест`
+    }
+    if (locale === 'en') {
+      return `You can still join: ${remaining} places left`
+    }
+    return `Veel saab liituda: ${remaining} inimest`
+  }
   const restBlockedTimes = useMemo(() => {
     return bookedTimesForSelectedDate
       .filter((time) => /^\d{2}:\d{2}$/.test(time))
@@ -516,9 +526,7 @@ export default function StaticBookingInfo() {
                         >
                           <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
                           <span className="text-xs text-warm-gray-600">
-                            {remaining === null
-                              ? t('guestsNotSet')
-                              : t('joinPlaces', { count: remaining })}
+                            {formatJoinPlaces(remaining)}
                           </span>
                           {canJoin && (
                             <button
