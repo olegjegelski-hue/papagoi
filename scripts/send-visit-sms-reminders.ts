@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { formatInTimeZone } from 'date-fns-tz'
 import { sendSms } from '../lib/sms'
+import { createTransporter } from '../lib/email'
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
@@ -584,6 +585,54 @@ export async function runVisitSmsRemindersFromEnv() {
   console.log(
     `Done. Successfully sent ${successCount} SMS reminder(s). Failed: ${errorCount}.`
   )
+
+  // Saada kokkuvõtte email keskusele, kui päriselt SMS-e saadeti
+  if (!dryRun && uniqueByPhone.size > 0) {
+    try {
+      const transporter = createTransporter()
+      const to = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+      const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+      const subject = 'SMS meeldetuletused – päevakokkuvõte'
+
+      const now = new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
+
+      const text = [
+        'Papagoi Keskuse külastuste SMS-meeldetuletuste kokkuvõte',
+        '',
+        `Kuupäev ja kellaaeg (Tallinn): ${now}`,
+        '',
+        `Unikaalseid telefoninumbreid (plaanitud): ${uniqueByPhone.size}`,
+        `Õnnestus saata: ${successCount}`,
+        `Ebaõnnestus: ${errorCount}`,
+      ].join('\n')
+
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+            SMS meeldetuletuste kokkuvõte
+          </h2>
+          <p>Kuupäev ja kellaaeg (Tallinn): <strong>${now}</strong></p>
+          <ul style="line-height: 1.6;">
+            <li><strong>Unikaalseid telefoninumbreid (plaanitud):</strong> ${uniqueByPhone.size}</li>
+            <li><strong>Õnnestus saata:</strong> ${successCount}</li>
+            <li><strong>Ebaõnnestus:</strong> ${errorCount}</li>
+          </ul>
+        </div>
+      `
+
+      await transporter.sendMail({
+        from: `"Papagoi Keskus – SMS meeldetuletused" <${fromAddress}>`,
+        to,
+        subject,
+        text,
+        html,
+      })
+
+      console.log(`Visit SMS summary email sent to ${to}`)
+    } catch (error) {
+      console.error('Failed to send visit SMS summary email:', error)
+    }
+  }
 }
 
 if (process.env.VISIT_SMS_CLI === '1') {
