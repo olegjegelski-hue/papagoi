@@ -52,7 +52,7 @@ function assertEnv(name: string): string {
 const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 const GOOGLE_MY_BUSINESS_BASE = 'https://mybusiness.googleapis.com/v4'
 
-async function getAccessTokenFromRefreshToken() {
+export async function getGmbAccessToken() {
   const clientId = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_ID')
   const clientSecret = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_SECRET')
   const refreshToken = assertEnv('GOOGLE_MY_BUSINESS_REFRESH_TOKEN')
@@ -87,7 +87,7 @@ async function getAccessTokenFromRefreshToken() {
 async function fetchAllGoogleReviewsFromGMB(): Promise<GoogleReview[]> {
   const accountId = assertEnv('GOOGLE_MY_BUSINESS_ACCOUNT_ID')
   const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
-  const accessToken = await getAccessTokenFromRefreshToken()
+  const accessToken = await getGmbAccessToken()
 
   const parent = `accounts/${accountId}/locations/${locationId}`
   const pageSize = 50
@@ -370,31 +370,19 @@ function buildNotionPropertiesFromReview(
     }
   }
 
-  // Vastuse mustand – ära kirjuta üle, kui juba olemas
-  const existingDraft = existingProperties?.['Vastuse mustand']
-  const draftText =
-    existingDraft?.rich_text?.[0]?.plain_text && existingDraft.rich_text[0].plain_text.trim().length
-      ? existingDraft.rich_text[0].plain_text
+  // Vastus – ära kirjuta üle, kui juba olemas
+  const existingReply = existingProperties?.['Vastus']
+  const replyText =
+    existingReply?.rich_text?.[0]?.plain_text && existingReply.rich_text[0].plain_text.trim().length
+      ? existingReply.rich_text[0].plain_text
       : draft
 
-  if (draftText) {
-    props['Vastuse mustand'] = {
+  if (replyText) {
+    props['Vastus'] = {
       rich_text: [
         {
           type: 'text',
-          text: { content: draftText },
-        },
-      ],
-    }
-  }
-
-  // Vastuse lõplik tekst – proovime, kui Google'is juba reply olemas
-  if (review.reviewReply?.comment) {
-    props['Vastuse lõplik tekst'] = {
-      rich_text: [
-        {
-          type: 'text',
-          text: { content: review.reviewReply.comment },
+          text: { content: replyText },
         },
       ],
     }

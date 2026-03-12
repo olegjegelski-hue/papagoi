@@ -11,6 +11,10 @@
     {
       "path": "/api/sync-gmb-reviews",
       "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/post-gmb-replies",
+      "schedule": "0 8 * * *"
     }
   ]
 }
