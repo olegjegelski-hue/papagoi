@@ -14,7 +14,7 @@
     },
     {
       "path": "/api/post-gmb-replies",
-      "schedule": "20 10 * * *"
+      "schedule": "0 11 * * *"
     }
   ]
 }
