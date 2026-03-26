@@ -39,11 +39,9 @@ function buildGiftCardHtml(
   input: GiftCardRenderInput & {
     qrSvg: string
     logoUrl: string
-    parrotWmUrls: [string, string, string]
   }
 ) {
-  const { amountEur, validUntil, code, qrSvg, logoUrl, parrotWmUrls } = input
-  const [wm1, wm2, wm3] = parrotWmUrls
+  const { amountEur, validUntil, code, qrSvg, logoUrl } = input
   const validUntilEe = formatEeDate(validUntil)
 
   return `<!doctype html>
@@ -85,11 +83,25 @@ function buildGiftCardHtml(
         position:relative;
         width:1000px;
         height:600px;
-        background: linear-gradient(0deg, rgba(245,243,240,0.9), rgba(245,243,240,0.9)), radial-gradient(circle at 20% 0%, rgba(67,160,71,0.08), transparent 55%), radial-gradient(circle at 75% 20%, rgba(3,155,229,0.08), transparent 55%);
+        background:
+          radial-gradient(ellipse 420px 300px at 88% 12%, rgba(67,160,71,0.14), transparent 58%),
+          radial-gradient(ellipse 380px 280px at 6% 88%, rgba(255,152,0,0.1), transparent 52%),
+          radial-gradient(ellipse 340px 260px at 72% 72%, rgba(3,155,229,0.1), transparent 50%),
+          radial-gradient(ellipse 280px 220px at 38% 42%, rgba(96,125,139,0.07), transparent 48%),
+          linear-gradient(168deg, #f4f1eb 0%, #e9e4dc 38%, #f2efe8 72%, #ebe6df 100%);
         border: 1px solid rgba(38,50,56,.18);
         border-radius: 22px;
         overflow:hidden;
         box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+      }
+      .gc-bg-theme{
+        position:absolute;
+        inset:0;
+        width:100%;
+        height:100%;
+        z-index:0;
+        pointer-events:none;
+        opacity:1;
       }
       .gc-ornament{
         position:absolute;
@@ -99,6 +111,7 @@ function buildGiftCardHtml(
         height: 170px;
         pointer-events:none;
         opacity:0.7;
+        z-index:1;
       }
       .gc-topbar{
         position:absolute;
@@ -141,6 +154,12 @@ function buildGiftCardHtml(
         display:flex;
         flex-direction:column;
         align-items:center;
+      }
+      .gc-titleMain{
+        text-decoration: underline;
+        text-decoration-thickness: 3px;
+        text-underline-offset: 10px;
+        text-decoration-color: rgba(74,74,64,0.45);
       }
       /* Üks ühine keha teksti stiil (aadress, kehtivus, broneerimine, tervitus) */
       .gc-body{
@@ -250,57 +269,32 @@ function buildGiftCardHtml(
       .gc-code{
         display:none;
       }
-
-      /* Kolm eraldi lõigatud papagoid (public/gift-card/wm-parrot-*.png) */
-      .gc-parrot-wm-layer{
-        position:absolute;
-        inset:0;
-        z-index:1;
-        pointer-events:none;
-        overflow:hidden;
-        border-radius: inherit;
-      }
-      .gc-parrot-wm{
-        position:absolute;
-        opacity:0.12;
-        mix-blend-mode: multiply;
-      }
-      .gc-parrot-wm img{
-        width:100%;
-        height:100%;
-        object-fit:contain;
-        display:block;
-      }
-      /* Sinikollane (vasak logo lind) — ülemine parem tühi ala */
-      .gc-parrot-wm--1{
-        width:150px;
-        height:195px;
-        right:3%;
-        top:8%;
-        transform: rotate(-11deg);
-      }
-      /* Valge tutt (keskmine) — keskel paremal */
-      .gc-parrot-wm--2{
-        width:118px;
-        height:168px;
-        right:22%;
-        top:36%;
-        transform: rotate(10deg);
-      }
-      /* Hall + punane saba (parem logo lind) — alumine keskmine, QR-ist eemal */
-      .gc-parrot-wm--3{
-        width:148px;
-        height:168px;
-        left:46%;
-        bottom:152px;
-        transform: rotate(-6deg);
-      }
     </style>
   </head>
 
   <body>
     <div class="gc-page">
       <section class="gc-card">
+        <svg class="gc-bg-theme" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="gcFeather1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#43A047" stop-opacity="0.14"/>
+              <stop offset="100%" stop-color="#039BE5" stop-opacity="0.06"/>
+            </linearGradient>
+            <linearGradient id="gcFeather2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FF9800" stop-opacity="0.12"/>
+              <stop offset="100%" stop-color="#43A047" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#gcFeather1)" d="M720 40c80 40 120 140 90 240-25 75-95 120-180 95-40-12-70-45-85-85 25-95 95-210 175-250z" opacity="0.85"/>
+          <path fill="url(#gcFeather2)" d="M40 380c60-20 130 10 170 70 35 52 30 120-15 165-45 48-120 55-175 15-55-45-45-130 20-250z" opacity="0.75"/>
+          <path fill="rgba(3,155,229,0.07)" d="M480 320c55 15 95 65 100 125 5 70-35 130-100 145-90 20-170-40-185-130-8-55 10-110 50-145 45-40 95-35 135 5z"/>
+          <g fill="none" stroke="rgba(38,50,56,0.06)" stroke-width="1.2" stroke-linecap="round">
+            <path d="M650 480 Q720 420 820 460"/>
+            <path d="M120 200 Q200 120 280 180"/>
+            <path d="M420 80 Q500 40 580 90"/>
+          </g>
+        </svg>
         <svg class="gc-ornament" viewBox="0 0 1000 170" preserveAspectRatio="none" aria-hidden="true">
           <path d="M780 0c-40 20-60 50-70 80-12 38-4 74 20 90" fill="none" stroke="rgba(38,50,56,0.22)" stroke-width="2"/>
           <path d="M740 15c-40 20-60 50-70 80-12 38-4 74 20 90" fill="none" stroke="rgba(38,50,56,0.18)" stroke-width="2"/>
@@ -310,17 +304,11 @@ function buildGiftCardHtml(
           <path d="M670 70c-18 6-30 18-38 34" fill="none" stroke="rgba(38,50,56,0.12)" stroke-width="2" stroke-linecap="round"/>
         </svg>
 
-        <div class="gc-parrot-wm-layer" aria-hidden="true">
-          <div class="gc-parrot-wm gc-parrot-wm--1"><img src="${escapeHtml(wm1)}" alt="" /></div>
-          <div class="gc-parrot-wm gc-parrot-wm--2"><img src="${escapeHtml(wm2)}" alt="" /></div>
-          <div class="gc-parrot-wm gc-parrot-wm--3"><img src="${escapeHtml(wm3)}" alt="" /></div>
-        </div>
-
         <div class="gc-topbar">
           <img class="gc-logo" src="${escapeHtml(logoUrl)}" alt="Papagoi Keskus" />
           <div class="gc-titleText">
             <div class="gc-titleStack">
-              <div>Kinkekaart</div>
+              <div class="gc-titleMain">Kinkekaart</div>
               <div class="gc-validTop gc-body">Kehtib kuni: <span class="gc-date">${escapeHtml(validUntilEe)}</span></div>
               <div class="gc-sumLine">Summa: <span>${amountEur} €</span></div>
               <div class="gc-bookLine gc-body">
@@ -353,11 +341,6 @@ function buildGiftCardHtml(
 export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee').replace(/\/$/, '')
   const logoUrl = `${baseUrl}/logo.png`
-  const parrotWmUrls: [string, string, string] = [
-    `${baseUrl}/gift-card/wm-parrot-1.png`,
-    `${baseUrl}/gift-card/wm-parrot-2.png`,
-    `${baseUrl}/gift-card/wm-parrot-3.png`,
-  ]
 
   const qrSvg = await QRCode.toString(input.qrUrl, {
     type: 'svg',
@@ -372,7 +355,6 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
     ...input,
     qrSvg,
     logoUrl,
-    parrotWmUrls,
   })
 
   const browser = await chromium.launch({
