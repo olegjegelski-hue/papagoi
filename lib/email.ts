@@ -502,3 +502,80 @@ https://www.papagoi.ee/
     text,
   })
 }
+
+export async function sendGiftCardIssuedEmail(data: {
+  to: string
+  buyerName: string | null
+  amountEur: number
+  code: string
+  validUntil: string
+  pngBuffer: Buffer
+  pdfBuffer: Buffer
+  qrUrl: string
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+
+  const buyerNameLine = data.buyerName ? `Tere, <strong>${data.buyerName}</strong>!` : 'Tere!'
+  const subject = `Papagoi Keskuse kinkekaart (${data.amountEur} €) – valmis`
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px; margin-top: 0;">
+        Kinkekaart on valmis
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">${buyerNameLine}</p>
+
+      <div style="background-color: #f0fdf4; padding: 18px 20px; border-radius: 10px; margin: 18px 0; border: 2px solid #43A047;">
+        <p style="margin: 8px 0;"><strong>Väärtus:</strong> ${data.amountEur} €</p>
+        <p style="margin: 8px 0;"><strong>Kehtiv kuni:</strong> ${data.validUntil}</p>
+        <p style="margin: 8px 0;"><strong>Kood:</strong> ${data.code}</p>
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.6; margin: 14px 0;">
+        Manused: <strong>PNG</strong> ja <strong>PDF</strong> formaadis kinkekaart. Saate QR-koodi skännida ja valida endale sobiva aja.
+      </p>
+
+      <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+        Lunastamise link: <a href="${data.qrUrl}">${data.qrUrl}</a>
+      </p>
+
+      <p style="font-size: 14px; color: #4b5563; margin-top: 18px;">
+        Kui tekib küsimusi, võtke ühendust: <a href="tel:+3725127938">+372 512 7938</a> või <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>.
+      </p>
+
+      <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;"><strong>Papagoi Keskus</strong></p>
+        <p style="margin: 5px 0;">Tartu mnt 80, Soinaste</p>
+      </div>
+    </div>
+  `
+
+  const text = `
+${data.buyerName ? `Tere, ${data.buyerName}!` : 'Tere!'}
+
+Kinkekaart on valmis.
+Väärtus: ${data.amountEur} €
+Kehtiv kuni: ${data.validUntil}
+Kood: ${data.code}
+
+Lunastamise link: ${data.qrUrl}
+Manused: PNG ja PDF
+
+Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
+`.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: data.to,
+    cc: centerEmail,
+    subject,
+    html,
+    text,
+    attachments: [
+      { filename: `kinkekaart-${data.code}.png`, content: data.pngBuffer, contentType: 'image/png' },
+      { filename: `kinkekaart-${data.code}.pdf`, content: data.pdfBuffer, contentType: 'application/pdf' },
+    ],
+  })
+}

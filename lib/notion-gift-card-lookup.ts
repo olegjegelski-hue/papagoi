@@ -1,0 +1,155 @@
+async function fetchNotion(url: string, options: RequestInit) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 15000)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+export interface GiftCardDetails {
+  pageId: string
+  code: string
+  amountEur: number
+  validUntil: string
+  buyerName: string | null
+  buyerEmail: string | null
+  usedAt: string | null
+  qrUrl: string | null
+}
+
+type NotionGiftCardPropertyMap = Record<string, any>
+
+function getTitlePlain(p: any): string {
+  return p?.title?.[0]?.plain_text ?? ''
+}
+
+function getRichTextPlain(p: any): string {
+  return p?.rich_text?.[0]?.plain_text ?? ''
+}
+
+function readValidUntil(p: any): string {
+  if (!p) return ''
+  if (p.type === 'date') return p.date?.start ?? ''
+  if (p.type === 'formula') return p.formula?.string ?? String(p.formula?.number ?? '')
+  if (p.type === 'rich_text') return getRichTextPlain(p)
+  if (p.type === 'title') return getTitlePlain(p)
+  return ''
+}
+
+function readUsedAt(p: any): string | null {
+  if (!p) return null
+  if (p.type === 'date') return p.date?.start ?? null
+  return null
+}
+
+function readEmail(p: any): string | null {
+  if (!p) return null
+  if (p.type === 'email') return p.email ?? null
+  if (p.type === 'rich_text') return getRichTextPlain(p) || null
+  if (p.type === 'title') return getTitlePlain(p) || null
+  return null
+}
+
+export async function getGiftCardDetailsByCode(
+  notionApiKey: string,
+  databaseId: string,
+  code: string
+): Promise<GiftCardDetails | null> {
+  const dbId = databaseId.replace(/-/g, '')
+  const normalizedCode = code.trim()
+
+  const queryUrl = `https://api.notion.com/v1/databases/${dbId}/query`
+
+  const headers = {
+    Authorization: `Bearer ${notionApiKey}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  }
+
+  // Koodi väljal võib olla tüüp `title` (ja varem setitaksegi nii, kui Notionis on title),
+  // aga teeme fallbacki `rich_text`-ile.
+  const queryBodies = [
+    { filter: { property: 'Kinkekaardi kood', title: { equals: normalizedCode } }, page_size: 1 },
+    { filter: { property: 'Kinkekaardi kood', rich_text: { equals: normalizedCode } }, page_size: 1 },
+  ]
+
+  let page: any | null = null
+  for (const body of queryBodies) {
+    const res = await fetchNotion(queryUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`Notion gift card lookup failed: ${res.status} ${text.slice(0, 200)}`)
+    }
+    const data = await res.json()
+    page = data?.results?.[0] ?? null
+    if (page) break
+  }
+
+  if (!page) return null
+
+  const props: NotionGiftCardPropertyMap = page.properties || {}
+
+  const codeProp = props['Kinkekaardi kood']
+  const codeValue = codeProp?.type === 'title' ? getTitlePlain(codeProp) : getRichTextPlain(codeProp)
+
+  const amountProp = props['Väärtus']
+  const amountEur = typeof amountProp?.number === 'number' ? amountProp.number : Number(amountProp?.number ?? 0)
+
+  const validUntil = readValidUntil(props['Aegub'])
+
+  const buyerName = (() => {
+    const p = props['Ostja nimi']
+    if (!p) return null
+    if (p.type === 'title') return getTitlePlain(p) || null
+    if (p.type === 'rich_text') return getRichTextPlain(p) || null
+    return null
+  })()
+
+  const buyerEmail = readEmail(props['Ostja email'])
+  const usedAt = readUsedAt(props['Kasutatud kuupäev'])
+  const qrUrl = props['QR URL']?.url ?? null
+
+  return {
+    pageId: page.id,
+    code: codeValue || normalizedCode,
+    amountEur,
+    validUntil,
+    buyerName,
+    buyerEmail,
+    usedAt,
+    qrUrl,
+  }
+}
+
+export async function setGiftCardQrUrl(
+  notionApiKey: string,
+  pageId: string,
+  qrUrl: string
+): Promise<void> {
+  const patchUrl = `https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`
+  const res = await fetchNotion(patchUrl, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${notionApiKey}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      properties: {
+        'QR URL': { url: qrUrl },
+      },
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Notion gift card QR update failed: ${res.status} ${text.slice(0, 200)}`)
+  }
+}
+
