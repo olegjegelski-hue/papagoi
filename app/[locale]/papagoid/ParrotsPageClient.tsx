@@ -1,7 +1,7 @@
 
 'use client'
 import { useState, useEffect } from 'react'
-import { Heart, Star, Users, Clock, Euro, Check, Gift, Phone, Mail, X, Eye, Calendar } from 'lucide-react'
+import { Heart, Star, Users, Clock, Euro, Check, Gift, Phone, Mail, X, Eye, Calendar, ExternalLink } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 
 const getStatusColor = (status: string) => {
@@ -59,6 +59,7 @@ const formatDate = (dateString: string, locale: string) => {
 
 export default function ParrotsPageClient({ allParrots }: { allParrots: any[] }) {
   const t = useTranslations('PapagoidPage')
+  const serviceT = useTranslations('TeenusedPage')
   const locale = useLocale()
   const [filter, setFilter] = useState('all')
   const [nameFilter, setNameFilter] = useState('all')
@@ -567,6 +568,27 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             </div>
           </div>
         )}
+
+        <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mt-12">
+          <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">{serviceT('saleTitle')}</h2>
+            <p className="text-lg opacity-90">{serviceT('saleSubtitle')}</p>
+          </div>
+          <div className="p-8">
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
+              <p className="text-gray-700 leading-relaxed mb-6">{serviceT('saleDesc')}</p>
+              <a
+                href="https://petsvilla.ee"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
+              >
+                <ExternalLink className="w-5 h-5 mr-2" />
+                {serviceT('saleLinkText')}
+              </a>
+            </div>
+          </div>
+        </div>
 
         {false && (
           <div className="mt-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-3xl p-12 text-center">

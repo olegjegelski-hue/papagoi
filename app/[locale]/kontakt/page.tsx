@@ -63,6 +63,7 @@ export default async function ContactPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('KontaktPage')
+  const serviceT = await getTranslations('TeenusedPage')
   const baseUrl = getSiteUrl()
   const faqs = faqKeys.map(({ q, a }) => ({ question: t(q), answer: t(a) }))
   const faqSchema = {
@@ -254,6 +255,27 @@ export default async function ContactPage({ params }: Props) {
                 <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mt-12">
+          <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">{serviceT('saleTitle')}</h2>
+            <p className="text-lg opacity-90">{serviceT('saleSubtitle')}</p>
+          </div>
+          <div className="p-8">
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
+              <p className="text-gray-700 leading-relaxed mb-6">{serviceT('saleDesc')}</p>
+              <a
+                href="https://petsvilla.ee"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
+              >
+                <ExternalLink className="w-5 h-5 mr-2" />
+                {serviceT('saleLinkText')}
+              </a>
+            </div>
           </div>
         </div>
       </div>

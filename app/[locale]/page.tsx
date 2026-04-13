@@ -5,7 +5,8 @@ import BookingCTA from '@/components/BookingCTA'
 import Statistics from '@/components/Statistics'
 import TestimonialsSection from '@/components/testimonials-section'
 import SectionDivider from '@/components/SectionDivider'
-import { setRequestLocale } from 'next-intl/server'
+import { ExternalLink } from 'lucide-react'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 
 function getSiteUrl() {
@@ -55,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Home({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('TeenusedPage')
 
   return (
     <>
@@ -69,6 +71,26 @@ export default async function Home({ params }: Props) {
       <TestimonialsSection />
       <SectionDivider variant="wave" />
       <BookingCTA />
+      <section className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mx-4 sm:mx-6 lg:mx-8 mt-8 mb-16">
+        <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2">{t('saleTitle')}</h2>
+          <p className="text-lg opacity-90">{t('saleSubtitle')}</p>
+        </div>
+        <div className="p-8">
+          <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
+            <p className="text-gray-700 leading-relaxed mb-6">{t('saleDesc')}</p>
+            <a
+              href="https://petsvilla.ee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
+            >
+              <ExternalLink className="w-5 h-5 mr-2" />
+              {t('saleLinkText')}
+            </a>
+          </div>
+        </div>
+      </section>
     </>
   )
 }

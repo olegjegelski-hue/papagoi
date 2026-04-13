@@ -52,6 +52,76 @@ function readEmail(p: any): string | null {
   return null
 }
 
+function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCardDetails {
+  const props: NotionGiftCardPropertyMap = page.properties || {}
+
+  const codeProp = props['Kinkekaardi kood']
+  const codeValue = codeProp?.type === 'title' ? getTitlePlain(codeProp) : getRichTextPlain(codeProp)
+
+  const amountProp = props['Väärtus']
+  const amountEur = typeof amountProp?.number === 'number' ? amountProp.number : Number(amountProp?.number ?? 0)
+
+  const validUntil = readValidUntil(props['Aegub'])
+
+  const buyerName = (() => {
+    const p = props['Ostja nimi']
+    if (!p) return null
+    if (p.type === 'title') return getTitlePlain(p) || null
+    if (p.type === 'rich_text') return getRichTextPlain(p) || null
+    return null
+  })()
+
+  const buyerEmail = readEmail(props['Ostja email'])
+  const usedAt = readUsedAt(props['Kasutatud kuupäev'])
+  const qrUrl = props['QR URL']?.url ?? null
+
+  return {
+    pageId: page.id,
+    code: codeValue || codeFallback,
+    amountEur,
+    validUntil,
+    buyerName,
+    buyerEmail,
+    usedAt,
+    qrUrl,
+  }
+}
+
+/** Tabeli päringu esimene kirje (loomise aeg kasvav — stabiilne „esimene“). */
+export async function getFirstGiftCardFromDatabase(
+  notionApiKey: string,
+  databaseId: string
+): Promise<GiftCardDetails | null> {
+  const dbId = databaseId.replace(/-/g, '')
+  const queryUrl = `https://api.notion.com/v1/databases/${dbId}/query`
+
+  const headers = {
+    Authorization: `Bearer ${notionApiKey}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  }
+
+  const res = await fetchNotion(queryUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      page_size: 1,
+      sorts: [{ timestamp: 'created_time', direction: 'ascending' }],
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Notion gift card first page failed: ${res.status} ${text.slice(0, 200)}`)
+  }
+
+  const data = await res.json()
+  const page = data?.results?.[0] ?? null
+  if (!page) return null
+
+  return mapNotionPageToGiftCardDetails(page, '')
+}
+
 export async function getGiftCardDetailsByCode(
   notionApiKey: string,
   databaseId: string,
@@ -93,38 +163,7 @@ export async function getGiftCardDetailsByCode(
 
   if (!page) return null
 
-  const props: NotionGiftCardPropertyMap = page.properties || {}
-
-  const codeProp = props['Kinkekaardi kood']
-  const codeValue = codeProp?.type === 'title' ? getTitlePlain(codeProp) : getRichTextPlain(codeProp)
-
-  const amountProp = props['Väärtus']
-  const amountEur = typeof amountProp?.number === 'number' ? amountProp.number : Number(amountProp?.number ?? 0)
-
-  const validUntil = readValidUntil(props['Aegub'])
-
-  const buyerName = (() => {
-    const p = props['Ostja nimi']
-    if (!p) return null
-    if (p.type === 'title') return getTitlePlain(p) || null
-    if (p.type === 'rich_text') return getRichTextPlain(p) || null
-    return null
-  })()
-
-  const buyerEmail = readEmail(props['Ostja email'])
-  const usedAt = readUsedAt(props['Kasutatud kuupäev'])
-  const qrUrl = props['QR URL']?.url ?? null
-
-  return {
-    pageId: page.id,
-    code: codeValue || normalizedCode,
-    amountEur,
-    validUntil,
-    buyerName,
-    buyerEmail,
-    usedAt,
-    qrUrl,
-  }
+  return mapNotionPageToGiftCardDetails(page, normalizedCode)
 }
 
 export async function setGiftCardQrUrl(
