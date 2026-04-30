@@ -365,7 +365,7 @@ export default function StaticBookingInfo() {
               <button
                 type="button"
                 onClick={() => setMonthDate((current) => addMonths(current, 1))}
-                className="px-4 py-2 rounded-full bg-papagoi-green text-white text-sm font-semibold hover:bg-papagoi-green/90 transition-colors"
+                className="px-4 h-[44px] rounded-full bg-papagoi-green text-white text-sm font-semibold hover:bg-papagoi-green/90 transition-colors"
               >
                 {t('nextMonth')}
               </button>
@@ -392,14 +392,14 @@ export default function StaticBookingInfo() {
                   setBookingsLoadError(null)
                   loadBookings()
                 }}
-                className="text-sm font-semibold text-papagoi-green hover:underline whitespace-nowrap"
+                className="text-sm font-semibold text-papagoi-green hover:underline whitespace-nowrap h-[44px] px-3 rounded-md"
               >
                 {t('tryAgain')}
               </button>
               <button
                 type="button"
                 onClick={() => setBookingsLoadError(null)}
-                className="text-lg text-warm-gray-500 hover:text-warm-gray-700 leading-none"
+                className="h-11 w-11 inline-flex items-center justify-center rounded-md text-lg text-warm-gray-500 hover:text-warm-gray-700 leading-none"
                 aria-label={t('close')}
               >
                 ×
@@ -407,7 +407,7 @@ export default function StaticBookingInfo() {
             </div>
           )}
 
-          <div className="grid grid-cols-7 text-center text-xs font-semibold text-warm-gray-500 mb-2">
+          <div className="grid w-full min-w-full grid-cols-[repeat(7,minmax(44px,1fr))] gap-2 text-center text-xs font-semibold text-warm-gray-500 mb-2">
             {weekDayLetters.map((day) => (
               <div key={day} className="py-2">
                 {day}
@@ -415,7 +415,7 @@ export default function StaticBookingInfo() {
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid w-full min-w-full grid-cols-[repeat(7,minmax(44px,1fr))] gap-2">
             {calendarDays.map((day) => {
               const isCurrentMonth = isSameMonth(day, monthDate)
               const isTodayDate = isToday(day)
@@ -437,7 +437,7 @@ export default function StaticBookingInfo() {
                   }}
                   disabled={isPastDate || isTodayClosed}
                   className={[
-                    'h-10 rounded-lg flex items-center justify-center text-sm border transition-colors',
+                    'w-full h-[44px] rounded-lg flex items-center justify-center text-sm border transition-colors',
                     isPastDate || isTodayClosed
                       ? 'text-warm-gray-300 border-warm-gray-200 cursor-not-allowed'
                       : isCurrentMonth

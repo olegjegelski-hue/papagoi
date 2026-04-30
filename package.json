@@ -13,7 +13,6 @@
     "post-gmb-replies": "tsx scripts/post-google-review-replies.ts"
   },
   "devDependencies": {
-    "@next/swc-darwin-arm64": "^14.2.33",
     "@next/swc-wasm-nodejs": "13.5.1",
     "@types/node": "20.6.2",
     "@types/qrcode": "^1.5.6",
