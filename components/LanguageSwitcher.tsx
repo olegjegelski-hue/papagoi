@@ -92,7 +92,7 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-0.5 font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded hover:opacity-90"
+        className="inline-flex h-11 items-center gap-0.5 px-2 font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded hover:opacity-90"
         style={!('stripe' in current && current.stripe) ? { color: current.color } : undefined}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -115,7 +115,7 @@ export default function LanguageSwitcher() {
               <button
                 type="button"
                 onClick={() => handleSelect(lang.code)}
-                className={`w-full text-left pl-5 pr-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 ${
+                className={`w-full h-11 text-left pl-5 pr-4 text-sm font-medium transition-opacity hover:opacity-90 ${
                   locale === lang.code ? 'bg-black/5' : 'hover:bg-black/5'
                 }`}
                 style={

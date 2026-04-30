@@ -38,7 +38,7 @@ export default function Footer() {
                 href="https://www.facebook.com/PapagoiKeskus" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group hover:scale-110 transition-transform duration-300"
+                className="group inline-flex h-11 w-11 items-center justify-center rounded-full hover:scale-110 transition-transform duration-300"
               >
                 <div className="w-10 h-10 bg-[#1877F2] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ export default function Footer() {
                 href="https://www.instagram.com/papagoikeskus" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group hover:scale-110 transition-transform duration-300"
+                className="group inline-flex h-11 w-11 items-center justify-center rounded-full hover:scale-110 transition-transform duration-300"
               >
                 <div className="w-10 h-10 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@ export default function Footer() {
                 href="https://www.youtube.com/@PetsVillaTartu" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group hover:scale-110 transition-transform duration-300"
+                className="group inline-flex h-11 w-11 items-center justify-center rounded-full hover:scale-110 transition-transform duration-300"
               >
                 <div className="w-10 h-10 bg-[#FF0000] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@ export default function Footer() {
               </a>
             </div>
             <div className="mt-8 flex justify-center">
-              <Link href="/privaatsus" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+              <Link href="/privaatsus" className="inline-flex h-11 items-center px-2 leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                 {t('privacy')}
               </Link>
             </div>
@@ -83,42 +83,42 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-papagoi-green">{t('quickLinks')}</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   {tNav('home')}
                 </Link>
               </li>
               <li>
-                <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/teenused" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   {tNav('services')}
                 </Link>
               </li>
               <li>
-                <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300">
+                <Link href="/meist" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300">
                   {tNav('about')}
                 </Link>
               </li>
               <li>
-                <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/papagoid" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   {tNav('parrots')}
                 </Link>
               </li>
               <li>
-                <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
+                <Link href="/kulastajatele" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   {tNav('visitors')}
                 </Link>
               </li>
               <li>
-                <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
+                <Link href="/broneeri" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   {tNav('book')}
                 </Link>
               </li>
               <li>
-                <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
+                <Link href={KINKEKAART_PATH} className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-orange transition-colors duration-300">
                   {tNav('giftCard')}
                 </Link>
               </li>
               <li>
-                <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/kontakt" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   {tNav('contact')}
                 </Link>
               </li>
@@ -139,7 +139,7 @@ export default function Footer() {
                     href="https://maps.google.com/?q=Tartu+mnt+80,+Soinaste,+Kambja+vald,+Tartumaa+61709,+Eesti"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-sm text-papagoi-green hover:text-papagoi-blue transition-colors duration-300 mt-1"
+                    className="inline-flex h-11 items-center leading-none text-sm text-papagoi-green hover:text-papagoi-blue transition-colors duration-300 mt-1"
                   >
                     <ExternalLink className="w-3 h-3 mr-1" />
                     {t('viewOnMap')}
@@ -150,7 +150,7 @@ export default function Footer() {
                 <Phone className="w-5 h-5 text-papagoi-blue" />
                 <a 
                   href="tel:+37251279338" 
-                  className="text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300"
+                  className="inline-flex h-11 items-center leading-none text-deep-anthracite hover:text-papagoi-blue transition-colors duration-300"
                 >
                   +372 51 27 938
                 </a>
@@ -159,7 +159,7 @@ export default function Footer() {
                 <Mail className="w-5 h-5 text-papagoi-yellow" />
                 <a 
                   href="mailto:keskus@papagoi.ee" 
-                  className="text-deep-anthracite hover:text-papagoi-yellow transition-colors duration-300"
+                  className="inline-flex h-11 items-center leading-none text-deep-anthracite hover:text-papagoi-yellow transition-colors duration-300"
                 >
                   keskus@papagoi.ee
                 </a>

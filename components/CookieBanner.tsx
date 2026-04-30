@@ -35,14 +35,14 @@ export default function CookieBanner() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-sm sm:text-base text-warm-gray-200">
             {t('message')}{' '}
-            <Link href="/privaatsus" className="text-papagoi-green hover:underline">
+            <Link href="/privaatsus" className="inline-flex h-11 items-center text-papagoi-green hover:underline align-middle">
               {t('readMore')}
             </Link>
             .
           </p>
           <Button
             onClick={handleAccept}
-            className="bg-papagoi-green hover:bg-papagoi-green/90 text-white font-semibold shrink-0 rounded-full px-6"
+            className="bg-papagoi-green hover:bg-papagoi-green/90 text-white font-semibold shrink-0 rounded-full px-6 h-11"
           >
             {t('accept')}
           </Button>

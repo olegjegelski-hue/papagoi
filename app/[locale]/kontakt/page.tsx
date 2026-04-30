@@ -102,7 +102,7 @@ export default async function ContactPage({ params }: Props) {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">{t('phone')}</h3>
-                    <a href="tel:+3725127938" className="text-gray-600 hover:text-papagoi-green transition-colors mb-2 block font-medium">
+                    <a href="tel:+3725127938" className="inline-flex h-11 items-center leading-none text-gray-600 hover:text-papagoi-green transition-colors mb-2 font-medium">
                       +372 512 7938
                     </a>
                   </div>
@@ -113,7 +113,7 @@ export default async function ContactPage({ params }: Props) {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">{t('email')}</h3>
-                    <a href="mailto:keskus@papagoi.ee" className="text-gray-600 hover:text-papagoi-blue transition-colors mb-2 block font-medium">
+                    <a href="mailto:keskus@papagoi.ee" className="inline-flex h-11 items-center leading-none text-gray-600 hover:text-papagoi-blue transition-colors mb-2 font-medium">
                       keskus@papagoi.ee
                     </a>
                     <p className="text-sm text-gray-500">{t('reply24h')}</p>
@@ -134,7 +134,7 @@ export default async function ContactPage({ params }: Props) {
                       href="https://maps.google.com/?q=Tartu+mnt+80,+Soinaste,+Kambja+vald,+Tartumaa+61709,+Eesti"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm text-papagoi-orange hover:text-papagoi-orange-600 transition-colors font-medium"
+                      className="inline-flex h-11 items-center leading-none px-1 text-sm text-papagoi-orange hover:text-papagoi-orange-600 transition-colors font-medium"
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
                       {t('viewOnGoogleMaps')}
