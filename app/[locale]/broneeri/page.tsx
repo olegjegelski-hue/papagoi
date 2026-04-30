@@ -156,6 +156,13 @@ export default async function BookingPage({ params }: Props) {
                 </li>
               </ul>
             </div>
+
+            <div className="bg-papagoi-beige-50 rounded-xl p-6 border border-papagoi-green/20">
+              <h4 className="text-lg font-semibold text-deep-anthracite mb-3">{t('whatToBringTitle')}</h4>
+              <p className="text-warm-gray-700 text-sm leading-relaxed mb-3">{t('whatToBringP1')}</p>
+              <p className="text-warm-gray-700 text-sm leading-relaxed mb-3">{t('whatToBringP2')}</p>
+              <p className="text-warm-gray-700 text-sm leading-relaxed">{t('whatToBringP3')}</p>
+            </div>
           </div>
         </div>
 

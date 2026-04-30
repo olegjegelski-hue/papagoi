@@ -112,7 +112,11 @@
     "contactDetails": "Contact details",
     "contactDetailsDesc": "Phone and email for contact",
     "specialNeeds": "Special needs",
-    "specialNeedsDesc": "Allergies, mobility, etc."
+    "specialNeedsDesc": "Allergies, mobility, etc.",
+    "whatToBringTitle": "What can you bring as a treat? 🌿",
+    "whatToBringP1": "Guests often like to offer something tasty to our birds and guinea pigs, and that is always warmly welcome. Healthy options include fresh vegetables, fruit and salad leaves.",
+    "whatToBringP2": "Our parrots and guinea pigs especially love bell pepper, cucumber, lettuce, broccoli, apple and grapes.",
+    "whatToBringP3": "Bringing a treat is not expected - it is simply an optional way to bring a little extra joy!"
   },
   "KontaktPage": {
     "title": "Contact",

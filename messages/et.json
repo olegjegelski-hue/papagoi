@@ -112,7 +112,11 @@
     "contactDetails": "Kontaktandmed",
     "contactDetailsDesc": "Telefon ja e-post ühenduse pidamiseks",
     "specialNeeds": "Erivajadused",
-    "specialNeedsDesc": "Allergia, liikumisraskused, vms"
+    "specialNeedsDesc": "Allergia, liikumisraskused, vms",
+    "whatToBringTitle": "Mida tuua külakostiks? 🌿",
+    "whatToBringP1": "Külalised soovivad tihti meie lindudele ja merisigadele midagi maitsvat pakkuda ja see on igati teretulnud! Tervislikuks toiduks on värsked köögi- ja puuviljad ning salatilehed.",
+    "whatToBringP2": "Papagoid ja merisead armastavad väga: paprikat, kurki, salatit, brokolit, õuna ja viinamarju.",
+    "whatToBringP3": "Külakost ei ole ootus, vaid puhtalt võimalus soovi korral lisarõõmu teha!"
   },
   "KontaktPage": {
     "title": "Kontakt",
