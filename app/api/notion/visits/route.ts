@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { subDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
+import {
+  extractVisitLanguageFromNotionVisitorProps,
+  sortVisitLanguageLabels,
+} from '@/lib/visit-language'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -148,15 +152,19 @@ async function sumVisitorCountsByPageIds(
   return counts.reduce((sum, value) => sum + value, 0)
 }
 
-async function sumVisitorCountsByVisitId(
+/** Külastajad DB: kõik kirjed, mis viitavad sellele külastusele — summa + keeled */
+async function aggregateVisitorsForVisit(
   NOTION_API_KEY: string,
   visitorsDb: { databaseId: string; relationPropertyName?: string; countPropertyName?: string } | null,
   visitPageId: string
-) {
+): Promise<{ guestSum: number; languages: string[] }> {
   const relationPropertyName = visitorsDb?.relationPropertyName
   const countPropertyName = visitorsDb?.countPropertyName
-  if (!relationPropertyName || !countPropertyName) return null
+  if (!relationPropertyName || !visitorsDb?.databaseId) {
+    return { guestSum: 0, languages: [] }
+  }
   let total = 0
+  const langSet = new Set<string>()
   let cursor: string | undefined
   do {
     const body: Record<string, unknown> = {
@@ -176,16 +184,21 @@ async function sumVisitorCountsByVisitId(
       },
       body: JSON.stringify(body),
     })
-    if (!response.ok) return null
+    if (!response.ok)
+      return { guestSum: total, languages: sortVisitLanguageLabels(Array.from(langSet)) }
     const data = await response.json()
     const pages = data.results || []
-    total += pages.reduce((sum: number, page: any) => {
-      const value = extractCount(page.properties?.[countPropertyName])
-      return sum + value
-    }, 0)
+    for (const page of pages) {
+      const props = (page as any).properties || {}
+      if (countPropertyName) {
+        total += extractCount(props[countPropertyName])
+      }
+      const lang = extractVisitLanguageFromNotionVisitorProps(props as Record<string, unknown>)
+      if (lang?.trim()) langSet.add(lang.trim())
+    }
     cursor = data.has_more ? data.next_cursor : undefined
   } while (cursor)
-  return total
+  return { guestSum: total, languages: sortVisitLanguageLabels(Array.from(langSet)) }
 }
 
 function findGuestsPropertyName(properties: Record<string, any>) {
@@ -341,7 +354,7 @@ export async function GET(request: Request) {
 
     const results = allResults
     const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
-    const bookings: { date: string; time: string | null; guests: number | null }[] = (
+    const bookings: { date: string; time: string | null; guests: number | null; languages: string[] }[] = (
       await Promise.all(
         results.map(async (page: any) => {
           const pageProperties = page.properties || {}
@@ -362,10 +375,12 @@ export async function GET(request: Request) {
               guestsValue = await sumVisitorCountsByPageIds(NOTION_API_KEY, visitorsDb, relationIds)
             }
           }
+          const visitorAgg = await aggregateVisitorsForVisit(NOTION_API_KEY, visitorsDb, page.id)
           if (guestsValue === null) {
-            guestsValue = await sumVisitorCountsByVisitId(NOTION_API_KEY, visitorsDb, page.id)
+            guestsValue = visitorAgg.guestSum > 0 ? visitorAgg.guestSum : null
           }
-          return { date: dateValue, time: normalizedTime, guests: guestsValue }
+          const languages = visitorAgg.languages
+          return { date: dateValue, time: normalizedTime, guests: guestsValue, languages }
         })
       )
     ).filter((b): b is NonNullable<typeof b> => b !== null)

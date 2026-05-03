@@ -16,7 +16,30 @@ export function parseVisitMailLocale(raw: string | null | undefined): VisitMailL
   return 'et'
 }
 
-/** Loeb Külastajad lehelt välja (nimi sisaldab keel / language / visitlang). */
+/** Vormi/API kood → Notioni Select väärtus (Est / Eng / Rus). */
+export function visitMailLocaleToNotionSelectLabel(locale: VisitMailLocale): 'Est' | 'Eng' | 'Rus' {
+  if (locale === 'en') return 'Eng'
+  if (locale === 'ru') return 'Rus'
+  return 'Est'
+}
+
+/** Kuvamiseks: järjekord Est, Eng, Rus, ülejäänud tähestikuliselt */
+export function sortVisitLanguageLabels(labels: string[]): string[] {
+  const order = ['Est', 'Eng', 'Rus']
+  const uniq = [...new Set(labels.map((s) => s.trim()).filter(Boolean))]
+  return uniq.sort((a, b) => {
+    const ia = order.indexOf(a)
+    const ib = order.indexOf(b)
+    if (ia !== -1 || ib !== -1) {
+      if (ia === -1) return 1
+      if (ib === -1) return -1
+      return ia - ib
+    }
+    return a.localeCompare(b)
+  })
+}
+
+/** Loeb Külastajad kirjest keele (tulba nimi sisaldab keel / language / visitlang). */
 export function extractVisitLanguageFromNotionVisitorProps(
   properties: Record<string, unknown>
 ): string | null {

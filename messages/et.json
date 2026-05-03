@@ -371,6 +371,8 @@
     "selectedDate": "Valitud kuupäev",
     "nbTimes": "NB! Tavakülastused iga päev 12:00-18:00. Varasemad kellaajad ainult eelneval kokkuleppel!",
     "bookedSlots": "Broneeritud ajad",
+    "bookedSlotsLanguageIntro": "Igal real kuvatakse sellele ajale broneerinute valitud külastuse keel(ed).",
+    "bookedSlotLanguagesLabel": "Keeled",
     "guestsNotSet": "Külaliste arv pole määratud",
     "joinPlaces": "Veel saab liituda: {{count}} inimest",
     "join": "Liitu",

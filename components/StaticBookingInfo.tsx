@@ -6,8 +6,11 @@ import { et, enUS as en, ru } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { sortVisitLanguageLabels, visitMailLocaleToNotionSelectLabel } from '@/lib/visit-language'
 
 export type VisitLanguageCode = 'et' | 'en' | 'ru'
+
+export type BookedSlotEntry = { time: string; guests: number | null; languages: string[] }
 
 function visitLanguageFromLocale(locale: string): VisitLanguageCode {
   if (locale === 'en') return 'en'
@@ -31,9 +34,7 @@ export default function StaticBookingInfo() {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null)
   const [hasConsent, setHasConsent] = useState(false)
   const [bookingsLoadError, setBookingsLoadError] = useState<string | null>(null)
-  const [bookingsByDate, setBookingsByDate] = useState<
-    Record<string, { time: string; guests: number | null }[]>
-  >({})
+  const [bookingsByDate, setBookingsByDate] = useState<Record<string, BookedSlotEntry[]>>({})
   const [isLoadingBookings, setIsLoadingBookings] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -53,7 +54,7 @@ export default function StaticBookingInfo() {
   const timeSlots = Array.from({ length: 9 }, (_, index) => `${String(10 + index).padStart(2, '0')}:00`)
   const selectedDateValue = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''
   /** Kõik broneeringud kuupäeva kohta – blokeerimiseks (1h enne/järele) ja Liitu-nupu kuvamiseks. */
-  const getAllBookingsForDate = (date: Date, entries: { time: string; guests: number | null }[]) => {
+  const getAllBookingsForDate = (_date: Date, entries: BookedSlotEntry[]) => {
     return entries
   }
 
@@ -199,26 +200,40 @@ export default function StaticBookingInfo() {
         throw new Error(`HTTP ${response.status}`)
       }
       const data = await response.json()
-      const grouped: Record<string, Record<string, number | null>> = {}
+      const grouped: Record<string, Record<string, { guests: number | null; languages: Set<string> }>> = {}
       const bookings = Array.isArray(data?.bookings) ? data.bookings : []
-      bookings.forEach((booking: { date?: string; time?: string | null; guests?: number | null }) => {
-        if (!booking?.date) return
-        const key = booking.date.split('T')[0]
-        if (!grouped[key]) grouped[key] = {}
-        const timeKey = booking.time || 'Määramata'
-        const guestsValue = Number.isFinite(booking.guests) ? Number(booking.guests) : null
-        if (!(timeKey in grouped[key])) {
-          grouped[key][timeKey] = guestsValue
-        } else if (grouped[key][timeKey] !== null && guestsValue !== null) {
-          grouped[key][timeKey] = (grouped[key][timeKey] || 0) + guestsValue
-        } else {
-          grouped[key][timeKey] = null
+      bookings.forEach(
+        (booking: { date?: string; time?: string | null; guests?: number | null; languages?: string[] }) => {
+          if (!booking?.date) return
+          const key = booking.date.split('T')[0]
+          if (!grouped[key]) grouped[key] = {}
+          const timeKey = booking.time || 'Määramata'
+          const guestsValue = Number.isFinite(booking.guests) ? Number(booking.guests) : null
+          const langArr = Array.isArray(booking.languages) ? booking.languages : []
+          if (!(timeKey in grouped[key])) {
+            grouped[key][timeKey] = {
+              guests: guestsValue,
+              languages: new Set(langArr),
+            }
+          } else {
+            const cell = grouped[key][timeKey]
+            langArr.forEach((l) => cell.languages.add(l))
+            if (cell.guests !== null && guestsValue !== null) {
+              cell.guests = cell.guests + guestsValue
+            } else {
+              cell.guests = null
+            }
+          }
         }
-      })
-      const normalized: Record<string, { time: string; guests: number | null }[]> = {}
+      )
+      const normalized: Record<string, BookedSlotEntry[]> = {}
       Object.keys(grouped).forEach((key) => {
         normalized[key] = Object.entries(grouped[key])
-          .map(([time, guests]) => ({ time, guests }))
+          .map(([time, cell]) => ({
+            time,
+            guests: cell.guests,
+            languages: sortVisitLanguageLabels(Array.from(cell.languages)),
+          }))
           .sort((a, b) => {
             if (a.time === 'Määramata') return 1
             if (b.time === 'Määramata') return -1
@@ -309,14 +324,19 @@ export default function StaticBookingInfo() {
         setBookingsByDate((prev) => {
           const key = selectedDateValue
           const entries = prev[key] || []
+          const notionLang = visitMailLocaleToNotionSelectLabel(formData.visitLanguage)
           const existing = entries.find((e) => e.time === selectedTime)
           const newEntries = existing
             ? entries.map((e) =>
                 e.time === selectedTime
-                  ? { ...e, guests: (e.guests ?? 0) + groupSizeNum }
+                  ? {
+                      ...e,
+                      guests: (e.guests ?? 0) + groupSizeNum,
+                      languages: sortVisitLanguageLabels([...e.languages, notionLang]),
+                    }
                   : e
               )
-            : [...entries, { time: selectedTime, guests: groupSizeNum }].sort((a, b) =>
+            : [...entries, { time: selectedTime, guests: groupSizeNum, languages: [notionLang] }].sort((a, b) =>
                 a.time.localeCompare(b.time)
               )
           return { ...prev, [key]: newEntries }
@@ -520,7 +540,8 @@ export default function StaticBookingInfo() {
 
               {bookedEntriesForSelectedDate.length > 0 && (
                 <div className="mt-4 rounded-lg border border-papagoi-orange/30 bg-papagoi-orange/10 p-4">
-                  <p className="text-sm font-semibold text-deep-anthracite mb-2">{t('bookedSlots')}</p>
+                  <p className="text-sm font-semibold text-deep-anthracite">{t('bookedSlots')}</p>
+                  <p className="text-xs text-warm-gray-600 mt-1 mb-3 leading-relaxed">{t('bookedSlotsLanguageIntro')}</p>
                   <div className="space-y-2">
                     {bookedEntriesForSelectedDate.map((entry) => {
                       const remaining = entry.guests === null ? null : Math.max(0, 20 - entry.guests)
@@ -532,21 +553,29 @@ export default function StaticBookingInfo() {
                       return (
                         <div
                           key={entry.time}
-                          className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-papagoi-beige-100 px-3 py-2"
+                          className="flex flex-col gap-2 rounded-lg bg-papagoi-beige-100 px-3 py-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
                         >
-                          <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
-                          <span className="text-xs text-warm-gray-600">
-                            {formatJoinPlaces(remaining)}
-                          </span>
-                          {canJoin && (
-                            <button
-                              type="button"
-                              onClick={() => setSelectedTime(entry.time)}
-                              className="px-3 py-1 rounded-full text-xs font-semibold bg-papagoi-green text-white hover:bg-papagoi-green/90 transition-colors"
-                            >
-                              {t('join')}
-                            </button>
-                          )}
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
+                            {entry.languages.length > 0 && (
+                              <span className="text-xs text-warm-gray-700">
+                                <span className="font-semibold text-deep-anthracite">{t('bookedSlotLanguagesLabel')}:</span>{' '}
+                                {entry.languages.join(', ')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs text-warm-gray-600">{formatJoinPlaces(remaining)}</span>
+                            {canJoin && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedTime(entry.time)}
+                                className="px-3 py-1 rounded-full text-xs font-semibold bg-papagoi-green text-white hover:bg-papagoi-green/90 transition-colors"
+                              >
+                                {t('join')}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       )
                     })}

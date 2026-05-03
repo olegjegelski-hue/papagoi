@@ -371,6 +371,8 @@
     "selectedDate": "Selected date",
     "nbTimes": "NB! Regular visits daily 12:00–18:00. Earlier times by arrangement only!",
     "bookedSlots": "Booked times",
+    "bookedSlotsLanguageIntro": "Each row shows the visit language(s) guests chose for that time slot.",
+    "bookedSlotLanguagesLabel": "Languages",
     "guestsNotSet": "Guest count not set",
     "joinPlaces": "You can still join: {{count}} places left",
     "join": "Join",
