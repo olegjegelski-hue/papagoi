@@ -7,6 +7,14 @@ import { toast } from 'sonner'
 import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 
+export type VisitLanguageCode = 'et' | 'en' | 'ru'
+
+function visitLanguageFromLocale(locale: string): VisitLanguageCode {
+  if (locale === 'en') return 'en'
+  if (locale === 'ru') return 'ru'
+  return 'et'
+}
+
 export default function StaticBookingInfo() {
   const t = useTranslations('StaticBookingInfo')
   const locale = useLocale()
@@ -33,6 +41,7 @@ export default function StaticBookingInfo() {
     phone: '',
     groupSize: '',
     groupType: '',
+    visitLanguage: visitLanguageFromLocale(locale) as VisitLanguageCode,
     message: '',
     website: '',
   })
@@ -291,6 +300,7 @@ export default function StaticBookingInfo() {
           phone: '',
           groupSize: '',
           groupType: '',
+          visitLanguage: visitLanguageFromLocale(locale),
           message: '',
           website: '',
         })
@@ -644,22 +654,42 @@ export default function StaticBookingInfo() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="booking-group-type" className="text-sm font-semibold text-deep-anthracite">
-                      {t('labelGroupType')}
-                    </label>
-                    <select
-                      id="booking-group-type"
-                      value={formData.groupType}
-                      onChange={(event) => handleInputChange('groupType', event.target.value)}
-                      className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
-                    >
-                      <option value="">{t('groupTypePlaceholder')}</option>
-                      <option value="perevisit">{t('groupTypeFamily')}</option>
-                      <option value="kool">{t('groupTypeSchool')}</option>
-                      <option value="ettevote">{t('groupTypeBusiness')}</option>
-                      <option value="muu">{t('groupTypeOther')}</option>
-                    </select>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-6">
+                    <div className="space-y-2 w-full max-w-[260px] sm:max-w-none">
+                      <label htmlFor="booking-group-type" className="text-xs font-semibold text-deep-anthracite sm:text-sm">
+                        {t('labelGroupType')}
+                      </label>
+                      <select
+                        id="booking-group-type"
+                        value={formData.groupType}
+                        onChange={(event) => handleInputChange('groupType', event.target.value)}
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-2 py-2 text-sm"
+                      >
+                        <option value="">{t('groupTypePlaceholder')}</option>
+                        <option value="perevisit">{t('groupTypeFamily')}</option>
+                        <option value="kool">{t('groupTypeSchool')}</option>
+                        <option value="ettevote">{t('groupTypeBusiness')}</option>
+                        <option value="muu">{t('groupTypeOther')}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2 w-full max-w-[260px] sm:max-w-none">
+                      <label htmlFor="booking-visit-language" className="text-xs font-semibold text-deep-anthracite sm:text-sm">
+                        {t('labelVisitLanguage')}
+                      </label>
+                      <select
+                        id="booking-visit-language"
+                        value={formData.visitLanguage}
+                        onChange={(event) =>
+                          handleInputChange('visitLanguage', event.target.value as VisitLanguageCode)
+                        }
+                        required
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-2 py-2 text-sm"
+                      >
+                        <option value="et">{t('visitLangEt')}</option>
+                        <option value="en">{t('visitLangEn')}</option>
+                        <option value="ru">{t('visitLangRu')}</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div className="space-y-2">

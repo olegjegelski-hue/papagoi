@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { sendConfirmationEmail } from '@/lib/email'
+import { formatVisitDateLong } from '@/lib/email-i18n'
+import {
+  extractVisitLanguageFromNotionVisitorProps,
+  parseVisitMailLocale,
+  type VisitMailLocale,
+} from '@/lib/visit-language'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,6 +19,7 @@ function extractText(property: any): string | null {
   if (property.type === 'rich_text') return property.rich_text?.[0]?.plain_text || null
   if (property.type === 'title') return property.title?.[0]?.plain_text || null
   if (property.type === 'email') return property.email || null
+  if (property.type === 'select') return property.select?.name || null
   return null
 }
 
@@ -143,6 +150,9 @@ export async function GET(request: NextRequest) {
       Object.keys(props).find((k) => normalizeKey(k).includes('nimi'))
     const name = namePropName ? extractText(props[namePropName]) : null
 
+    const visitLangRaw = extractVisitLanguageFromNotionVisitorProps(props as Record<string, unknown>)
+    const mailLocale: VisitMailLocale = parseVisitMailLocale(visitLangRaw)
+
     const relationPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
       return props[k]?.type === 'relation' && n.includes('kulastus')
@@ -174,12 +184,7 @@ export async function GET(request: NextRequest) {
 
         const dateValue = datePropName ? visitProps[datePropName]?.date?.start : null
         if (dateValue) {
-          dateStr = new Date(dateValue).toLocaleDateString('et-EE', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+          dateStr = formatVisitDateLong(dateValue, mailLocale)
           const rawTime = timePropName ? extractText(visitProps[timePropName]) : null
           const derivedTime = dateValue.includes('T')
             ? formatInTimeZone(dateValue, 'Europe/Tallinn', 'HH:mm')
@@ -200,7 +205,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!dateStr) {
-      dateStr = new Date().toLocaleDateString('et-EE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+      dateStr = formatVisitDateLong(new Date().toISOString(), mailLocale)
     }
 
     const patchRes = await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, {
@@ -232,6 +237,7 @@ export async function GET(request: NextRequest) {
       calendarStartIso,
       calendarEndIso,
       cc: 'keskus@papagoi.ee',
+      locale: mailLocale,
     })
 
     return new NextResponse(SUCCESS_HTML, {

@@ -10,6 +10,12 @@ import { cleanText } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
 
+function parseVisitLanguage(raw: unknown): 'et' | 'en' | 'ru' {
+  const s = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
+  if (s === 'en' || s === 'ru' || s === 'et') return s;
+  return 'et';
+}
+
 async function saveBookingToNotion(payload: {
   name: string;
   email: string;
@@ -20,6 +26,7 @@ async function saveBookingToNotion(payload: {
   groupType?: string;
   message?: string;
   totalPrice?: number;
+  visitLanguage?: 'et' | 'en' | 'ru';
 }) {
   try {
     const visitId = await findOrCreateVisit({
@@ -37,6 +44,7 @@ async function saveBookingToNotion(payload: {
       groupType: payload.groupType,
       message: payload.message,
       totalPrice: payload.totalPrice,
+      visitLanguage: payload.visitLanguage,
     });
   } catch (err) {
     console.error('Notion broneering salvestamine ebaõnnestus:', err);
@@ -64,7 +72,8 @@ export async function POST(request: NextRequest) {
       groupType,
       message = '',
       website, // honeypot (optional)
-      joinExisting
+      joinExisting,
+      visitLanguage: rawVisitLanguage,
     } = body;
 
     const cleaned = {
@@ -78,6 +87,7 @@ export async function POST(request: NextRequest) {
       message: cleanText(message, { max: 2000, preserveNewlines: true }),
       website: cleanText(website, { max: 200 }),
     };
+    const visitLanguage = parseVisitLanguage(rawVisitLanguage);
     const isJoinRequest = Boolean(joinExisting);
 
     // Validate required fields
@@ -174,6 +184,7 @@ export async function POST(request: NextRequest) {
       message: cleaned.message ? cleaned.message : undefined,
       totalPrice: Number(totalPrice),
       bookingId: `BKG-${Date.now()}`,
+      visitLanguage,
     });
 
     // Salvesta Notioni (Külastused + Külastajad) – ei muuda olemasolevaid kirjeid
@@ -189,6 +200,7 @@ export async function POST(request: NextRequest) {
       groupType: cleaned.groupType || undefined,
       message: cleaned.message ? cleaned.message : undefined,
       totalPrice: Number(totalPrice),
+      visitLanguage,
     });
     }
 

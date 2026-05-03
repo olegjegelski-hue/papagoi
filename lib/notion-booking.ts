@@ -11,6 +11,13 @@ function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
 }
 
+/** Notioni Select „Külastuse keel“ valikud: Est, Rus, Eng */
+function visitLanguageToNotionSelect(code: 'et' | 'en' | 'ru') {
+  if (code === 'en') return 'Eng'
+  if (code === 'ru') return 'Rus'
+  return 'Est'
+}
+
 async function fetchNotion(url: string, options: RequestInit) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 10000)
@@ -201,6 +208,8 @@ export async function createVisitor(payload: {
   groupType?: string
   message?: string
   totalPrice?: number
+  /** Külastuse/juhendi keel – salvestatakse Notioni, kui vastav väli leidub */
+  visitLanguage?: 'et' | 'en' | 'ru'
 }): Promise<boolean> {
   const NOTION_API_KEY = process.env.NOTION_API_KEY
   const NOTION_VISITORS_DATABASE_ID = process.env.NOTION_VISITORS_DATABASE_ID
@@ -306,6 +315,33 @@ export async function createVisitor(payload: {
   if (signaturePropName) {
     const signature = randomBytes(24).toString('hex')
     visitorProps[signaturePropName] = { rich_text: [{ type: 'text', text: { content: signature } }] }
+  }
+
+  const visitLangPropName =
+    findProperty(properties, [
+      { type: 'select', normalizedIncludes: ['keel', 'language', 'visitlang'] },
+      { type: 'rich_text', normalizedIncludes: ['keel', 'language', 'visitlang'] },
+    ]) ||
+    Object.keys(properties).find((k) => {
+      const n = normalizeKey(k)
+      return (
+        (n.includes('keel') || n.includes('language') || n.includes('visitlang')) &&
+        (properties[k]?.type === 'select' || properties[k]?.type === 'rich_text')
+      )
+    }) ||
+    null
+
+  if (visitLangPropName && payload.visitLanguage) {
+    const langProp = properties[visitLangPropName]
+    if (langProp?.type === 'select') {
+      visitorProps[visitLangPropName] = {
+        select: { name: visitLanguageToNotionSelect(payload.visitLanguage) },
+      }
+    } else if (langProp?.type === 'rich_text') {
+      visitorProps[visitLangPropName] = {
+        rich_text: [{ type: 'text', text: { content: payload.visitLanguage } }],
+      }
+    }
   }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {

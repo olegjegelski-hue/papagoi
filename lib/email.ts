@@ -1,13 +1,23 @@
 
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
+import type { VisitMailLocale } from '@/lib/visit-language'
+import {
+  bookingGroupTypeLabel,
+  calendarStrings,
+  formatVisitDateLongFromDate,
+  formatVisitDateLong,
+  formatVisitDateForSubject,
+  getBookingEmailCopy,
+  getConfirmationEmailCopy,
+  visitLanguageLabelForEmail,
+} from '@/lib/email-i18n'
 
 const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee'
-const CALENDAR_TITLE = 'Broneering Papagoi Keskuses'
 const CALENDAR_LOCATION = 'Tartu mnt 80, Soinaste, Kambja vald'
-const CALENDAR_DESCRIPTION = 'Külastus Papagoi Keskuses. Külastuse kestus: 45–60 min. Palume olla kohal 5–10 min varem.'
 
-function buildCalendarUrls(startIso: string, endIso: string) {
+function buildCalendarUrls(startIso: string, endIso: string, locale: VisitMailLocale = 'et') {
+  const cal = calendarStrings(locale)
   const start = new Date(startIso)
   const end = new Date(endIso)
   const toGoogleFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
@@ -16,26 +26,26 @@ function buildCalendarUrls(startIso: string, endIso: string) {
 
   const googleUrl =
     'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-    `&text=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `&text=${encodeURIComponent(cal.title)}` +
     `&dates=${startStr}/${endStr}` +
     `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
-    `&details=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+    `&details=${encodeURIComponent(cal.description)}`
 
   const outlookUrl =
     'https://outlook.live.com/calendar/0/action/compose' +
-    `?subject=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `?subject=${encodeURIComponent(cal.title)}` +
     `&startdt=${encodeURIComponent(startIso)}` +
     `&enddt=${encodeURIComponent(endIso)}` +
     `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
-    `&body=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+    `&body=${encodeURIComponent(cal.description)}`
 
   const icsUrl =
     `${SITE_URL.replace(/\/$/, '')}/api/calendar/event` +
     `?start=${encodeURIComponent(startIso)}` +
     `&end=${encodeURIComponent(endIso)}` +
-    `&title=${encodeURIComponent(CALENDAR_TITLE)}` +
+    `&title=${encodeURIComponent(cal.title)}` +
     `&location=${encodeURIComponent(CALENDAR_LOCATION)}` +
-    `&description=${encodeURIComponent(CALENDAR_DESCRIPTION)}`
+    `&description=${encodeURIComponent(cal.description)}`
 
   return { googleUrl, outlookUrl, icsUrl }
 }
@@ -158,74 +168,69 @@ export async function sendBookingEmail(data: {
   message?: string
   totalPrice: number
   bookingId: string
+  visitLanguage?: VisitMailLocale
 }) {
   try {
     const transporter = createTransporter()
+    const locale = data.visitLanguage ?? 'et'
+    const copy = getBookingEmailCopy(locale)
+    const tsLocale = locale === 'en' ? 'en-GB' : locale === 'ru' ? 'ru-RU' : 'et-EE'
 
-    const formattedDate = data.date
-      ? new Date(data.date).toLocaleDateString('et-EE', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      : ''
+    const formattedDate = data.date ? formatVisitDateLongFromDate(data.date, locale) : ''
 
-    const groupTypeLabel =
-      data.groupType === 'perevisit' ? 'Perevisit' :
-      data.groupType === 'kool' ? 'Kool/Lasteaed' :
-      data.groupType === 'ettevote' ? 'Ettevõte' : 'Muu'
+    const groupTypeLabel = bookingGroupTypeLabel(locale, data.groupType)
+
+    const visitLangCode = data.visitLanguage ?? 'et'
+    const visitLangHuman = visitLanguageLabelForEmail(locale, visitLangCode)
 
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Broneeringu päring
+        ${copy.title}
       </h2>
       
       <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
-        NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.<br>
-        <br>
-        Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul).<br>
-        <em>Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.</em>
+        ${copy.nbHtml}
       </div>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <h3 style="color: #059669; margin-top: 0;">Kliendi andmed:</h3>
-        <p style="margin: 10px 0;"><strong>Nimi:</strong> ${data.name}</p>
-        <p style="margin: 10px 0;"><strong>E-post:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
-        <p style="margin: 10px 0;"><strong>Telefon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>
+        <h3 style="color: #059669; margin-top: 0;">${copy.clientTitle}</h3>
+        <p style="margin: 10px 0;"><strong>${copy.name}</strong> ${data.name}</p>
+        <p style="margin: 10px 0;"><strong>${copy.email}</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+        <p style="margin: 10px 0;"><strong>${copy.phone}</strong> <a href="tel:${data.phone}">${data.phone}</a></p>
+        <p style="margin: 10px 0;"><strong>${copy.visitLang}</strong> ${visitLangHuman}</p>
       </div>
       
       <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #f59e0b;">
-        <h3 style="color: #d97706; margin-top: 0;">Broneeringu üksikasjad:</h3>
-        <p style="margin: 10px 0;"><strong>ID:</strong> ${data.bookingId}</p>
-        ${data.date ? `<p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${formattedDate}</p>` : ''}
-        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>` : ''}
-        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45-60 min</p>
-        <p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>
-        ${data.groupType ? `<p style="margin: 10px 0;"><strong>Grupi tüüp:</strong> ${groupTypeLabel}</p>` : ''}
-        <p style="margin: 10px 0; font-size: 18px;"><strong>Hind:</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
-        <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
+        <h3 style="color: #d97706; margin-top: 0;">${copy.detailsTitle}</h3>
+        <p style="margin: 10px 0;"><strong>${copy.id}</strong> ${data.bookingId}</p>
+        ${data.date ? `<p style="margin: 10px 0;"><strong>${copy.date}</strong> ${formattedDate}</p>` : ''}
+        ${data.timeSlot ? `<p style="margin: 10px 0;"><strong>${copy.time}</strong> ${data.timeSlot}${copy.timeSlotSuffix}</p>` : ''}
+        <p style="margin: 10px 0;"><strong>${copy.duration}</strong> ${copy.durationVal}</p>
+        <p style="margin: 10px 0;"><strong>${copy.groupSize}</strong> ${data.groupSize}${copy.groupSizeNote}</p>
+        ${data.groupType && groupTypeLabel ? `<p style="margin: 10px 0;"><strong>${copy.groupType}</strong> ${groupTypeLabel}</p>` : ''}
+        <p style="margin: 10px 0; font-size: 18px;"><strong>${copy.price}</strong> <span style="color: #d97706;">${data.totalPrice.toFixed(2)}€</span></p>
+        <p style="margin: 10px 0;"><strong>${copy.payment}</strong> ${copy.paymentVal}</p>
       </div>
       
       ${data.message ? `
       <div style="background-color: #fff; padding: 20px; border-left: 4px solid #43A047; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 0;">Lisainfo:</h3>
+        <h3 style="color: #333; margin-top: 0;">${copy.extraTitle}</h3>
         <p style="white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
       </div>
       ` : ''}
       
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 5px 0;">Lugupidamisega</p>
-        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
-        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 5px 0;">${copy.regards}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${copy.centre}</p>
+        <p style="margin: 5px 0;">${copy.tel}</p>
         <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">www.papagoi.ee</a></p>
-        <p style="margin: 5px 0;">E-post: <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
+        <p style="margin: 5px 0;">${locale === 'ru' ? 'Эл. почта:' : locale === 'en' ? 'Email:' : 'E-post:'} <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
         <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
       </div>
       
       <div style="color: #6b7280; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-        <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
+        <p>${copy.sent} ${new Date().toLocaleString(tsLocale, { timeZone: 'Europe/Tallinn' })}</p>
       </div>
     </div>
   `
@@ -234,41 +239,39 @@ export async function sendBookingEmail(data: {
       from: `"Papagoi Keskus Broneering" <${process.env.SMTP_USER}>`,
       to: `${data.email}, keskus@papagoi.ee`,
       replyTo: data.email,
-      subject: `Broneeringu päring: ${data.name}${data.date ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
+      subject: `${copy.subjectPrefix} ${data.name}${formattedDate ? ` - ${formattedDate}` : ''}${data.timeSlot ? ` ${data.timeSlot}` : ''}`,
       html: htmlContent,
       text: `
-BRONEERINGU PÄRING
+${copy.textHeader}
 __________________________________
 
-NB! Tegemist on broneeringu päringuga. Broneering jõustub pärast meie kinnituskirja.
+${copy.textNb}
 
-Kinnitame päringu esimesel võimalusel (tavaliselt 24 h jooksul).
-Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.
+${copy.textClient}
+- ${copy.name} ${data.name}
+- ${copy.email} ${data.email}
+- ${copy.phone} ${data.phone}
+- ${copy.visitLang} ${visitLangHuman}
 
-Kliendi andmed:
-- Nimi: ${data.name}
-- E-post: ${data.email}
-- Telefon: ${data.phone}
+${copy.textDetails}
+- ${copy.id} ${data.bookingId}
+${data.date ? `- ${copy.date} ${formattedDate}\n` : ''}${data.timeSlot ? `- ${copy.time} ${data.timeSlot}${copy.timeSlotSuffix}\n` : ''}- ${copy.duration} ${copy.durationVal}
+- ${copy.groupSize} ${data.groupSize}${copy.groupSizeNote}
+${data.groupType && groupTypeLabel ? `- ${copy.groupType} ${groupTypeLabel}\n` : ''}- ${copy.price} ${data.totalPrice.toFixed(2)}€
+- ${copy.payment} ${copy.paymentVal}
 
-Broneeringu üksikasjad:
-- ID: ${data.bookingId}
-${data.date ? `- Kuupäev: ${formattedDate}\n` : ''}${data.timeSlot ? `- Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n` : ''}- Külastuse kestus: 45-60 min
-- Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)
-${data.groupType ? `- Grupi tüüp: ${groupTypeLabel}\n` : ''}- Hind: ${data.totalPrice.toFixed(2)}€
-- Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)
+${data.message ? `${copy.extraTitle}\n${data.message}\n\n` : ''}
 
-${data.message ? `Lisainfo:\n${data.message}\n\n` : ''}
-
-Lugupidamisega
-Papagoi Keskus
-Tel +372 51 27 938
+${copy.regards}
+${copy.centre}
+${copy.tel}
 
 www.papagoi.ee
-E-post: keskus@papagoi.ee
+keskus@papagoi.ee
 https://www.facebook.com/PapagoiKeskus
 
 ---
-Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}
+${copy.sent} ${new Date().toLocaleString(tsLocale, { timeZone: 'Europe/Tallinn' })}
       `.trim(),
     }
 
@@ -296,97 +299,111 @@ export async function sendConfirmationEmail(data: {
   calendarEndIso?: string
   cc?: string
   adminOnly?: boolean
+  /** Külastuse keel Notionist / broneeringust – määrab meili keele */
+  locale?: VisitMailLocale
 }) {
   try {
     const transporter = createTransporter()
+    const locale = data.locale ?? 'et'
+    const cr = getConfirmationEmailCopy(locale)
+    const tsLocale = locale === 'en' ? 'en-GB' : locale === 'ru' ? 'ru-RU' : 'et-EE'
+
+    const guestName =
+      data.name?.trim() ||
+      (locale === 'en' ? 'Guest' : locale === 'ru' ? 'Гость' : 'Külastaja')
 
     const groupSizeLine =
       data.groupSize != null
-        ? `<p style="margin: 10px 0;"><strong>Grupi suurus:</strong> ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)</p>`
+        ? `<p style="margin: 10px 0;"><strong>${cr.groupSize}</strong> ${data.groupSize}${cr.groupSizeNote}</p>`
         : ''
     const priceLine =
       data.price != null
-        ? `<p style="margin: 10px 0;"><strong>Hind:</strong> ${data.price.toFixed(2)} €</p>`
+        ? `<p style="margin: 10px 0;"><strong>${cr.price}</strong> ${data.price.toFixed(2)} €</p>`
         : ''
     const timeSlotLine = data.timeSlot
-      ? `<p style="margin: 10px 0;"><strong>Kellaaeg:</strong> ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.</p>`
+      ? `<p style="margin: 10px 0;"><strong>${cr.time}</strong> ${data.timeSlot}${cr.timeSlotSuffix}</p>`
       : ''
 
     const calendarUrls =
       data.calendarStartIso && data.calendarEndIso
-        ? buildCalendarUrls(data.calendarStartIso, data.calendarEndIso)
+        ? buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale)
         : null
-    const calendarSection =
-      calendarUrls
-        ? `
+    const calendarSection = calendarUrls
+      ? `
       <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b; font-weight: 600;">
-        <p style="margin: 0 0 10px 0; font-weight: 600; color: #92400e;">Lisa broneering kalendrisse</p>
+        <p style="margin: 0 0 10px 0; font-weight: 600; color: #92400e;">${cr.calendarTitle}</p>
         <p style="margin: 0; font-size: 14px; font-weight: 500;">
-          <a href="${calendarUrls.googleUrl}" style="color: #d97706; text-decoration: underline;">Lisa Google Calendrisse</a> &nbsp;|&nbsp;
-          <a href="${calendarUrls.outlookUrl}" style="color: #d97706; text-decoration: underline;">Lisa Outlook'i</a> &nbsp;|&nbsp;
-          <a href="${calendarUrls.icsUrl}" style="color: #d97706; text-decoration: underline;">Laadi alla .ics</a> (sobib enamustele kalendritele)
+          <a href="${calendarUrls.googleUrl}" style="color: #d97706; text-decoration: underline;">${cr.google}</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.outlookUrl}" style="color: #d97706; text-decoration: underline;">${cr.outlook}</a> &nbsp;|&nbsp;
+          <a href="${calendarUrls.icsUrl}" style="color: #d97706; text-decoration: underline;">${cr.ics}</a> ${cr.icsNote}
         </p>
       </div>`
-        : ''
+      : ''
 
     const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Papagoi Keskuse broneeringu kinnitus
+        ${cr.title}
       </h2>
       
-      <p style="font-size: 16px; line-height: 1.6;">Tere, ${data.name}!</p>
+      <p style="font-size: 16px; line-height: 1.6;">${cr.greeting}, ${guestName}!</p>
       
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <h3 style="color: #059669; margin-top: 0;">Broneeringu andmed</h3>
-        <p style="margin: 10px 0;"><strong>Asukoht:</strong> Papagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald <a href="https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald">Google Maps</a></p>
-        <p style="margin: 10px 0;"><strong>Kuupäev:</strong> ${data.date}</p>
+        <h3 style="color: #059669; margin-top: 0;">${cr.bookingBlockTitle}</h3>
+        <p style="margin: 10px 0;"><strong>${cr.location}</strong> ${cr.locationLine} <a href="https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald">Google Maps</a></p>
+        <p style="margin: 10px 0;"><strong>${cr.date}</strong> ${data.date}</p>
         ${timeSlotLine}
-        <p style="margin: 10px 0;"><strong>Külastuse kestus:</strong> 45–60 min</p>
+        <p style="margin: 10px 0;"><strong>${cr.duration}</strong> ${cr.durationVal}</p>
         ${groupSizeLine}
         ${priceLine}
-        <p style="margin: 10px 0;"><strong>Maksmine:</strong> pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)</p>
+        <p style="margin: 10px 0;"><strong>${cr.payment}</strong> ${cr.paymentVal}</p>
       </div>
       ${calendarSection}
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <p style="margin: 0; font-weight: 600; color: #059669;">Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale või helista tel <a href="tel:+3725127938" style="color: #059669;">+372 512 7938</a>.</p>
+        <p style="margin: 0; font-weight: 600; color: #059669;">${cr.changeHint}<a href="tel:+3725127938" style="color: #059669;">+372 512 7938</a>.</p>
       </div>
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 0;">Infoks</h3>
+        <h3 style="color: #333; margin-top: 0;">${cr.infoTitle}</h3>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
-          <li>Kui soovite, võite papagoidele ja merisigadele kaasa tuua midagi värsket – see on igati teretulnud. Sobivad näiteks paprika, kurk, salat, brokoli, õun ja viinamarjad. Külakost ei ole ootus, vaid soovi korral väike lisarõõm.</li>
-          <li>Papagoid lendavad vabalt ringi ja teevad palju hääli. Kui tulete lastega, valmistage nad veidi ette.</li>
-          <li>Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).</li>
-          <li><strong style="color: #059669;">Soovitame kanda tumedamaid sokke (mitte valgeid).</strong> Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.</li>
+          <li>${cr.infoTreat}</li>
+          <li>${cr.infoNoise}</li>
+          <li>${cr.infoGuide}</li>
+          <li><strong style="color: #059669;">${cr.infoSocksBold}</strong>${cr.infoSocksRest}</li>
         </ul>
-        <p style="margin: 15px 0 0 0;"><strong>Reeglid, ohutus ja praktiline info</strong> – kõik oluline enne külastust: <a href="${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised" style="color: #059669; text-decoration: underline;">www.papagoi.ee/kulastajatele</a></p>
+        <p style="margin: 15px 0 0 0;"><strong>${cr.rulesLead}</strong> ${cr.rulesRest} <a href="${cr.rulesHref}" style="color: #059669; text-decoration: underline;">${cr.rulesLabelShort}</a></p>
       </div>
       
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 5px 0;">Lugupidamisega</p>
-        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
-        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 5px 0;">${cr.regards}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${cr.centre}</p>
+        <p style="margin: 5px 0;">${cr.tel}</p>
         <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">https://www.papagoi.ee/</a></p>
         <p style="margin: 5px 0;">keskus@papagoi.ee</p>
         <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
       </div>
       
       <div style="color: #6b7280; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-        <p>Saadetud: ${new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })}</p>
+        <p>${cr.sent} ${new Date().toLocaleString(tsLocale, { timeZone: 'Europe/Tallinn' })}</p>
       </div>
     </div>
   `
 
     const baseDate = data.dateForSubject || data.date
-    const subjectDate = data.timeSlot && !baseDate.match(/\d{1,2}:\d{2}/)
-      ? `${baseDate} kell ${data.timeSlot}`
-      : baseDate
+    const subjectDate =
+      data.timeSlot && !baseDate.match(/\d{1,2}:\d{2}/)
+        ? locale === 'en'
+          ? `${baseDate} at ${data.timeSlot}`
+          : locale === 'ru'
+            ? `${baseDate} в ${data.timeSlot}`
+            : `${baseDate} kell ${data.timeSlot}`
+        : baseDate
+
     const mailOptions: Record<string, unknown> = {
       from: `"Papagoi Keskus" <${process.env.SMTP_USER}>`,
       to: data.email,
       subject: data.adminOnly
-        ? `[Admin] Broneeringu kinnitus – puudub kliendi e-post: ${data.name}`
-        : `Broneeringu kinnitus – Papagoi Keskus (${subjectDate})`,
+        ? `${cr.subjectAdmin} ${data.name}`
+        : `${cr.subjectNormal} (${subjectDate})`,
       html: htmlContent,
     }
     if (data.cc && !data.adminOnly) {
@@ -394,38 +411,53 @@ export async function sendConfirmationEmail(data: {
     }
 
     const timeSlotText = data.timeSlot
-      ? `* Kellaaeg: ${data.timeSlot} Alustame täistunnil. Palume olla kohal 5–10 min varem, kutsume teid ise sisse.\n`
+      ? `* ${cr.time} ${data.timeSlot}${cr.timeSlotSuffix}\n`
       : ''
     const groupSizeText =
       data.groupSize != null
-        ? `* Grupi suurus: ${data.groupSize} inimest (paneme gruppe kokku, võivad veel liituda teised külastajad)\n`
+        ? `* ${cr.groupSize} ${data.groupSize}${cr.groupSizeNote}\n`
         : ''
-    const priceText =
-      data.price != null ? `* Hind: ${data.price.toFixed(2)} €\n` : ''
+    const priceText = data.price != null ? `* ${cr.price} ${data.price.toFixed(2)} €\n` : ''
     const calendarText =
       data.calendarStartIso && data.calendarEndIso
         ? (() => {
-            const urls = buildCalendarUrls(data.calendarStartIso, data.calendarEndIso)
-            return `\nLisa broneering kalendrisse:\n* Google Calendar: ${urls.googleUrl}\n* Outlook: ${urls.outlookUrl}\n* Laadi alla .ics: ${urls.icsUrl}\n`
+            const urls = buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale)
+            return `\n${cr.calendarTextIntro}\n* Google Calendar: ${urls.googleUrl}\n* Outlook: ${urls.outlookUrl}\n* ${cr.ics}: ${urls.icsUrl}\n`
           })()
         : ''
-    const textContent =
-      'PAPAGOI KESKUSE BRONEERINGU KINNITUS\n\nTere, ' +
-      data.name +
-      '!\n\nBroneeringu andmed\n* Asukoht: Papagoi Keskus – Tartu mnt 80, Soinaste, Kambja vald\n  Google Maps: https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald\n* Kuupäev: ' +
-      data.date +
-      '\n' +
-      timeSlotText +
-      '* Külastuse kestus: 45–60 min\n' +
-      groupSizeText +
-      priceText +
-      '* Maksmine: pärast külastust kohapeal, ainult sularaha (pangaterminal puudub)\n' +
-      calendarText +
-      '\n*** Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale või helista tel +372 512 7938. ***\n\nInfoks\n* Papagoid lendavad vabalt ringi ja teevad palju hääli. Kui tulete lastega, valmistage nad veidi ette.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* **Soovitame kanda tumedamaid sokke (mitte valgeid).** Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
-      '\n*** Kui soovid aega muuta või ei saa tulla, vasta palun sellele kirjale või helista tel +372 512 7938. ***\n\nInfoks\n* Kui soovite, võite papagoidele ja merisigadele kaasa tuua midagi värsket – see on igati teretulnud. Sobivad näiteks paprika, kurk, salat, brokoli, õun ja viinamarjad. Külakost ei ole ootus, vaid soovi korral väike lisarõõm.\n* Papagoid lendavad vabalt ringi ja teevad palju hääli. Kui tulete lastega, valmistage nad veidi ette.\n* Külastusel palume järgida juhendaja juhiseid (lindude ja külastajate turvalisuse tagamiseks).\n* **Soovitame kanda tumedamaid sokke (mitte valgeid).** Põrand on enne külastust pestud, kuid külastuse ajal võivad papagoid söömise käigus pudistada pähkleid ja värsket toitu, mida anname koos teiega. Seetõttu võib põrand külastuse lõpuks olla veidi pudine ning heledad sokid võivad määrduda.\n\nReeglid, ohutus ja praktiline info – kõik oluline enne külastust: ' +
-      `${SITE_URL.replace(/\/$/, '')}/kulastajatele#reeglid-ja-juhised` +
-      '\n\nLugupidamisega\nPapagoi Keskus\nTel +372 51 27 938\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus\n\n---\nSaadetud: ' +
-      new Date().toLocaleString('et-EE', { timeZone: 'Europe/Tallinn' })
+
+    const textContent = [
+      cr.textTitle,
+      '',
+      `${cr.greeting}, ${guestName}!`,
+      '',
+      cr.textBooking,
+      `* ${cr.textLocation} ${cr.locationLine}`,
+      `  ${cr.textMaps} https://www.google.com/maps/search/?api=1&query=Tartu+mnt+80,+Soinaste,+Kambja+vald`,
+      `* ${cr.date} ${data.date}`,
+      timeSlotText.trimEnd(),
+      `* ${cr.duration} ${cr.durationVal}`,
+      groupSizeText.trimEnd(),
+      priceText.trimEnd(),
+      `* ${cr.payment} ${cr.paymentVal}`,
+      calendarText.trimEnd(),
+      '',
+      cr.textChangeBlock,
+      '',
+      cr.textInfo,
+      `* ${cr.infoTreat}`,
+      `* ${cr.infoNoise}`,
+      `* ${cr.infoGuide}`,
+      `* ${cr.infoSocksBold}${cr.infoSocksRest}`,
+      '',
+      `${cr.textRules} ${cr.rulesHref}`,
+      '',
+      `${cr.regards}\n${cr.centre}\n${cr.tel}\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus`,
+      '',
+      `---\n${cr.sent} ${new Date().toLocaleString(tsLocale, { timeZone: 'Europe/Tallinn' })}`,
+    ]
+      .filter((line) => line !== '')
+      .join('\n')
 
     mailOptions.text = textContent
 

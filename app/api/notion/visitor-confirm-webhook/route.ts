@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 import { sendConfirmationEmail } from '@/lib/email'
+import { formatVisitDateForSubject, formatVisitDateLong } from '@/lib/email-i18n'
+import {
+  extractVisitLanguageFromNotionVisitorProps,
+  parseVisitMailLocale,
+  type VisitMailLocale,
+} from '@/lib/visit-language'
 
 export const dynamic = 'force-dynamic'
 
@@ -314,6 +320,9 @@ export async function POST(request: NextRequest) {
       Object.keys(props).find((k) => normalizeKey(k).includes('nimi'))
     const name = namePropName ? extractText(props[namePropName]) : null
 
+    const visitLangRaw = extractVisitLanguageFromNotionVisitorProps(props as Record<string, unknown>)
+    const mailLocale: VisitMailLocale = parseVisitMailLocale(visitLangRaw)
+
     const arvPropName = Object.keys(props).find((k) => {
       const n = normalizeKey(k)
       return (n === 'arv' || n.includes('arv')) && (props[k]?.type === 'number' || props[k]?.type === 'formula')
@@ -407,12 +416,7 @@ export async function POST(request: NextRequest) {
           }
         }
         if (dateValue) {
-          dateStr = new Date(dateValue).toLocaleDateString('et-EE', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+          dateStr = formatVisitDateLong(dateValue, mailLocale)
           // Kellaaeg: 1) Kuupäev datetime-st (T või tühik), 2) Kellaaeg-tulp, 3) pealkirjast, 4) kõik Külastuse tulbad
           const timeFromDate = extractTimeFromDateValue(dateValue)
           const timeFromProp = timePropName ? normalizeTime(extractText(visitProps[timePropName])) : null
@@ -427,8 +431,7 @@ export async function POST(request: NextRequest) {
             }
           }
           timeSlot = timeFromDate || timeFromProp || timeFromTitle || timeFromAny || undefined
-          const dStr = formatInTimeZone(dateValue, 'Europe/Tallinn', 'dd.MM')
-          dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
+          dateForSubject = formatVisitDateForSubject(dateValue, timeSlot, mailLocale)
           // Kalendri sündmuse algus ja lõpp (ISO)
           const datePart = dateValue.split('T')[0].split(' ')[0]
           const startDt =
@@ -464,15 +467,9 @@ export async function POST(request: NextRequest) {
 
     if (!dateStr) {
       const fallback = new Date()
-      dateStr = fallback.toLocaleDateString('et-EE', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+      dateStr = formatVisitDateLong(fallback.toISOString(), mailLocale)
       if (!dateForSubject) {
-        const dStr = formatInTimeZone(fallback, 'Europe/Tallinn', 'dd.MM')
-        dateForSubject = timeSlot ? `${dStr} kell ${timeSlot}` : dStr
+        dateForSubject = formatVisitDateForSubject(fallback.toISOString(), timeSlot, mailLocale)
       }
     }
 
@@ -507,6 +504,7 @@ export async function POST(request: NextRequest) {
           calendarStartIso,
           calendarEndIso,
           cc: ADMIN_EMAIL,
+          locale: mailLocale,
         })
       } catch (err: any) {
         console.error('[visitor-confirm-webhook] Email send failed:', err)
@@ -562,6 +560,7 @@ export async function POST(request: NextRequest) {
           calendarStartIso,
           calendarEndIso,
           adminOnly: true,
+          locale: mailLocale,
         })
       } catch {
         /* ignore */
