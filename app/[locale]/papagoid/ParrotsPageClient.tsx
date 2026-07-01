@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Heart, Star, Users, Clock, Euro, Check, Gift, Phone, Mail, X, Eye, Calendar, ExternalLink } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import PetsVillaLink from '@/components/PetsVillaLink'
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -577,15 +578,13 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
           <div className="p-8">
             <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
               <p className="text-gray-700 leading-relaxed mb-6">{serviceT('saleDesc')}</p>
-              <a
-                href="https://petsvilla.ee"
-                target="_blank"
-                rel="noopener noreferrer"
+              <PetsVillaLink
+                source="papagoid"
                 className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
               >
                 <ExternalLink className="w-5 h-5 mr-2" />
                 {serviceT('saleLinkText')}
-              </a>
+              </PetsVillaLink>
             </div>
           </div>
         </div>

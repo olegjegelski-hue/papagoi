@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Gift, ChevronUp, ChevronDown } from 'lucide-react'
+import { trackGiftCardSubmit } from '@/lib/meta-pixel'
 
 const STEP = 10
 const MIN = 10
@@ -45,6 +46,7 @@ export default function GiftCardForm() {
         setError(data?.error || 'Tellimus ebaõnnestus')
         return
       }
+      trackGiftCardSubmit({ value: amount })
       setSubmitted(true)
     } catch {
       setError('Ühendusviga. Proovi uuesti või võta ühendust.')

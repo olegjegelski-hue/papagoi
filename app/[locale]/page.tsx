@@ -5,6 +5,7 @@ import BookingCTA from '@/components/BookingCTA'
 import Statistics from '@/components/Statistics'
 import TestimonialsSection from '@/components/testimonials-section'
 import SectionDivider from '@/components/SectionDivider'
+import PetsVillaLink from '@/components/PetsVillaLink'
 import { ExternalLink } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
@@ -79,15 +80,13 @@ export default async function Home({ params }: Props) {
         <div className="p-8">
           <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200 text-center">
             <p className="text-gray-700 leading-relaxed mb-6">{t('saleDesc')}</p>
-            <a
-              href="https://petsvilla.ee"
-              target="_blank"
-              rel="noopener noreferrer"
+            <PetsVillaLink
+              source="avaleht"
               className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
             >
               <ExternalLink className="w-5 h-5 mr-2" />
               {t('saleLinkText')}
-            </a>
+            </PetsVillaLink>
           </div>
         </div>
       </section>

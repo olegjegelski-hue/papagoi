@@ -1,5 +1,6 @@
 
 import { Users, GraduationCap, Building, Heart, Clock, Euro, PartyPopper, Utensils, Feather, ExternalLink } from 'lucide-react'
+import PetsVillaLink from '@/components/PetsVillaLink'
 
 const services = [
   {
@@ -236,15 +237,13 @@ export default function Services() {
                   Kui otsite papagoide või merisigade müügipakkumisi ning kasvatuse infot, vaadake meie teist kodulehte.
                   Papagoi Keskus on eelkõige koht, kuhu tulla külla ja kogeda papagoisid kohapeal.
                 </p>
-                <a
-                  href="https://petsvilla.ee"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <PetsVillaLink
+                  source="teenused-komponent"
                   className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg transform hover:scale-105 transition-all"
                 >
                   <ExternalLink className="w-5 h-5 mr-2" />
                   Ava PetsVilla.ee
-                </a>
+                </PetsVillaLink>
                 <p className="text-sm text-gray-500 mt-4">
                   Avaneb uues aknas
                 </p>
