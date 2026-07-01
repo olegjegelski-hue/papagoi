@@ -22,6 +22,9 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   verification: {
     google: 'CPr-Db3uIhvMR38RI3_ligyrF_GVfUv6706fjQAWDpM',
+    other: {
+      'facebook-domain-verification': 'ytdul5bednhzp0b5mqea9rfibg7c3d',
+    },
   },
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
   description: 'Tule külasta Papagoi Keskust Tartus! Üle 50 papagoi, broneeri külastus või osta digitaalne kinkekaart. Giidiga ekskursioonid, sünnipäevad, grupikülastused. Eesti esimene papagoidekeskus alates 2015.',
