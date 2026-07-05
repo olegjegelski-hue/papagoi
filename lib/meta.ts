@@ -23,7 +23,6 @@ export async function trackBooking(opts: { email?: string; phone?: string; value
     const eventId = crypto.randomUUID()
 
     // Browser Pixel — same eventID for deduplication
-    // @ts-expect-error fbq track options type
     window.fbq?.('track', 'Schedule', { value: opts.value, currency: 'EUR' }, { eventID: eventId })
 
     // Server CAPI — same eventId
