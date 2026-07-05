@@ -1,3 +1,5 @@
+'use client'
+
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void
@@ -11,15 +13,6 @@ function track(event: string, params?: Record<string, unknown>, custom = false) 
   } else {
     window.fbq('track', event, params)
   }
-}
-
-/** Broneeringu vorm edukalt saadetud */
-export function trackBookingSubmit(params?: { groupType?: string; groupSize?: number }) {
-  track('Schedule', {
-    content_name: 'Broneering',
-    content_category: params?.groupType ?? 'broneering',
-    num_items: params?.groupSize,
-  })
 }
 
 /** Kinkekaardi tellimus edukalt saadetud */

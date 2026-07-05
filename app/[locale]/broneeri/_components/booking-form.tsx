@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
-import { trackBookingSubmit } from '@/lib/meta-pixel';
+import { trackBooking } from '@/lib/meta';
 
 export default function BookingForm() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
@@ -64,9 +64,11 @@ export default function BookingForm() {
       const result = await response.json();
 
       if (response.ok) {
-        trackBookingSubmit({
-          groupType: formData.groupType,
-          groupSize: parseInt(formData.groupSize, 10) || undefined,
+        const groupSizeNum = parseInt(formData.groupSize, 10) || 0
+        void trackBooking({
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          value: groupSizeNum * 10,
         });
         toast.success(result.message);
         setFormData({

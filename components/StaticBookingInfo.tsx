@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { sortVisitLanguageLabels, visitMailLocaleToNotionSelectLabel } from '@/lib/visit-language'
-import { trackBookingSubmit } from '@/lib/meta-pixel'
+import { trackBooking } from '@/lib/meta'
 
 export type VisitLanguageCode = 'et' | 'en' | 'ru'
 
@@ -309,9 +309,10 @@ export default function StaticBookingInfo() {
       const result = await response.json()
 
       if (response.ok) {
-        trackBookingSubmit({
-          groupType: formData.groupType,
-          groupSize: groupSizeNum,
+        void trackBooking({
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          value: groupSizeNum * 10,
         })
         setSubmitMessage(result.message || t('submitSuccess'))
         setFormData({
