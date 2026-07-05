@@ -4,9 +4,7 @@ import { Nunito, Open_Sans } from 'next/font/google'
 import MetaPixel from '@/components/MetaPixel'
 import './globals.css'
 
-const FB_PIXEL_ID =
-  process.env.NEXT_PUBLIC_FB_PIXEL_ID ??
-  (process.env.NODE_ENV === 'production' ? '923614276572746' : undefined)
+const FB_PIXEL_ID = process.env.META_PIXEL_ID
 
 const nunito = Nunito({
   subsets: ['latin'],
