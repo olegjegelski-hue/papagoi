@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'CPr-Db3uIhvMR38RI3_ligyrF_GVfUv6706fjQAWDpM',
     other: {
-      'facebook-domain-verification': 'ytdul5bednhzp0b5mqea9rfibg7c3d',
+      'facebook-domain-verification': 'q7wrvl1zid06u22qr8rf488mc7bcak',
     },
   },
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
