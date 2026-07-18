@@ -15,7 +15,20 @@ const nextConfig = {
   },
   experimental: {
     // Playwright / Chromium ei tohi Webpacki sisse minna (Vercel serverless)
-    serverComponentsExternalPackages: ['playwright', 'playwright-core', '@sparticuz/chromium'],
+    serverComponentsExternalPackages: [
+      'playwright',
+      'playwright-core',
+      '@sparticuz/chromium-min',
+    ],
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      const externals = ['@sparticuz/chromium-min', 'playwright-core', 'playwright']
+      if (Array.isArray(config.externals)) {
+        config.externals.push(...externals)
+      }
+    }
+    return config
   },
   images: {
     // Kui kasutad `output=export`, Next.js ei saa pilte serveris optimeerida.

@@ -8,14 +8,19 @@ export interface GiftCardRenderInput {
   qrUrl: string
 }
 
+/** Vercel x64 pack — chromium-min laeb binaari esimesel käivitamisel /tmp alla */
+const CHROMIUM_PACK_URL =
+  process.env.CHROMIUM_PACK_URL ||
+  'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar'
+
 async function launchBrowser() {
-  // Vercel / Lambda: Playwrighti vaikimisi Chromium puudub — kasuta @sparticuz/chromium
+  // Vercel / Lambda: kasuta @sparticuz/chromium-min + kaugpack (väldib bundleri bin-probleemi)
   const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
   if (isServerless) {
-    const chromium = (await import('@sparticuz/chromium')).default
+    const chromium = (await import('@sparticuz/chromium-min')).default
     return playwrightChromium.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
       headless: true,
     })
   }
