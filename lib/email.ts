@@ -497,15 +497,12 @@ export async function sendGiftCardOrderEmail(data: {
       <p style="font-size: 15px; line-height: 1.6;">
         ${t.thanks}
       </p>
-      <p style="font-size: 15px; line-height: 1.6;">
-        ${t.questions.replace(
-          '+372 512 7938',
-          '<a href="tel:+3725127938">+372 512 7938</a>'
-        ).replace(
-          'keskus@papagoi.ee',
-          '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>'
-        )}
-      </p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <h3 style="color: #059669; margin-top: 0;">${t.detailsTitle}</h3>
+        <p style="margin: 10px 0;"><strong>${t.value}</strong> ${data.amountEur} € (${visitsLabel})</p>
+        <p style="margin: 10px 0;">${t.once}</p>
+        <p style="margin: 10px 0;">${t.validity}</p>
+      </div>
       <p style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">${t.transferLead}</p>
       <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; margin: 0 0 16px 0; border: 1px solid #e5e7eb;">
         <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
@@ -515,12 +512,6 @@ export async function sendGiftCardOrderEmail(data: {
       <p style="font-size: 15px; line-height: 1.6;">
         ${t.afterTransfer}
       </p>
-      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <h3 style="color: #059669; margin-top: 0;">${t.detailsTitle}</h3>
-        <p style="margin: 10px 0;"><strong>${t.value}</strong> ${data.amountEur} € (${visitsLabel})</p>
-        <p style="margin: 10px 0;">${t.once}</p>
-        <p style="margin: 10px 0;">${t.validity}</p>
-      </div>
       <p style="font-size: 14px; color: #4b5563;">
         ${t.questions.replace(
           '+372 512 7938',
@@ -544,7 +535,10 @@ ${t.greetingText(data.buyerName)}
 
 ${t.thanks}
 
-${t.questions}
+${t.detailsTitle}:
+- ${t.value} ${data.amountEur} € (${visitsLabel})
+- ${t.once}
+- ${t.validity}
 
 ${t.transferLead}
 ${t.recipient} ${t.recipientValue}
@@ -552,11 +546,6 @@ ${t.iban} ${t.ibanValue}
 ${t.reference} ${refLine}
 
 ${t.afterTransfer}
-
-${t.detailsTitle}:
-- ${t.value} ${data.amountEur} € (${visitsLabel})
-- ${t.once}
-- ${t.validity}
 
 ${t.questions}
 
