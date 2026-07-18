@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 
 Disallow: /api/
+Disallow: /kinkekaart/truki
+Disallow: /*/kinkekaart/truki
 
 Sitemap: https://papagoi.ee/sitemap.xml
