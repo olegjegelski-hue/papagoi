@@ -70,10 +70,34 @@ function readEmail(p: any): string | null {
 }
 
 function getProp(props: NotionGiftCardPropertyMap, name: string): any {
-  if (props[name]) return props[name]
-  const needle = name.toLowerCase()
-  const key = Object.keys(props).find((k) => k.toLowerCase() === needle)
+  if (Object.prototype.hasOwnProperty.call(props, name)) return props[name]
+  const needle = name.toLowerCase().normalize('NFC')
+  const key = Object.keys(props).find((k) => k.toLowerCase().normalize('NFC') === needle)
   return key ? props[key] : undefined
+}
+
+function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
+  const fromAegub = readValidUntil(getProp(props, 'Aegub'))
+  if (fromAegub) return fromAegub
+
+  // Mis tahes formula, mis näeb välja nagu kuupäev
+  for (const p of Object.values(props)) {
+    if (p?.type !== 'formula') continue
+    const v = readValidUntil(p)
+    if (v && /\d{4}/.test(v)) return v
+  }
+
+  const purchase =
+    readValidUntil(getProp(props, 'Ostu kuupäev')) ||
+    (() => {
+      for (const [k, p] of Object.entries(props)) {
+        if (p?.type === 'date' && p.date?.start && /ostu/i.test(k)) return p.date.start as string
+      }
+      return ''
+    })()
+
+  if (purchase) return fallbackValidUntilFromPurchase(purchase)
+  return ''
 }
 
 function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCardDetails {
@@ -85,12 +109,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
   const amountProp = getProp(props, 'Väärtus')
   const amountEur = typeof amountProp?.number === 'number' ? amountProp.number : Number(amountProp?.number ?? 0)
 
-  let validUntil = readValidUntil(getProp(props, 'Aegub'))
-  if (!validUntil) {
-    // Kui formula ei lae (või on tühi), arvuta ostukuupäev + 1 aasta
-    const purchase = readValidUntil(getProp(props, 'Ostu kuupäev'))
-    if (purchase) validUntil = fallbackValidUntilFromPurchase(purchase)
-  }
+  const validUntil = resolveValidUntil(props)
 
   const buyerName = (() => {
     const p = props['Ostja nimi']
@@ -192,7 +211,33 @@ export async function getGiftCardDetailsByCode(
 
   if (!page) return null
 
-  return mapNotionPageToGiftCardDetails(page, normalizedCode)
+  let details = mapNotionPageToGiftCardDetails(page, normalizedCode)
+
+  // Kui query vastuses formula puudub/tühi, küsi Aegub eraldi (Notion soovitab property endpointi)
+  if (!details.validUntil) {
+    const aegubId = getProp(page.properties || {}, 'Aegub')?.id
+    if (aegubId) {
+      const propRes = await fetchNotion(
+        `https://api.notion.com/v1/pages/${page.id.replace(/-/g, '')}/properties/${encodeURIComponent(aegubId)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${notionApiKey}`,
+            'Notion-Version': '2022-06-28',
+          },
+        }
+      )
+      if (propRes.ok) {
+        const propData = await propRes.json()
+        const fromProp = readValidUntil(propData)
+        if (fromProp) {
+          details = { ...details, validUntil: fromProp }
+        }
+      }
+    }
+  }
+
+  return details
 }
 
 export async function setGiftCardQrUrl(
