@@ -3,6 +3,7 @@ import { buildGiftCardFileResponse } from '@/lib/gift-card-build-file-response'
 import { getClientIp, rateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 /** Avalik: PDF/PNG kinkekaardi koodiga (ilma admin secretita). Nõuab ?code= */
 export async function GET(request: Request) {
@@ -21,6 +22,8 @@ export async function GET(request: Request) {
 
     const format = (searchParams.get('format') || 'pdf').toLowerCase()
     const fmt = format === 'png' ? 'png' : 'pdf'
+    const disposition =
+      searchParams.get('disposition') === 'inline' ? 'inline' : 'attachment'
 
     const NOTION_API_KEY = process.env.NOTION_API_KEY
     const NOTION_GIFT_CARDS_DATABASE_ID = process.env.NOTION_GIFT_CARDS_DATABASE_ID
@@ -36,7 +39,7 @@ export async function GET(request: Request) {
       baseUrl,
       notionApiKey: NOTION_API_KEY,
       notionDatabaseId: NOTION_GIFT_CARDS_DATABASE_ID,
-      contentDisposition: 'attachment',
+      contentDisposition: disposition,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'

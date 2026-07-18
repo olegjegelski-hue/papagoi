@@ -1,11 +1,31 @@
 import QRCode from 'qrcode'
-import { chromium } from 'playwright'
+import { chromium as playwrightChromium } from 'playwright-core'
 
 export interface GiftCardRenderInput {
   code: string
   amountEur: number
   validUntil: string
   qrUrl: string
+}
+
+async function launchBrowser() {
+  // Vercel / Lambda: Playwrighti vaikimisi Chromium puudub — kasuta @sparticuz/chromium
+  const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+  if (isServerless) {
+    const chromium = (await import('@sparticuz/chromium')).default
+    return playwrightChromium.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    })
+  }
+
+  // Lokaalselt: Playwrighti paigaldatud brauseri binaar
+  const { chromium } = await import('playwright')
+  return playwrightChromium.launch({
+    executablePath: chromium.executablePath(),
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  })
 }
 
 const CARD_WIDTH_PX = 1080
@@ -357,9 +377,7 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
     logoUrl,
   })
 
-  const browser = await chromium.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  })
+  const browser = await launchBrowser()
   try {
     const page = await browser.newPage({
       viewport: { width: CARD_WIDTH_PX, height: CARD_HEIGHT_PX },

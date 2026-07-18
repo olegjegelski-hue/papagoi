@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
-import {
-  getGiftCardDetailsByCode,
-} from '@/lib/notion-gift-card-lookup'
-import { renderGiftCardToPngPdf } from '@/lib/gift-card-render'
+import { getGiftCardDetailsByCode } from '@/lib/notion-gift-card-lookup'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -50,7 +48,6 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
 
   const NOTION_API_KEY = process.env.NOTION_API_KEY
   const NOTION_GIFT_CARDS_DATABASE_ID = process.env.NOTION_GIFT_CARDS_DATABASE_ID
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee').replace(/\/$/, '')
 
   if (!NOTION_API_KEY || !NOTION_GIFT_CARDS_DATABASE_ID) {
     return (
@@ -74,15 +71,9 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
     )
   }
 
-  const qrUrl = `${baseUrl}/kinkekaart/lunasta?code=${encodeURIComponent(details.code)}`
-  const { pngBuffer } = await renderGiftCardToPngPdf({
-    code: details.code,
-    amountEur: details.amountEur,
-    validUntil: details.validUntil,
-    qrUrl,
-  })
-  const src = `data:image/png;base64,${pngBuffer.toString('base64')}`
   const printApi = `/api/gift-card-print?code=${encodeURIComponent(details.code)}`
+  // Eelvaade API kaudu (render toimub seal, mitte RSC HTML-is)
+  const previewSrc = `${printApi}&format=png&disposition=inline`
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-papagoi-beige-50 px-4 py-12">
@@ -95,7 +86,7 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={previewSrc}
         alt={`Kinkekaart ${details.code}`}
         className="max-w-full rounded-lg shadow-lg"
         width={1080}
@@ -118,7 +109,7 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
       </div>
 
       <p className="mt-6 max-w-md text-center text-xs text-warm-gray-500">
-        Lingi jagamine jagab kaarti. Ära postita seda avalikult.
+        Lingi jagamine jagab kaarti. Ära postita seda avalikult. Esimene avamine võib võtta mõne sekundi.
       </p>
     </div>
   )

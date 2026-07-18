@@ -13,6 +13,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  experimental: {
+    // Playwright / Chromium ei tohi Webpacki sisse minna (Vercel serverless)
+    serverComponentsExternalPackages: ['playwright', 'playwright-core', '@sparticuz/chromium'],
+  },
   images: {
     // Kui kasutad `output=export`, Next.js ei saa pilte serveris optimeerida.
     // Muul juhul lülitame optimeerimise sisse.
