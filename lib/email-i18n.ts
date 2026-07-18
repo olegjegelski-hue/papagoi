@@ -368,3 +368,88 @@ export function getConfirmationEmailCopy(locale: VisitMailLocale) {
   const block = c[locale]
   return { ...block, rulesHref, rulesLabelShort }
 }
+
+export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
+  const c = {
+    et: {
+      subject: (amountEur: number) => `Kinkekaardi päring – Papagoi Keskus (${amountEur} €)`,
+      title: 'Kinkekaardi päring',
+      greeting: (name: string) => `Tere, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Tere, ${name}!`,
+      thanks: 'Täname teid kinkekaardi päringu eest.',
+      questions:
+        'Kui teil on küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.',
+      transferLead: 'Palume teha ülekanne:',
+      recipient: 'Saaja:',
+      recipientValue: 'PetsVilla OÜ',
+      iban: 'IBAN:',
+      ibanValue: 'EE612200221093596096',
+      reference: 'Selgitus:',
+      referenceValue: (code: string) => `Kinkekaart ${code}`,
+      afterTransfer:
+        'Andke meile teada kui ülekanne tehtud, saadame teile kinkekaardi mailile.',
+      detailsTitle: 'Kinkekaardi andmed',
+      value: 'Väärtus:',
+      visits: (n: number) => `${n} külastust`,
+      once: 'Kinkekaart on ühekordne ning kogu summa tuleb kasutada ühe korraga.',
+      validity: 'Kinkekaardi kehtivus on 1 aasta.',
+      regards: 'Lugupidamisega',
+      centre: 'Papagoi Keskus',
+      tel: 'Tel +372 51 27 938',
+    },
+    en: {
+      subject: (amountEur: number) => `Gift card enquiry – Papagoi Centre (${amountEur} €)`,
+      title: 'Gift card enquiry',
+      greeting: (name: string) => `Hello, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Hello, ${name}!`,
+      thanks: 'Thank you for your gift card enquiry.',
+      questions:
+        'If you have any questions, please contact us: +372 512 7938 or keskus@papagoi.ee.',
+      transferLead: 'Please make a bank transfer:',
+      recipient: 'Recipient:',
+      recipientValue: 'PetsVilla OÜ',
+      iban: 'IBAN:',
+      ibanValue: 'EE612200221093596096',
+      reference: 'Payment reference:',
+      referenceValue: (code: string) => `Gift card ${code}`,
+      afterTransfer:
+        'Please let us know once the transfer has been made, and we will send the gift card to your email.',
+      detailsTitle: 'Gift card details',
+      value: 'Value:',
+      visits: (n: number) => `${n} visits`,
+      once: 'The gift card is single-use and the full amount must be used in one visit.',
+      validity: 'The gift card is valid for 1 year.',
+      regards: 'Kind regards',
+      centre: 'Papagoi Centre',
+      tel: 'Tel +372 51 27 938',
+    },
+    ru: {
+      subject: (amountEur: number) =>
+        `Запрос подарочной карты – центр Papagoi (${amountEur} €)`,
+      title: 'Запрос подарочной карты',
+      greeting: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Здравствуйте, ${name}!`,
+      thanks: 'Спасибо за ваш запрос подарочной карты.',
+      questions:
+        'Если у вас есть вопросы, свяжитесь с нами: +372 512 7938 или keskus@papagoi.ee.',
+      transferLead: 'Просим сделать перевод:',
+      recipient: 'Получатель:',
+      recipientValue: 'PetsVilla OÜ',
+      iban: 'IBAN:',
+      ibanValue: 'EE612200221093596096',
+      reference: 'Назначение платежа:',
+      referenceValue: (code: string) => `Подарочная карта ${code}`,
+      afterTransfer:
+        'Сообщите нам, когда перевод будет сделан — мы отправим подарочную карту на вашу почту.',
+      detailsTitle: 'Данные подарочной карты',
+      value: 'Сумма:',
+      visits: (n: number) => `${n} посещений`,
+      once: 'Подарочная карта одноразовая — вся сумма должна быть использована за один визит.',
+      validity: 'Срок действия подарочной карты — 1 год.',
+      regards: 'С уважением',
+      centre: 'Центр Papagoi',
+      tel: 'Тел. +372 51 27 938',
+    },
+  }
+  return c[locale]
+}

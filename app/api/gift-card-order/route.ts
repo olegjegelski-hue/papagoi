@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createGiftCardOrder } from '@/lib/notion-gift-cards'
 import { sendGiftCardOrderEmail } from '@/lib/email'
 import { cleanText } from '@/lib/sanitize'
+import { parseVisitMailLocale } from '@/lib/visit-language'
 
 export const dynamic = 'force-dynamic'
 const MAX_AMOUNT = 1000
@@ -9,7 +10,8 @@ const MAX_AMOUNT = 1000
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, phone, amount, confirm, botField } = body
+    const { name, email, phone, amount, confirm, botField, locale: localeRaw } = body
+    const locale = parseVisitMailLocale(typeof localeRaw === 'string' ? localeRaw : 'et')
 
     const cleanedName = cleanText(name, { max: 120 })
     const cleanedEmail = cleanText(email, { max: 254 })
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
       buyerName: cleanedName,
       amountEur: amountNum,
       code: result.code,
+      locale,
     })
 
     return NextResponse.json({ ok: true, code: result.code, pageId: result.pageId })

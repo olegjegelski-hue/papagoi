@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLocale } from 'next-intl'
 import { Gift, ChevronUp, ChevronDown } from 'lucide-react'
 import { trackGiftCardSubmit } from '@/lib/meta-pixel'
 
@@ -14,6 +15,7 @@ function roundToStep(value: number): number {
 }
 
 export default function GiftCardForm() {
+  const locale = useLocale()
   const [amount, setAmount] = useState<number>(10)
   const [submitted, setSubmitted] = useState(false)
   const [name, setName] = useState('')
@@ -39,6 +41,7 @@ export default function GiftCardForm() {
           amount,
           confirm,
           botField,
+          locale,
         }),
       })
       const data = await res.json()

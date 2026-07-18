@@ -10,6 +10,7 @@ import {
   formatVisitDateForSubject,
   getBookingEmailCopy,
   getConfirmationEmailCopy,
+  getGiftCardOrderEmailCopy,
   visitLanguageLabelForEmail,
 } from '@/lib/email-i18n'
 
@@ -476,54 +477,92 @@ export async function sendGiftCardOrderEmail(data: {
   buyerName: string
   amountEur: number
   code: string
+  locale?: VisitMailLocale
 }) {
   const transporter = createTransporter()
   const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
   const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
-  const subject = `Kinkekaardi päring – Papagoi Keskus (${data.amountEur} €)`
+  const locale = data.locale ?? 'et'
+  const t = getGiftCardOrderEmailCopy(locale)
+  const subject = t.subject(data.amountEur)
+  const visitsLabel = t.visits(data.amountEur / 10)
+  const refLine = t.referenceValue(data.code)
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Kinkekaardi päring
+        ${t.title}
       </h2>
-      <p style="font-size: 16px; line-height: 1.6;">Tere, <strong>${data.buyerName}</strong>!</p>
+      <p style="font-size: 16px; line-height: 1.6;">${t.greeting(data.buyerName)}</p>
       <p style="font-size: 15px; line-height: 1.6;">
-        Täname teid kinkekaardi päringu eest. Oleme päringu kätte saanud ja võtame peagi ühendust maksmise ja kinkekaardi vormistamise osas.
+        ${t.thanks}
+      </p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.questions.replace(
+          '+372 512 7938',
+          '<a href="tel:+3725127938">+372 512 7938</a>'
+        ).replace(
+          'keskus@papagoi.ee',
+          '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>'
+        )}
+      </p>
+      <p style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">${t.transferLead}</p>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; margin: 0 0 16px 0; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.iban}</strong> ${t.ibanValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.reference}</strong> ${refLine}</p>
+      </div>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.afterTransfer}
       </p>
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
-        <h3 style="color: #059669; margin-top: 0;">Kinkekaardi andmed</h3>
-        <p style="margin: 10px 0;"><strong>Väärtus:</strong> ${data.amountEur} € (${data.amountEur / 10} külastust)</p>
-        <p style="margin: 10px 0;">Kinkekaart on ühekordne ning kogu summa tuleb kasutada ühe korraga.</p>
-        <p style="margin: 10px 0;">Kinkekaardi kehtivus on 1 aasta.</p>
+        <h3 style="color: #059669; margin-top: 0;">${t.detailsTitle}</h3>
+        <p style="margin: 10px 0;"><strong>${t.value}</strong> ${data.amountEur} € (${visitsLabel})</p>
+        <p style="margin: 10px 0;">${t.once}</p>
+        <p style="margin: 10px 0;">${t.validity}</p>
       </div>
       <p style="font-size: 14px; color: #4b5563;">
-        Kui teil on küsimusi, võtke ühendust: <a href="tel:+3725127938">+372 512 7938</a> või <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>.
+        ${t.questions.replace(
+          '+372 512 7938',
+          '<a href="tel:+3725127938">+372 512 7938</a>'
+        ).replace(
+          'keskus@papagoi.ee',
+          '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>'
+        )}
       </p>
       <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 5px 0;">Lugupidamisega</p>
-        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
-        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 5px 0;">${t.regards}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${t.centre}</p>
+        <p style="margin: 5px 0;">${t.tel}</p>
         <p style="margin: 5px 0;"><a href="https://www.papagoi.ee/">https://www.papagoi.ee/</a></p>
       </div>
     </div>
   `
 
   const text = `
-Tere, ${data.buyerName}!
+${t.greetingText(data.buyerName)}
 
-Täname teid kinkekaardi päringu eest. Oleme päringu kätte saanud ja võtame peagi ühendust maksmise ja kinkekaardi vormistamise osas.
+${t.thanks}
 
-Kinkekaardi andmed:
-- Väärtus: ${data.amountEur} € (${data.amountEur / 10} külastust)
-- Kinkekaart on ühekordne ning kogu summa tuleb kasutada ühe korraga.
-- Kinkekaardi kehtivus on 1 aasta.
+${t.questions}
 
-Kui teil on küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.
+${t.transferLead}
+${t.recipient} ${t.recipientValue}
+${t.iban} ${t.ibanValue}
+${t.reference} ${refLine}
 
-Lugupidamisega
-Papagoi Keskus
-Tel +372 51 27 938
+${t.afterTransfer}
+
+${t.detailsTitle}:
+- ${t.value} ${data.amountEur} € (${visitsLabel})
+- ${t.once}
+- ${t.validity}
+
+${t.questions}
+
+${t.regards}
+${t.centre}
+${t.tel}
 https://www.papagoi.ee/
   `.trim()
 
