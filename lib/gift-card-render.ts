@@ -51,12 +51,18 @@ function formatEeDate(input: string): string {
   // ISO: 2027-03-26 or 2027-03-26T...
   const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
   if (iso) return `${iso[3]}.${iso[2]}.${iso[1]}`
-  // Notion can sometimes return 26/03/2027 in formula or string
-  const slash = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
-  if (slash) return `${slash[1]}.${slash[2]}.${slash[3]}`
+  // Notion formula: 18/07/2027 või 18/7/2027 (päev/kuu/aasta)
+  const slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (slash) {
+    const d = slash[1].padStart(2, '0')
+    const m = slash[2].padStart(2, '0')
+    return `${d}.${m}.${slash[3]}`
+  }
   // Already in EE form?
-  const ee = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/)
-  if (ee) return raw
+  const ee = raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/)
+  if (ee) {
+    return `${ee[1].padStart(2, '0')}.${ee[2].padStart(2, '0')}.${ee[3]}`
+  }
   return raw
 }
 

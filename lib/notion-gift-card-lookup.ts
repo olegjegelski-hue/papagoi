@@ -32,10 +32,27 @@ function getRichTextPlain(p: any): string {
 function readValidUntil(p: any): string {
   if (!p) return ''
   if (p.type === 'date') return p.date?.start ?? ''
-  if (p.type === 'formula') return p.formula?.string ?? String(p.formula?.number ?? '')
+  if (p.type === 'formula') {
+    const f = p.formula
+    if (!f) return ''
+    // Notion formula võib olla string, date või number
+    if (f.type === 'string' && typeof f.string === 'string' && f.string.trim()) return f.string.trim()
+    if (f.type === 'date' && f.date?.start) return f.date.start
+    if (f.type === 'number' && f.number != null) return String(f.number)
+    if (typeof f.string === 'string' && f.string.trim()) return f.string.trim()
+    if (f.date?.start) return f.date.start
+    return ''
+  }
   if (p.type === 'rich_text') return getRichTextPlain(p)
   if (p.type === 'title') return getTitlePlain(p)
   return ''
+}
+
+/** Ostukuupäev + 1 aasta (kui Aegub formula on tühi või ei lae). */
+function fallbackValidUntilFromPurchase(purchaseIso: string): string {
+  const m = purchaseIso.trim().match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (!m) return ''
+  return `${Number(m[1]) + 1}-${m[2]}-${m[3]}`
 }
 
 function readUsedAt(p: any): string | null {
@@ -52,16 +69,28 @@ function readEmail(p: any): string | null {
   return null
 }
 
+function getProp(props: NotionGiftCardPropertyMap, name: string): any {
+  if (props[name]) return props[name]
+  const needle = name.toLowerCase()
+  const key = Object.keys(props).find((k) => k.toLowerCase() === needle)
+  return key ? props[key] : undefined
+}
+
 function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCardDetails {
   const props: NotionGiftCardPropertyMap = page.properties || {}
 
-  const codeProp = props['Kinkekaardi kood']
+  const codeProp = getProp(props, 'Kinkekaardi kood')
   const codeValue = codeProp?.type === 'title' ? getTitlePlain(codeProp) : getRichTextPlain(codeProp)
 
-  const amountProp = props['Väärtus']
+  const amountProp = getProp(props, 'Väärtus')
   const amountEur = typeof amountProp?.number === 'number' ? amountProp.number : Number(amountProp?.number ?? 0)
 
-  const validUntil = readValidUntil(props['Aegub'])
+  let validUntil = readValidUntil(getProp(props, 'Aegub'))
+  if (!validUntil) {
+    // Kui formula ei lae (või on tühi), arvuta ostukuupäev + 1 aasta
+    const purchase = readValidUntil(getProp(props, 'Ostu kuupäev'))
+    if (purchase) validUntil = fallbackValidUntilFromPurchase(purchase)
+  }
 
   const buyerName = (() => {
     const p = props['Ostja nimi']
