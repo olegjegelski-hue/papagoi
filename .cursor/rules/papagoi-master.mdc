@@ -1,0 +1,63 @@
+---
+description: Papagoi.ee Master System Prompt — stäkk, arhitektuur, GAP-id, töövoog
+alwaysApply: true
+---
+
+# 🧭 Master System Prompt (papagoi.ee)
+
+Allikas Notionis: Papagoi.ee Koduleht → „Master System Prompt (Cursor)“.
+Kui Notionis muudad, ütle Cursorile: **sünki Master Prompt projekti**.
+
+## 1. Projekt & kontekst
+
+Hoolda **Papagoi Keskuse** kodulehte: https://papagoi.ee — Eesti esimene papagoidekeskus Tartu lähedal (Soinaste).
+Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET/EN/RU), operatiivsed töövood Notionis.
+
+- Äri: PetsVilla OÜ · +372 512 7938 · keskus@papagoi.ee
+- Aadress: Tartu mnt 80, Soinaste, Kambja vald
+- Repo: `olegjegelski-hue/papagoi` · Hosting: Vercel (`main` → production)
+- Sait on **väga valmis** — töö = täiendused, GAP-id, hooldus (mitte greenfield)
+
+## 2. Stäkk (LUKUS — ära muuda ilma loata)
+
+- Next.js 14 App Router + React 18 + TypeScript
+- Tailwind CSS (+ olemasolev design system / shadcn-laadsed komponendid)
+- next-intl (ET/EN/RU) — `messages/{et,en,ru}.json`
+- **CMS / operatiivandmed: Notion API** (Visits, Visitors, Gift cards, Blog, Parrots, Google Reviews jt)
+- E-post: Nodemailer/SMTP + `lib/email-i18n.ts` / `lib/email.ts`
+- SMS: Sendberry · GMB/Places arvustused · Meta Pixel + CAPI
+- Kinkekaardi PNG/PDF: Playwright + `@sparticuz/chromium-min`
+- Vercel crons (`vercel.json`)
+- **Prisma: surnud jäänuk — ei kasutata.** Paketti (`prisma` / `@prisma/client`) pole `package.json`-is; alles on vaid `prisma/schema.prisma` (mudelid `Booking`, `ContactForm`, `NewsletterSubscription`) ja vana `DATABASE_URL` lokaalses `.env`-is. Kõik andmed käivad Notion API kaudu. Ära ehita uut funktsionaalsust Prisma peale; jäänuki (schema + `DATABASE_URL`) võib soovi korral eemaldada.
+
+## 3. Mis juba töötab
+
+- Broneering → Notion Visits/Visitors → kinnitusmeilid → webhook/kinnitusvoog · kalender
+- Kinkekaardid → tellimus + ülekande e-kiri (IBAN) → admin väljastus → PNG/PDF → `/[locale]/kinkekaart/truki`
+- Cron: review invites, SMS, GMB sync/replies
+- Sisu: blogi, papagoid, teenused, külastajatele, i18n lehed
+- Meta: Lead (broneering/kinkekaart), PetsVilla outbound click tracking
+- Planeerimine: Notion „Kodulehed – plaan & ehitus“, Bränd = Papagoi.ee
+
+## 4. Teadaolevad GAP-id
+
+- `/kinkekaart/lunasta` puudub (QR 404)
+- Sitemap/SEO: `ru` + blogi slugid
+- Cookie vs Pixel · cron token hügieen
+- Online maksed kinkekaardile (praegu käsitsi ülekanne)
+- Ära loo paralleelseid „ajutisi“ lahendusi — sulge GAP või dokumenteeri Ootel
+
+## 5. Reeglid
+
+- Mobile-first; säilita Papagoi UI / brand
+- Uued UI stringid → i18n; meilid → `email-i18n`
+- Server Components vaikimisi; Client ainult interaktsiooniks
+- Notion = allikas — ära dubleeri uut DB-d ilma põhjuseta
+- Saladused ainult env-is; ära commitita võtmeid
+- Väikesed diffid; ära commitita / ära kirjuta MD-sid ilma palumiseta
+- Enne suuri muudatusi: lühike plaan; küsi kui ebaselge
+- Avalikud API-d: rate-limit; ära lekkida PII debug-endpointidesse
+
+## 6. Definition of Done
+
+Töötab productionis (või selge preview), responsiivne, i18n kui UI/meil, ei murra broneeringut/kinkekaarti/cron’e.
