@@ -45,6 +45,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - Sitemap/SEO: `ru` + blogi slugid
 - Cookie vs Pixel · cron token hügieen
 - Online maksed kinkekaardile (praegu käsitsi ülekanne)
+- Prisma jäänuki koristus — eemalda `prisma/schema.prisma` ja vana `DATABASE_URL` `.env`-ist (kasutuses pole; andmekiht = Notion API)
 - Ära loo paralleelseid „ajutisi“ lahendusi — sulge GAP või dokumenteeri Ootel
 
 ## 5. Reeglid
