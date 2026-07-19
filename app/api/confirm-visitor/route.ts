@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 <body style="font-family: Arial, sans-serif; max-width: 500px; margin: 80px auto; padding: 20px; text-align: center;">
   <h1 style="color: #059669;">✅ Kinnituskiri saadetud</h1>
   <p>Kliendile on saadetud broneeringu kinnituskiri.</p>
-  <p><a href="https://www.papagoi.ee">Tagasi kodulehele</a></p>
+  <p><a href="https://papagoi.ee">Tagasi kodulehele</a></p>
 </body>
 </html>`
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 <body style="font-family: Arial, sans-serif; max-width: 500px; margin: 80px auto; padding: 20px; text-align: center;">
   <h1 style="color: #dc2626;">Viga</h1>
   <p>${msg}</p>
-  <p><a href="https://www.papagoi.ee">Tagasi kodulehele</a></p>
+  <p><a href="https://papagoi.ee">Tagasi kodulehele</a></p>
 </body>
 </html>`
 

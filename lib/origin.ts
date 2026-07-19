@@ -12,7 +12,7 @@ function normalizeOrigin(url: string): string | null {
 /**
  * Optional CSRF-ish protection for public APIs:
  * If NEXT_PUBLIC_SITE_URL is set and request has an Origin header,
- * only allow requests from the same origin (www ja ilma www versioon).
+ * only allow requests from the same origin (kanooniline non-www + võimalik www host).
  */
 export function isAllowedOrigin(req: NextRequest): boolean {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;
@@ -26,7 +26,7 @@ export function isAllowedOrigin(req: NextRequest): boolean {
 
   if (origin === allowed) return true;
 
-  // Lubada ka www / ilma www variant (nt papagoi.ee ja www.papagoi.ee)
+  // Lubada sama domeeni host-variandid (kanooniline on papagoi.ee)
   try {
     const allowedUrl = new URL(allowed);
     const originUrl = new URL(origin);

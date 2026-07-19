@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Server misconfiguration' }, { status: 500 })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee'
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
     const qrUrl = `${baseUrl}/kinkekaart/lunasta?code=${encodeURIComponent(code)}`
 
     const details = await getGiftCardDetailsByCode(NOTION_API_KEY, NOTION_GIFT_CARDS_DATABASE_ID, code)

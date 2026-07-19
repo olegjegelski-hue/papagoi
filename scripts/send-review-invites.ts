@@ -301,8 +301,8 @@ export async function sendReviewEmail(to: string, name: string | null, visitDate
         </strong>
         <br/>
         Kinkekaardi leiate siit:
-        <a href="https://www.papagoi.ee/kinkekaart" style="color: #ea580c; font-weight: 600; text-decoration: underline; margin-left: 4px;">
-          https://www.papagoi.ee/kinkekaart
+        <a href="https://papagoi.ee/kinkekaart" style="color: #ea580c; font-weight: 600; text-decoration: underline; margin-left: 4px;">
+          https://papagoi.ee/kinkekaart
         </a>
       </p>
       <p style="margin-top: 16px; font-size: 14px; color: #4b5563;">
@@ -312,7 +312,7 @@ export async function sendReviewEmail(to: string, name: string | null, visitDate
         <p style="margin: 5px 0;">Papagoid tänavad Teid.</p>
         <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
         <p style="margin: 5px 0;">Tel +372 51 27 938</p>
-        <p style="margin: 5px 0;"><a href="https://www.papagoi.ee/">https://www.papagoi.ee/</a></p>
+        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
         <p style="margin: 5px 0;"><a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
       </div>
     </div>
@@ -330,7 +330,7 @@ ${reviewLink}
 
 Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.
 
-Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – Papagoi Keskuse kinkekaardiga saab kingisaaja ise valida endale sobiva aja ja külastuse. Kinkekaardi leiate siit: https://www.papagoi.ee/kinkekaart
+Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – Papagoi Keskuse kinkekaardiga saab kingisaaja ise valida endale sobiva aja ja külastuse. Kinkekaardi leiate siit: https://papagoi.ee/kinkekaart
 
 Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.
 
@@ -338,7 +338,7 @@ Papagoid tänavad Teid.
 
 Papagoi Keskus
 Tel +372 51 27 938
-https://www.papagoi.ee/
+https://papagoi.ee/
 keskus@papagoi.ee
   `.trim()
 

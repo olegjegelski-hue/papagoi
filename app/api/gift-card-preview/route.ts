@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ ok: false, error: 'Server misconfiguration' }, { status: 500 })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee'
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
 
     return await buildGiftCardFileResponse({
       code,

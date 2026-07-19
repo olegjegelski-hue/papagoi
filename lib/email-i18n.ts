@@ -194,14 +194,14 @@ export function getBookingEmailCopy(locale: VisitMailLocale) {
 
 export function getConfirmationEmailCopy(locale: VisitMailLocale) {
   const visitorsUrl = (path: string) => {
-    const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee').replace(/\/$/, '')
+    const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
     return `${base}${path}`
   }
   const rulesHref = visitorsUrl(
     locale === 'en' ? '/en/kulastajatele#reeglid-ja-juhised' : locale === 'ru' ? '/ru/kulastajatele#reeglid-ja-juhised' : '/kulastajatele#reeglid-ja-juhised'
   )
   const rulesLabelShort = {
-    et: 'www.papagoi.ee/kulastajatele',
+    et: 'papagoi.ee/kulastajatele',
     en: 'Visitors info (rules)',
     ru: 'Информация для посетителей',
   }[locale]

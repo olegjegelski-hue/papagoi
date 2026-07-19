@@ -14,7 +14,7 @@ import {
   visitLanguageLabelForEmail,
 } from '@/lib/email-i18n'
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee'
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
 const CALENDAR_LOCATION = 'Tartu mnt 80, Soinaste, Kambja vald'
 
 function buildCalendarUrls(startIso: string, endIso: string, locale: VisitMailLocale = 'et') {
@@ -225,7 +225,7 @@ export async function sendBookingEmail(data: {
         <p style="margin: 5px 0;">${copy.regards}</p>
         <p style="margin: 5px 0; font-weight: 600;">${copy.centre}</p>
         <p style="margin: 5px 0;">${copy.tel}</p>
-        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">www.papagoi.ee</a></p>
+        <p style="margin: 15px 0 5px 0;"><a href="https://papagoi.ee">papagoi.ee</a></p>
         <p style="margin: 5px 0;">${locale === 'ru' ? 'Эл. почта:' : locale === 'en' ? 'Email:' : 'E-post:'} <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
         <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
       </div>
@@ -267,7 +267,7 @@ ${copy.regards}
 ${copy.centre}
 ${copy.tel}
 
-www.papagoi.ee
+papagoi.ee
 keskus@papagoi.ee
 https://www.facebook.com/PapagoiKeskus
 
@@ -378,7 +378,7 @@ export async function sendConfirmationEmail(data: {
         <p style="margin: 5px 0;">${cr.regards}</p>
         <p style="margin: 5px 0; font-weight: 600;">${cr.centre}</p>
         <p style="margin: 5px 0;">${cr.tel}</p>
-        <p style="margin: 15px 0 5px 0;"><a href="https://www.papagoi.ee">https://www.papagoi.ee/</a></p>
+        <p style="margin: 15px 0 5px 0;"><a href="https://papagoi.ee">https://papagoi.ee/</a></p>
         <p style="margin: 5px 0;">keskus@papagoi.ee</p>
         <p style="margin: 5px 0;"><a href="https://www.facebook.com/PapagoiKeskus">https://www.facebook.com/PapagoiKeskus</a></p>
       </div>
@@ -453,7 +453,7 @@ export async function sendConfirmationEmail(data: {
       '',
       `${cr.textRules} ${cr.rulesHref}`,
       '',
-      `${cr.regards}\n${cr.centre}\n${cr.tel}\nhttps://www.papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus`,
+      `${cr.regards}\n${cr.centre}\n${cr.tel}\nhttps://papagoi.ee/\nkeskus@papagoi.ee\nhttps://www.facebook.com/PapagoiKeskus`,
       '',
       `---\n${cr.sent} ${new Date().toLocaleString(tsLocale, { timeZone: 'Europe/Tallinn' })}`,
     ]
@@ -525,7 +525,7 @@ export async function sendGiftCardOrderEmail(data: {
         <p style="margin: 5px 0;">${t.regards}</p>
         <p style="margin: 5px 0; font-weight: 600;">${t.centre}</p>
         <p style="margin: 5px 0;">${t.tel}</p>
-        <p style="margin: 5px 0;"><a href="https://www.papagoi.ee/">https://www.papagoi.ee/</a></p>
+        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
       </div>
     </div>
   `
@@ -552,7 +552,7 @@ ${t.questions}
 ${t.regards}
 ${t.centre}
 ${t.tel}
-https://www.papagoi.ee/
+https://papagoi.ee/
   `.trim()
 
   await transporter.sendMail({

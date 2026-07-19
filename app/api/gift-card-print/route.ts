@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ ok: false, error: 'Server misconfiguration' }, { status: 500 })
     }
 
-    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee').replace(/\/$/, '')
+    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
 
     return await buildGiftCardFileResponse({
       code,

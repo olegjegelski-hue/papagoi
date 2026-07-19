@@ -344,7 +344,7 @@ function buildGiftCardHtml(
               <div class="gc-sumLine">Summa: <span>${amountEur} €</span></div>
               <div class="gc-bookLine gc-body">
                 Broneeri külastus:
-                <span class="url">www.papagoi.ee</span>
+                <span class="url">papagoi.ee</span>
               </div>
             </div>
           </div>
@@ -370,7 +370,7 @@ function buildGiftCardHtml(
 }
 
 export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.papagoi.ee').replace(/\/$/, '')
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
   const logoUrl = `${baseUrl}/logo.png`
 
   const qrSvg = await QRCode.toString(input.qrUrl, {
