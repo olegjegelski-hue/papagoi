@@ -1,6 +1,6 @@
 {
   "Nav": { "home": "Avaleht", "services": "Teenused", "about": "Meist", "parrots": "Meie papagoid", "visitors": "Külastajatele", "book": "Broneeri", "giftCard": "Kinkekaart", "contact": "Kontakt", "blog": "Blogi", "language": "Keel" },
-  "Footer": { "tagline": "Elu täis värve ja hääli", "description": "Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015. Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!", "quickLinks": "Kiirlingid", "contact": "Kontakt", "privacy": "Privaatsus ja küpsised", "viewOnMap": "Vaata kaardil", "byAppointmentOnly": "Ainult eelneval kokkuleppel", "bookingRequired": "Broneerimine vajalik", "rightsReserved": "Kõik õigused kaitstud" },
+  "Footer": { "tagline": "Elu täis värve ja hääli", "description": "Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015. Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!", "quickLinks": "Kiirlingid", "contact": "Kontakt", "privacy": "Privaatsus ja küpsised", "cookieSettings": "Küpsiste seaded", "viewOnMap": "Vaata kaardil", "byAppointmentOnly": "Ainult eelneval kokkuleppel", "bookingRequired": "Broneerimine vajalik", "rightsReserved": "Kõik õigused kaitstud" },
   "Common": { "logoAlt": "Papagoi Keskus - kolm kaunist papagoid oksal - Elu täis värve ja hääli" },
   "Hero": {
     "welcome": "Tere tulemast Papagoi Keskusesse Tartus!",
@@ -89,10 +89,18 @@
     "ctaImageAlt": "Pere papagoidega"
   },
   "CookieBanner": {
-    "ariaLabel": "Cookie teade",
-    "message": "Kasutame küpsiseid (cookies), et veebileht töötaks korralikult ja et saaksime analüüsida külastuste statistikat. Jätkates lehe kasutamist, nõustute küpsiste kasutamisega.",
+    "ariaLabel": "Küpsiste nõusolek",
+    "message": "Kasutame vajalikke küpsiseid saidi tööks. Turundusküpsiseid (sh Meta Pixel) kasutame ainult teie nõusolekul.",
     "readMore": "Lugege lähemalt",
-    "accept": "Nõustun"
+    "accept": "Nõustun kõigega",
+    "necessaryOnly": "Ainult vajalikud",
+    "settings": "Seaded",
+    "save": "Salvesta valik",
+    "necessaryTitle": "Vajalikud",
+    "necessaryDesc": "Saiditoimimiseks vajalikud küpsised. Neid ei saa välja lülitada.",
+    "marketingTitle": "Turundus",
+    "marketingDesc": "Meta Pixel ja seotud turundus-/mõõtmisküpsised reklaamide ja külastuste mõõtmiseks.",
+    "alwaysOn": "Alati sees"
   },
   "BroneeriPage": {
     "title": "Broneeri külastus",
@@ -527,10 +535,10 @@
     "s8Analytics": "Analüütilised küpsised",
     "s8AnalyticsP": "Need küpsised aitavad meil mõista, kuidas külastajad meie veebilehte kasutavad:",
     "s8AnalyticsLi": ["Külastuste arv ja kestus", "Kõige populaarsemad lehed", "Tehnilised andmed (brauser, seade)"],
-    "s8AnalyticsNote": "Me ei kasuta kolmandate osapoolte analüütilisi teenuseid (nt Google Analytics) ilma teie selgesõnalise nõusolekuta.",
+    "s8AnalyticsNote": "Meta Pixeli ja turundusküpsiseid laadime alles pärast teie selgesõnalist nõusolekut. Nõusolekut saate hiljem muuta lingiga „Küpsiste seaded“.",
     "s8_3Title": "8.3. Kuidas küpsiseid kontrollida?",
     "s8_3P": "Te saate oma brauseri seadetes kontrollida ja kustutada küpsiseid. Palun pange tähele, et mõned küpsised on veebilehe töötamiseks vajalikud ja nende keelamine võib mõjutada lehe funktsionaalsust.",
-    "s8_3P2": "Teie küpsiste nõusolekut saate muuta või tühistada, kustutades brauseri seadetest küpsise",
+    "s8_3P2": "Nõusolekut saate muuta jaluse lingiga „Küpsiste seaded“ või kustutades brauseri andmetest võtme",
     "s9Title": "9. Andmete turvalisus",
     "s9P": "Me rakendame sobivaid tehnilisi ja organisatsioonilisi meetmeid, et kaitsta teie isikuandmeid volitamata juurdepääsu, kaotamise, hävitamise või muutmise eest. See hõlmab:",
     "s9Li": ["Turvalist andmesideprotokolli (HTTPS)", "Regulaarseid turvauuendusi", "Piiratud juurdepääsu isikuandmetele", "Regulaarseid varukoopiaid"],

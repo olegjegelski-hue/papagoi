@@ -1,17 +1,55 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Script from 'next/script'
+import {
+  hasMarketingConsent,
+  onConsentChange,
+  type CookieConsent,
+} from '@/lib/cookie-consent'
 
 type Props = {
   pixelId: string
 }
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void
+  }
+}
+
+function revokePixelConsent() {
+  try {
+    window.fbq?.('consent', 'revoke')
+  } catch {
+    // ignore
+  }
+}
+
 export default function MetaPixel({ pixelId }: Props) {
+  const [allowed, setAllowed] = useState(false)
+
+  useEffect(() => {
+    setAllowed(hasMarketingConsent())
+
+    return onConsentChange((consent: CookieConsent) => {
+      if (consent.marketing) {
+        setAllowed(true)
+      } else {
+        revokePixelConsent()
+        setAllowed(false)
+      }
+    })
+  }, [])
+
+  if (!allowed || !pixelId) return null
+
   return (
-    <>
-      <Script
-        id="meta-pixel"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
+    <Script
+      id="meta-pixel"
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: `
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -20,20 +58,11 @@ export default function MetaPixel({ pixelId }: Props) {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('consent', 'grant');
             fbq('init', '${pixelId}');
             fbq('track', 'PageView');
           `,
-        }}
-      />
-      <noscript>
-        <img
-          height="1"
-          width="1"
-          style={{ display: 'none' }}
-          src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-          alt=""
-        />
-      </noscript>
-    </>
+      }}
+    />
   )
 }

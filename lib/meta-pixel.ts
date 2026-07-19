@@ -1,5 +1,7 @@
 'use client'
 
+import { hasMarketingConsent } from '@/lib/cookie-consent'
+
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void
@@ -7,7 +9,7 @@ declare global {
 }
 
 function track(event: string, params?: Record<string, unknown>, custom = false) {
-  if (typeof window === 'undefined' || !window.fbq) return
+  if (typeof window === 'undefined' || !hasMarketingConsent() || !window.fbq) return
   if (custom) {
     window.fbq('trackCustom', event, params)
   } else {

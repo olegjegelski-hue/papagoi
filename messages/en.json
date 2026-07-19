@@ -1,6 +1,6 @@
 {
   "Nav": { "home": "Home", "services": "Services", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language" },
-  "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved" },
+  "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "cookieSettings": "Cookie settings", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved" },
   "Common": { "logoAlt": "Parrot Centre - three beautiful parrots on a branch - Life full of colours and voices" },
   "Hero": {
     "welcome": "Welcome to Parrot Centre in Tartu!",
@@ -89,10 +89,18 @@
     "ctaImageAlt": "Family with parrots"
   },
   "CookieBanner": {
-    "ariaLabel": "Cookie notice",
-    "message": "We use cookies so the website works properly and we can analyse visitor statistics. By continuing to use the site, you agree to our use of cookies.",
+    "ariaLabel": "Cookie consent",
+    "message": "We use necessary cookies to run the site. Marketing cookies (including Meta Pixel) are used only with your consent.",
     "readMore": "Read more",
-    "accept": "I agree"
+    "accept": "Accept all",
+    "necessaryOnly": "Necessary only",
+    "settings": "Settings",
+    "save": "Save choice",
+    "necessaryTitle": "Necessary",
+    "necessaryDesc": "Cookies required for the site to work. These cannot be turned off.",
+    "marketingTitle": "Marketing",
+    "marketingDesc": "Meta Pixel and related marketing/measurement cookies for ads and visit measurement.",
+    "alwaysOn": "Always on"
   },
   "BroneeriPage": {
     "title": "Book a visit",
@@ -527,10 +535,10 @@
     "s8Analytics": "Analytics cookies",
     "s8AnalyticsP": "These cookies help us understand how visitors use our website:",
     "s8AnalyticsLi": ["Number and duration of visits", "Most popular pages", "Technical data (browser, device)"],
-    "s8AnalyticsNote": "We do not use third-party analytics (e.g. Google Analytics) without your explicit consent.",
+    "s8AnalyticsNote": "We load Meta Pixel and marketing cookies only after your explicit consent. You can change this later via “Cookie settings”.",
     "s8_3Title": "8.3. How to control cookies?",
     "s8_3P": "You can control and delete cookies in your browser settings. Note that some cookies are essential for the site to work and disabling them may affect functionality.",
-    "s8_3P2": "You can change or withdraw your cookie consent by deleting the cookie",
+    "s8_3P2": "You can change consent via the footer link “Cookie settings”, or by deleting the browser storage key",
     "s9Title": "9. Data security",
     "s9P": "We apply appropriate technical and organisational measures to protect your personal data from unauthorised access, loss, destruction or alteration. This includes:",
     "s9Li": ["Secure communication (HTTPS)", "Regular security updates", "Limited access to personal data", "Regular backups"],

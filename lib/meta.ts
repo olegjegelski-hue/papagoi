@@ -1,5 +1,7 @@
 'use client'
 
+import { hasMarketingConsent } from '@/lib/cookie-consent'
+
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void
@@ -20,12 +22,14 @@ function normalizePhone(phone?: string): string | undefined {
 
 export async function trackBooking(opts: { email?: string; phone?: string; value: number }) {
   try {
+    if (!hasMarketingConsent()) return
+
     const eventId = crypto.randomUUID()
 
     // Browser Pixel — same eventID for deduplication
     window.fbq?.('track', 'Schedule', { value: opts.value, currency: 'EUR' }, { eventID: eventId })
 
-    // Server CAPI — same eventId
+    // Server CAPI — same eventId + consent flag
     await fetch('/api/meta-capi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -39,6 +43,7 @@ export async function trackBooking(opts: { email?: string; phone?: string; value
         currency: 'EUR',
         fbp: getCookie('_fbp'),
         fbc: getCookie('_fbc'),
+        marketingConsent: true,
       }),
     })
   } catch {

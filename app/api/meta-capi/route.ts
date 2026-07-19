@@ -12,6 +12,12 @@ const sha256 = (v?: string) =>
 export async function POST(req: NextRequest) {
   try {
     const b = await req.json()
+
+    // GDPR: only forward events when the client asserts marketing consent
+    if (b.marketingConsent !== true) {
+      return NextResponse.json({ skipped: true, reason: 'no_marketing_consent' })
+    }
+
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     const ua = req.headers.get('user-agent') ?? undefined
 

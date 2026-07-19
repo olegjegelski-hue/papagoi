@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { KINKEKAART_PATH } from '@/lib/site-links'
+import { openCookieSettings } from '@/lib/cookie-consent'
 
 export default function Footer() {
   const t = useTranslations('Footer')
@@ -71,10 +72,17 @@ export default function Footer() {
                 </div>
               </a>
             </div>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-1">
               <Link href="/privaatsus" className="inline-flex h-11 items-center px-2 leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                 {t('privacy')}
               </Link>
+              <button
+                type="button"
+                onClick={() => openCookieSettings()}
+                className="inline-flex h-11 items-center px-2 leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300"
+              >
+                {t('cookieSettings')}
+              </button>
             </div>
           </div>
 
