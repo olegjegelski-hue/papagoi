@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
+import { requireCronAuth } from '@/lib/cron-auth'
 import { syncGoogleReviewsToNotion } from '@/scripts/sync-google-reviews-to-notion'
 
 // Vältime agressiivset vahemälu – seda kutsub Verceli cron
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = requireCronAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     await syncGoogleReviewsToNotion()
     return NextResponse.json({ ok: true })
@@ -14,4 +18,3 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: message }, { status: 500 })
   }
 }
-
