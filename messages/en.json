@@ -1,5 +1,5 @@
 {
-  "Nav": { "home": "Home", "services": "Services", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language" },
+  "Nav": { "home": "Home", "services": "Services", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language", "chooseLanguage": "Choose language"},
   "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "cookieSettings": "Cookie settings", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved" },
   "Common": { "logoAlt": "Parrot Centre - three beautiful parrots on a branch - Life full of colours and voices" },
   "Hero": {
@@ -213,7 +213,17 @@
     "submit": "I want a gift card ({amount} €)",
     "submitting": "Sending…",
     "errorGeneric": "Order failed",
-    "errorNetwork": "Connection error. Please try again or contact us."
+    "errorNetwork": "Connection error. Please try again or contact us.",
+    "companyHoneypot": "Company",
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "confirmRequired": "Please confirm with the checkbox that this is not a bot request.",
+      "emailInvalid": "Please enter a valid email address",
+      "amountInvalid": "Amount must be between €10–€1000 and a multiple of €10",
+      "serverConfig": "Server configuration is missing",
+      "unknown": "Order failed. Please try again."
+    }
   },
   "TeenusedPage": {
     "title": "Services",
@@ -487,6 +497,7 @@
     "errorConsent": "Please agree to the use of your data",
     "errorSend": "Something went wrong sending your message. Please try again.",
     "errorNetwork": "Network error. Please try again.",
+    "errorRateLimited": "Too many requests. Please try again in a moment.",
     "honeypotLabel": "Website"
   },
   "PrivaatsusPage": {
@@ -578,7 +589,9 @@
     "statusSeeking": "Seeking sponsor",
     "statusSponsored": "Has sponsor",
     "statusPending": "Pending",
-    "statusUnknown": "Unknown"
+    "statusUnknown": "Unknown",
+    "perMonth": "{{amount}} € / month",
+    "joinWaitlist": "Join the waitlist"
   },
   "GrupidHero": {
     "title": "Special",
@@ -783,5 +796,215 @@
     "example3Sub": "Birthday, 1 child free",
     "example3Price": "90 EUR",
     "example3Original": "Standard price 100 EUR"
+  },
+  "GiftCardPrint": {
+    "metaTitle": "Print gift card | Parrot Centre",
+    "title": "Print gift card",
+    "enterCodeHint": "Add the gift card code to the address bar, for example:",
+    "serverConfig": "Server configuration is incomplete. Please try again later.",
+    "notFound": "Gift card not found. Please check the code.",
+    "validUntil": "Valid until",
+    "imageAlt": "Gift card {{code}}",
+    "downloadPdf": "Download PDF",
+    "downloadPng": "Download PNG",
+    "privacyNote": "This page is intended only for the gift card owner. Do not share the link publicly."
+  },
+  "GoogleRating": {
+    "loading": "Loading rating...",
+    "reviewCount": "{{count}} reviews",
+    "reviews": "Google reviews"
+  },
+  "RistiisaPage": {
+    "title": "Parrot Sponsor Programme",
+    "intro": "The sponsor programme offers much more than support alone – it is an emotional journey and a special bond.",
+    "benefits": [
+      {
+        "title": "A personal emotional bond",
+        "description": "Build a special, strong bond with your chosen parrot, who will start waiting for you and recognising you.",
+        "details": [
+          "The parrot learns to know you",
+          "A special greeting at meetings",
+          "Personal interaction"
+        ]
+      },
+      {
+        "title": "Quarterly private meetings",
+        "description": "At the end of each quarter you get 30 minutes alone with your sponsored parrot, without other visitors.",
+        "details": [
+          "30-minute private meeting",
+          "Special feeding and playtime",
+          "A calm one-to-one setting"
+        ]
+      },
+      {
+        "title": "Regular photo and video updates",
+        "description": "You receive photos and videos of your sponsored parrot’s everyday life and development several times a year.",
+        "details": [
+          "Monthly photo report",
+          "Short videos of the parrot’s activities",
+          "News about health and wellbeing"
+        ]
+      },
+      {
+        "title": "Special recognition and benefits",
+        "description": "Your name appears by the parrot’s home and you get special benefits when visiting the centre.",
+        "details": [
+          "Name tag by the parrot",
+          "Free entry to regular visits",
+          "Special thanks on social media"
+        ]
+      },
+      {
+        "title": "Join the sponsor family",
+        "description": "Become part of our sponsor community and receive invitations to special events.",
+        "details": [
+          "Sponsor gatherings",
+          "Invitations to special events",
+          "Sharing experiences with other sponsors"
+        ]
+      },
+      {
+        "title": "You truly help their wellbeing",
+        "description": "Your support goes directly to care, food and veterinary oversight for the parrot.",
+        "details": [
+          "Quality food and vitamins",
+          "Veterinary care and health checks",
+          "Toys and enrichment activities"
+        ]
+      }
+    ],
+    "tiersTitle": "Support",
+    "tiersTitleHighlight": "Tiers",
+    "tiersIntro": "Choose the support level that fits the parrot’s size and needs",
+    "popularBadge": "Most popular",
+    "perMonth": "per month",
+    "suitableFor": "Suitable for:",
+    "tierBenefits": "Benefits:",
+    "selectTier": "Choose this tier",
+    "tiers": [
+      {
+        "name": "Small parrot",
+        "species": [
+          "Cockatiel",
+          "Kakariki",
+          "Lovebird"
+        ],
+        "monthlyAmount": "15€",
+        "benefits": [
+          "Quarterly meetings",
+          "Photo updates",
+          "Name tag"
+        ],
+        "popular": false
+      },
+      {
+        "name": "Medium parrot",
+        "species": [
+          "African Grey",
+          "Conure",
+          "Ring-necked parakeet"
+        ],
+        "monthlyAmount": "25€",
+        "benefits": [
+          "Everything above",
+          "Video updates",
+          "Special events",
+          "Free visits"
+        ],
+        "popular": true
+      },
+      {
+        "name": "Large parrot",
+        "species": [
+          "Macaw",
+          "Cockatoo",
+          "Amazon"
+        ],
+        "monthlyAmount": "45€",
+        "benefits": [
+          "Everything above",
+          "Monthly meetings",
+          "Special recognition",
+          "VIP benefits"
+        ],
+        "popular": false
+      }
+    ],
+    "howTitle": "How does it",
+    "howTitleHighlight": "work?",
+    "steps": [
+      {
+        "title": "Choose a parrot",
+        "description": "Meet our birds and pick the one closest to your heart"
+      },
+      {
+        "title": "Register",
+        "description": "Fill in a simple form and choose a suitable support tier"
+      },
+      {
+        "title": "Start supporting",
+        "description": "We draw up an agreement and send the first photo report of your sponsored parrot"
+      },
+      {
+        "title": "Enjoy the connection",
+        "description": "Meet your sponsored parrot regularly and follow their progress"
+      }
+    ],
+    "faqTitle": "Frequently Asked",
+    "faqTitleHighlight": "Questions",
+    "faq": [
+      {
+        "question": "How does the sponsor programme work exactly?",
+        "answer": "After registering you choose a suitable parrot from those available. You pay a monthly fee that goes directly to their care. Each quarter we contact you to arrange a private meeting."
+      },
+      {
+        "question": "Can I take the parrot home?",
+        "answer": "No – this is a symbolic adoption. The birds stay at our centre, where they are used to living and receive professional care. You can visit them regularly."
+      },
+      {
+        "question": "Can I choose a specific parrot?",
+        "answer": "Yes! On our website you can see all parrots and their sponsorship status. You may choose the one closest to your heart if they are not already sponsored."
+      },
+      {
+        "question": "What if I want to end the programme?",
+        "answer": "You can end the programme at any time with 30 days’ notice. There are no extra fees or obligations."
+      },
+      {
+        "question": "Can I support more than one parrot?",
+        "answer": "Of course! Many of our sponsors support several birds. A separate agreement is made for each parrot."
+      },
+      {
+        "question": "How do payments work?",
+        "answer": "We send a monthly invoice by email, which you can pay by bank transfer. Automatic recurring payment can also be set up."
+      }
+    ],
+    "ctaTitle": "Ready to become a parrot sponsor?",
+    "ctaIntro": "Join our wonderful sponsor family today and build a special bond with one of our amazing birds!",
+    "callLabel": "Call us",
+    "writeLabel": "Write to us",
+    "ctaViewParrots": "See all parrots",
+    "ctaContact": "Get in touch"
+  },
+  "BlogPage": {
+    "title": "Our Blog",
+    "intro": "Read interesting stories about our parrots, their everyday lives and care. We also share useful tips and exciting adventures from the Parrot Centre.",
+    "comingSoonTitle": "Blog coming soon!",
+    "comingSoonIntro": "Our blog is currently being prepared. Soon you will be able to read:",
+    "card1Title": "Parrot stories",
+    "card1Desc": "Interesting adventures and stories about our parrots",
+    "card2Title": "Care tips",
+    "card2Desc": "Useful advice for interacting with parrots",
+    "card3Title": "Centre news",
+    "card3Desc": "Fresh updates on our activities and events",
+    "card4Title": "Visitor stories",
+    "card4Desc": "Memorable experiences and feedback",
+    "socialCta": "Follow our social channels for the latest news!",
+    "allCategories": "All",
+    "readMore": "Read more",
+    "coverAlt": "{{title}} cover image",
+    "schemaName": "Parrot Centre Blog",
+    "schemaDescription": "Stories about parrots, care and life at the Parrot Centre.",
+    "notFoundTitle": "Post not found",
+    "notFoundBody": "This post is not published or does not exist."
   }
 }

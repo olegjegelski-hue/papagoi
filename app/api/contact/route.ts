@@ -58,20 +58,14 @@ export async function POST(request: NextRequest) {
     // Honeypot check
     if (cleaned.website && toStringSafe(cleaned.website).trim().length > 0) {
       // Bot submission: act as success but do nothing
-      return NextResponse.json(
-        { success: true, message: 'Teie sõnum on edukalt saadetud! Vastame teile esimesel võimalusel.' },
-        { status: 201 }
-      );
+      return NextResponse.json({ success: true }, { status: 201 });
     }
 
     // Rate limit per IP
     const ip = getClientIp(request.headers);
     const rl = rateLimit(ip, { windowMs: 10 * 60 * 1000, max: 15, minIntervalMs: 3 * 1000 });
     if (!rl.allowed) {
-      return NextResponse.json(
-        errorResponse('RATE_LIMITED', 'Päringuid on liiga palju. Palun proovige mõne hetke pärast uuesti.'),
-        { status: 429 }
-      );
+      return NextResponse.json(errorResponse('RATE_LIMITED', 'RATE_LIMITED'), { status: 429 });
     }
 
     // Saada emailid (ilma andmebaasi salvestuseta)
@@ -84,13 +78,7 @@ export async function POST(request: NextRequest) {
       formType: cleaned.formType ? cleaned.formType : undefined,
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: 'Teie sõnum on edukalt saadetud! Vastame teile esimesel võimalusel.',
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: any) {
     const errorId = captureError(error);
     const errMsg = error?.message || String(error);
@@ -99,8 +87,7 @@ export async function POST(request: NextRequest) {
     if (['EDNS', 'ENOTFOUND', 'EAI_AGAIN'].includes(errCode)) {
       console.error('SMTP DNS viga – kontrolli SMTP_HOST Vercelis. Soovitus: smtp.alfanetti.ee (Alfanet)');
     }
-    const message =
-      'Sõnumi saatmisel tekkis viga. Palun proovige uuesti või helistage meile otse: +372 51 27 938.';
+    const message = 'SERVER_ERROR';
     const showDetails = process.env.NODE_ENV === 'development' || !!process.env.DEBUG_EMAIL_ERRORS;
     return NextResponse.json(
       errorResponse('SERVER_ERROR', message, {

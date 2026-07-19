@@ -532,14 +532,16 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                   <div className="border-t pt-3">
                     <div className="bg-yellow-50 rounded-lg p-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-bold text-gray-800">{parrot.sponsorship.monthlyAmount}/kuus</span>
-                        <span className="text-yellow-600 font-medium text-xs">Ootel</span>
+                        <span className="text-sm font-bold text-gray-800">
+                          {t('perMonth', { amount: parrot.sponsorship.monthlyAmount })}
+                        </span>
+                        <span className="text-yellow-600 font-medium text-xs">{t('statusPending')}</span>
                       </div>
                       <a
                         href={`/ristiisa-programm?parrot=${encodeURIComponent(parrot.name)}`}
                         className="block w-full bg-yellow-500 text-white py-1.5 rounded-lg font-semibold hover:bg-yellow-600 transition-colors text-center text-xs"
                       >
-                        Liigu järjekorda
+                        {t('joinWaitlist')}
                       </a>
                     </div>
                   </div>

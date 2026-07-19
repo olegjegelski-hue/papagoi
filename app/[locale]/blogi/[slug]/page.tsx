@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
@@ -373,13 +374,14 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
+  const t = await getTranslations('BlogPage')
   const post = await getPostBySlug(slug)
   if (!post) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-papagoi-beige-50 via-papagoi-beige to-green-50/80">
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <h1 className="text-3xl font-bold text-gray-800">Postitust ei leitud</h1>
-          <p className="text-gray-600 mt-4">See postitus ei ole avaldatud või seda ei ole olemas.</p>
+          <h1 className="text-3xl font-bold text-gray-800">{t('notFoundTitle')}</h1>
+          <p className="text-gray-600 mt-4">{t('notFoundBody')}</p>
         </div>
       </div>
     )

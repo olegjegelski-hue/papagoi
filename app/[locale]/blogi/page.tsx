@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import BlogPostsClient from './BlogPostsClient'
 import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
@@ -79,15 +80,17 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 
 export default async function BlogPage({ params }: Props) {
   const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations('BlogPage')
   const posts = await getBlogPosts()
   const hasPosts = posts.length > 0
   const baseUrl = getSiteUrl()
   const blogSchema = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'Papagoi Keskus Blogi',
+    name: t('schemaName'),
     url: `${baseUrl}/${locale}/blogi`,
-    description: 'Lood papagoidest, hooldusest ja Papagoi Keskuse tegemistest.',
+    description: t('schemaDescription'),
     blogPost: posts.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
@@ -109,11 +112,10 @@ export default async function BlogPage({ params }: Props) {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold papagoi-text-gradient mb-6">
-            Meie Blogi
+            {t('title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Loe huvitavaid lugusid meie papagoidest, nende igapäevaelust ja hooldamisest. 
-            Jagame ka kasulikke nõuandeid ja põnevaid seiklusi Papagoi Keskusest.
+            {t('intro')}
           </p>
         </div>
 
@@ -127,38 +129,38 @@ export default async function BlogPage({ params }: Props) {
               </div>
               
               <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                Blogi tuleb varsti!
+                {t('comingSoonTitle')}
               </h2>
               
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Meie blogi on hetkel ettevalmistamisel. Varsti saate siin lugeda:
+                {t('comingSoonIntro')}
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-3xl mx-auto">
                 <div className="bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl p-6">
-                  <h3 className="font-bold text-gray-800 mb-2">Papagoi lood</h3>
-                  <p className="text-sm text-gray-600">Huvitavad seiklused ja lood meie papagoidest</p>
+                  <h3 className="font-bold text-gray-800 mb-2">{t('card1Title')}</h3>
+                  <p className="text-sm text-gray-600">{t('card1Desc')}</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-6">
-                  <h3 className="font-bold text-gray-800 mb-2">Hooldussoovitused</h3>
-                  <p className="text-sm text-gray-600">Kasulikud nõuanded papagoidega suhtlemiseks</p>
+                  <h3 className="font-bold text-gray-800 mb-2">{t('card2Title')}</h3>
+                  <p className="text-sm text-gray-600">{t('card2Desc')}</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6">
-                  <h3 className="font-bold text-gray-800 mb-2">Keskuse uudised</h3>
-                  <p className="text-sm text-gray-600">Värske info meie tegevustest ja sündmustest</p>
+                  <h3 className="font-bold text-gray-800 mb-2">{t('card3Title')}</h3>
+                  <p className="text-sm text-gray-600">{t('card3Desc')}</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-pink-100 to-red-100 rounded-2xl p-6">
-                  <h3 className="font-bold text-gray-800 mb-2">Külastajate lood</h3>
-                  <p className="text-sm text-gray-600">Meeldejäävad kogemused ja tagasiside</p>
+                  <h3 className="font-bold text-gray-800 mb-2">{t('card4Title')}</h3>
+                  <p className="text-sm text-gray-600">{t('card4Desc')}</p>
                 </div>
               </div>
               
               <div className="text-center">
                 <p className="text-gray-500 mb-6">
-                  Jälgige meie sotsiaalmeedia kanaleid värskete uudiste jaoks!
+                  {t('socialCta')}
                 </p>
                 
                 <div className="flex justify-center space-x-4">

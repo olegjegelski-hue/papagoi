@@ -66,7 +66,7 @@ export default function ContactForm() {
 
       if (response.ok && result.success) {
         setIsSubmitted(true);
-        toast.success(result.message || t('successTitle'));
+        toast.success(t('successTitle'));
         setFormData({
           name: '',
           email: '',
@@ -78,11 +78,14 @@ export default function ContactForm() {
         });
       } else {
         console.error('API error:', result);
-        let errorMessage =
-          typeof result.error === 'string'
+        const code =
+          typeof result?.error === 'string'
             ? result.error
-            : result?.error?.message || t('errorSend');
-        // Kui server tagastab details (debug), näita ka seda
+            : result?.error?.code || result?.error?.message;
+        let errorMessage =
+          code === 'RATE_LIMITED'
+            ? t('errorRateLimited')
+            : t('errorSend');
         if (result?.error?.details) {
           errorMessage += ` (${result.error.details})`;
         }

@@ -48,7 +48,21 @@ export default function GiftCardForm() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data?.error || t('errorGeneric'))
+        const code = typeof data?.errorCode === 'string' ? data.errorCode : ''
+        const errorKeys = [
+          'nameRequired',
+          'emailRequired',
+          'confirmRequired',
+          'emailInvalid',
+          'amountInvalid',
+          'serverConfig',
+          'unknown',
+        ] as const
+        setError(
+          errorKeys.includes(code as (typeof errorKeys)[number])
+            ? t(`errors.${code}` as 'errors.nameRequired')
+            : t('errorGeneric')
+        )
         return
       }
       trackGiftCardSubmit({ value: amount })
@@ -197,7 +211,7 @@ export default function GiftCardForm() {
 
       {/* Honeypot väli robotite vastu – inimkasutajale ei kuvata */}
       <div className="hidden" aria-hidden="true">
-        <label htmlFor="gift-company">Ettevõte</label>
+        <label htmlFor="gift-company">{t('companyHoneypot')}</label>
         <input
           id="gift-company"
           type="text"

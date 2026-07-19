@@ -97,13 +97,7 @@ export default function StaticBookingInfo() {
   }, [selectedBookingEntry, selectedTime])
   const formatJoinPlaces = (remaining: number | null) => {
     if (remaining === null) return t('guestsNotSet')
-    if (locale === 'ru') {
-      return `Можно присоединиться: ${remaining} мест`
-    }
-    if (locale === 'en') {
-      return `You can still join: ${remaining} places left`
-    }
-    return `Veel saab liituda: ${remaining} inimest`
+    return t('joinPlaces', { count: remaining })
   }
   const restBlockedTimes = useMemo(() => {
     return bookedTimesForSelectedDate

@@ -18,16 +18,10 @@ export async function POST(request: Request) {
     const cleanedPhone = cleanText(phone || '', { max: 40 })
 
     if (!cleanedName) {
-      return NextResponse.json(
-        { ok: false, error: 'Nimi on kohustuslik' },
-        { status: 400 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'nameRequired' }, { status: 400 })
     }
     if (!cleanedEmail) {
-      return NextResponse.json(
-        { ok: false, error: 'E-post on kohustuslik' },
-        { status: 400 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'emailRequired' }, { status: 400 })
     }
 
     // Honeypot: kui see väli on täidetud, eeldame, et tegemist on robotiga.
@@ -37,27 +31,18 @@ export async function POST(request: Request) {
     }
 
     if (confirm !== true) {
-      return NextResponse.json(
-        { ok: false, error: 'Palun kinnita linnukesega, et see ei ole roboti tehtud päring.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'confirmRequired' }, { status: 400 })
     }
 
     // Emaili formaadi kontroll
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(cleanedEmail)) {
-      return NextResponse.json(
-        { ok: false, error: 'Palun sisestage kehtiv e-posti aadress' },
-        { status: 400 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'emailInvalid' }, { status: 400 })
     }
 
     const amountNum = typeof amount === 'number' ? amount : parseInt(String(amount), 10)
     if (Number.isNaN(amountNum) || amountNum < 10 || amountNum % 10 !== 0 || amountNum > MAX_AMOUNT) {
-      return NextResponse.json(
-        { ok: false, error: `Väärtus peab olema vahemikus 10–${MAX_AMOUNT} € ja 10 € kordne` },
-        { status: 400 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'amountInvalid' }, { status: 400 })
     }
 
     const NOTION_API_KEY = process.env.NOTION_API_KEY
@@ -65,10 +50,7 @@ export async function POST(request: Request) {
 
     if (!NOTION_API_KEY || !NOTION_GIFT_CARDS_DATABASE_ID) {
       console.error('Missing NOTION_API_KEY or NOTION_GIFT_CARDS_DATABASE_ID')
-      return NextResponse.json(
-        { ok: false, error: 'Serveri seadistus puudub' },
-        { status: 500 }
-      )
+      return NextResponse.json({ ok: false, errorCode: 'serverConfig' }, { status: 500 })
     }
 
     const result = await createGiftCardOrder(NOTION_API_KEY, NOTION_GIFT_CARDS_DATABASE_ID, {
@@ -91,7 +73,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, code: result.code, pageId: result.pageId })
   } catch (error) {
     console.error('Gift card order error:', error)
-    const message = error instanceof Error ? error.message : 'Tundmatu viga'
-    return NextResponse.json({ ok: false, error: message }, { status: 500 })
+    return NextResponse.json({ ok: false, errorCode: 'unknown' }, { status: 500 })
   }
 }

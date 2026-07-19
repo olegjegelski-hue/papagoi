@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useRouter, usePathname } from '@/i18n/navigation'
 
 // Lipu värvid: Eesti horisontaalselt 1/3 sinine, 1/3 must, 1/3 valge
@@ -21,6 +22,7 @@ const languages = [
 ] as const
 
 export default function LanguageSwitcher() {
+  const t = useTranslations('Nav')
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -96,7 +98,7 @@ export default function LanguageSwitcher() {
         style={!('stripe' in current && current.stripe) ? { color: current.color } : undefined}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-label="Vali keel"
+        aria-label={t('chooseLanguage')}
       >
         <span>{renderLabel(current)}</span>
         <ChevronDown

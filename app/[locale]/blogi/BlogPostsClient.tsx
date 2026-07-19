@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 
 type BlogPost = {
@@ -17,19 +18,29 @@ type Props = {
   posts: BlogPost[]
 }
 
+const ALL_CATEGORY = '__all__'
+
+function dateLocale(locale: string): string {
+  if (locale === 'ru') return 'ru-RU'
+  if (locale === 'en') return 'en-GB'
+  return 'et-EE'
+}
+
 export default function BlogPostsClient({ posts }: Props) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('Kõik')
+  const t = useTranslations('BlogPage')
+  const locale = useLocale()
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORY)
 
   const categories = useMemo(() => {
     const values = new Set<string>()
     posts.forEach((post) => {
       ;(post.categories || []).forEach((category) => values.add(category))
     })
-    return ['Kõik', ...Array.from(values)]
+    return [ALL_CATEGORY, ...Array.from(values)]
   }, [posts])
 
   const filteredPosts = useMemo(() => {
-    if (selectedCategory === 'Kõik') return posts
+    if (selectedCategory === ALL_CATEGORY) return posts
     return posts.filter((post) => (post.categories || []).includes(selectedCategory))
   }, [posts, selectedCategory])
 
@@ -38,6 +49,7 @@ export default function BlogPostsClient({ posts }: Props) {
       <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
         {categories.map((category) => {
           const isActive = category === selectedCategory
+          const label = category === ALL_CATEGORY ? t('allCategories') : category
           return (
             <button
               key={category}
@@ -50,7 +62,7 @@ export default function BlogPostsClient({ posts }: Props) {
                   : 'bg-papagoi-beige-100 text-gray-700 border-papagoi-beige-300 hover:bg-card',
               ].join(' ')}
             >
-              {category}
+              {label}
             </button>
           )
         })}
@@ -59,7 +71,7 @@ export default function BlogPostsClient({ posts }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredPosts.map((post) => {
           const formattedDate = post.date
-            ? new Date(post.date).toLocaleDateString('et-EE', {
+            ? new Date(post.date).toLocaleDateString(dateLocale(locale), {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
@@ -72,7 +84,7 @@ export default function BlogPostsClient({ posts }: Props) {
                 <div className="h-56 w-full overflow-hidden">
                   <img
                     src={post.cover}
-                    alt={`${post.title} kaanepilt`}
+                    alt={t('coverAlt', { title: post.title })}
                     className="h-full w-full object-cover"
                     loading="lazy"
                     referrerPolicy="no-referrer"
@@ -101,7 +113,7 @@ export default function BlogPostsClient({ posts }: Props) {
                   href={`/blogi/${post.slug || post.id}`}
                   className="inline-flex items-center text-papagoi-blue font-semibold hover:underline"
                 >
-                  Loe edasi
+                  {t('readMore')}
                 </Link>
               </div>
             </article>
