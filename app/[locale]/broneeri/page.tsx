@@ -4,10 +4,7 @@ import { Calendar, Users, Clock, Euro, Phone, AlertCircle } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -26,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `${base}/${locale}/broneeri` },
+    alternates: pageAlternates(locale, 'broneeri'),
     openGraph: {
       title: isRu ? 'Забронировать визит - Центр попугаев в Тарту' : isEn ? 'Book a visit - Parrot Centre Tartu' : 'Broneeri külastus - Papagoi Keskus Tartus',
       description: isRu ? 'Забронируйте визит в единственный в Эстонии центр попугаев. Ответ за 24 ч. Или купите подарочную карту.' : isEn ? 'Book a visit to Estonia\'s unique parrot centre. Reply within 24h. Or buy a gift card.' : 'Broneeri külastus Eesti ainulaadsesse papagoidekeskusesse. Vastus 24h jooksul. Või osta kinkekaart.',

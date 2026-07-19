@@ -1,34 +1,52 @@
 import { Metadata } from 'next'
 import BlogPostsClient from './BlogPostsClient'
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+type Props = { params: Promise<{ locale: string }> }
 
-export const metadata: Metadata = {
-  title: 'Blogi | Papagoi Keskus Tartus',
-  description: 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses. Külastus, kinkekaart ja teavitused.',
-  keywords: 'Papagoi Keskus blogi, papagoid, papagoide hooldus, papagoidekeskus Tartus',
-  alternates: {
-    canonical: `${getSiteUrl()}/blogi`,
-  },
-  openGraph: {
-    title: 'Blogi | Papagoi Keskus Tartus',
-    description: 'Loe meie blogi papagoidest ja Papagoi Keskuse uudiseid. Külastus ja kinkekaart.',
-    type: 'website',
-    locale: 'et_EE',
-    url: `${getSiteUrl()}/blogi`,
-    images: ['/logo.png'],
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Blogi | Papagoi Keskus Tartus',
-    description: 'Loe meie blogi papagoidest ja Papagoi Keskuse uudiseid.',
-    images: ['/logo.png'],
-  },
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const base = getSiteUrl()
+  const isRu = locale === 'ru'
+  const isEn = locale === 'en'
+  const title = isRu
+    ? 'Блог | Центр попугаев в Тарту'
+    : isEn
+      ? 'Blog | Parrot Centre Tartu'
+      : 'Blogi | Papagoi Keskus Tartus'
+  const description = isRu
+    ? 'Читайте наш блог о попугаях, уходе за ними и повседневной жизни Центра попугаев.'
+    : isEn
+      ? 'Read our blog about parrots, their care and everyday life at the Parrot Centre.'
+      : 'Loe meie blogi papagoidest, nende hooldamisest ja igapäevaelust Papagoi Keskuses. Külastus, kinkekaart ja teavitused.'
+  const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_EE' : 'et_EE'
+
+  return {
+    title,
+    description,
+    keywords: isRu
+      ? 'блог Центр попугаев, попугаи, уход за попугаями'
+      : isEn
+        ? 'Parrot Centre blog, parrots, parrot care, Tartu'
+        : 'Papagoi Keskus blogi, papagoid, papagoide hooldus, papagoidekeskus Tartus',
+    alternates: pageAlternates(locale, 'blogi'),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: ogLocale,
+      url: `${base}/${locale}/blogi`,
+      images: ['/logo.png'],
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      images: ['/logo.png'],
+    },
+  }
 }
 
 type BlogPost = {
@@ -59,7 +77,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
   }
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params
   const posts = await getBlogPosts()
   const hasPosts = posts.length > 0
   const baseUrl = getSiteUrl()
@@ -67,14 +86,14 @@ export default async function BlogPage() {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Papagoi Keskus Blogi',
-    url: `${baseUrl}/blogi`,
+    url: `${baseUrl}/${locale}/blogi`,
     description: 'Lood papagoidest, hooldusest ja Papagoi Keskuse tegemistest.',
     blogPost: posts.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
       description: post.excerpt || undefined,
       datePublished: post.date || undefined,
-      url: post.slug ? `${baseUrl}/blogi/${post.slug}` : undefined,
+      url: post.slug ? `${baseUrl}/${locale}/blogi/${post.slug}` : undefined,
       image: post.cover ? [post.cover] : undefined,
     })),
   }

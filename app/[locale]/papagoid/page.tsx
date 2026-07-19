@@ -1,11 +1,7 @@
 import ParrotsPageClient from './ParrotsPageClient'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -30,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords,
-    alternates: { canonical: `${base}/${locale}/papagoid` },
+    alternates: pageAlternates(locale, 'papagoid'),
     openGraph: {
       title: isRu ? 'Наши попугаи - Центр попугаев в Тарту' : isEn ? 'Our parrots - Parrot Centre Tartu' : 'Meie papagoid - Papagoi Keskus Tartus',
       description: isRu ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Станьте крёстным или подарите подарочную карту.' : isEn ? 'Meet our parrots. Over 50 parrots. Become a sponsor or give a gift card.' : 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',

@@ -5,11 +5,7 @@ import SchoolGroups from './_components/school-groups'
 import CompanyGroups from './_components/company-groups'
 import GroupBooking from './_components/group-booking'
 import GroupPricing from './_components/group-pricing'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -28,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `${base}/${locale}/grupid` },
+    alternates: pageAlternates(locale, 'grupid'),
     openGraph: {
       title: isRu ? 'Групповые программы - Центр попугаев в Тарту' : isEn ? 'Group programmes - Parrot Centre Tartu' : 'Grupid - Papagoi Keskus Tartus',
       description: isRu ? 'Программы для школ, компаний и мероприятий.' : isEn ? 'Group programmes for schools, companies and events.' : 'Spetsiaalsed programmid gruppidele.',

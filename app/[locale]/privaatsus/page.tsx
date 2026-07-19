@@ -2,11 +2,7 @@ import { Shield, Cookie, Lock, Mail, FileText } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -27,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords,
-    alternates: { canonical: `${base}/${locale}/privaatsus` },
+    alternates: pageAlternates(locale, 'privaatsus'),
     openGraph: {
       title: isRu ? 'Конфиденциальность и cookie - Центр попугаев' : isEn ? 'Privacy and cookies - Parrot Centre' : 'Privaatsus ja küpsised - Papagoi Keskus',
       description: isRu ? 'Политика конфиденциальности и условия cookie.' : isEn ? 'Parrot Centre privacy policy and cookie terms.' : 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused.',

@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,11 +23,6 @@ type BlogPost = {
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
-}
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
 }
 
 function getText(property: any) {
@@ -334,23 +330,26 @@ function renderBlocks(blocks: NotionBlock[], fallbackAlt?: string) {
   })
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const post = await getPostBySlug(slug)
   if (!post) {
     return {
       title: 'Blogi | Papagoi Keskus',
     }
   }
   const baseUrl = getSiteUrl()
-  const canonicalUrl = `${baseUrl}/blogi/${params.slug}`
+  const canonicalUrl = `${baseUrl}/${locale}/blogi/${slug}`
   const description = post.excerpt || undefined
   const images = post.cover ? [post.cover] : ['/logo.png']
   return {
     title: `${post.title} | Papagoi Keskus`,
     description,
-    alternates: {
-      canonical: canonicalUrl,
-    },
+    alternates: pageAlternates(locale, `blogi/${slug}`),
     openGraph: {
       type: 'article',
       title: post.title,
@@ -368,8 +367,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug)
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}) {
+  const { locale, slug } = await params
+  const post = await getPostBySlug(slug)
   if (!post) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-papagoi-beige-50 via-papagoi-beige to-green-50/80">
@@ -391,7 +395,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       })
     : ''
   const baseUrl = getSiteUrl()
-  const canonicalUrl = `${baseUrl}/blogi/${params.slug}`
+  const canonicalUrl = `${baseUrl}/${locale}/blogi/${slug}`
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',

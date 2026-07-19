@@ -3,11 +3,7 @@ import { Link } from '@/i18n/navigation'
 import VisitProcess from '@/components/VisitProcess'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -31,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords: isRu ? 'Центр попугаев посетителям, визит по записи, подарочная карта' : isEn ? 'Parrot Centre visitors, book visit Tartu, gift card' : 'Papagoi Keskus külastajatele, külastus broneerimisega Tartus, kinkekaart',
-    alternates: { canonical: `${base}/${locale}/kulastajatele` },
+    alternates: pageAlternates(locale, 'kulastajatele'),
     openGraph: {
       title: isRu ? 'Посетителям - Центр попугаев в Тарту' : isEn ? 'For visitors - Parrot Centre Tartu' : 'Külastajatele - Papagoi Keskus Tartus',
       description: isRu ? 'Вся нужная информация для визита. Бронирование и подарочная карта. Пн–Вс 12–18.' : isEn ? 'All you need to know for your visit. Book or give a gift card. Open Mon–Sun 12–6pm.' : 'Kõik vajalik info Papagoi Keskuse külastamiseks. Broneeri või kingi kinkekaart. Lahtiolekuajad: E-P 12-18.',

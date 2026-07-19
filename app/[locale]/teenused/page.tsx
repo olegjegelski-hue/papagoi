@@ -5,11 +5,7 @@ import GiftCardCTA from '@/components/GiftCardCTA'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -37,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : isEn
         ? 'Parrot Centre services, gift card, parrot birthday, group visits Tartu'
         : 'Papagoi Keskus teenused, kinkekaart, papagoid sünnipäevale, külastus broneerimisega, grupikülastused Tartus',
-    alternates: { canonical: `${base}/${locale}/teenused` },
+    alternates: pageAlternates(locale, 'teenused'),
     openGraph: {
       title: isRu ? 'Услуги - Центр попугаев в Тарту' : isEn ? 'Services - Parrot Centre Tartu' : 'Teenused - Papagoi Keskus Tartus',
       description: isRu ? 'Визит 10€, подарочная карта, день рождения, VIP, групповые визиты.' : isEn ? 'Visit €10, gift card, birthdays, VIP, group visits.' : 'Külastus 10€, kinkekaart, sünnipäevad, VIP külastus, grupikülastused.',

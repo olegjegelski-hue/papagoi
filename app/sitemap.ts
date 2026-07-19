@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { routing } from '@/i18n/routing'
+import { getPublishedBlogSlugsForSitemap } from '@/lib/notion-blog-slugs'
+import { localeUrl, sitemapLanguageAlternates } from '@/lib/seo'
 
-const LOCALES = ['et', 'en'] as const
 const PATHS = [
   { path: '', changeFrequency: 'weekly' as const, priority: 1 },
   { path: 'teenused', changeFrequency: 'monthly' as const, priority: 0.9 },
@@ -16,21 +18,37 @@ const PATHS = [
   { path: 'privaatsus', changeFrequency: 'yearly' as const, priority: 0.3 },
 ]
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
-  const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-
   const entries: MetadataRoute.Sitemap = []
-  for (const locale of LOCALES) {
-    for (const { path, changeFrequency, priority } of PATHS) {
+
+  for (const { path, changeFrequency, priority } of PATHS) {
+    const languages = sitemapLanguageAlternates(path)
+    for (const locale of routing.locales) {
       entries.push({
-        url: path ? `${normalizedBaseUrl}/${locale}/${path}` : `${normalizedBaseUrl}/${locale}`,
+        url: localeUrl(locale, path),
         lastModified: now,
         changeFrequency,
         priority,
+        alternates: { languages },
       })
     }
   }
+
+  const blogPosts = await getPublishedBlogSlugsForSitemap()
+  for (const post of blogPosts) {
+    const path = `blogi/${post.slug}`
+    const languages = sitemapLanguageAlternates(path)
+    for (const locale of routing.locales) {
+      entries.push({
+        url: localeUrl(locale, path),
+        lastModified: post.lastModified || now,
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        alternates: { languages },
+      })
+    }
+  }
+
   return entries
 }

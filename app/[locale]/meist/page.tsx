@@ -3,11 +3,7 @@ import { Link } from '@/i18n/navigation'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -35,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : isEn
         ? 'Parrot Centre about us, Estonia first parrot centre, history Tartu, gift card'
         : 'Papagoi Keskus meie lugu, Eesti esimene papagoidekeskus, Papagoi Keskus ajalugu, papagoidekeskus Tartus, kinkekaart',
-    alternates: { canonical: `${base}/${locale}/meist` },
+    alternates: pageAlternates(locale, 'meist'),
     openGraph: {
       title: isRu ? 'О нас - Центр попугаев в Тарту' : isEn ? 'About us - Parrot Centre Tartu' : 'Meist - Papagoi Keskus Tartus',
       description: isRu ? 'Познакомьтесь с Центром попугаев в Тарту: первый в Эстонии с 2015.' : isEn ? 'Meet Parrot Centre in Tartu: Estonia\'s first parrot centre since 2015.' : 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015.',

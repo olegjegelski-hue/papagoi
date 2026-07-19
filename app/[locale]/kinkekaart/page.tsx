@@ -4,11 +4,7 @@ import GiftCardForm from '@/components/GiftCardForm'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -33,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords,
-    alternates: { canonical: `${base}/${locale}/kinkekaart` },
+    alternates: pageAlternates(locale, 'kinkekaart'),
     openGraph: {
       title: isRu ? 'Подарочная карта - Центр попугаев в Тарту' : isEn ? 'Gift card - Parrot Centre Tartu' : 'Kinkekaart - Papagoi Keskus Tartus',
       description: isRu ? 'Подарите визит в Центр попугаев. Цифровая карта шагами по 10 €. На день рождения или юбилей.' : isEn ? 'Give a visit to the Parrot Centre. Digital gift card in €10 steps. For birthdays or anniversaries.' : 'Kingi külastus Papagoi Keskuses. Digitaalne kinkekaart 10 € sammuga. Sünnipäevaks või juubeliks.',

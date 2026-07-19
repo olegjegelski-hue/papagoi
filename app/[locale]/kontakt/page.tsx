@@ -4,11 +4,7 @@ import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
-
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -33,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords,
-    alternates: { canonical: `${base}/${locale}/kontakt` },
+    alternates: pageAlternates(locale, 'kontakt'),
     openGraph: {
       title: isRu ? 'Контакты - Центр попугаев в Тарту' : isEn ? 'Contact - Parrot Centre Tartu' : 'Kontakt - Papagoi Keskus Tartus',
       description: isRu ? 'Свяжитесь с Центром попугаев в Тарту. Контакты и информация о бронировании.' : isEn ? 'Get in touch with the Parrot Centre in Tartu. Contact details and booking info.' : 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed ja broneerimisinfo.',

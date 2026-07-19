@@ -1,33 +1,51 @@
-
 import Image from 'next/image'
 import { Heart, Gift, Calendar, Camera, Users, Phone, Mail, Euro, Check, Star, Clock } from 'lucide-react'
+import type { Metadata } from 'next'
+import { getSiteUrl, pageAlternates } from '@/lib/seo'
 
-function getSiteUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
-}
+type Props = { params: Promise<{ locale: string }> }
 
-export const metadata = {
-  title: 'Ristiisa Programm - Papagoi Keskus Tartus',
-  description: 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega. Või kingi kinkekaart külastuseks.',
-  keywords: 'ristiisa programm, papagoi ristiisa, Papagoi Keskus, toeta papagoid, papagoid Tartus',
-  alternates: {
-    canonical: `${getSiteUrl()}/ristiisa-programm`,
-  },
-  openGraph: {
-    title: 'Ristiisa Programm - Papagoi Keskus Tartus',
-    description: 'Hakka meie papagoi ristiisaks! Kvartaalsed privaatsed kohtumised. Või kingi kinkekaart.',
-    type: 'website',
-    locale: 'et_EE',
-    url: `${getSiteUrl()}/ristiisa-programm`,
-    images: ['/logo.png'],
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Ristiisa Programm - Papagoi Keskus Tartus',
-    description: 'Hakka meie papagoi ristiisaks! Kvartaalsed privaatsed kohtumised.',
-    images: ['/logo.png'],
-  },
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const base = getSiteUrl()
+  const isRu = locale === 'ru'
+  const isEn = locale === 'en'
+  const title = isRu
+    ? 'Программа крёстных - Центр попугаев в Тарту'
+    : isEn
+      ? 'Sponsor programme - Parrot Centre Tartu'
+      : 'Ristiisa Programm - Papagoi Keskus Tartus'
+  const description = isRu
+    ? 'Станьте крёстным нашего попугая! Поддержите символически любимца и участвуйте в его повседневной жизни.'
+    : isEn
+      ? 'Become a sponsor of our parrot! Support your favourite bird and take part in its everyday life with quarterly private meetings.'
+      : 'Hakka meie papagoi ristiisaks! Toeta sümboolselt oma lemmikpapagoid ja saa osa tema igapäevaelust kvartaalsete privaatsete kohtumistega. Või kingi kinkekaart külastuseks.'
+  const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_EE' : 'et_EE'
+
+  return {
+    title,
+    description,
+    keywords: isRu
+      ? 'программа крёстных, попугай, Центр попугаев'
+      : isEn
+        ? 'sponsor programme, parrot sponsor, Parrot Centre Tartu'
+        : 'ristiisa programm, papagoi ristiisa, Papagoi Keskus, toeta papagoid, papagoid Tartus',
+    alternates: pageAlternates(locale, 'ristiisa-programm'),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: ogLocale,
+      url: `${base}/${locale}/ristiisa-programm`,
+      images: ['/logo.png'],
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      images: ['/logo.png'],
+    },
+  }
 }
 
 const benefits = [
