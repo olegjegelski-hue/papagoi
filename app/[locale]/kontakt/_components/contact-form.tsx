@@ -218,6 +218,8 @@ export default function ContactForm() {
                   <Input
                     id="contact-phone"
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder={t('placeholderPhone')}

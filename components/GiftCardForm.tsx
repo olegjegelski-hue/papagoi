@@ -141,12 +141,14 @@ export default function GiftCardForm() {
           <div className="flex-1 flex items-center">
             <input
               type="number"
+              inputMode="numeric"
               min={MIN}
+              max={MAX}
               step={STEP}
               value={amount}
               onChange={handleInputChange}
               onBlur={handleInputBlur}
-              className="w-full px-4 py-3 rounded-xl border-2 border-papagoi-green/30 text-center text-xl font-semibold text-deep-anthracite focus:ring-2 focus:ring-papagoi-green focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full min-h-[48px] px-4 py-3 rounded-xl border-2 border-papagoi-green/30 text-center text-xl font-semibold text-deep-anthracite focus:ring-2 focus:ring-papagoi-green focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               aria-label={t('amountAria')}
             />
             <span className="ml-2 text-xl font-semibold text-deep-anthracite">€</span>
@@ -176,8 +178,9 @@ export default function GiftCardForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent"
-            placeholder={t('name')}
+            autoComplete="name"
+            className="w-full min-h-[44px] px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent text-base"
+            placeholder={t('namePlaceholder')}
           />
         </div>
         <div>
@@ -187,10 +190,12 @@ export default function GiftCardForm() {
           <input
             id="gift-phone"
             type="tel"
+            inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent"
-            placeholder="+372 5xxx xxxx"
+            autoComplete="tel"
+            className="w-full min-h-[44px] px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent text-base"
+            placeholder={t('phonePlaceholder')}
           />
         </div>
         <div>
@@ -203,7 +208,8 @@ export default function GiftCardForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent"
+            autoComplete="email"
+            className="w-full min-h-[44px] px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent text-base"
             placeholder={t('emailPlaceholder')}
           />
         </div>

@@ -74,8 +74,8 @@ export default function CallToAction() {
             <div>
               <h4 className="font-semibold mb-3 text-lg">Külastuste broneerimine:</h4>
               <div className="space-y-2 opacity-90">
-                <p>📞 Telefon: +372 XXX XXXX</p>
-                <p>📧 Email: info@papagoi.ee</p>
+                <p>📞 Telefon: +372 512 7938</p>
+                <p>📧 Email: keskus@papagoi.ee</p>
                 <p>⏰ Vastame: E-R 9:00-18:00</p>
               </div>
             </div>
