@@ -62,6 +62,15 @@ export default async function TeenusedPage({ params }: Props) {
   const birthdayWhatLi = t.raw('birthdayWhatLi') as string[]
   const outsideWhatLi = t.raw('outsideWhatLi') as string[]
 
+  const bookButton = (
+    <div className="flex justify-center mt-8">
+      <Link href="/broneeri" className="papagoi-cta text-white shadow-2xl">
+        <Calendar className="w-5 h-5" aria-hidden />
+        <span>{t('ctaBook')}</span>
+      </Link>
+    </div>
+  )
+
   return (
     <>
       <ServiceSchema />
@@ -120,9 +129,10 @@ export default async function TeenusedPage({ params }: Props) {
                   </div>
                 </div>
               </div>
-              <div className="bg-green-50 rounded-xl p-4 mb-6">
+              <div className="bg-green-50 rounded-xl p-4">
                 <p className="text-gray-700">{t('visitPrice')}</p>
               </div>
+              {bookButton}
             </div>
           </div>
 
@@ -142,7 +152,7 @@ export default async function TeenusedPage({ params }: Props) {
               <p className="text-xl opacity-90">{t('vipSubtitle')}</p>
             </div>
             <div className="p-8">
-              <div className="mb-6">
+              <div className="mb-0">
                 <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8 mb-6">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-6 h-6 text-indigo-600" />
@@ -164,6 +174,7 @@ export default async function TeenusedPage({ params }: Props) {
                   <p className="text-gray-700">{t('vipPrice')}</p>
                 </div>
               </div>
+              {bookButton}
             </div>
           </div>
 
@@ -174,6 +185,7 @@ export default async function TeenusedPage({ params }: Props) {
             </div>
             <div className="p-8">
               <GroupVisitsCards />
+              {bookButton}
             </div>
           </div>
 
@@ -199,6 +211,7 @@ export default async function TeenusedPage({ params }: Props) {
               <div className="bg-pink-50 rounded-xl p-4">
                 <p className="text-gray-700">{t('birthdayPrice')}</p>
               </div>
+              {bookButton}
             </div>
           </div>
 
@@ -226,6 +239,7 @@ export default async function TeenusedPage({ params }: Props) {
               <div className="bg-green-50 rounded-xl p-4">
                 <p className="text-gray-700">{t('outsidePrice')}</p>
               </div>
+              {bookButton}
             </div>
           </div>
 
