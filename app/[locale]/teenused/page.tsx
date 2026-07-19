@@ -166,6 +166,42 @@ export default async function TeenusedPage({ params }: Props) {
             </div>
           </div>
 
+          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('groupTitle')}</h2>
+              <p className="text-xl opacity-90">{t('groupSubtitle')}</p>
+            </div>
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-blue-50 rounded-xl p-6">
+                  <div className="flex items-center mb-4">
+                    <GraduationCap className="w-8 h-8 text-blue-600 mr-3" />
+                    <h3 className="text-xl font-bold text-gray-800">{t('groupSchoolsTitle')}</h3>
+                  </div>
+                  <ul className="space-y-2 text-gray-700">
+                    {groupSchoolsLi.map((item, i) => (
+                      <li key={i}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-6">
+                  <div className="flex items-center mb-4">
+                    <Building className="w-8 h-8 text-purple-600 mr-3" />
+                    <h3 className="text-xl font-bold text-gray-800">{t('groupCompaniesTitle')}</h3>
+                  </div>
+                  <ul className="space-y-2 text-gray-700">
+                    {groupCompaniesLi.map((item, i) => (
+                      <li key={i}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="bg-blue-50 rounded-xl p-4">
+                <p className="text-gray-700">{t('groupPrice')}</p>
+              </div>
+            </div>
+          </div>
+
           <GiftCardCTA variant="service" />
 
           <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
@@ -214,42 +250,6 @@ export default async function TeenusedPage({ params }: Props) {
               </div>
               <div className="bg-green-50 rounded-xl p-4">
                 <p className="text-gray-700">{t('outsidePrice')}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('groupTitle')}</h2>
-              <p className="text-xl opacity-90">{t('groupSubtitle')}</p>
-            </div>
-            <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-blue-50 rounded-xl p-6">
-                  <div className="flex items-center mb-4">
-                    <GraduationCap className="w-8 h-8 text-blue-600 mr-3" />
-                    <h3 className="text-xl font-bold text-gray-800">{t('groupSchoolsTitle')}</h3>
-                  </div>
-                  <ul className="space-y-2 text-gray-700">
-                    {groupSchoolsLi.map((item, i) => (
-                      <li key={i}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-6">
-                  <div className="flex items-center mb-4">
-                    <Building className="w-8 h-8 text-purple-600 mr-3" />
-                    <h3 className="text-xl font-bold text-gray-800">{t('groupCompaniesTitle')}</h3>
-                  </div>
-                  <ul className="space-y-2 text-gray-700">
-                    {groupCompaniesLi.map((item, i) => (
-                      <li key={i}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="bg-blue-50 rounded-xl p-4">
-                <p className="text-gray-700">{t('groupPrice')}</p>
               </div>
             </div>
           </div>
