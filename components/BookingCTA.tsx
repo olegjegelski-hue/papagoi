@@ -15,7 +15,7 @@ export default function BookingCTA() {
           <p className="text-lg text-deep-anthracite-600 mb-8 max-w-2xl mx-auto">{t('subtitle')}</p>
           <div className="flex justify-center items-center">
             <Link href="/broneeri" className="papagoi-cta text-white shadow-2xl">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-5 h-5" aria-hidden />
               <span>{t('bookVisit')}</span>
             </Link>
           </div>

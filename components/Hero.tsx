@@ -1,9 +1,9 @@
 'use client'
 
-import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
-import { Calendar, Users, Star, Clock } from 'lucide-react'
+import { Users, Star, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import IntentPaths from '@/components/IntentPaths'
 
 export default function Hero() {
   const t = useTranslations('Hero')
@@ -49,12 +49,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="flex justify-center items-center mb-12">
-          <Link href="/broneeri" className="papagoi-cta text-white shadow-2xl">
-            <Calendar className="w-5 h-5" />
-            <span>{t('bookVisit')}</span>
-          </Link>
-        </div>
+        <IntentPaths variant="hero" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300">

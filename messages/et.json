@@ -9,7 +9,7 @@
     "introRest": ". Külastus ainult broneerimisega. Tule külla, kuula põnevaid lugusid papagoidest, tee nendega pilti ja toida neid oma käest.",
     "unique": "Ainulaadne kogemus",
     "forAll": "Sobib kõigile",
-    "bookVisit": "Broneeri külastus",
+    "bookVisit": "Broneeri aeg",
     "forFamilies": "Peredele",
     "forFamiliesDesc": "Põnevate mälestuste loomine igale vanuseastmele",
     "forSchools": "Koolidele & lasteaedadele",
@@ -32,16 +32,24 @@
     "meetParrots": "Tutvuge meie sõbralike papagoidega",
     "uniquePersonality": "Iga papagoi on unikaalne isiksus oma loo ja iseloomuga"
   },
+  "IntentPaths": {
+    "visitTitle": "Tule meile külla",
+    "visitDesc": "Broneeri endale või perega aeg papagoide juurde.",
+    "visitCta": "Broneeri aeg",
+    "giftTitle": "Kingi elamus",
+    "giftDesc": "Osta kinkekaart ja rõõmusta kedagi papagoide-külastusega.",
+    "giftCta": "Osta kinkekaart"
+  },
   "BookingCTA": {
     "title": "Valmis meie papagoidega tutvuma?",
     "subtitle": "Broneerige oma külastus juba täna ja kogege ainulaadset seiklust koos üle 50 erineva papagoiga!",
-    "bookVisit": "Broneeri külastus",
+    "bookVisit": "Broneeri aeg",
     "contactLine": "📞 Helistage meile: +372 512 7938 | ✉️ Kirjutage: keskus@papagoi.ee"
   },
   "GiftCardCTA": {
-    "title": "Papagoi Keskuse kinkekaart",
-    "titleShort": "Papagoi Keskuse kinkekaart.",
-    "subtitle": "Tee rõõmu kellelegi olulisele – Kingi vägev elamus!",
+    "title": "Kingi elamus",
+    "titleShort": "Kingi elamus",
+    "subtitle": "Osta kinkekaart ja rõõmusta kedagi papagoide-külastusega.",
     "buyGiftCard": "Osta kinkekaart"
   },
   "Statistics": {
@@ -248,7 +256,7 @@
     "saleLinkText": "Ava PetsVilla.ee",
     "ctaTitle": "Valmis külastama?",
     "ctaSubtitle": "Broneerige külastus juba täna ja kogege midagi erilist!",
-    "ctaBook": "Broneeri külastus",
+    "ctaBook": "Broneeri aeg",
     "ctaPhone": "Helista: +372 512 7938"
   },
   "MeistPage": {
@@ -266,7 +274,7 @@
     "parrotRoomDesc": "Suur, valgusrikas spetsiaalsete UV valgustitega ruum, kus lindudel on ronimisalad erinevate okstega, mänguasjad ja palju ruumi lendamiseks.",
     "ctaTitle": "Külasta meid!",
     "ctaSubtitle": "Tule külla ja tutvu meie suure perega!",
-    "ctaBook": "Broneeri külastus",
+    "ctaBook": "Broneeri aeg",
     "ctaServices": "Vaata teenuseid"
   },
   "KulastajatelePage": {
@@ -338,7 +346,7 @@
     "specialProgramLi": ["Rahulik tempo", "Kohandatud programm", "Personaalne lähenemine", "Terapeutiline efekt", "Turvaline keskkond"],
     "ctaTitle": "Valmis meie pere külastama?",
     "ctaSubtitle": "Broneerige külastus juba täna ja kogege midagi erilist!",
-    "ctaBook": "Broneeri külastus",
+    "ctaBook": "Broneeri aeg",
     "ctaPhone": "Helista: +372 512 7938"
   },
   "VisitProcess": {

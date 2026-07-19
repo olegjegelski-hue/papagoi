@@ -9,7 +9,7 @@
     "introRest": ". Visit by booking only. Come over, hear exciting stories about the parrots, take photos with them and feed them from your hand.",
     "unique": "Unique experience",
     "forAll": "For everyone",
-    "bookVisit": "Book a visit",
+    "bookVisit": "Book a time",
     "forFamilies": "Families",
     "forFamiliesDesc": "Creating exciting memories for all ages",
     "forSchools": "Schools & kindergartens",
@@ -32,17 +32,25 @@
     "meetParrots": "Meet our friendly parrots",
     "uniquePersonality": "Each parrot is a unique personality with its own story and character"
   },
+  "IntentPaths": {
+    "visitTitle": "Come visit us",
+    "visitDesc": "Book a time for yourself or your family with the parrots.",
+    "visitCta": "Book a time",
+    "giftTitle": "Gift an experience",
+    "giftDesc": "Buy a gift card and delight someone with a parrot visit.",
+    "giftCta": "Buy a gift card"
+  },
   "BookingCTA": {
     "title": "Ready to meet our parrots?",
     "subtitle": "Book your visit today and experience a unique adventure with over 50 different parrots!",
-    "bookVisit": "Book a visit",
+    "bookVisit": "Book a time",
     "contactLine": "📞 Call us: +372 512 7938 | ✉️ Email: keskus@papagoi.ee"
   },
   "GiftCardCTA": {
-    "title": "Parrot Centre gift card",
-    "titleShort": "Parrot Centre gift card.",
-    "subtitle": "Give someone special a great experience!",
-    "buyGiftCard": "Buy gift card"
+    "title": "Gift an experience",
+    "titleShort": "Gift an experience",
+    "subtitle": "Buy a gift card and delight someone with a parrot visit.",
+    "buyGiftCard": "Buy a gift card"
   },
   "Statistics": {
     "title": "Our achievements in numbers",
@@ -248,7 +256,7 @@
     "saleLinkText": "Open PetsVilla.ee",
     "ctaTitle": "Ready to visit?",
     "ctaSubtitle": "Book your visit today and experience something special!",
-    "ctaBook": "Book a visit",
+    "ctaBook": "Book a time",
     "ctaPhone": "Call: +372 512 7938"
   },
   "MeistPage": {
@@ -266,7 +274,7 @@
     "parrotRoomDesc": "A large, bright room with special UV lighting where the birds have climbing areas with different branches, toys and plenty of space to fly.",
     "ctaTitle": "Visit us!",
     "ctaSubtitle": "Come and meet our big family!",
-    "ctaBook": "Book a visit",
+    "ctaBook": "Book a time",
     "ctaServices": "View services"
   },
   "KulastajatelePage": {
@@ -338,7 +346,7 @@
     "specialProgramLi": ["Calm pace", "Tailored programme", "Personal approach", "Therapeutic effect", "Safe environment"],
     "ctaTitle": "Ready to visit our family?",
     "ctaSubtitle": "Book your visit today and experience something special!",
-    "ctaBook": "Book a visit",
+    "ctaBook": "Book a time",
     "ctaPhone": "Call: +372 512 7938"
   },
   "VisitProcess": {
