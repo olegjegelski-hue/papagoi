@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Gift, ChevronUp, ChevronDown } from 'lucide-react'
 import { trackGiftCardSubmit } from '@/lib/meta-pixel'
 
@@ -16,8 +16,10 @@ function roundToStep(value: number): number {
 
 export default function GiftCardForm() {
   const locale = useLocale()
+  const t = useTranslations('GiftCardForm')
   const [amount, setAmount] = useState<number>(10)
   const [submitted, setSubmitted] = useState(false)
+  const [orderCode, setOrderCode] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -46,13 +48,14 @@ export default function GiftCardForm() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data?.error || 'Tellimus ebaõnnestus')
+        setError(data?.error || t('errorGeneric'))
         return
       }
       trackGiftCardSubmit({ value: amount })
+      setOrderCode(typeof data?.code === 'string' ? data.code : '')
       setSubmitted(true)
     } catch {
-      setError('Ühendusviga. Proovi uuesti või võta ühendust.')
+      setError(t('errorNetwork'))
     } finally {
       setLoading(false)
     }
@@ -74,12 +77,32 @@ export default function GiftCardForm() {
   if (submitted) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
-        <p className="text-xl font-semibold text-green-800 mb-2">Täname!</p>
-        <p className="text-deep-anthracite/80">
-          Tellimus on kinnitatud. Saatsime kinnituskirja teie e-postile. Koopia saadeti ka Papagoi Keskusele. Võtame peagi ühendust kinkekaardi maksmise ja vormistamise osas.
-        </p>
+        <p className="text-xl font-semibold text-green-800 mb-2">{t('successTitle')}</p>
+        <p className="text-deep-anthracite/80 text-left sm:text-center">{t('successBody')}</p>
+
+        <div className="mt-6 rounded-xl border border-papagoi-green/20 bg-white px-4 py-4 text-left text-sm text-deep-anthracite">
+          <p className="font-semibold mb-2">{t('transferLead')}</p>
+          <p className="mb-1">
+            <strong>{t('recipient')}</strong> {t('recipientValue')}
+          </p>
+          <p className="mb-1">
+            <strong>{t('iban')}</strong> {t('ibanValue')}
+          </p>
+          <p className="mb-1">
+            <strong>{t('amountLabel')}</strong> {amount} €
+          </p>
+          {orderCode ? (
+            <p>
+              <strong>{t('reference')}</strong> {t('referenceValue', { code: orderCode })}
+            </p>
+          ) : null}
+        </div>
+
         <p className="text-sm text-deep-anthracite/60 mt-4">
-          Küsimuste korral: <a href="tel:+3725127938" className="text-papagoi-green hover:underline">+372 512 7938</a>
+          {t('questions')}{' '}
+          <a href="tel:+3725127938" className="text-papagoi-green hover:underline">
+            +372 512 7938
+          </a>
         </p>
       </div>
     )
@@ -89,14 +112,14 @@ export default function GiftCardForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col items-center text-center">
         <label className="block text-lg font-semibold text-deep-anthracite mb-3">
-          Vali kinkekaardi väärtus (10 € = 1 külastus)
+          {t('amountSelect')}
         </label>
         <div className="flex items-center gap-2 max-w-xs">
           <button
             type="button"
             onClick={decrement}
             disabled={amount <= MIN}
-            aria-label="Vähenda summat"
+            aria-label={t('decreaseAmount')}
             className="flex-shrink-0 w-12 h-12 rounded-xl border-2 border-papagoi-green/30 text-deep-anthracite hover:border-papagoi-green hover:bg-papagoi-green/10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent flex items-center justify-center transition-all"
           >
             <ChevronDown className="w-6 h-6" />
@@ -110,28 +133,28 @@ export default function GiftCardForm() {
               onChange={handleInputChange}
               onBlur={handleInputBlur}
               className="w-full px-4 py-3 rounded-xl border-2 border-papagoi-green/30 text-center text-xl font-semibold text-deep-anthracite focus:ring-2 focus:ring-papagoi-green focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              aria-label="Summa eurodes"
+              aria-label={t('amountAria')}
             />
             <span className="ml-2 text-xl font-semibold text-deep-anthracite">€</span>
           </div>
           <button
             type="button"
             onClick={increment}
-            aria-label="Suurenda summat"
+            aria-label={t('increaseAmount')}
             className="flex-shrink-0 w-12 h-12 rounded-xl border-2 border-papagoi-green/30 text-deep-anthracite hover:border-papagoi-green hover:bg-papagoi-green/10 flex items-center justify-center transition-all"
           >
             <ChevronUp className="w-6 h-6" />
           </button>
         </div>
         <p className="mt-2 text-warm-gray-600 text-sm">
-          {amount} € = {amount / 10} külastust (maksimaalselt {MAX} €)
+          {t('visitsHint', { amount, visits: amount / 10, max: MAX })}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label htmlFor="gift-name" className="block text-sm font-medium text-deep-anthracite mb-1">
-            Nimi
+            {t('name')}
           </label>
           <input
             id="gift-name"
@@ -140,12 +163,12 @@ export default function GiftCardForm() {
             onChange={(e) => setName(e.target.value)}
             required
             className="w-full px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent"
-            placeholder="Nimi"
+            placeholder={t('name')}
           />
         </div>
         <div>
           <label htmlFor="gift-phone" className="block text-sm font-medium text-deep-anthracite mb-1">
-            Tel
+            {t('phone')}
           </label>
           <input
             id="gift-phone"
@@ -158,7 +181,7 @@ export default function GiftCardForm() {
         </div>
         <div>
           <label htmlFor="gift-email" className="block text-sm font-medium text-deep-anthracite mb-1">
-            E-post
+            {t('email')}
           </label>
           <input
             id="gift-email"
@@ -167,7 +190,7 @@ export default function GiftCardForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full px-4 py-3 rounded-xl border border-papagoi-green/20 focus:ring-2 focus:ring-papagoi-green focus:border-transparent"
-            placeholder="email@näide.ee"
+            placeholder={t('emailPlaceholder')}
           />
         </div>
       </div>
@@ -200,7 +223,7 @@ export default function GiftCardForm() {
           className="mt-1 h-4 w-4 rounded border-papagoi-green/60 text-papagoi-green focus:ring-papagoi-green"
         />
         <label htmlFor="gift-confirm" className="text-sm text-deep-anthracite text-left">
-          Kinnitan, et soovin päriselt kinkekaarti ja see ei ole test ega roboti tehtud päring.
+          {t('confirmLabel')}
         </label>
       </div>
 
@@ -211,7 +234,7 @@ export default function GiftCardForm() {
           className="w-full sm:w-auto papagoi-cta disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
         >
           <Gift className="w-5 h-5 mr-2" />
-          {loading ? 'Saadan…' : `Soovin kinkekaarti (${amount} €)`}
+          {loading ? t('submitting') : t('submit', { amount })}
         </button>
       </div>
     </form>
