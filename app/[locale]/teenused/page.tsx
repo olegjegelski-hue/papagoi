@@ -1,7 +1,8 @@
-import { Clock, Users, GraduationCap, Building, Heart, ExternalLink, Calendar, Phone } from 'lucide-react'
+import { Clock, Users, GraduationCap, Heart, ExternalLink, Calendar, Phone } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import ServiceSchema from '@/components/ServiceSchema'
 import GiftCardCTA from '@/components/GiftCardCTA'
+import GroupVisitsCards from '@/components/GroupVisitsCards'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -59,8 +60,6 @@ export default async function TeenusedPage({ params }: Props) {
   const vipWhatLi = t.raw('vipWhatLi') as string[]
   const birthdayWhatLi = t.raw('birthdayWhatLi') as string[]
   const outsideWhatLi = t.raw('outsideWhatLi') as string[]
-  const groupSchoolsLi = t.raw('groupSchoolsLi') as string[]
-  const groupCompaniesLi = t.raw('groupCompaniesLi') as string[]
 
   return (
     <>
@@ -172,33 +171,7 @@ export default async function TeenusedPage({ params }: Props) {
               <p className="text-xl opacity-90">{t('groupSubtitle')}</p>
             </div>
             <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-blue-50 rounded-xl p-6">
-                  <div className="flex items-center mb-4">
-                    <GraduationCap className="w-8 h-8 text-blue-600 mr-3" />
-                    <h3 className="text-xl font-bold text-gray-800">{t('groupSchoolsTitle')}</h3>
-                  </div>
-                  <ul className="space-y-2 text-gray-700">
-                    {groupSchoolsLi.map((item, i) => (
-                      <li key={i}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-6">
-                  <div className="flex items-center mb-4">
-                    <Building className="w-8 h-8 text-purple-600 mr-3" />
-                    <h3 className="text-xl font-bold text-gray-800">{t('groupCompaniesTitle')}</h3>
-                  </div>
-                  <ul className="space-y-2 text-gray-700">
-                    {groupCompaniesLi.map((item, i) => (
-                      <li key={i}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="bg-blue-50 rounded-xl p-4">
-                <p className="text-gray-700">{t('groupPrice')}</p>
-              </div>
+              <GroupVisitsCards />
             </div>
           </div>
 
