@@ -31,7 +31,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **Analüütika:** Meta Pixel + Conversions API (`META_PIXEL_ID`, `META_CAPI_TOKEN`)
 - **Kinkekaardi PNG/PDF:** Playwright + `@sparticuz/chromium-min` (Vercel)
 - **Hosting / cron:** Vercel (`vercel.json` crons)
-- **Prisma:** **surnud jäänuk — ei kasutata.** Paketti (`prisma` / `@prisma/client`) pole `package.json`-is; alles on vaid `prisma/schema.prisma` (mudelid `Booking`, `ContactForm`, `NewsletterSubscription`) ja vana `DATABASE_URL` lokaalses `.env`-is. Kõik andmed käivad **Notion API** kaudu. Ära ehita uut funktsionaalsust Prisma peale; jäänuki (schema + `DATABASE_URL`) võib soovi korral eemaldada.
+- **Prisma:** **eemaldatud (surnud jäänuk koristatud 19.07.2026).** Kustutatud `prisma/schema.prisma` + `DATABASE_URL` `.env`-ist. Kõik andmed käivad **Notion API** kaudu. Ära too Prismat tagasi ega ehita selle peale.
 
 ## 3. Peamised süsteemid (mis juba töötab)
 
@@ -45,9 +45,9 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 ## 4. Teadaolevad GAP-id / prioriteedid (ära „unusta“)
 
 - `/kinkekaart/lunasta` — QR viitab lunastusele, lehte pole (404)
+- Sitemap / SEO: `ru` + blogi slugid vajadusel täiendada
 - E-kirjade kohaletoimetavus (SPF/DKIM/DMARC) — SPF + DKIM + DMARC DNS-kirjed puudu/poolik; email-only voog (broneering, kinkekaart) võib rämpsu sattuda. *(DNS-töö, kasutaja teha.)*
 - Online maksed kinkekaardile (praegu käsitsi ülekanne)
-- Prisma jäänuki koristus — eemalda `prisma/schema.prisma` ja vana `DATABASE_URL` `.env`-ist (kasutuses pole; andmekiht = Notion API)
 - Ära loo paralleelseid „ajutisi“ lahendusi — sulge GAP või dokumenteeri teadlikult Ootel
 
 ## 5. Arhitektuuri põhimõtted
@@ -109,3 +109,4 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-07-19:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`)
 - **2026-07-19:** Prisma staatus kontrollitud — surnud jäänuk; andmekiht on Notion API
 - **2026-07-19:** GAP-id suletud: Cookie↔Pixel nõusolek; Cron/endpoint auth (SMS + GMB). Uus lahtine GAP: e-kirjade kohaletoimetavus (SPF/DKIM/DMARC)
+- **2026-07-19:** Prisma jäänuk eemaldatud — kustutatud `prisma/schema.prisma` + `DATABASE_URL` `.env`-ist + `.gitignore` rida. Andmekiht = Notion API
