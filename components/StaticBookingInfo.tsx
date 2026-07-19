@@ -167,6 +167,10 @@ export default function StaticBookingInfo() {
   const handleTimeClick = (time: string) => {
     if (!selectedDate) return
     setSelectedTime(time)
+    // Mobiilis kerib vorm nähtavale (klaviatuur / cookie-bänner ei kata voogu ära)
+    requestAnimationFrame(() => {
+      document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
   }
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -360,34 +364,34 @@ export default function StaticBookingInfo() {
   }
 
   return (
-    <div className="bg-papagoi-beige-100 rounded-2xl shadow-2xl p-8 border border-papagoi-beige-200">
-      <h2 className="text-2xl font-bold text-deep-anthracite mb-8 font-heading">{t('title')}</h2>
+    <div className="bg-papagoi-beige-100 rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 border border-papagoi-beige-200 overflow-x-clip">
+      <h2 className="text-2xl font-bold text-deep-anthracite mb-6 sm:mb-8 font-heading">{t('title')}</h2>
       
       {/* Important Notice */}
-      <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-6 mb-8">
+      <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 sm:p-6 mb-6 sm:mb-8">
         <div className="flex items-center space-x-3 mb-3">
           <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
-          <h3 className="text-xl font-bold text-amber-800 font-heading">{t('importantTitle')}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-amber-800 font-heading">{t('importantTitle')}</h3>
         </div>
         <p className="text-amber-800 font-medium mb-1">{t('importantLine1')}</p>
         <p className="text-amber-800">{t('importantLine2')}</p>
       </div>
 
-        {/* Calendar */}
-        <div className="bg-papagoi-beige-50 rounded-xl p-6 border border-papagoi-green/20 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
+        {/* Calendar — grid-cols-7 (mitte minmax(44px)), et mahuks kitsasse telefoniekraani */}
+        <div className="bg-papagoi-beige-50 rounded-xl p-3 sm:p-6 border border-papagoi-green/20 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
             <div>
               <h3 className="text-xl font-bold text-deep-anthracite">{t('calendar')}</h3>
               <p className="text-sm text-warm-gray-600">
                 {format(monthDate, 'MMMM yyyy', { locale: dateFnsLocale })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {canGoBack && (
                 <button
                   type="button"
                   onClick={() => setMonthDate(currentMonth)}
-                  className="px-4 py-2 rounded-full border border-papagoi-green text-papagoi-green text-sm font-semibold hover:bg-papagoi-green/10 transition-colors"
+                  className="min-h-[44px] px-4 py-2 rounded-full border border-papagoi-green text-papagoi-green text-sm font-semibold hover:bg-papagoi-green/10 transition-colors touch-manipulation"
                 >
                   {t('backToCurrentMonth')}
                 </button>
@@ -395,7 +399,7 @@ export default function StaticBookingInfo() {
               <button
                 type="button"
                 onClick={() => setMonthDate((current) => addMonths(current, 1))}
-                className="px-4 h-[44px] rounded-full bg-papagoi-green text-white text-sm font-semibold hover:bg-papagoi-green/90 transition-colors"
+                className="min-h-[44px] px-4 rounded-full bg-papagoi-green text-white text-sm font-semibold hover:bg-papagoi-green/90 transition-colors touch-manipulation"
               >
                 {t('nextMonth')}
               </button>
@@ -437,15 +441,15 @@ export default function StaticBookingInfo() {
             </div>
           )}
 
-          <div className="grid w-full min-w-full grid-cols-[repeat(7,minmax(44px,1fr))] gap-2 text-center text-xs font-semibold text-warm-gray-500 mb-2">
-            {weekDayLetters.map((day) => (
-              <div key={day} className="py-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-xs font-semibold text-warm-gray-500 mb-2">
+            {weekDayLetters.map((day, index) => (
+              <div key={`${day}-${index}`} className="py-1 sm:py-2">
                 {day}
               </div>
             ))}
           </div>
 
-          <div className="grid w-full min-w-full grid-cols-[repeat(7,minmax(44px,1fr))] gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {calendarDays.map((day) => {
               const isCurrentMonth = isSameMonth(day, monthDate)
               const isTodayDate = isToday(day)
@@ -467,7 +471,7 @@ export default function StaticBookingInfo() {
                   }}
                   disabled={isPastDate || isTodayClosed}
                   className={[
-                    'w-full h-[44px] rounded-lg flex items-center justify-center text-sm border transition-colors',
+                    'w-full min-h-[40px] h-10 sm:h-[44px] rounded-lg flex items-center justify-center text-sm border transition-colors touch-manipulation',
                     isPastDate || isTodayClosed
                       ? 'text-warm-gray-300 border-warm-gray-200 cursor-not-allowed'
                       : isCurrentMonth
@@ -510,7 +514,7 @@ export default function StaticBookingInfo() {
                 {t('nbTimes')}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                 {timeSlots.map((time) => {
                   const isActive = selectedTime === time
                   const isBooked = bookedTimesForSelectedDate.includes(time)
@@ -525,7 +529,7 @@ export default function StaticBookingInfo() {
                       disabled={disabled}
                       title={isBooked ? t('titleBooked') : isRestBlocked ? t('titleRestBlocked') : undefined}
                       className={[
-                        'px-4 py-2 rounded-lg border font-semibold transition-colors',
+                        'min-h-[44px] px-3 sm:px-4 py-2 rounded-lg border font-semibold transition-colors touch-manipulation',
                         disabled ? 'border-warm-gray-200 text-warm-gray-400 bg-warm-gray-50 cursor-not-allowed' : '',
                         isActive
                           ? 'bg-papagoi-green text-white border-papagoi-green'
@@ -593,8 +597,12 @@ export default function StaticBookingInfo() {
                 </div>
               )}
               {selectedTime && !(selectedBookingEntry && remainingSeats === 0) && (
-                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                <form
+                  id="booking-form"
+                  onSubmit={handleSubmit}
+                  className="relative mt-6 space-y-4 pb-28 sm:pb-6"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="booking-name" className="text-sm font-semibold text-deep-anthracite">
                         {t('labelName')}
@@ -606,7 +614,8 @@ export default function StaticBookingInfo() {
                         onChange={(event) => handleInputChange('name', event.target.value)}
                         placeholder={t('placeholderName')}
                         required
-                        className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
+                        autoComplete="name"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                       />
                     </div>
                     <div className="space-y-2">
@@ -620,12 +629,13 @@ export default function StaticBookingInfo() {
                         onChange={(event) => handleInputChange('email', event.target.value)}
                         placeholder={t('placeholderEmail')}
                         required
-                        className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
+                        autoComplete="email"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                       />
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label htmlFor="booking-phone" className="text-sm font-semibold text-deep-anthracite">
                         {t('labelPhone')}
@@ -633,6 +643,7 @@ export default function StaticBookingInfo() {
                       <input
                         id="booking-phone"
                         type="tel"
+                        inputMode="tel"
                         value={formData.phone}
                         onChange={(event) => handleInputChange('phone', normalizeEstonianPhone(event.target.value))}
                         onFocus={(event) => {
@@ -642,7 +653,8 @@ export default function StaticBookingInfo() {
                         }}
                         placeholder={t('placeholderPhone')}
                         required
-                        className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
+                        autoComplete="tel"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                       />
                       <p className="text-xs text-warm-gray-500">{t('phoneHint')}</p>
                     </div>
@@ -653,13 +665,14 @@ export default function StaticBookingInfo() {
                       <input
                         id="booking-group-size"
                         type="number"
+                        inputMode="numeric"
                         min={minGroupSize}
                         max={remainingSeats ?? 50}
                         value={formData.groupSize}
                         onChange={(event) => handleInputChange('groupSize', event.target.value)}
                         placeholder={t('placeholderGroupSize')}
                         required
-                        className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                       />
                       <p className="text-xs text-warm-gray-500">
                         {t('minGroupSize', { min: minGroupSize })}
@@ -668,31 +681,31 @@ export default function StaticBookingInfo() {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-deep-anthracite">{t('labelDate')}</label>
-                      <div className="rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite">
+                      <div className="min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite flex items-center">
                         {selectedDateValue}
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-deep-anthracite">{t('labelTime')}</label>
-                      <div className="rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite">
+                      <div className="min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 bg-warm-gray-50 text-sm text-deep-anthracite flex items-center">
                         {selectedTime}
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-6">
-                    <div className="space-y-2 w-full max-w-[260px] sm:max-w-none">
-                      <label htmlFor="booking-group-type" className="text-xs font-semibold text-deep-anthracite sm:text-sm">
+                    <div className="space-y-2 w-full">
+                      <label htmlFor="booking-group-type" className="text-sm font-semibold text-deep-anthracite">
                         {t('labelGroupType')}
                       </label>
                       <select
                         id="booking-group-type"
                         value={formData.groupType}
                         onChange={(event) => handleInputChange('groupType', event.target.value)}
-                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-2 py-2 text-sm"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base bg-white"
                       >
                         <option value="">{t('groupTypePlaceholder')}</option>
                         <option value="perevisit">{t('groupTypeFamily')}</option>
@@ -701,8 +714,8 @@ export default function StaticBookingInfo() {
                         <option value="muu">{t('groupTypeOther')}</option>
                       </select>
                     </div>
-                    <div className="space-y-2 w-full max-w-[260px] sm:max-w-none">
-                      <label htmlFor="booking-visit-language" className="text-xs font-semibold text-deep-anthracite sm:text-sm">
+                    <div className="space-y-2 w-full">
+                      <label htmlFor="booking-visit-language" className="text-sm font-semibold text-deep-anthracite">
                         {t('labelVisitLanguage')}
                       </label>
                       <select
@@ -712,7 +725,7 @@ export default function StaticBookingInfo() {
                           handleInputChange('visitLanguage', event.target.value as VisitLanguageCode)
                         }
                         required
-                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-2 py-2 text-sm"
+                        className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base bg-white"
                       >
                         <option value="et">{t('visitLangEt')}</option>
                         <option value="en">{t('visitLangEn')}</option>
@@ -731,7 +744,7 @@ export default function StaticBookingInfo() {
                       onChange={(event) => handleInputChange('message', event.target.value)}
                       placeholder={t('placeholderMessage')}
                       rows={4}
-                      className="w-full rounded-lg border border-warm-gray-200 px-3 py-2"
+                      className="w-full rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                     />
                   </div>
 
@@ -752,7 +765,7 @@ export default function StaticBookingInfo() {
                       type="checkbox"
                       checked={hasConsent}
                       onChange={(event) => setHasConsent(event.target.checked)}
-                      className="mt-1 h-4 w-4 rounded border-warm-gray-300"
+                      className="mt-0.5 h-5 w-5 shrink-0 rounded border-warm-gray-300"
                     />
                     <span>{t('consent')}</span>
                   </label>
@@ -760,7 +773,7 @@ export default function StaticBookingInfo() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full rounded-lg bg-papagoi-green text-white font-semibold py-3 hover:bg-papagoi-green/90 transition-colors"
+                    className="w-full min-h-[48px] rounded-lg bg-papagoi-green text-white font-semibold py-3 hover:bg-papagoi-green/90 transition-colors touch-manipulation"
                   >
                     {isSubmitting ? t('submitting') : t('submitButton')}
                   </button>

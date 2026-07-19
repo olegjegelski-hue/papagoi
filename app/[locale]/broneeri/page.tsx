@@ -47,17 +47,17 @@ export default async function BookingPage({ params }: Props) {
   const t = await getTranslations('BroneeriPage')
 
   return (
-    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+    <div className="min-h-screen bg-papagoi-beige-50 pt-8 sm:pt-12 pb-28 sm:pb-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
             <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">{t('title')}</span>
           </h1>
-          <p className="text-xl text-deep-anthracite-700 max-w-3xl mx-auto">{t('intro')}</p>
+          <p className="text-base sm:text-xl text-deep-anthracite-700 max-w-3xl mx-auto">{t('intro')}</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="lg:col-span-2 min-w-0">
             <StaticBookingInfo />
           </div>
 
