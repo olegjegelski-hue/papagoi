@@ -6,49 +6,64 @@ import { useTranslations } from 'next-intl'
 import { KINKEKAART_PATH } from '@/lib/site-links'
 
 type Props = {
-  /** hero = heledad kaardid tumedal taustal; plain = heleda tausta sektsioon */
+  /** hero = pealehe CTA-paar; plain = heleda tausta sektsioon */
   variant?: 'hero' | 'plain'
 }
 
+/**
+ * Kaks peamist tegevust (broneeri / kinkekaart).
+ * Hero: suured gradient-CTA-d klaasitaustal — mitte beige info-kastid nagu Peredele jms.
+ */
 export default function IntentPaths({ variant = 'hero' }: Props) {
   const t = useTranslations('IntentPaths')
 
-  const grid =
-    variant === 'hero'
-      ? 'grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto mb-12'
-      : 'grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto'
+  if (variant === 'plain') {
+    return (
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch max-w-2xl mx-auto">
+        <Link href="/broneeri" className="papagoi-cta flex-1">
+          <Calendar className="h-5 w-5" aria-hidden />
+          <span>{t('visitCta')}</span>
+        </Link>
+        <Link
+          href={KINKEKAART_PATH}
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full px-8 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-br from-papagoi-orange to-papagoi-red hover:shadow-papagoi-orange/40"
+        >
+          <Gift className="h-5 w-5" aria-hidden />
+          <span>{t('giftCta')}</span>
+        </Link>
+      </div>
+    )
+  }
 
   return (
-    <div className={grid}>
-      <Link
-        href="/broneeri"
-        className="group flex flex-col items-start rounded-2xl bg-white p-6 text-left shadow-2xl border-2 border-papagoi-green/30 hover:border-papagoi-green hover:shadow-papagoi-green/20 hover:-translate-y-0.5 transition-all duration-300"
-      >
-        <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-papagoi-green/15 text-papagoi-green group-hover:bg-papagoi-green group-hover:text-white transition-colors">
-          <Calendar className="h-6 w-6" aria-hidden />
-        </span>
-        <h3 className="text-xl font-bold text-deep-anthracite mb-2">{t('visitTitle')}</h3>
-        <p className="text-sm text-warm-gray-600 mb-4 flex-1">{t('visitDesc')}</p>
-        <span className="inline-flex items-center gap-2 font-semibold text-papagoi-green group-hover:underline">
-          <Calendar className="h-4 w-4" aria-hidden />
-          {t('visitCta')}
-        </span>
-      </Link>
+    <div className="max-w-3xl mx-auto mb-14">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch">
+        <Link
+          href="/broneeri"
+          className="group relative flex flex-1 flex-col items-center justify-center gap-1 rounded-full px-8 py-5 text-center text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(67,160,71,0.45)] bg-gradient-to-br from-[#43A047] to-[#039BE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          <span className="inline-flex items-center gap-2 text-lg md:text-xl font-bold tracking-tight">
+            <Calendar className="h-5 w-5 shrink-0 opacity-95" aria-hidden />
+            {t('visitTitle')}
+          </span>
+          <span className="text-sm font-medium text-white/90 max-w-[16rem] leading-snug">
+            {t('visitDesc')}
+          </span>
+        </Link>
 
-      <Link
-        href={KINKEKAART_PATH}
-        className="group flex flex-col items-start rounded-2xl bg-white p-6 text-left shadow-2xl border-2 border-papagoi-orange/40 hover:border-papagoi-orange hover:shadow-papagoi-orange/20 hover:-translate-y-0.5 transition-all duration-300"
-      >
-        <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-papagoi-orange/15 text-papagoi-orange group-hover:bg-papagoi-orange group-hover:text-white transition-colors">
-          <Gift className="h-6 w-6" aria-hidden />
-        </span>
-        <h3 className="text-xl font-bold text-deep-anthracite mb-2">{t('giftTitle')}</h3>
-        <p className="text-sm text-warm-gray-600 mb-4 flex-1">{t('giftDesc')}</p>
-        <span className="inline-flex items-center gap-2 font-semibold text-papagoi-orange group-hover:underline">
-          <Gift className="h-4 w-4" aria-hidden />
-          {t('giftCta')}
-        </span>
-      </Link>
+        <Link
+          href={KINKEKAART_PATH}
+          className="group relative flex flex-1 flex-col items-center justify-center gap-1 rounded-full px-8 py-5 text-center text-white shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(255,152,0,0.45)] bg-gradient-to-br from-papagoi-orange to-papagoi-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          <span className="inline-flex items-center gap-2 text-lg md:text-xl font-bold tracking-tight">
+            <Gift className="h-5 w-5 shrink-0 opacity-95" aria-hidden />
+            {t('giftTitle')}
+          </span>
+          <span className="text-sm font-medium text-white/90 max-w-[16rem] leading-snug">
+            {t('giftDesc')}
+          </span>
+        </Link>
+      </div>
     </div>
   )
 }
