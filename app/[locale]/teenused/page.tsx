@@ -4,6 +4,7 @@ import ServiceSchema from '@/components/ServiceSchema'
 import GiftCardCTA from '@/components/GiftCardCTA'
 import GroupVisitsCards from '@/components/GroupVisitsCards'
 import PetsVillaLink from '@/components/PetsVillaLink'
+import ScrollToHash from '@/components/ScrollToHash'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getSiteUrl, pageAlternates } from '@/lib/seo'
@@ -64,6 +65,7 @@ export default async function TeenusedPage({ params }: Props) {
   return (
     <>
       <ServiceSchema />
+      <ScrollToHash />
       <div className="min-h-screen bg-gradient-to-b from-papagoi-beige-50 via-papagoi-beige to-papagoi-green-50/50">
         <main className="pt-12 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,7 +79,7 @@ export default async function TeenusedPage({ params }: Props) {
             </p>
           </div>
 
-          <div className="bg-papagoi-beige-100 text-card-foreground border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+          <div id="kulastus" className="scroll-mt-28 bg-papagoi-beige-100 text-card-foreground border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('visitTitle')}</h2>
               <p className="text-xl opacity-90">{t('visitSubtitle')}</p>
@@ -165,7 +167,7 @@ export default async function TeenusedPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+          <div id="grupikylastused" className="scroll-mt-28 bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('groupTitle')}</h2>
               <p className="text-xl opacity-90">{t('groupSubtitle')}</p>

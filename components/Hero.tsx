@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { Users, Star, Clock } from 'lucide-react'
+import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import IntentPaths from '@/components/IntentPaths'
 
@@ -52,17 +53,35 @@ export default function Hero() {
         <IntentPaths variant="hero" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300">
+          <div className="flex flex-col bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-green hover:scale-105 transition-transform duration-300 text-left">
             <h3 className="font-bold text-lg text-papagoi-green mb-2">{t('forFamilies')}</h3>
-            <p className="text-deep-anthracite-700">{t('forFamiliesDesc')}</p>
+            <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forFamiliesDesc')}</p>
+            <Link
+              href={{ pathname: '/teenused', hash: 'kulastus' }}
+              className="font-semibold text-papagoi-green hover:underline underline-offset-2"
+            >
+              {t('learnMore')}
+            </Link>
           </div>
-          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-blue hover:scale-105 transition-transform duration-300">
+          <div className="flex flex-col bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-blue hover:scale-105 transition-transform duration-300 text-left">
             <h3 className="font-bold text-lg text-papagoi-blue mb-2">{t('forSchools')}</h3>
-            <p className="text-deep-anthracite-700">{t('forSchoolsDesc')}</p>
+            <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forSchoolsDesc')}</p>
+            <Link
+              href={{ pathname: '/teenused', hash: 'grupikylastused' }}
+              className="font-semibold text-papagoi-blue hover:underline underline-offset-2"
+            >
+              {t('learnMore')}
+            </Link>
           </div>
-          <div className="bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-orange hover:scale-105 transition-transform duration-300">
+          <div className="flex flex-col bg-papagoi-beige-100 rounded-xl p-6 shadow-2xl border-l-4 border-papagoi-orange hover:scale-105 transition-transform duration-300 text-left">
             <h3 className="font-bold text-lg text-papagoi-orange mb-2">{t('forBusiness')}</h3>
-            <p className="text-deep-anthracite-700">{t('forBusinessDesc')}</p>
+            <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forBusinessDesc')}</p>
+            <Link
+              href={{ pathname: '/teenused', hash: 'grupikylastused' }}
+              className="font-semibold text-papagoi-orange hover:underline underline-offset-2"
+            >
+              {t('learnMore')}
+            </Link>
           </div>
         </div>
 
