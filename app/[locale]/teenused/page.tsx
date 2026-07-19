@@ -79,7 +79,7 @@ export default async function TeenusedPage({ params }: Props) {
             </p>
           </div>
 
-          <div id="kulastus" className="scroll-mt-28 bg-papagoi-beige-100 text-card-foreground border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+          <div id="kulastus" className="scroll-mt-[12.5rem] bg-papagoi-beige-100 text-card-foreground border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-green-500 to-blue-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('visitTitle')}</h2>
               <p className="text-xl opacity-90">{t('visitSubtitle')}</p>
@@ -167,7 +167,7 @@ export default async function TeenusedPage({ params }: Props) {
             </div>
           </div>
 
-          <div id="grupikylastused" className="scroll-mt-28 bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+          <div id="grupikylastused" className="scroll-mt-[12.5rem] bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('groupTitle')}</h2>
               <p className="text-xl opacity-90">{t('groupSubtitle')}</p>

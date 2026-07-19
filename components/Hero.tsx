@@ -58,7 +58,7 @@ export default function Hero() {
             <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forFamiliesDesc')}</p>
             <Link
               href={{ pathname: '/teenused', hash: 'kulastus' }}
-              className="font-semibold text-papagoi-green hover:underline underline-offset-2"
+              className="mt-auto w-full text-center font-semibold text-papagoi-green hover:underline underline-offset-2"
             >
               {t('learnMore')}
             </Link>
@@ -68,7 +68,7 @@ export default function Hero() {
             <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forSchoolsDesc')}</p>
             <Link
               href={{ pathname: '/teenused', hash: 'grupikylastused' }}
-              className="font-semibold text-papagoi-blue hover:underline underline-offset-2"
+              className="mt-auto w-full text-center font-semibold text-papagoi-blue hover:underline underline-offset-2"
             >
               {t('learnMore')}
             </Link>
@@ -78,7 +78,7 @@ export default function Hero() {
             <p className="text-deep-anthracite-700 flex-1 mb-4">{t('forBusinessDesc')}</p>
             <Link
               href={{ pathname: '/teenused', hash: 'grupikylastused' }}
-              className="font-semibold text-papagoi-orange hover:underline underline-offset-2"
+              className="mt-auto w-full text-center font-semibold text-papagoi-orange hover:underline underline-offset-2"
             >
               {t('learnMore')}
             </Link>
