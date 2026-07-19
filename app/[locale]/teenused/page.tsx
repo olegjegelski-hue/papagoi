@@ -211,6 +211,9 @@ export default async function TeenusedPage({ params }: Props) {
               <div className="bg-pink-50 rounded-xl p-4">
                 <p className="text-gray-700">{t('birthdayPrice')}</p>
               </div>
+              <p className="mt-6 text-center text-gray-700 leading-relaxed">
+                {t('birthdaySimpleTip')}
+              </p>
               {bookButton}
             </div>
           </div>
