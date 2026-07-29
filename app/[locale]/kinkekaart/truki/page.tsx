@@ -2,6 +2,20 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getGiftCardDetailsByCode } from '@/lib/notion-gift-card-lookup'
 
+function formatEeDate(input: string): string {
+  const raw = (input || '').trim()
+  if (!raw) return ''
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (iso) return `${iso[3]}.${iso[2]}.${iso[1]}`
+  const slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (slash) {
+    return `${slash[1].padStart(2, '0')}.${slash[2].padStart(2, '0')}.${slash[3]}`
+  }
+  const ee = raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/)
+  if (ee) return `${ee[1].padStart(2, '0')}.${ee[2].padStart(2, '0')}.${ee[3]}`
+  return raw
+}
+
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
@@ -74,6 +88,7 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
 
   const printApi = `/api/gift-card-print?code=${encodeURIComponent(details.code)}`
   const previewSrc = `${printApi}&format=png&disposition=inline`
+  const validUntilLabel = formatEeDate(details.validUntil) || details.validUntil || '—'
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-papagoi-beige-50 px-4 py-12">
@@ -81,7 +96,7 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
       <p className="mb-6 text-center text-sm text-warm-gray-600">
         <span className="font-medium text-deep-anthracite">{details.code}</span>
         {' · '}
-        {details.amountEur} € · {t('validUntil')} {details.validUntil || '—'}
+        {details.amountEur} € · {t('validUntil')} {validUntilLabel}
       </p>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}

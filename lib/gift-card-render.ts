@@ -395,8 +395,10 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
       deviceScaleFactor: 1,
     })
 
-    await page.setContent(html, { waitUntil: 'networkidle' })
-    await page.waitForTimeout(300) // kindlustame, et font/assetid on jõudnud renderduda
+    // networkidle + Google Fonts põhjustab Vercelil tihti
+    // "Target page, context or browser has been closed"
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 30_000 })
+    await new Promise((r) => setTimeout(r, 400))
 
     const pngBuffer = await page.screenshot({
       type: 'png',

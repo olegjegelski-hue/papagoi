@@ -69,10 +69,21 @@ function readEmail(p: any): string | null {
   return null
 }
 
+function normalizePropKey(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFC')
+    .replace(/ä/g, 'a')
+    .replace(/ö/g, 'o')
+    .replace(/ü/g, 'u')
+    .replace(/õ/g, 'o')
+    .replace(/\s+/g, '')
+}
+
 function getProp(props: NotionGiftCardPropertyMap, name: string): any {
   if (Object.prototype.hasOwnProperty.call(props, name)) return props[name]
-  const needle = name.toLowerCase().normalize('NFC')
-  const key = Object.keys(props).find((k) => k.toLowerCase().normalize('NFC') === needle)
+  const needle = normalizePropKey(name)
+  const key = Object.keys(props).find((k) => normalizePropKey(k) === needle)
   return key ? props[key] : undefined
 }
 

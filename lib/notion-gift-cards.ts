@@ -34,12 +34,22 @@ function findProp(
   typeFilter?: string
 ): string | null {
   const normalizedTargets = exactNames.map((n) => normalizeKey(n))
+
+  // 1) Täpne nimi (väldi „Kuupäev“ ↔ „Kasutatud kuupäev“ valepositiivset)
   for (const [key, prop] of Object.entries(properties)) {
     if (typeFilter && prop?.type !== typeFilter) continue
     const propName = (prop?.name ?? key).toString()
     const n = normalizeKey(propName)
-    if (normalizedTargets.some((t) => n === t || n.includes(t) || t.includes(n)))
-      return key
+    if (normalizedTargets.some((t) => n === t)) return key
+  }
+
+  // 2) Sisaldumine — aga ära vali „kasutatud…“ kui otsime ostukuupäeva
+  for (const [key, prop] of Object.entries(properties)) {
+    if (typeFilter && prop?.type !== typeFilter) continue
+    const propName = (prop?.name ?? key).toString()
+    const n = normalizeKey(propName)
+    if (n.includes('kasutatud')) continue
+    if (normalizedTargets.some((t) => n.includes(t) || t.includes(n))) return key
   }
   return null
 }
