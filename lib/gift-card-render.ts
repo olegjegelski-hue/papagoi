@@ -10,15 +10,23 @@ export interface GiftCardRenderInput {
   qrUrl: string
 }
 
-/** Logo baasi64-sse — Vercelil pole vaja logo.png võrgu kaudu laadida (www redirect + networkidle crash). */
+/** Väike JPEG logo baasi64-sse — suur PNG (~340KB) kukutab Vercel Chromiumi. */
 function getLogoDataUri(): string {
-  try {
-    const buf = readFileSync(join(process.cwd(), 'public', 'logo.png'))
-    return `data:image/png;base64,${buf.toString('base64')}`
-  } catch (err) {
-    console.error('[gift-card-render] logo.png puudub, fallback URL:', err)
-    return 'https://www.papagoi.ee/logo.png'
+  const candidates = [
+    join(process.cwd(), 'public', 'gift-card', 'logo-card.jpg'),
+    join(process.cwd(), 'public', 'logo.png'),
+  ]
+  for (const path of candidates) {
+    try {
+      const buf = readFileSync(path)
+      const mime = path.endsWith('.jpg') || path.endsWith('.jpeg') ? 'image/jpeg' : 'image/png'
+      return `data:${mime};base64,${buf.toString('base64')}`
+    } catch {
+      /* proovi järgmist */
+    }
   }
+  console.error('[gift-card-render] logo puudub, fallback URL')
+  return 'https://www.papagoi.ee/logo.png'
 }
 
 /** Vercel x64 pack — chromium-min laeb binaari esimesel käivitamisel /tmp alla */
@@ -403,14 +411,15 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
       deviceScaleFactor: 1,
     })
 
-    // Ainult inline assetid (logo data-URI, süsteemifondid) — ei vaja networkidle
-    await page.setContent(html, { waitUntil: 'load', timeout: 30_000 })
+    // Inline JPEG logo (~50KB) + süsteemifondid — ei vaja networkidle/Google Fonts
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 30_000 })
     await page.waitForFunction(() => {
       const img = document.querySelector('img.gc-logo') as HTMLImageElement | null
       return Boolean(img && img.complete && img.naturalWidth > 0)
-    }, { timeout: 10_000 }).catch(() => {
+    }, { timeout: 5_000 }).catch(() => {
       /* logo puudumisel jätkame — kuupäev/summa peavad ikkagi pildile minema */
     })
+    await new Promise((r) => setTimeout(r, 100))
 
     const pngBuffer = await page.screenshot({
       type: 'png',
