@@ -383,7 +383,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       recipient: 'Saaja:',
       recipientValue: 'PetsVilla OÜ',
       iban: 'IBAN:',
-      ibanValue: 'EE612200221093596096',
+      ibanValue: 'EE252200221078273363',
       reference: 'Selgitus:',
       referenceValue: (code: string) => `Kinkekaart ${code}`,
       afterTransfer:
@@ -409,7 +409,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       recipient: 'Recipient:',
       recipientValue: 'PetsVilla OÜ',
       iban: 'IBAN:',
-      ibanValue: 'EE612200221093596096',
+      ibanValue: 'EE252200221078273363',
       reference: 'Payment reference:',
       referenceValue: (code: string) => `Gift card ${code}`,
       afterTransfer:
@@ -436,7 +436,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       recipient: 'Получатель:',
       recipientValue: 'PetsVilla OÜ',
       iban: 'IBAN:',
-      ibanValue: 'EE612200221093596096',
+      ibanValue: 'EE252200221078273363',
       reference: 'Назначение платежа:',
       referenceValue: (code: string) => `Подарочная карта ${code}`,
       afterTransfer:
