@@ -54,6 +54,7 @@ export async function GET(request: Request) {
             filter: { property: 'Kinkekaardi kood', title: { equals: code } },
             page_size: 1,
           }),
+          cache: 'no-store',
         })
         const data = await res.json()
         const page = data?.results?.[0]

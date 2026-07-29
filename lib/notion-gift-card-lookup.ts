@@ -2,7 +2,8 @@ async function fetchNotion(url: string, options: RequestInit) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 15000)
   try {
-    return await fetch(url, { ...options, signal: controller.signal })
+    // Kinkekaardi staatus/kuupäevad muutuvad — Next.js ei tohi fetch'i cache'ida
+    return await fetch(url, { ...options, signal: controller.signal, cache: 'no-store' })
   } finally {
     clearTimeout(timeoutId)
   }

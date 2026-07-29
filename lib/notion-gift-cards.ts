@@ -14,7 +14,7 @@ async function fetchNotion(url: string, options: RequestInit) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 10000)
   try {
-    return await fetch(url, { ...options, signal: controller.signal })
+    return await fetch(url, { ...options, signal: controller.signal, cache: 'no-store' })
   } finally {
     clearTimeout(timeoutId)
   }
