@@ -62,6 +62,7 @@ export async function GET(request: Request) {
           notionStatus: res.status,
           pageId: page?.id ?? null,
           dbSuffix: dbId.slice(-8),
+          keySuffix: NOTION_API_KEY.slice(-4),
           propKeys: Object.keys(props),
           aegub: props['Aegub']?.formula ?? props['Aegub'] ?? null,
           ostu: props['Ostu kuupäev']?.date ?? null,

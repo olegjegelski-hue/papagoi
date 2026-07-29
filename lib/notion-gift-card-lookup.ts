@@ -98,22 +98,46 @@ function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
     if (v && /\d{4}/.test(v)) return v
   }
 
-  const purchase =
+  let purchase =
     readValidUntil(getProp(props, 'Ostu kuupäev')) ||
     readValidUntil(getProp(props, 'Ostu kuupaev')) ||
     (() => {
       for (const [k, p] of Object.entries(props)) {
         if (p?.type !== 'date' || !p.date?.start) continue
         const nk = normalizePropKey(k)
-        // ära kasuta „kasutatud“ kuupäeva ostukuupäevana
         if (nk.includes('kasutatud')) continue
         if (nk.includes('ostu') || nk === 'kuupaev' || nk === 'date') return p.date.start as string
       }
       return ''
     })()
 
+  // Jäänuk: createGiftCardOrder kirjutas vahel ostukuupäeva „Kasutatud“ väljale
+  if (!purchase) {
+    const mistaken = readValidUntil(getProp(props, 'Kasutatud kuupäev'))
+    if (mistaken) purchase = mistaken
+  }
+
   if (purchase) return fallbackValidUntilFromPurchase(purchase)
   return ''
+}
+
+function resolveUsedAt(props: NotionGiftCardPropertyMap): string | null {
+  const used = readUsedAt(getProp(props, 'Kasutatud kuupäev'))
+  if (!used) return null
+
+  const purchase =
+    readValidUntil(getProp(props, 'Ostu kuupäev')) ||
+    readValidUntil(getProp(props, 'Ostu kuupaev'))
+
+  // Kui Ostu tühi ja Staatus aktiivne, on „Kasutatud“ tõenäoliselt vale ostukuupäev
+  const statusProp = getProp(props, 'Staatus')
+  const statusName =
+    statusProp?.select?.name || statusProp?.status?.name || statusProp?.rich_text?.[0]?.plain_text || ''
+  if (!purchase && /aktiivne/i.test(statusName)) {
+    return null
+  }
+
+  return used
 }
 
 function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCardDetails {
@@ -136,7 +160,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
   })()
 
   const buyerEmail = readEmail(props['Ostja email'])
-  const usedAt = readUsedAt(props['Kasutatud kuupäev'])
+  const usedAt = resolveUsedAt(props)
   const qrUrl = props['QR URL']?.url ?? null
 
   return {
