@@ -87,8 +87,16 @@ export default async function KinkekaartTrukiPage({ params, searchParams }: Prop
   }
 
   const printApi = `/api/gift-card-print?code=${encodeURIComponent(details.code)}`
-  const previewSrc = `${printApi}&format=png&disposition=inline`
+  // Cache-bust: brauser võib vana 500 JSON-i pildina cache’ida
+  const previewSrc = `${printApi}&format=png&disposition=inline&v=${encodeURIComponent(details.validUntil || 'na')}-${details.amountEur}`
   const validUntilLabel = formatEeDate(details.validUntil) || details.validUntil || '—'
+
+  if (!details.validUntil) {
+    console.warn('[kinkekaart/truki] validUntil tühi Notionist', {
+      code: details.code,
+      amountEur: details.amountEur,
+    })
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-papagoi-beige-50 px-4 py-12">

@@ -100,9 +100,14 @@ function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
 
   const purchase =
     readValidUntil(getProp(props, 'Ostu kuupäev')) ||
+    readValidUntil(getProp(props, 'Ostu kuupaev')) ||
     (() => {
       for (const [k, p] of Object.entries(props)) {
-        if (p?.type === 'date' && p.date?.start && /ostu/i.test(k)) return p.date.start as string
+        if (p?.type !== 'date' || !p.date?.start) continue
+        const nk = normalizePropKey(k)
+        // ära kasuta „kasutatud“ kuupäeva ostukuupäevana
+        if (nk.includes('kasutatud')) continue
+        if (nk.includes('ostu') || nk === 'kuupaev' || nk === 'date') return p.date.start as string
       }
       return ''
     })()

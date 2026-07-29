@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
 import QRCode from 'qrcode'
 import { chromium as playwrightChromium } from 'playwright-core'
 
@@ -6,6 +8,17 @@ export interface GiftCardRenderInput {
   amountEur: number
   validUntil: string
   qrUrl: string
+}
+
+/** Logo baasi64-sse — Vercelil pole vaja logo.png võrgu kaudu laadida (www redirect + networkidle crash). */
+function getLogoDataUri(): string {
+  try {
+    const buf = readFileSync(join(process.cwd(), 'public', 'logo.png'))
+    return `data:image/png;base64,${buf.toString('base64')}`
+  } catch (err) {
+    console.error('[gift-card-render] logo.png puudub, fallback URL:', err)
+    return 'https://www.papagoi.ee/logo.png'
+  }
 }
 
 /** Vercel x64 pack — chromium-min laeb binaari esimesel käivitamisel /tmp alla */
@@ -80,9 +93,6 @@ function buildGiftCardHtml(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=${CARD_WIDTH_PX}, initial-scale=1" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
     <style>
       :root{
         --green:#43A047;
@@ -97,7 +107,7 @@ function buildGiftCardHtml(
       body{
         margin:0;
         background:transparent;
-        font-family: "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         color:var(--text);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -165,7 +175,7 @@ function buildGiftCardHtml(
         border: 1px solid rgba(38,50,56,.12);
       }
       .gc-titleText{
-        font-family: "Nunito", system-ui, sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         font-weight: 900;
         font-size: 92px;
         line-height: 0.92;
@@ -209,7 +219,7 @@ function buildGiftCardHtml(
         margin-top: 14px;
       }
       .gc-sumLine{
-        font-family: "Nunito", system-ui, sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         font-weight: 900;
         color: var(--brown);
         font-size: 40px;
@@ -370,8 +380,7 @@ function buildGiftCardHtml(
 }
 
 export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
-  const logoUrl = `${baseUrl}/logo.png`
+  const logoUrl = getLogoDataUri()
 
   const qrSvg = await QRCode.toString(input.qrUrl, {
     type: 'svg',
@@ -381,7 +390,6 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
     scale: 4,
   })
 
-  // Kasutame olemasolevaid saidil olevaid pilte (CDN), et kaardil oleks “fotoread” nagu vana disain.
   const html = buildGiftCardHtml({
     ...input,
     qrSvg,
@@ -395,10 +403,14 @@ export async function renderGiftCardToPngPdf(input: GiftCardRenderInput) {
       deviceScaleFactor: 1,
     })
 
-    // networkidle + Google Fonts põhjustab Vercelil tihti
-    // "Target page, context or browser has been closed"
-    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 30_000 })
-    await new Promise((r) => setTimeout(r, 400))
+    // Ainult inline assetid (logo data-URI, süsteemifondid) — ei vaja networkidle
+    await page.setContent(html, { waitUntil: 'load', timeout: 30_000 })
+    await page.waitForFunction(() => {
+      const img = document.querySelector('img.gc-logo') as HTMLImageElement | null
+      return Boolean(img && img.complete && img.naturalWidth > 0)
+    }, { timeout: 10_000 }).catch(() => {
+      /* logo puudumisel jätkame — kuupäev/summa peavad ikkagi pildile minema */
+    })
 
     const pngBuffer = await page.screenshot({
       type: 'png',
