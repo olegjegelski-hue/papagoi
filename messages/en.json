@@ -53,6 +53,12 @@
     "subtitle": "Buy a gift card and delight someone with a parrot visit.",
     "buyGiftCard": "Buy a gift card"
   },
+  "Home": {
+    "partner": {
+      "heading": "Our partner",
+      "lead": "Fresh greens for our parrots and guinea pigs are provided by"
+    }
+  },
   "Statistics": {
     "title": "Our achievements in numbers",
     "subtitle": "11 years of experience and thousands of happy visitors",

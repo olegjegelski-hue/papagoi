@@ -6,6 +6,7 @@ import Statistics from '@/components/Statistics'
 import TestimonialsSection from '@/components/testimonials-section'
 import SectionDivider from '@/components/SectionDivider'
 import PetsVillaLink from '@/components/PetsVillaLink'
+import HomePartners from '@/components/HomePartners'
 import { ExternalLink } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
@@ -68,7 +69,7 @@ export default async function Home({ params }: Props) {
       <TestimonialsSection />
       <SectionDivider variant="wave" />
       <GiftCardCTA />
-      <section className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mx-4 sm:mx-6 lg:mx-8 mt-8 mb-16">
+      <section className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mx-4 sm:mx-6 lg:mx-8 mt-8 mb-8">
         <div className="bg-gradient-to-r from-red-500 to-orange-600 p-8 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-2">{t('saleTitle')}</h2>
           <p className="text-lg opacity-90">{t('saleSubtitle')}</p>
@@ -86,6 +87,7 @@ export default async function Home({ params }: Props) {
           </div>
         </div>
       </section>
+      <HomePartners />
     </>
   )
 }

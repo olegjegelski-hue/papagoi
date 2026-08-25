@@ -53,6 +53,12 @@
     "subtitle": "Osta kinkekaart ja rõõmusta kedagi papagoide-külastusega.",
     "buyGiftCard": "Osta kinkekaart"
   },
+  "Home": {
+    "partner": {
+      "heading": "Koostööpartner",
+      "lead": "Meie papagoide ja merisigade värske toidulaua eest hoolitseb"
+    }
+  },
   "Statistics": {
     "title": "Meie saavutused arvudes",
     "subtitle": "11 aastat kogemust ning tuhandeid rõõmsaid kliente",
