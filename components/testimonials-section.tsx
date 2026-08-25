@@ -6,6 +6,7 @@ import { Star, ExternalLink } from 'lucide-react'
 import { useInView } from 'react-intersection-observer'
 import { useTranslations } from 'next-intl'
 import GoogleRating from './GoogleRating'
+import { loadGoogleReviews } from '@/lib/google-reviews-client'
 
 interface GoogleReview {
   author_name: string
@@ -19,13 +20,18 @@ export default function TestimonialsSection() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true })
   const [googleReviews, setGoogleReviews] = React.useState<GoogleReview[]>([])
   const [googleReviewsLoaded, setGoogleReviewsLoaded] = React.useState(false)
+  const [rating, setRating] = React.useState<number | undefined>(undefined)
+  const [reviewCount, setReviewCount] = React.useState(0)
   const t = useTranslations('Testimonials')
 
   React.useEffect(() => {
     async function fetchGoogleReviews() {
       try {
-        const response = await fetch('/api/google-reviews')
-        const data = await response.json()
+        const data = await loadGoogleReviews()
+        setRating(typeof data.rating === 'number' ? data.rating : 5.0)
+        setReviewCount(
+          typeof data.user_ratings_total === 'number' ? data.user_ratings_total : 0
+        )
         if (Array.isArray(data.reviews)) {
           const withText = data.reviews.filter((r: GoogleReview) => r.text && r.text.trim().length > 0)
           const byNewest = [...withText].sort((a, b) => (b.time ?? 0) - (a.time ?? 0))
@@ -33,6 +39,8 @@ export default function TestimonialsSection() {
         }
       } catch (error) {
         console.error('Error fetching Google reviews:', error)
+        setRating(5.0)
+        setReviewCount(0)
       } finally {
         setGoogleReviewsLoaded(true)
       }
@@ -65,7 +73,11 @@ export default function TestimonialsSection() {
 
         <div className="mt-1 mb-3 flex justify-center">
           <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-3xl px-6 py-4 text-white inline-block shadow-lg">
-            <GoogleRating />
+            <GoogleRating
+              loading={!googleReviewsLoaded}
+              rating={rating}
+              userRatingsTotal={reviewCount}
+            />
           </div>
         </div>
 

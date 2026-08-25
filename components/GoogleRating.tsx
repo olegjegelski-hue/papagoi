@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { loadGoogleReviews } from '@/lib/google-reviews-client'
 
 interface GoogleRatingData {
   rating: number
@@ -10,27 +11,51 @@ interface GoogleRatingData {
   error?: string
 }
 
-export default function GoogleRating() {
+type GoogleRatingProps = {
+  rating?: number
+  userRatingsTotal?: number
+  loading?: boolean
+}
+
+export default function GoogleRating({
+  rating: ratingProp,
+  userRatingsTotal: countProp,
+  loading: loadingProp,
+}: GoogleRatingProps = {}) {
   const t = useTranslations('GoogleRating')
-  const [ratingData, setRatingData] = useState<GoogleRatingData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const fromParent = loadingProp !== undefined || ratingProp !== undefined
+  const [fetched, setFetched] = useState<GoogleRatingData | null>(null)
+  const [fetchLoading, setFetchLoading] = useState(!fromParent)
 
   useEffect(() => {
+    if (fromParent) return
+
     async function fetchRating() {
       try {
-        const response = await fetch('/api/google-reviews')
-        const data = await response.json()
-        setRatingData(data)
+        const data = await loadGoogleReviews()
+        setFetched({
+          rating: typeof data.rating === 'number' ? data.rating : 5.0,
+          user_ratings_total:
+            typeof data.user_ratings_total === 'number' ? data.user_ratings_total : 0,
+          error: data.error,
+        })
       } catch (error) {
         console.error('Error fetching Google rating:', error)
-        setRatingData({ rating: 5.0, user_ratings_total: 0 })
+        setFetched({ rating: 5.0, user_ratings_total: 0 })
       } finally {
-        setLoading(false)
+        setFetchLoading(false)
       }
     }
 
     fetchRating()
-  }, [])
+  }, [fromParent])
+
+  const loading = fromParent ? Boolean(loadingProp) : fetchLoading
+  const ratingData: GoogleRatingData | null = fromParent
+    ? ratingProp !== undefined
+      ? { rating: ratingProp, user_ratings_total: countProp ?? 0 }
+      : null
+    : fetched
 
   if (loading) {
     return (
