@@ -9,16 +9,11 @@
   --background-rgb: 232, 228, 223;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 0, 0, 0;
-  }
-}
-
 html {
   /* Vältida võimalikku lehe ümberpööramist */
   transform: none;
+  /* Sait on hele bränd; ära lase Chrome'il vormikontrolle tumedaks keerata */
+  color-scheme: light;
 }
 
 body {
@@ -31,6 +26,41 @@ body {
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-nunito), system-ui, sans-serif;
+  }
+
+  /*
+    Vormiväljad peavad värvi ise määrama. Muidu Android Chrome tumedas režiimis
+    pärib body valge teksti, aga jätab välja tausta heledaks → tekst on nähtamatu.
+  */
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='hidden']):not([type='submit']):not([type='button']):not([type='reset']):not([type='image']):not([type='color']),
+  textarea,
+  select {
+    color: #263238;
+    background-color: #fff;
+    -webkit-text-fill-color: #263238;
+    caret-color: #263238;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #757575;
+    -webkit-text-fill-color: #757575;
+    opacity: 1;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #263238;
+    caret-color: #263238;
+    box-shadow: 0 0 0 1000px #fff inset;
+    transition: background-color 99999s ease-out;
   }
 }
 
