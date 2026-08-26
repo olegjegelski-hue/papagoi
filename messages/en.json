@@ -370,7 +370,50 @@
     "ctaTitle": "Ready to visit our family?",
     "ctaSubtitle": "Book your visit today and experience something special!",
     "ctaBook": "Book a time",
-    "ctaPhone": "Call: +372 512 7938"
+    "ctaPhone": "Call: +372 512 7938",
+    "faqTitle": "Frequently asked questions",
+    "faq": [
+      {
+        "question": "How long does a visit last?",
+        "answer": "A visit lasts about 1 hour."
+      },
+      {
+        "question": "How much does a visit cost?",
+        "answer": "The ticket is €10 per visitor. Minimum 3 people."
+      },
+      {
+        "question": "Do I need to book the visit in advance?",
+        "answer": "Visits take place only with an advance booking."
+      },
+      {
+        "question": "From what age can children visit?",
+        "answer": "There is no age limit, but children only together with parents."
+      },
+      {
+        "question": "Where can I park?",
+        "answer": "Parking is right in front of the building and FREE."
+      },
+      {
+        "question": "Do the parrots bite?",
+        "answer": "No, our parrots do not attack visitors. At the start of every visit the guide explains how to behave with the birds."
+      },
+      {
+        "question": "May I take photos during the visit?",
+        "answer": "Photography and filming are allowed."
+      },
+      {
+        "question": "Can I visit with a gift card?",
+        "answer": "Gift cards are also valid for a visit."
+      },
+      {
+        "question": "Is there wheelchair access?",
+        "answer": "Yes, it is possible. There is one step at the entrance."
+      },
+      {
+        "question": "How large a group can you take?",
+        "answer": "Kindergartens and schools up to 30 people, adults up to 20 people."
+      }
+    ]
   },
   "VisitProcess": {
     "sectionTitle": "How a visit goes",

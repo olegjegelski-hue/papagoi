@@ -1,9 +1,14 @@
-import { Clock, Euro, Users, Camera, Shield, AlertCircle, Phone, Calendar, CheckCircle, XCircle, Info, Car, Baby } from 'lucide-react'
+import { Clock, Euro, Users, Camera, Shield, AlertCircle, Phone, Calendar, CheckCircle, XCircle, Info, Car, Baby, HelpCircle } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import VisitProcess from '@/components/VisitProcess'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getSiteUrl, pageAlternates } from '@/lib/seo'
+
+type FaqItem = {
+  question: string
+  answer: string
+}
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -49,14 +54,36 @@ export default async function VisitorsPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('KulastajatelePage')
+  const baseUrl = getSiteUrl()
   const allowedLi = t.raw('allowedLi') as string[]
   const forbiddenLi = t.raw('forbiddenLi') as string[]
   const tipsLi = t.raw('tipsLi') as string[]
   const babyLi = t.raw('babyLi') as string[]
   const paymentLi = t.raw('paymentLi') as string[]
+  const faqItems = t.raw('faq') as FaqItem[]
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/${locale}/kulastajatele`,
+    },
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-papagoi-beige-50 via-papagoi-beige to-papagoi-green-50/50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <main className="pt-12 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -227,6 +254,21 @@ export default async function VisitorsPage({ params }: Props) {
             </div>
           </div>
 
+
+          <div id="kkk" className="mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <HelpCircle className="w-6 h-6 text-papagoi-green mr-2" />
+              {t('faqTitle')}
+            </h2>
+            <div className="space-y-4">
+              {faqItems.map((item, index) => (
+                <div key={index} className="bg-card text-card-foreground border rounded-xl shadow-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.question}</h3>
+                  <p className="text-gray-700 leading-relaxed">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* CTA */}
           <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-12 text-white text-center">

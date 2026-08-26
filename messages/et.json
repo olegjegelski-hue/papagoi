@@ -370,7 +370,50 @@
     "ctaTitle": "Valmis meie pere külastama?",
     "ctaSubtitle": "Broneerige külastus juba täna ja kogege midagi erilist!",
     "ctaBook": "Broneeri aeg",
-    "ctaPhone": "Helista: +372 512 7938"
+    "ctaPhone": "Helista: +372 512 7938",
+    "faqTitle": "Korduma kippuvad küsimused",
+    "faq": [
+      {
+        "question": "Kui kaua külastus kestab?",
+        "answer": "Külastus kestab ca 1 tund."
+      },
+      {
+        "question": "Kui palju maksab külastus?",
+        "answer": "Pilet on 10 € külastaja. Miinimum 3 inimest."
+      },
+      {
+        "question": "Kas külastuse peab ette broneerima?",
+        "answer": "Külastus toimub ainult ette broneerimisega."
+      },
+      {
+        "question": "Mis vanusest lapsed võivad külastada?",
+        "answer": "Meil pole vanusepiirangut kuid lapsed ainult koos vanematega."
+      },
+      {
+        "question": "Kus saab parkida?",
+        "answer": "Parkimine otse maja ees ja TASUTA."
+      },
+      {
+        "question": "Kas papagoid hammustavad?",
+        "answer": "Ei, meie papagoid ei ründa külastajaid. Iga külastuse alguses juhendab giid, kuidas lindudega käituda."
+      },
+      {
+        "question": "Kas külastuse ajal tohib pildistada?",
+        "answer": "Pildistamine ja filmimine on lubatud."
+      },
+      {
+        "question": "Kas saab kinkekaardiga tulla?",
+        "answer": "Kinkekaardid kehtivad ka külastusele."
+      },
+      {
+        "question": "Kas on ligipääs ratastooliga?",
+        "answer": "Jah on võimalik. Sissepääsul on üks aste."
+      },
+      {
+        "question": "Kui suur grupp mahub?",
+        "answer": "Lasteaiad ja koolid kuni 30 inimest, täiskasvanud kuni 20 inimest."
+      }
+    ]
   },
   "VisitProcess": {
     "sectionTitle": "Külastuse käik",
