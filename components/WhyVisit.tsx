@@ -31,6 +31,10 @@ export default function WhyVisit() {
               <img
                 src="https://cdn.abacus.ai/images/6baf6a7b-99c8-468a-b03c-176e7a3f2380.png"
                 alt={t('imageAlt')}
+                width={4032}
+                height={3024}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-auto rounded-2xl shadow-lg scale-x-[-1]"
               />
               <div className="mt-6 text-center">

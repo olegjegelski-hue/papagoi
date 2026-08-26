@@ -11,13 +11,15 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[115vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-x-0 top-0 z-0 h-[100dvh] pointer-events-none">
         <Image
           src="https://cdn.abacus.ai/images/a53ad376-2734-41bc-b5f8-84dc65645611.png"
           alt={t('heroAraAlt')}
           fill
           className="object-cover object-center"
           priority
+          decoding="sync"
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20"></div>
