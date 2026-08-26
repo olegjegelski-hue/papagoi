@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { fetchGooglePlaceDetails } from '@/lib/google-place-details';
 
 /** Tunni ISR. force-dynamic võitleks revalidate'iga ja nulliks CDN-cache'i (max-age=0). */
 export const revalidate = 3600;
@@ -21,43 +22,24 @@ function errorJson(extra: Record<string, unknown>, status = 503) {
 
 export async function GET() {
   try {
-    const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
-    const EXPLICIT_PLACE_ID = process.env.GOOGLE_PLACES_PLACE_ID;
-
-    if (!GOOGLE_PLACES_API_KEY) {
+    if (!process.env.GOOGLE_PLACES_API_KEY) {
       return errorJson({ error: 'Google Places API key not configured' });
     }
 
-    if (!EXPLICIT_PLACE_ID) {
+    if (!process.env.GOOGLE_PLACES_PLACE_ID) {
       return errorJson({
         error: 'GOOGLE_PLACES_PLACE_ID is not configured on the server',
       });
     }
 
-    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${EXPLICIT_PLACE_ID}&fields=rating,user_ratings_total,reviews&key=${GOOGLE_PLACES_API_KEY}`;
+    const details = await fetchGooglePlaceDetails();
 
-    const detailsResponse = await fetch(detailsUrl, {
-      next: { revalidate: 3600 },
-    });
-    const detailsData = await detailsResponse.json();
-
-    if (detailsData.status === 'OK' && detailsData.result) {
-      const reviews = Array.isArray(detailsData.result.reviews)
-        ? detailsData.result.reviews.map((review: any) => ({
-            author_name: review.author_name,
-            rating: review.rating,
-            text: review.text,
-            relative_time_description: review.relative_time_description,
-            profile_photo_url: review.profile_photo_url,
-            time: review.time
-          }))
-        : [];
-
+    if (details.ok) {
       return NextResponse.json(
         {
-          rating: detailsData.result.rating || 5.0,
-          user_ratings_total: detailsData.result.user_ratings_total || 0,
-          reviews,
+          rating: details.data.rating,
+          user_ratings_total: details.data.user_ratings_total,
+          reviews: details.data.reviews,
           success: true,
           source: 'place_id'
         },
@@ -67,13 +49,13 @@ export async function GET() {
 
     // 5xx, et ISR/CDN ei cache'iks veakeha tunniks. Kliendi fallback jääb JSON-i.
     console.error('Google Places details failed', {
-      status: detailsData.status,
-      error_message: detailsData.error_message || null
+      status: details.status,
+      error_message: details.error_message || null
     });
     return errorJson({
       error: 'Google Places details failed',
-      status: detailsData.status,
-      error_message: detailsData.error_message || null
+      status: details.status,
+      error_message: details.error_message || null
     });
   } catch (error) {
     console.error('Error fetching Google reviews:', error);

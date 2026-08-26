@@ -1,6 +1,14 @@
-export default function LocalBusinessSchema() {
+import { aggregateRatingFromPlace, fetchGooglePlaceDetails } from '@/lib/google-place-details'
+
+export default async function LocalBusinessSchema() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
   const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+
+  const place = await fetchGooglePlaceDetails()
+  const aggregateRating = place.ok
+    ? aggregateRatingFromPlace(place.data.rating, place.data.user_ratings_total)
+    : null
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -40,11 +48,7 @@ export default function LocalBusinessSchema() {
         closes: '18:00',
       },
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '5.0',
-      reviewCount: '177',
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     url: normalizedBaseUrl,
     sameAs: [
       'https://www.facebook.com/PapagoiKeskus',
