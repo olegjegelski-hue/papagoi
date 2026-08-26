@@ -1,23 +1,50 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { KINKEKAART_PATH } from '@/lib/site-links'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { useScrollLock } from '@/hooks/use-scroll-lock'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const t = useTranslations('Nav')
   const tCommon = useTranslations('Common')
 
+  useScrollLock(isOpen)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [isOpen])
+
   return (
-    <nav className="bg-papagoi-beige-300/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-papagoi-green/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className={`bg-papagoi-beige-300/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-papagoi-green/30 ${
+        isOpen ? 'flex max-h-[100svh] flex-col overflow-hidden' : ''
+      }`}
+    >
+      {isOpen && (
+        <div
+          role="presentation"
+          className="fixed inset-0 z-40 bg-deep-anthracite/30 touch-none md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <div
+        className={`relative z-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${
+          isOpen ? 'flex min-h-0 max-h-[100svh] flex-1 flex-col overflow-hidden' : ''
+        }`}
+      >
         
         {/* Centered Logo Row with Papagoi [LOGO] Keskus */}
-        <div className="flex justify-center items-center py-4 relative">
+        <div className="flex justify-center items-center py-4 relative shrink-0">
           <Link href="/" className="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 group">
             {/* Papagoi text - Nunito Bold (brändi logo font) */}
             <div className="text-right">
@@ -103,7 +130,9 @@ export default function Navigation() {
           {/* Mobile menu button - positioned absolute to top-right */}
           <div className="md:hidden absolute right-0 top-4">
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
+              aria-expanded={isOpen}
               className="text-deep-anthracite hover:text-papagoi-green focus:outline-none transition-colors duration-300"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -146,7 +175,10 @@ export default function Navigation() {
 
         {/* Mobile Navigation - UUS LIHTSUSTATUD VERSIOON */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2 bg-papagoi-beige-300/98 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/30">
+          <div
+            data-scroll-lock-scrollable=""
+            className="md:hidden min-h-0 flex-1 overflow-y-auto overscroll-contain max-h-[calc(100svh-9rem)] pb-4 space-y-2 bg-papagoi-beige-300/98 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/30"
+          >
             <Link href="/" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
               {t('home')}
             </Link>

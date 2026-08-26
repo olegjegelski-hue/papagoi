@@ -189,3 +189,10 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
+
+/* Overlay (hamburger / keelevalik): taustaleht ei keri, menüü ise võib */
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
