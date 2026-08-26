@@ -15,7 +15,7 @@ export default async function LocalBusinessSchema() {
     name: 'Papagoi Keskus',
     description:
       'Eesti esimene Papagoi Keskus Tartus, alates 2015. Külastus broneerimisega, digitaalne kinkekaart, sünnipäevad ja grupikülastused. Üle 50 papagoi – tule tutvuge meie värvilise perekonnaga!',
-    image: `${normalizedBaseUrl}/logo.png`,
+    image: `${normalizedBaseUrl}/og/default.jpg`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Tartu mnt 80, Soinaste',

@@ -7,7 +7,7 @@ export default function TouristAttractionSchema() {
     name: 'Papagoi Keskus',
     description:
       'Eesti esimene papagoidekeskus Tartus, üle 50 papagoiga. Külastus broneerimisega, digitaalne kinkekaart, giidiga ekskursioonid ja interaktiivne kogemus.',
-    image: `${normalizedBaseUrl}/logo.png`,
+    image: `${normalizedBaseUrl}/og/default.jpg`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Tartu mnt 80, Soinaste',
