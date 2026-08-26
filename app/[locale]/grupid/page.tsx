@@ -5,7 +5,7 @@ import SchoolGroups from './_components/school-groups'
 import CompanyGroups from './_components/company-groups'
 import GroupBooking from './_components/group-booking'
 import GroupPricing from './_components/group-pricing'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/grupid`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

@@ -4,7 +4,7 @@ import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -36,13 +36,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/kontakt`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Контакты - Центр попугаев в Тарту' : isEn ? 'Contact - Parrot Centre Tartu' : 'Kontakt - Papagoi Keskus Tartus',
       description: isRu ? 'Свяжитесь с Центром попугаев в Тарту.' : isEn ? 'Get in touch with the Parrot Centre in Tartu.' : 'Võtke Papagoi Keskusega ühendust Tartus. Kontaktandmed ja broneerimisinfo.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

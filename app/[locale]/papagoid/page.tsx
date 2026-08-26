@@ -1,7 +1,8 @@
 import ParrotsPageClient from './ParrotsPageClient'
 import type { Metadata } from 'next'
-import { setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
+import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -33,13 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/papagoid`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Наши попугаи - Центр попугаев в Тарту' : isEn ? 'Our parrots - Parrot Centre Tartu' : 'Meie papagoid - Papagoi Keskus Tartus',
       description: isRu ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Станьте крёстным или подарите подарочную карту.' : isEn ? 'Meet our parrots. Over 50 parrots. Become a sponsor or give a gift card.' : 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }
@@ -80,8 +81,14 @@ const fallbackParrots = [
 export default async function ParrotsPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('PapagoidPage')
   const notionParrots = await getParrotsFromNotion()
   const allParrots = notionParrots.length > 0 ? notionParrots : fallbackParrots
 
-  return <ParrotsPageClient allParrots={allParrots} />
+  return (
+    <>
+      <BreadcrumbJsonLd locale={locale} items={[{ name: t('title'), path: 'papagoid' }]} />
+      <ParrotsPageClient allParrots={allParrots} />
+    </>
+  )
 }

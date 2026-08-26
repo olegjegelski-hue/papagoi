@@ -8,6 +8,7 @@ import Footer from '@/components/Footer'
 import { Toaster } from 'sonner'
 import LocalBusinessSchema from '@/components/LocalBusinessSchema'
 import TouristAttractionSchema from '@/components/TouristAttractionSchema'
+import OrganizationSchema from '@/components/OrganizationSchema'
 import CookieBanner from '@/components/CookieBanner'
 import SetHtmlLang from '@/components/SetHtmlLang'
 
@@ -34,6 +35,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       <SetHtmlLang locale={locale} />
       <LocalBusinessSchema />
       <TouristAttractionSchema />
+      <OrganizationSchema />
       <NextIntlClientProvider messages={messages} locale={locale}>
         <Navigation />
         <main className="flex-1 flex flex-col bg-papagoi-beige">

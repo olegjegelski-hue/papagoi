@@ -3,7 +3,7 @@ import { Link } from '@/i18n/navigation'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -38,13 +38,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/meist`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'О нас - Центр попугаев в Тарту' : isEn ? 'About us - Parrot Centre Tartu' : 'Meist - Papagoi Keskus Tartus',
       description: isRu ? 'Познакомьтесь с Центром попугаев в Тарту.' : isEn ? 'Meet Parrot Centre in Tartu: Estonia\'s first parrot centre since 2015.' : 'Tutvuge Papagoi Keskusega Tartus: Eesti esimene papagoidekeskus alates 2015.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

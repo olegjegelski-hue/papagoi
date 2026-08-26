@@ -3,7 +3,7 @@ import { Link } from '@/i18n/navigation'
 import VisitProcess from '@/components/VisitProcess'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type FaqItem = {
   question: string
@@ -39,13 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/kulastajatele`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Посетителям - Центр попугаев в Тарту' : isEn ? 'For visitors - Parrot Centre Tartu' : 'Külastajatele - Papagoi Keskus Tartus',
       description: isRu ? 'Вся нужная информация для визита.' : isEn ? 'All you need to know for your visit. Book or give a gift card.' : 'Kõik vajalik info Papagoi Keskuse külastamiseks. Broneeri või kingi kinkekaart.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

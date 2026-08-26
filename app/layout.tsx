@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import { Nunito, Open_Sans } from 'next/font/google'
 import MetaPixel from '@/components/MetaPixel'
+import { shareImages } from '@/lib/seo'
 import './globals.css'
 
 const FB_PIXEL_ID = process.env.META_PIXEL_ID
@@ -26,12 +27,15 @@ export const metadata: Metadata = {
   },
   title: 'Papagoi Keskus – Elu täis värve ja hääli',
   description: 'Tule külasta Papagoi Keskust Tartus! Üle 50 papagoi, broneeri külastus või osta digitaalne kinkekaart. Giidiga ekskursioonid, sünnipäevad, grupikülastused. Eesti esimene papagoidekeskus alates 2015.',
-  keywords: 'papagoi, papagoid keskus, Papagoi Keskus Tartus, külastus, kinkekaart, broneeri, pered, koolid, lasteaiad, papagoidekeskus, Eesti',
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   openGraph: {
     title: 'Papagoi Keskus – Elu täis värve ja hääli',
     description: 'Eesti esimene papagoidekeskus Tartus. Broneeri külastus või kingi kinkekaart. Üle 50 papagoi.',
-    images: ['/logo.png'],
+    images: shareImages('et'),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: shareImages('et'),
   },
   icons: {
     icon: [

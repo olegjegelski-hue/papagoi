@@ -4,7 +4,7 @@ import GiftCardForm from '@/components/GiftCardForm'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -36,13 +36,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/kinkekaart`,
-      images: ['/logo.png'],
+      images: shareImages(locale, 'kinkekaart'),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Подарочная карта - Центр попугаев в Тарту' : isEn ? 'Gift card - Parrot Centre Tartu' : 'Kinkekaart - Papagoi Keskus Tartus',
       description: isRu ? 'Подарите визит в Центр попугаев. Цифровая карта шагами по 10 €.' : isEn ? 'Give a visit to the Parrot Centre. Digital gift card in €10 steps.' : 'Kingi külastus Papagoi Keskuses. Digitaalne kinkekaart 10 € sammuga.',
-      images: ['/logo.png'],
+      images: shareImages(locale, 'kinkekaart'),
     },
   }
 }

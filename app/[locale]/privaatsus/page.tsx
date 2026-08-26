@@ -2,7 +2,7 @@ import { Shield, Cookie, Lock, Mail, FileText } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/privaatsus`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Конфиденциальность и cookie - Центр попугаев' : isEn ? 'Privacy and cookies - Parrot Centre' : 'Privaatsus ja küpsised - Papagoi Keskus',
       description: isRu ? 'Политика конфиденциальности и условия cookie.' : isEn ? 'Parrot Centre privacy policy and cookie terms.' : 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

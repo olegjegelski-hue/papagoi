@@ -7,7 +7,8 @@ import PetsVillaLink from '@/components/PetsVillaLink'
 import ScrollToHash from '@/components/ScrollToHash'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
+import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -42,13 +43,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/teenused`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Услуги - Центр попугаев в Тарту' : isEn ? 'Services - Parrot Centre Tartu' : 'Teenused - Papagoi Keskus Tartus',
       description: isRu ? 'Визит 10€, подарочная карта, групповые визиты.' : isEn ? 'Visit €10, gift card, group visits.' : 'Külastus 10€, kinkekaart, grupikülastused.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }
@@ -74,6 +75,7 @@ export default async function TeenusedPage({ params }: Props) {
   return (
     <>
       <ServiceSchema />
+      <BreadcrumbJsonLd locale={locale} items={[{ name: t('title'), path: 'teenused' }]} />
       <ScrollToHash />
       <div className="min-h-screen bg-gradient-to-b from-papagoi-beige-50 via-papagoi-beige to-papagoi-green-50/50">
         <main className="pt-12 pb-16">

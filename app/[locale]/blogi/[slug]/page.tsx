@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
+import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
 
 export const dynamic = 'force-dynamic'
 
@@ -346,7 +347,7 @@ export async function generateMetadata({
   const baseUrl = getSiteUrl()
   const canonicalUrl = `${baseUrl}/${locale}/blogi/${slug}`
   const description = post.excerpt || undefined
-  const images = post.cover ? [post.cover] : ['/logo.png']
+  const images = post.cover ? [post.cover] : shareImages(locale)
   return {
     title: `${post.title} | Papagoi Keskus`,
     description,
@@ -359,7 +360,7 @@ export async function generateMetadata({
       images,
     },
     twitter: {
-      card: post.cover ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: post.title,
       description,
       images,
@@ -431,6 +432,13 @@ export default async function BlogPostPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        />
+        <BreadcrumbJsonLd
+          locale={locale}
+          items={[
+            { name: t('title'), path: 'blogi' },
+            { name: post.title, path: `blogi/${slug}` },
+          ]}
         />
         <div className="mb-6">
           <Link href="/blogi" className="text-sm font-semibold text-papagoi-blue hover:underline">

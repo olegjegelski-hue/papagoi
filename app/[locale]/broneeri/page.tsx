@@ -4,7 +4,7 @@ import { Calendar, Users, Clock, Euro, Phone, AlertCircle } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/broneeri`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: isRu ? 'Забронировать визит - Центр попугаев в Тарту' : isEn ? 'Book a visit - Parrot Centre Tartu' : 'Broneeri külastus - Papagoi Keskus Tartus',
       description: isRu ? 'Забронируйте визит в центр попугаев. Ответ за 24 ч. Или купите подарочную карту.' : isEn ? 'Book a visit to the parrot centre. Reply within 24h. Or buy a gift card.' : 'Broneeri külastus papagoidekeskusesse. Vastus 24h jooksul. Või osta kinkekaart.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }

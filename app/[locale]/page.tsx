@@ -10,7 +10,7 @@ import HomePartners from '@/components/HomePartners'
 import { ExternalLink } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
-import { getSiteUrl, pageAlternates } from '@/lib/seo'
+import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -40,13 +40,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}`,
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
     twitter: {
       card: 'summary_large_image',
       title: isRu ? 'Центр попугаев в Тарту' : isEn ? 'Parrot Centre Tartu' : 'Papagoi Keskus Tartus | Eesti esimene papagoidekeskus',
       description: isRu ? 'Более 50 попугаев, бронирование визита или подарочная карта.' : isEn ? 'Over 50 parrots, book a visit or gift card.' : 'Üle 50 papagoi, külastus broneerimisega, kinkekaart, sünnipäevad ja grupikülastused.',
-      images: ['/logo.png'],
+      images: shareImages(locale),
     },
   }
 }
