@@ -73,6 +73,71 @@ export type RewriteGmbRepliesSummary = {
   samples: RewriteGmbReplySample[]
 }
 
+export type RewriteNextAction =
+  | 'safe_to_apply_same_limit'
+  | 'review_in_notion'
+  | 'wait_and_retry_with_smaller_limit'
+  | 'check_logs'
+
+export type CompactRewriteReport = {
+  ok: true
+  dryRun: boolean
+  checked: number
+  processing: number
+  wouldRewrite: number
+  rewritten: number
+  skipped: number
+  rateLimited: number
+  errors: number
+  stoppedEarly: boolean
+  nextAction: RewriteNextAction | null
+  errorSamples?: Array<{ pageId: string; reviewId: string; reason: string }>
+  rateLimit?: { stoppedEarly: boolean; reason: string }
+}
+
+export function getRewriteNextAction(
+  summary: Pick<RewriteGmbRepliesSummary, 'dryRun' | 'wouldRewrite' | 'rewritten' | 'rateLimited' | 'errors'>,
+): RewriteNextAction | null {
+  if (summary.rateLimited > 0) return 'wait_and_retry_with_smaller_limit'
+  if (summary.errors > 0) return 'check_logs'
+  if (summary.dryRun && summary.wouldRewrite > 0) return 'safe_to_apply_same_limit'
+  if (!summary.dryRun && summary.rewritten > 0) return 'review_in_notion'
+  return null
+}
+
+export function toCompactRewriteReport(summary: RewriteGmbRepliesSummary): CompactRewriteReport {
+  const report: CompactRewriteReport = {
+    ok: true,
+    dryRun: summary.dryRun,
+    checked: summary.checked,
+    processing: summary.processing,
+    wouldRewrite: summary.wouldRewrite,
+    rewritten: summary.rewritten,
+    skipped: summary.skipped,
+    rateLimited: summary.rateLimited,
+    errors: summary.errors,
+    stoppedEarly: summary.stoppedEarly,
+    nextAction: getRewriteNextAction(summary),
+  }
+  if (summary.errors > 0) {
+    report.errorSamples = summary.samples
+      .filter((sample) => sample.decision === 'error')
+      .map((sample) => ({
+        pageId: sample.pageId,
+        reviewId: sample.reviewId,
+        reason: sample.reason,
+      }))
+  }
+  if (summary.rateLimited > 0) {
+    const hit = summary.samples.find((sample) => sample.decision === 'rate-limited')
+    report.rateLimit = {
+      stoppedEarly: summary.stoppedEarly,
+      reason: hit?.reason || 'rate-limited',
+    }
+  }
+  return report
+}
+
 function assertEnv(name: string): string {
   const value = process.env[name]
   if (!value || !value.trim()) {

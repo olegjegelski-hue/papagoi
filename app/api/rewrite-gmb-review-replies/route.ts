@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import { requireCronAuth } from '@/lib/cron-auth'
-import { rewriteGmbReviewReplies } from '@/scripts/rewrite-gmb-review-replies'
+import {
+  getRewriteNextAction,
+  rewriteGmbReviewReplies,
+  toCompactRewriteReport,
+} from '@/scripts/rewrite-gmb-review-replies'
 
 /**
  * Käsitsi vanade postitamata GMB vastuste AI rewrite. EI ole vercel.json cronis.
  * Vaikimisi dry-run; kirjutamiseks: ?apply=1
  * Default batch: ainult Staatus=Uus. Mustand loodud uuesti: reviewId/pageId + force=1
  * Soovitatav apply limit=5 (max 20). Google’isse ei postita.
+ * Igapäevane terminal: ?compact=1 või ?format=compact (ilma samples[]).
  */
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -39,6 +44,8 @@ export async function GET(request: Request) {
     const limit = limitRaw ? Number.parseInt(limitRaw, 10) : undefined
     const reviewIds = collectCsvParams(url, ['reviewId', 'reviewIds'])
     const pageIds = collectCsvParams(url, ['pageId', 'pageIds'])
+    const compact =
+      url.searchParams.get('compact') === '1' || url.searchParams.get('format') === 'compact'
 
     const summary = await rewriteGmbReviewReplies({
       dryRun,
@@ -47,7 +54,14 @@ export async function GET(request: Request) {
       reviewIds: reviewIds.length > 0 ? reviewIds : undefined,
       pageIds: pageIds.length > 0 ? pageIds : undefined,
     })
-    return NextResponse.json({ ok: true, ...summary })
+    if (compact) {
+      return NextResponse.json(toCompactRewriteReport(summary))
+    }
+    return NextResponse.json({
+      ok: true,
+      ...summary,
+      nextAction: getRewriteNextAction(summary),
+    })
   } catch (error) {
     console.error('GMB reply rewrite failed', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
