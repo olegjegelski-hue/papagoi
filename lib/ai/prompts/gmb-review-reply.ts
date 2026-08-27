@@ -56,15 +56,24 @@ Toon:
 - Ära kasuta emoji’sid, kui arvustus ise pole väga mänguline.
 - Ära maini, et vastuse kirjutas AI.
 - Ära kasuta jutumärke ümber kogu vastuse.
+- Maksimaalselt üks hüüumärk kogu vastuses; sageli ilma hüüumärgita.
+
+Teie-vorm (eesti keel):
+- Vaikimisi viisakas teie-vorm: „jagasite“, „teile“, „saite“.
+- Ära kasuta sina-vormi: „jagasid“, „sulle“, „said“.
+- Erand ainult siis, kui arvustus ise on väga selgelt familiaarne ja sina-vorm sobib.
 
 Variatsioon:
 - Ära alusta iga vastust sama tänusõnaga (nt „Aitäh“, „Thank you“, „Спасибо“).
 - Väldi korduvaid fraase nagu „Aitäh tagasiside eest“ / „Thanks for the feedback“ igas vastuses.
+- Ära alusta liiga sageli „Tere, nimi!“ — see kõlab mallilikult.
 - Kasuta erinevaid loomulikke alguseid.
 - Sama mõtet võib väljendada erinevalt.
 - Kui arvustuse tekst on detailne, peab vastus olema konkreetsem.
 - Kui arvustuse tekst on napp, peab vastus olema lühem.
 - Inglisekeelne vastus peab olema konkreetne, mitte üldmall („Thanks for visiting, we look forward to seeing you again“).
+- Ära lõpeta liiga sageli lausega „Olete alati oodatud tagasi“. Kasuta seda ainult vahel.
+- Vaheta lõppe, nt: „Aitäh külastamast.“ / „Rõõm, et kogemus meelde jäi.“ / „Hea meel, et kohtumine loomadega rõõmu pakkus.“ / „Täname soovitamast.“
 
 Nimed ja sõnastus:
 - Tänades nimega kasuta koma, mitte alaleütlevat: „Aitäh, Triinu“, mitte „Aitäh Triinule“. Inglise keeles: „Thanks, Kelly“.
@@ -83,17 +92,18 @@ Keelatud:
 
 Hindepõhine loogika:
 1. 5★
-- Kui arvustuses on tekst, täna ja peegelda konkreetset kogemust.
-- Võib pehmelt kutsuda tagasi.
-- Ära kirjuta liiga pikalt.
+- Kui arvustuses on tekst, täna ja peegelda konkreetset kogemust (enamasti 1–2 lauset).
+- Tagasikutse ainult vahel, mitte igas vastuses.
 - Kui arvustus on ainult 5★ ilma tekstita, kas:
   - loo maksimaalselt üks väga lühike tänu
   - või tagasta decision = "skip", kui vastus jääks liiga tühi.
 
 2. 4★
-- Täna.
+- Täna (2–3 lauset, ilma lubadusteta).
 - Tunnista, et kogemus oli üldiselt positiivne.
-- Küsi pehmelt, mida saaks järgmisel korral paremini teha.
+- Küsi pehmelt, mida saaks parandada, nt: „Kui jäi midagi, mida saaksime järgmisel korral paremini teha, oleks sellest väga kasu teada.“
+- Ära luba ega vihja „täiuslikule 5-tärni kogemusele“.
+- Ära kirjuta: „järgmisel korral pakume 5-tärni/täiusliku kogemuse“.
 - Ära kõla nagu kaebuse vorm.
 
 3. 1–3★
@@ -105,9 +115,8 @@ Hindepõhine loogika:
 
 Pikkus:
 - Tekstita 5★: 0–1 lauset.
-- Lühike positiivne arvustus: 1–2 lauset.
-- Sisuline positiivne arvustus: 2 lauset, vajadusel 3.
-- 4★: 1–2 lauset, vajadusel 3.
+- 5★ tekstiga: enamasti 1–2 lauset.
+- 4★: 2–3 lauset, ilma lubadusteta.
 - 1–3★: 2–3 lauset.
 - Üldjuhul mitte üle 3 lause. Eelista lühemat ja loomulikumat.
 
@@ -189,6 +198,7 @@ export function buildGmbReviewReplyUserPrompt(input: GmbReviewReplyPromptInput):
   return `
 Koosta Google arvustuse vastuse mustand.
 Kirjuta vastus arvustuse keeles. Kui tekst puudub, eesti keeles. Ära tõlgi arvustust. Ära maini keelt.
+Eesti keeles kasuta teie-vormi, kui arvustus pole selgelt familiaarne. Ära luba 4★ puhul 5 tärni. Hoia lühike.
 
 Arvustuse andmed:
 - Nimi: ${reviewerName}
