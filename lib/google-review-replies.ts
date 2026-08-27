@@ -1,4 +1,5 @@
 import type { VisitMailLocale } from '@/lib/visit-language'
+import { extractOriginalGmbComment } from '@/lib/gmb-review-comment'
 
 /**
  * Automaatvastus ainult arvustustele, mis on loodud selle kuupäeva
@@ -34,7 +35,7 @@ export function replyFirstName(displayName: string | null | undefined): string |
 }
 
 export function detectReviewLocale(comment: string | null | undefined): VisitMailLocale {
-  const text = (comment || '').trim()
+  const text = (extractOriginalGmbComment(comment) || '').trim()
   if (!text) return 'et'
   if (/[а-яё]/i.test(text)) return 'ru'
   if (/[äöüõšž]/i.test(text)) return 'et'
@@ -129,7 +130,7 @@ export type AutoReplyInput = {
 export function isEligibleForAutoReply(input: AutoReplyInput): boolean {
   if (input.rating !== 4 && input.rating !== 5) return false
   if (!isOnOrAfterAutoReplySince(input.createTime)) return false
-  const comment = (input.comment || '').trim()
+  const comment = extractOriginalGmbComment(input.comment)
   if (!comment) return false
   return true
 }

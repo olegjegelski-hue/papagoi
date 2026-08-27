@@ -4,6 +4,10 @@ import {
   generateAutoReplyDraft,
   generateReplyType,
 } from '@/lib/google-review-replies'
+import {
+  extractOriginalGmbComment,
+  toNotionRichText,
+} from '@/lib/gmb-review-comment'
 
 // Sisemine ühtlustatud arvustuse kuju
 type GoogleReview = {
@@ -200,7 +204,7 @@ async function fetchAllGoogleReviewsViaPlaces(): Promise<GoogleReview[]> {
   return mapped
 }
 
-async function fetchAllNotionReviewPages(databaseId: string, apiKey: string): Promise<NotionPage[]> {
+export async function fetchAllNotionReviewPages(databaseId: string, apiKey: string): Promise<NotionPage[]> {
   const results: NotionPage[] = []
   let startCursor: string | undefined
 
@@ -244,6 +248,7 @@ function buildNotionPropertiesFromReview(
   existingProperties: Record<string, any> | null,
   reviewUrl: string
 ) {
+  const originalComment = extractOriginalGmbComment(review.comment)
   const rating = starRatingToNumber(review.starRating)
   const replyType = generateReplyType(rating)
   const name =
@@ -252,7 +257,7 @@ function buildNotionPropertiesFromReview(
     reviewId: review.reviewId,
     displayName: review.reviewer?.displayName || null,
     rating,
-    comment: review.comment,
+    comment: originalComment,
     createTime: review.createTime,
   })
   const createDate = review.createTime || null
@@ -275,15 +280,10 @@ function buildNotionPropertiesFromReview(
     props['Hinne'] = { number: rating }
   }
 
-  // Arvustuse tekst
-  if (review.comment) {
+  // Arvustuse tekst: ainult originaal (GMB võib saata tõlke + originaali koos).
+  if (originalComment) {
     props['Arvustuse tekst'] = {
-      rich_text: [
-        {
-          type: 'text',
-          text: { content: review.comment },
-        },
-      ],
+      rich_text: toNotionRichText(originalComment),
     }
   }
 
