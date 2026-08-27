@@ -6,20 +6,23 @@ import 'dotenv/config'
  *
  *   npm run rewrite-gmb-review-replies -- --dry-run
  *   npm run rewrite-gmb-review-replies -- --dry-run --limit=5
- *   npm run rewrite-gmb-review-replies -- --dry-run --review-ids id1,id2
- *   Esimene apply soovitatavalt --limit=5 või --limit=10 (max 20).
+ *   npm run rewrite-gmb-review-replies -- --dry-run --review-ids id1,id2 --force
+ *   Apply soovitatavalt --limit=5 (max 20).
  *   npm run rewrite-gmb-review-replies -- --apply --limit=5
+ *
+ * Default batch: ainult Staatus=Uus (postitamata, kinnitamata, vastus olemas).
+ * Mustand loodud uuesti ainult targeted + --force / force=1.
  */
 
 import { generateGmbReviewReplyDraft, isGmbReplyAiRateLimitError } from '@/lib/ai/gmb-review-reply-client'
 import { extractOriginalGmbComment, toNotionRichText } from '@/lib/gmb-review-comment'
 import {
-  GMB_REWRITE_ALLOWED_STATUSES,
+  GMB_REWRITE_DEFAULT_STATUSES,
   GMB_STATUS,
   isGmbReplySafeToRewrite,
 } from '@/lib/gmb-review-workflow'
 
-const DEFAULT_LIMIT = 10
+const DEFAULT_LIMIT = 5
 const HARD_MAX_LIMIT = 20
 const MAX_TARGET_IDS = 20
 const MAX_SAMPLES = 10
@@ -34,6 +37,7 @@ type NotionPage = {
 
 export type RewriteGmbRepliesOptions = {
   dryRun?: boolean
+  force?: boolean
   limit?: number
   reviewIds?: string[]
   pageIds?: string[]
@@ -55,6 +59,7 @@ export type RewriteGmbReplySample = {
 export type RewriteGmbRepliesSummary = {
   dryRun: boolean
   targeted: boolean
+  force: boolean
   reviewIds: string[]
   pageIds: string[]
   checked: number
@@ -127,6 +132,7 @@ function takeFlagValues(argv: string[], names: string[]): string[] {
 function parseArgs(argv: string[]): RewriteGmbRepliesOptions {
   const apply = argv.includes('--apply')
   const dryRun = argv.includes('--dry-run') || !apply
+  const force = argv.includes('--force')
   const limitRaw = argv.find((a) => a.startsWith('--limit='))
   const limitParsed = limitRaw ? Number.parseInt(limitRaw.slice('--limit='.length), 10) : undefined
   const reviewIds = uniqueIds(
@@ -141,6 +147,7 @@ function parseArgs(argv: string[]): RewriteGmbRepliesOptions {
   )
   return {
     dryRun,
+    force,
     limit: limitParsed != null && Number.isFinite(limitParsed) && limitParsed > 0 ? limitParsed : undefined,
     reviewIds: reviewIds.length > 0 ? reviewIds : undefined,
     pageIds: pageIds.length > 0 ? pageIds : undefined,
@@ -282,12 +289,7 @@ async function fetchRewriteCandidates(apiKey: string, databaseId: string): Promi
       { property: 'Vastus', rich_text: { is_not_empty: true } },
       { property: 'Kinnitatud', checkbox: { equals: false } },
       { property: 'Vastus postitatud?', checkbox: { equals: false } },
-      {
-        or: GMB_REWRITE_ALLOWED_STATUSES.map((status) => ({
-          property: 'Staatus',
-          select: { equals: status },
-        })),
-      },
+      { property: 'Staatus', select: { equals: GMB_REWRITE_DEFAULT_STATUSES[0] } },
     ],
   })
 }
@@ -351,6 +353,8 @@ export async function rewriteGmbReviewReplies(
   const reviewIds = uniqueIds(options.reviewIds || [], normalizeGoogleReviewId, MAX_TARGET_IDS)
   const pageIds = uniqueIds(options.pageIds || [], (s) => s.replace(/-/g, '').trim(), MAX_TARGET_IDS)
   const targeted = reviewIds.length > 0 || pageIds.length > 0
+  const force = Boolean(options.force) && targeted
+  const allowExistingDraft = force
   const limit = targeted ? Math.max(reviewIds.length + pageIds.length, 1) : clampLimit(options.limit ?? defaultLimit())
 
   const apiKey = assertEnv('NOTION_API_KEY')
@@ -395,6 +399,7 @@ export async function rewriteGmbReviewReplies(
   const summary: RewriteGmbRepliesSummary = {
     dryRun,
     targeted,
+    force,
     reviewIds,
     pageIds,
     checked: 0,
@@ -413,9 +418,10 @@ export async function rewriteGmbReviewReplies(
 
   console.log(
     JSON.stringify({
-      note: 'Manual GMB reply rewrite. Never posts to Google. Default dry-run. apply=1 writes Notion only. Sequential AI with throttle; 429 stops the batch.',
+      note: 'Manual GMB reply rewrite. Never posts to Google. Default dry-run. Default batch is Staatus=Uus only. Mustand loodud needs targeted + force=1. apply=1 writes Notion only. Sequential AI with throttle; 429 stops the batch.',
       dryRun,
       targeted,
+      force,
       reviewIds,
       pageIds,
       limit,
@@ -473,7 +479,7 @@ export async function rewriteGmbReviewReplies(
     const reviewTextRaw = richTextPlain(props['Arvustuse tekst'])
     const reviewText = extractOriginalGmbComment(reviewTextRaw)
     const oldReply = richTextPlain(props['Vastus'])
-    const gate = isGmbReplySafeToRewrite(gateInputFromPage(props))
+    const gate = isGmbReplySafeToRewrite(gateInputFromPage(props), { allowExistingDraft })
 
     if (!gate.ok) {
       summary.skipped++
@@ -623,6 +629,7 @@ export async function rewriteGmbReviewReplies(
       {
         dryRun: summary.dryRun,
         targeted: summary.targeted,
+        force: summary.force,
         checked: summary.checked,
         processing: summary.processing,
         wouldRewrite: summary.wouldRewrite,

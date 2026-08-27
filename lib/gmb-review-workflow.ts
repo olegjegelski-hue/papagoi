@@ -54,16 +54,12 @@ export function isGmbReplyReadyToPost(
   return { ok: true }
 }
 
-export const GMB_REWRITE_ALLOWED_STATUSES: readonly GmbStatus[] = [
-  GMB_STATUS.uus,
-  GMB_STATUS.draft,
-  GMB_STATUS.error,
-  GMB_STATUS.skip,
-]
+export const GMB_REWRITE_DEFAULT_STATUSES: readonly GmbStatus[] = [GMB_STATUS.uus]
 
-/** Vanade postitamata vastuste AI rewrite. Ei puutu postitatud ega Valmis postitamiseks ridu. */
+/** Vanade postitamata vastuste AI rewrite. Default: ainult Staatus=Uus. Mustand loodud ainult targeted + force. */
 export function isGmbReplySafeToRewrite(
   input: GmbPostGateInput,
+  options?: { allowExistingDraft?: boolean },
 ): { ok: true } | { ok: false; reason: string } {
   if (!input.reviewId?.trim()) {
     return { ok: false, reason: 'Google review ID puudub' }
@@ -83,7 +79,19 @@ export function isGmbReplySafeToRewrite(
   if (input.status === GMB_STATUS.ready) {
     return { ok: false, reason: `staatus on "${GMB_STATUS.ready}"` }
   }
-  if (!input.status || !(GMB_REWRITE_ALLOWED_STATUSES as readonly string[]).includes(input.status)) {
+  if (input.status === GMB_STATUS.skip) {
+    return { ok: false, reason: `staatus on "${GMB_STATUS.skip}"` }
+  }
+  if (input.status === GMB_STATUS.draft) {
+    if (!options?.allowExistingDraft) {
+      return {
+        ok: false,
+        reason: `"${GMB_STATUS.draft}" ootab ülevaatust; uuesti ainult targeted + force=1`,
+      }
+    }
+    return { ok: true }
+  }
+  if (input.status !== GMB_STATUS.uus) {
     return { ok: false, reason: `staatus pole rewrite'iks lubatud (oli: ${input.status || 'tühi'})` }
   }
   return { ok: true }

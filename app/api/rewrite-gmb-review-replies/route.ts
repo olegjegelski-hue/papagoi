@@ -5,7 +5,8 @@ import { rewriteGmbReviewReplies } from '@/scripts/rewrite-gmb-review-replies'
 /**
  * Käsitsi vanade postitamata GMB vastuste AI rewrite. EI ole vercel.json cronis.
  * Vaikimisi dry-run; kirjutamiseks: ?apply=1
- * Google’isse ei postita.
+ * Default batch: ainult Staatus=Uus. Mustand loodud uuesti: reviewId/pageId + force=1
+ * Soovitatav apply limit=5 (max 20). Google’isse ei postita.
  */
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -33,6 +34,7 @@ export async function GET(request: Request) {
     const url = new URL(request.url)
     const apply = url.searchParams.get('apply') === '1'
     const dryRun = url.searchParams.get('dryRun') === '1' || url.searchParams.get('dry') === '1' || !apply
+    const force = url.searchParams.get('force') === '1'
     const limitRaw = url.searchParams.get('limit')
     const limit = limitRaw ? Number.parseInt(limitRaw, 10) : undefined
     const reviewIds = collectCsvParams(url, ['reviewId', 'reviewIds'])
@@ -40,6 +42,7 @@ export async function GET(request: Request) {
 
     const summary = await rewriteGmbReviewReplies({
       dryRun,
+      force,
       limit: limit != null && Number.isFinite(limit) && limit > 0 ? limit : undefined,
       reviewIds: reviewIds.length > 0 ? reviewIds : undefined,
       pageIds: pageIds.length > 0 ? pageIds : undefined,
