@@ -11,6 +11,7 @@
     "send-visit-sms-reminders": "VISIT_SMS_CLI=1 tsx scripts/send-visit-sms-reminders.ts",
     "send-test-sms": "TEST_SMS_CLI=1 tsx scripts/send-test-sms.ts",
     "sync-gmb-reviews": "tsx scripts/sync-google-reviews-to-notion.ts",
+    "resync-gmb-review-originals": "tsx scripts/resync-gmb-review-original-text.ts",
     "generate-gmb-review-replies": "tsx scripts/generate-google-review-replies.ts",
     "post-gmb-replies": "tsx scripts/post-google-review-replies.ts"
   },

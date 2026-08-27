@@ -31,6 +31,51 @@ export function extractOriginalGmbComment(raw: string | null | undefined): strin
   return trimmed.length > 0 ? trimmed : null
 }
 
+/**
+ * Originaal ainult siis, kui GMB selle selgelt annab.
+ * Tõlge-ainult stringi (Translated, ilma Originalita ja ilma tekstita enne markerit) ei kasutata.
+ */
+export function extractConfidentOriginalGmbComment(
+  raw: string | null | undefined,
+): string | null {
+  if (raw == null) return null
+  const text = String(raw).replace(/\r\n/g, '\n')
+  if (!text.trim()) return null
+
+  const hasOriginalMarker = ORIGINAL_RE.test(text)
+  const hasTranslatedMarker = TRANSLATED_RE.test(text)
+
+  if (hasTranslatedMarker && !hasOriginalMarker) {
+    const translatedAt = text.search(TRANSLATED_RE)
+    const before = text.slice(0, translatedAt).trim()
+    if (!before) return null
+  }
+
+  return extractOriginalGmbComment(text)
+}
+
+type GmbReviewCommentSource = {
+  comment?: string | null
+  originalComment?: string | null
+  originalText?: string | null
+  originalReviewText?: string | null
+}
+
+/**
+ * Arvustuse enda originaaltekst GMB vastusest.
+ * `reviewReply` on ettevõtte vastus — seda ei kasutata.
+ */
+export function pickConfidentOriginalFromGmbReview(
+  review: GmbReviewCommentSource,
+): string | null {
+  const named = [review.originalComment, review.originalText, review.originalReviewText]
+  for (const candidate of named) {
+    const extracted = extractConfidentOriginalGmbComment(candidate)
+    if (extracted) return extracted
+  }
+  return extractConfidentOriginalGmbComment(review.comment)
+}
+
 export function gmbCommentLooksTranslated(raw: string | null | undefined): boolean {
   if (!raw) return false
   return TRANSLATED_RE.test(raw) || ORIGINAL_RE.test(raw)

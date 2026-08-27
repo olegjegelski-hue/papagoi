@@ -42,27 +42,46 @@ function parseArgs(argv: string[]) {
 /** Esmase kontrolli 3 rida: ET tõlge-enne, RU originaal-enne, emoji. */
 const SAMPLE_NAMES = ['Geito Oolo', 'Nataļja B', 'Jana S']
 
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
 async function patchArvustuseTekst(apiKey: string, pageId: string, original: string) {
   const id = pageId.replace(/-/g, '')
-  const response = await fetch(`https://api.notion.com/v1/pages/${id}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      properties: {
-        'Arvustuse tekst': {
-          rich_text: toNotionRichText(original),
-        },
+  const maxAttempts = 4
+  let lastError = 'unknown'
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const response = await fetch(`https://api.notion.com/v1/pages/${id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json',
       },
-    }),
-  })
-  if (!response.ok) {
+      body: JSON.stringify({
+        properties: {
+          'Arvustuse tekst': {
+            rich_text: toNotionRichText(original),
+          },
+        },
+      }),
+    })
+
+    if (response.ok) return
+
     const text = await response.text()
-    throw new Error(`Notion PATCH failed ${response.status}: ${text}`)
+    lastError = `${response.status}: ${text}`
+    const retryable = response.status === 429 || response.status >= 500
+    if (!retryable || attempt === maxAttempts) {
+      throw new Error(`Notion PATCH failed ${lastError}`)
+    }
+    const waitMs = Math.min(1000 * 2 ** (attempt - 1), 8000)
+    console.warn(`  retry ${attempt}/${maxAttempts - 1} after ${waitMs}ms (${lastError.slice(0, 120)})`)
+    await sleep(waitMs)
   }
+
+  throw new Error(`Notion PATCH failed ${lastError}`)
 }
 
 async function main() {
@@ -96,6 +115,8 @@ async function main() {
     targets = [...preferred, ...rest].slice(0, limit)
   }
 
+  const verbose = dryRun || targets.length <= 5
+
   console.log(
     JSON.stringify(
       {
@@ -111,25 +132,64 @@ async function main() {
     ),
   )
 
-  const preview = limit != null || !dryRun ? targets : targets.slice(0, 5)
   if (dryRun && limit == null) {
     console.log(`Kuiv-jooks: näitan 5/${dual.length} näidet. Ülejäänud jäetakse.`)
+    targets = targets.slice(0, 5)
   }
 
-  for (const row of preview) {
-    console.log('---')
-    console.log(`Nimi: ${row.name}`)
-    console.log(`Page: ${row.id}`)
-    console.log(`Enne (${row.before.length} märki):\n${row.before}`)
-    console.log(`Pärast (${row.after!.length} märki):\n${row.after}`)
-    if (dryRun) continue
-    await patchArvustuseTekst(apiKey, row.id, row.after!)
-    console.log('Patched.')
-    await new Promise((r) => setTimeout(r, 350))
+  let patched = 0
+  const failures: { name: string; id: string; error: string }[] = []
+
+  for (let i = 0; i < targets.length; i++) {
+    const row = targets[i]
+    const n = `${i + 1}/${targets.length}`
+    if (verbose) {
+      console.log('---')
+      console.log(`Nimi: ${row.name}`)
+      console.log(`Page: ${row.id}`)
+      console.log(`Enne (${row.before.length} märki):\n${row.before}`)
+      console.log(`Pärast (${row.after!.length} märki):\n${row.after}`)
+    }
+    if (dryRun) {
+      console.log(`[${n}] DRY ${row.name}`)
+      continue
+    }
+    try {
+      await patchArvustuseTekst(apiKey, row.id, row.after!)
+      patched++
+      console.log(`[${n}] OK  ${row.name}`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      failures.push({ name: row.name, id: row.id, error: message })
+      console.error(`[${n}] FAIL ${row.name}  ${row.id}  ${message}`)
+    }
+    await sleep(350)
+  }
+
+  let remainingDual: number | null = null
+  if (!dryRun) {
+    const afterPages = await fetchAllNotionReviewPages(databaseId, apiKey)
+    remainingDual = afterPages.filter((page) =>
+      gmbCommentLooksTranslated(existingPlainText(page.properties['Arvustuse tekst'])),
+    ).length
+  }
+
+  const summary = {
+    planned: targets.length,
+    patched: dryRun ? 0 : patched,
+    failed: failures.length,
+    remainingDualInNotion: remainingDual,
+    failures,
+  }
+  console.log('--- KOKKUVÕTE ---')
+  console.log(JSON.stringify(summary, null, 2))
+
+  if (failures.length > 0) {
+    process.exit(1)
   }
 }
 
 main().catch((error) => {
-  console.error(error)
+  console.error('Skript katkes enne lõppu:', error)
   process.exit(1)
 })

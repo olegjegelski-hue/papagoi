@@ -58,7 +58,11 @@ function assertEnv(name: string): string {
 const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 const GOOGLE_MY_BUSINESS_BASE = 'https://mybusiness.googleapis.com/v4'
 
+let cachedGmbAccessToken: string | null = null
+
 export async function getGmbAccessToken() {
+  if (cachedGmbAccessToken) return cachedGmbAccessToken
+
   const clientId = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_ID')
   const clientSecret = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_SECRET')
   const refreshToken = assertEnv('GOOGLE_MY_BUSINESS_REFRESH_TOKEN')
@@ -87,7 +91,33 @@ export async function getGmbAccessToken() {
   if (!data.access_token) {
     throw new Error('No access_token in Google OAuth response')
   }
-  return data.access_token
+  cachedGmbAccessToken = data.access_token
+  return cachedGmbAccessToken
+}
+
+export type GmbReviewApiRecord = GoogleReview & {
+  originalComment?: string | null
+  originalText?: string | null
+}
+
+export async function fetchGmbReviewById(
+  reviewId: string,
+  accessToken?: string,
+): Promise<GmbReviewApiRecord | null> {
+  const accountId = assertEnv('GOOGLE_MY_BUSINESS_ACCOUNT_ID')
+  const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
+  const token = accessToken || (await getGmbAccessToken())
+  const id = reviewId.trim()
+  const url = `${GOOGLE_MY_BUSINESS_BASE}/accounts/${accountId}/locations/${locationId}/reviews/${encodeURIComponent(id)}`
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (response.status === 404) return null
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`GMB GET review ${id} failed ${response.status}: ${text}`)
+  }
+  return (await response.json()) as GmbReviewApiRecord
 }
 
 async function fetchAllGoogleReviewsFromGMB(): Promise<GoogleReview[]> {
