@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 import { getGmbAccessToken } from './sync-google-reviews-to-notion'
 import { createTransporter } from '../lib/email'
+import { autoReplySinceDate, shouldPostAutoReply } from '@/lib/google-review-replies'
 
 function assertEnv(name: string): string {
   const value = process.env[name]
@@ -44,6 +45,14 @@ async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
           {
             property: 'Kinnitatud',
             checkbox: { equals: true },
+          },
+          {
+            property: 'Hinne',
+            number: { greater_than_or_equal_to: 4 },
+          },
+          {
+            property: 'Arvustuse kuupäev',
+            date: { on_or_after: autoReplySinceDate() },
           },
         ],
       },
@@ -88,7 +97,19 @@ function getRichTextPlainText(prop: any): string | null {
   return text && String(text).trim().length > 0 ? String(text) : null
 }
 
+function getNotionRating(prop: any): number | null {
+  if (typeof prop?.number === 'number' && Number.isFinite(prop.number)) return prop.number
+  return null
+}
+
+function getNotionDateStart(prop: any): string | null {
+  const start = prop?.date?.start
+  return typeof start === 'string' && start.trim() ? start : null
+}
+
 export async function postRepliesToGoogle() {
+  // Kolm piirangut (Oleg 27.08): ainult alates GMB_AUTO_REPLY_SINCE, ainult 4–5★,
+  // rotatsioon mustandites. Kinnitatud jääb käsitsi — käivitamist siin ei lülitata.
   const NOTION_API_KEY = assertEnv('NOTION_API_KEY')
   const pages = await fetchNotionPagesNeedingReply()
 
@@ -118,6 +139,14 @@ export async function postRepliesToGoogle() {
     if (!reviewId || !replyText) {
       console.warn(`Skipping page ${page.id} – missing reviewId or reply text`)
       failed++
+      continue
+    }
+
+    const rating = getNotionRating(props['Hinne'])
+    const createTime = getNotionDateStart(props['Arvustuse kuupäev'])
+    const gate = shouldPostAutoReply({ rating, createTime })
+    if (!gate.ok) {
+      console.log(`Skipping reviewId=${reviewId}: ${gate.reason}`)
       continue
     }
 

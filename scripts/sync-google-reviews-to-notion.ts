@@ -1,5 +1,10 @@
 import 'dotenv/config'
 
+import {
+  generateAutoReplyDraft,
+  generateReplyType,
+} from '@/lib/google-review-replies'
+
 // Sisemine ühtlustatud arvustuse kuju
 type GoogleReview = {
   reviewId: string
@@ -148,59 +153,6 @@ function starRatingToNumber(starRating: string | null | undefined): number | nul
   }
 }
 
-function generateReplyType(rating: number | null): string | null {
-  if (rating == null) return null
-  if (rating >= 5) return '5★ – tänu ja kutse tagasi'
-  if (rating === 4) return '4★ – tänu ja küsi kuidas paremaks'
-  if (rating <= 3) return '1–3★ – vabandus ja palu kirjutada'
-  return null
-}
-
-function generateReplyDraft(name: string | null, rating: number | null): string | null {
-  const displayName = name && name.trim() ? name.trim() : 'Papagoi sõber'
-  if (rating == null) {
-    return `Tere, ${displayName}!
-
-Aitäh, et jagasite oma kogemust Papagoi Keskuses. Meil on väga oluline kuulda, kuidas külastus möödus – see aitab meil veel paremaks saada.
-
-Kui soovite midagi täpsustada või pikemalt jagada, kirjutage meile julgelt aadressil keskus@papagoi.ee või helistage +372 51 27 938.
-
-Sõbralikult
-Papagoi Keskus`
-  }
-
-  if (rating >= 5) {
-    return `Tere, ${displayName}!
-
-Aitäh sooja tagasiside eest – meil on väga hea meel, et külastus Papagoi Keskuses meeldis.
-
-Olete alati teretulnud tagasi, papagoid ootavad teid rõõmuga!
-
-Sõbralikult
-Papagoi Keskus`
-  }
-
-  if (rating === 4) {
-    return `Tere, ${displayName}!
-
-Aitäh, et võtsite aega ja jätsite meile hea arvustuse.
-
-Kui on mõni mõte, mis aitaks kogemuse viie tärnini viia, oleksime väga tänulikud, kui kirjutaksite meile aadressil keskus@papagoi.ee.
-
-Sõbralikult
-Papagoi Keskus`
-  }
-
-  return `Tere, ${displayName}.
-
-Vabandame siiralt, et külastus Papagoi Keskuses ei vastanud ootustele.
-
-Tahaksime väga aru saada, mis juhtus ja kuidas saaksime paremini – palun kirjutage meile otse aadressil keskus@papagoi.ee või helistage +372 51 27 938.
-
-Sõbralikult
-Papagoi Keskus`
-}
-
 async function fetchAllGoogleReviewsViaPlaces(): Promise<GoogleReview[]> {
   const apiKey = assertEnv('GOOGLE_PLACES_API_KEY')
   const placeId = assertEnv('GOOGLE_PLACES_PLACE_ID')
@@ -296,7 +248,13 @@ function buildNotionPropertiesFromReview(
   const replyType = generateReplyType(rating)
   const name =
     (review.reviewer?.displayName && review.reviewer.displayName.trim()) || 'Anonüümne'
-  const draft = generateReplyDraft(review.reviewer?.displayName || null, rating)
+  const draft = generateAutoReplyDraft({
+    reviewId: review.reviewId,
+    displayName: review.reviewer?.displayName || null,
+    rating,
+    comment: review.comment,
+    createTime: review.createTime,
+  })
   const createDate = review.createTime || null
   const replyExists = Boolean(review.reviewReply && review.reviewReply.comment)
 
@@ -370,7 +328,7 @@ function buildNotionPropertiesFromReview(
     }
   }
 
-  // Vastus – ära kirjuta üle, kui juba olemas
+  // Vastus – ära kirjuta üle; uuele täida mustand ainult 4–5★ alates kuupäevast
   const existingReply = existingProperties?.['Vastus']
   const replyText =
     existingReply?.rich_text?.[0]?.plain_text && existingReply.rich_text[0].plain_text.trim().length
