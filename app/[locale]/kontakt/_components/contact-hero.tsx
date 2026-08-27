@@ -28,7 +28,7 @@ export default function ContactHero() {
             <div className="bg-papagoi-beige-100/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Phone className="h-8 w-8 text-green-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 mb-2">Telefon</h3>
-              <a href="tel:+37251279380" className="text-green-600 hover:text-green-700 font-medium">
+              <a href="tel:+3725127938" className="text-green-600 hover:text-green-700 font-medium">
                 +372 512 7938
               </a>
             </div>

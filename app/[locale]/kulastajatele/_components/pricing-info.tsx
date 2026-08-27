@@ -176,7 +176,7 @@ export default function PricingInfo() {
             Võtke meiega ühendust ja arutame teie soove läbi - leiame alati sobiva lahenduse!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:+37251279380">
+            <a href="tel:+3725127938">
               <Button className="bg-gradient-to-r from-green-500 to-green-600 text-white">
                 <Phone className="mr-2 h-4 w-4" />
                 +372 512 7938

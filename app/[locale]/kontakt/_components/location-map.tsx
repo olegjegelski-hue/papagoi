@@ -119,7 +119,7 @@ export default function LocationMap() {
 
             <div className="text-center">
               <a
-                href="tel:+37251279380"
+                href="tel:+3725127938"
                 className="inline-flex items-center bg-gradient-to-r from-papagoi-green to-papagoi-blue hover:from-papagoi-green-600 hover:to-papagoi-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Helistage, kui tekivad küsimused

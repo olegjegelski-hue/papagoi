@@ -188,7 +188,7 @@ export default function VisitFAQ() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:+37251279380" className="papagoi-cta inline-flex items-center justify-center">
+            <a href="tel:+3725127938" className="papagoi-cta inline-flex items-center justify-center">
               <Phone className="mr-2 h-4 w-4" />
               Helistage +372 512 7938
             </a>

@@ -85,7 +85,7 @@ export default function CTASection() {
             </Link>
             <div className="flex items-center space-x-4 text-white/90">
               <div className="text-sm">{t('or')}</div>
-              <a href="tel:+37251279380" className="flex items-center space-x-2 hover:text-yellow-300 transition-colors">
+              <a href="tel:+3725127938" className="flex items-center space-x-2 hover:text-yellow-300 transition-colors">
                 <Phone className="h-4 w-4" />
                 <span>+372 512 7938</span>
               </a>

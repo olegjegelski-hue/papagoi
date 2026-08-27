@@ -77,7 +77,7 @@ export default function VisitorHero() {
                   Broneeri kohe
                 </Button>
               </Link>
-              <a href="tel:+37251279380">
+              <a href="tel:+3725127938">
                 <Button variant="outline" size="lg" className="border-green-500 text-green-600 hover:bg-green-50 font-semibold px-8 py-3 text-lg">
                   <Phone className="mr-2 h-5 w-5" />
                   Helista meile

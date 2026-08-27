@@ -15,7 +15,7 @@ export default function ContactInfo() {
       title: 'Helistage meile',
       description: 'Kõige kiirem viis ühenduse võtmiseks',
       action: '+372 512 7938',
-      link: 'tel:+37251279380',
+      link: 'tel:+3725127938',
       color: 'text-green-600 bg-green-50'
     },
     {
