@@ -14,6 +14,8 @@ interface GoogleReview {
   text: string
   relative_time_description?: string
   time?: number
+  language?: string
+  original_language?: string
 }
 
 export default function TestimonialsSection() {
@@ -100,7 +102,12 @@ export default function TestimonialsSection() {
                         <Star key={i} className="h-4 w-4 fill-current text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-gray-700 mb-4 italic">&quot;{review.text}&quot;</p>
+                    <p
+                      className="text-gray-700 mb-4 italic"
+                      lang={review.original_language || review.language || undefined}
+                    >
+                      &quot;{review.text}&quot;
+                    </p>
                   </div>
                   <div className="mt-4">
                     <div className="font-semibold text-gray-900">{formatFirstName(review.author_name)}</div>

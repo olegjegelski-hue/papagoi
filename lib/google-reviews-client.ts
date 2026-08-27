@@ -10,6 +10,9 @@ export type GoogleReviewsPayload = {
     relative_time_description?: string
     time?: number
     profile_photo_url?: string
+    language?: string
+    original_language?: string
+    translated?: boolean
   }>
   error?: string
 }

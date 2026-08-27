@@ -5,6 +5,11 @@ export type PlaceReview = {
   relative_time_description: string
   profile_photo_url: string
   time: number
+  /** IETF kood tagastatud teksti keelele (originaal, kui tõlge on välja lülitatud). */
+  language?: string
+  /** IETF kood arvustuse kirjutamise keelele. */
+  original_language?: string
+  translated?: boolean
 }
 
 export type PlaceDetailsOk = {
@@ -26,6 +31,9 @@ type PlaceDetailsResponse = {
       relative_time_description?: string
       profile_photo_url?: string
       time?: number
+      language?: string
+      original_language?: string
+      translated?: boolean
     }>
   }
 }
@@ -69,8 +77,16 @@ export async function fetchGooglePlaceDetails(): Promise<
   }
 
   try {
-    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=rating,user_ratings_total,reviews&key=${apiKey}`
-    const detailsResponse = await fetch(detailsUrl, {
+    // Vana Place Details: vaikimisi tõlgib Google teksti päringu keelde.
+    // reviews_no_translations hoiab originaali; newest ei eelista ingliskeelseid.
+    const detailsUrl = new URL('https://maps.googleapis.com/maps/api/place/details/json')
+    detailsUrl.searchParams.set('place_id', placeId)
+    detailsUrl.searchParams.set('fields', 'rating,user_ratings_total,reviews')
+    detailsUrl.searchParams.set('reviews_no_translations', 'true')
+    detailsUrl.searchParams.set('reviews_sort', 'newest')
+    detailsUrl.searchParams.set('key', apiKey)
+
+    const detailsResponse = await fetch(detailsUrl.toString(), {
       next: { revalidate: 3600 },
     })
     const detailsData = (await detailsResponse.json()) as PlaceDetailsResponse
@@ -85,6 +101,13 @@ export async function fetchGooglePlaceDetails(): Promise<
             relative_time_description: review.relative_time_description || '',
             profile_photo_url: review.profile_photo_url || '',
             time: review.time || 0,
+            ...(review.language ? { language: review.language } : {}),
+            ...(review.original_language
+              ? { original_language: review.original_language }
+              : {}),
+            ...(typeof review.translated === 'boolean'
+              ? { translated: review.translated }
+              : {}),
           }))
         : []
 
