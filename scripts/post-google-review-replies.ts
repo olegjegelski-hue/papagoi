@@ -2,7 +2,7 @@ import 'dotenv/config'
 
 import { getGmbAccessToken } from './sync-google-reviews-to-notion'
 import { createTransporter } from '../lib/email'
-import { autoReplySinceDate, shouldPostAutoReply } from '@/lib/google-review-replies'
+import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 
 function assertEnv(name: string): string {
   const value = process.env[name]
@@ -47,12 +47,8 @@ async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
             checkbox: { equals: true },
           },
           {
-            property: 'Hinne',
-            number: { greater_than_or_equal_to: 4 },
-          },
-          {
-            property: 'Arvustuse kuupäev',
-            date: { on_or_after: autoReplySinceDate() },
+            property: 'Staatus',
+            select: { equals: GMB_STATUS.ready },
           },
         ],
       },
@@ -92,24 +88,34 @@ async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
 function getRichTextPlainText(prop: any): string | null {
   const rich = prop?.rich_text
   if (!Array.isArray(rich) || rich.length === 0) return null
-  const first = rich[0]
-  const text = first?.plain_text ?? first?.text?.content
-  return text && String(text).trim().length > 0 ? String(text) : null
+  const text = rich.map((t: { plain_text?: string; text?: { content?: string } }) => t?.plain_text ?? t?.text?.content ?? '').join('')
+  return text && String(text).trim().length > 0 ? String(text).trim() : null
 }
 
-function getNotionRating(prop: any): number | null {
-  if (typeof prop?.number === 'number' && Number.isFinite(prop.number)) return prop.number
-  return null
-}
-
-function getNotionDateStart(prop: any): string | null {
-  const start = prop?.date?.start
-  return typeof start === 'string' && start.trim() ? start : null
+/** Ainult Staatus → Viga. Vastus postitatud? ja kuupäev jäävad puutumata. */
+async function markPostError(apiKey: string, pageId: string, reason: string) {
+  console.error(`Marking Notion page ${pageId} as ${GMB_STATUS.error}: ${reason}`)
+  const response = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      properties: {
+        Staatus: { select: { name: GMB_STATUS.error } },
+      },
+    }),
+  })
+  if (!response.ok) {
+    const text = await response.text()
+    console.error(`Failed to mark ${GMB_STATUS.error} on ${pageId}: ${response.status} - ${text}`)
+  }
 }
 
 export async function postRepliesToGoogle() {
-  // Kolm piirangut (Oleg 27.08): ainult alates GMB_AUTO_REPLY_SINCE, ainult 4–5★,
-  // rotatsioon mustandites. Kinnitatud jääb käsitsi — käivitamist siin ei lülitata.
+  // Ainult Kinnitatud + Staatus „Valmis postitamiseks“. Mustandit ega Uus ridu ei postita.
   const NOTION_API_KEY = assertEnv('NOTION_API_KEY')
   const pages = await fetchNotionPagesNeedingReply()
 
@@ -135,18 +141,17 @@ export async function postRepliesToGoogle() {
 
     const reviewId = getRichTextPlainText(reviewIdProp)
     const replyText = getRichTextPlainText(replyTextProp)
+    const status = props['Staatus']?.select?.name || null
+    const gate = isGmbReplyReadyToPost({
+      status,
+      confirmed: props['Kinnitatud']?.checkbox === true,
+      replyPosted: props['Vastus postitatud?']?.checkbox === true,
+      replyText,
+      reviewId,
+    })
 
-    if (!reviewId || !replyText) {
-      console.warn(`Skipping page ${page.id} – missing reviewId or reply text`)
-      failed++
-      continue
-    }
-
-    const rating = getNotionRating(props['Hinne'])
-    const createTime = getNotionDateStart(props['Arvustuse kuupäev'])
-    const gate = shouldPostAutoReply({ rating, createTime })
     if (!gate.ok) {
-      console.log(`Skipping reviewId=${reviewId}: ${gate.reason}`)
+      console.log(`Skipping page ${page.id}: ${gate.reason}`)
       continue
     }
 
@@ -164,14 +169,15 @@ export async function postRepliesToGoogle() {
 
     if (!gmbResponse.ok) {
       const text = await gmbResponse.text()
+      const reason = `${gmbResponse.status}: ${text}`
       console.error(
-        `Failed to post reply to Google for reviewId=${reviewId}: ${gmbResponse.status} - ${text}`,
+        `Failed to post reply to Google page=${page.id} reviewId=${reviewId}: ${reason}`,
       )
       failed++
+      await markPostError(NOTION_API_KEY, page.id, reason)
       continue
     }
 
-    // Mark as posted in Notion
     const nowIso = new Date().toISOString()
 
     const notionResponse = await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
@@ -187,7 +193,7 @@ export async function postRepliesToGoogle() {
             checkbox: true,
           },
           Staatus: {
-            select: { name: 'Vastus postitatud' },
+            select: { name: GMB_STATUS.posted },
           },
           'Vastuse postitamise kuupäev': {
             date: { start: nowIso },

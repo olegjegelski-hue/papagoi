@@ -1,9 +1,6 @@
 import 'dotenv/config'
 
-import {
-  generateAutoReplyDraft,
-  generateReplyType,
-} from '@/lib/google-review-replies'
+import { generateReplyType } from '@/lib/google-review-replies'
 import {
   extractOriginalGmbComment,
   toNotionRichText,
@@ -253,13 +250,6 @@ function buildNotionPropertiesFromReview(
   const replyType = generateReplyType(rating)
   const name =
     (review.reviewer?.displayName && review.reviewer.displayName.trim()) || 'Anonüümne'
-  const draft = generateAutoReplyDraft({
-    reviewId: review.reviewId,
-    displayName: review.reviewer?.displayName || null,
-    rating,
-    comment: originalComment,
-    createTime: review.createTime,
-  })
   const createDate = review.createTime || null
   const replyExists = Boolean(review.reviewReply && review.reviewReply.comment)
 
@@ -328,23 +318,7 @@ function buildNotionPropertiesFromReview(
     }
   }
 
-  // Vastus – ära kirjuta üle; uuele täida mustand ainult 4–5★ alates kuupäevast
-  const existingReply = existingProperties?.['Vastus']
-  const replyText =
-    existingReply?.rich_text?.[0]?.plain_text && existingReply.rich_text[0].plain_text.trim().length
-      ? existingReply.rich_text[0].plain_text
-      : draft
-
-  if (replyText) {
-    props['Vastus'] = {
-      rich_text: [
-        {
-          type: 'text',
-          text: { content: replyText },
-        },
-      ],
-    }
-  }
+  // Vastus täidab /api/generate-gmb-review-replies. Sync ei kirjuta ega tühjenda seda.
 
   // Vastus postitatud?
   props['Vastus postitatud?'] = {

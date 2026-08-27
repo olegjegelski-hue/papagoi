@@ -151,20 +151,3 @@ export function generateReplyType(rating: number | null): string | null {
   if (rating <= 3) return '1–3★ – vabandus ja palu kirjutada'
   return null
 }
-
-/** Cron tohib postitada ainult 4–5★ alates kuupäevast. 1–3★ jääb Olegile GMB-s. */
-export function shouldPostAutoReply(input: {
-  rating: number | null
-  createTime: string | null
-}): { ok: true } | { ok: false; reason: string } {
-  if (input.rating !== 4 && input.rating !== 5) {
-    return { ok: false, reason: 'ainult 4–5★ (1–3★ käsitsi)' }
-  }
-  if (!isOnOrAfterAutoReplySince(input.createTime)) {
-    return {
-      ok: false,
-      reason: `enne ${autoReplySinceDate()} (tagantjärele ei täideta)`,
-    }
-  }
-  return { ok: true }
-}
