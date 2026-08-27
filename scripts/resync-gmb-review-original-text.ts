@@ -1,6 +1,11 @@
 import 'dotenv/config'
 
-import { pickConfidentOriginalFromGmbReview, gmbCommentLooksTranslated, toNotionRichText } from '@/lib/gmb-review-comment'
+import {
+  diagnoseGmbOriginalPick,
+  gmbCommentLooksTranslated,
+  toNotionRichText,
+  type GmbCommentFieldSnapshot,
+} from '@/lib/gmb-review-comment'
 import { fetchGmbReviewById, getGmbAccessToken } from '@/scripts/sync-google-reviews-to-notion'
 
 /**
@@ -16,6 +21,8 @@ const DEFAULT_LIMIT = 50
 const HARD_MAX_LIMIT = 100
 const GMB_GET_GAP_MS = 250
 const NOTION_PATCH_GAP_MS = 350
+const MAX_UNCERTAIN_SAMPLES = 25
+const TEXT_PREVIEW_LEN = 180
 
 type NotionPage = {
   id: string
@@ -26,6 +33,22 @@ export type ResyncOriginalTextOptions = {
   dryRun?: boolean
   limit?: number
   offset?: number
+}
+
+export type SkippedUncertainSample = {
+  pageId: string
+  reviewId: string
+  reviewerName: string
+  rating: number | null
+  notionTextStart: string
+  reason: string
+  gmb: {
+    starRating: string | null
+    comment: GmbCommentFieldSnapshot
+    originalText: GmbCommentFieldSnapshot
+    originalComment: GmbCommentFieldSnapshot
+    originalReviewText: GmbCommentFieldSnapshot
+  } | null
 }
 
 export type ResyncOriginalTextSummary = {
@@ -40,6 +63,7 @@ export type ResyncOriginalTextSummary = {
   notFound: number
   errors: number
   errorSamples: { reviewId: string; pageId: string; error: string }[]
+  skippedUncertainSamples: SkippedUncertainSample[]
 }
 
 function assertEnv(name: string): string {
@@ -93,6 +117,20 @@ function titlePlain(prop: any): string {
 
 function normalizeReviewText(value: string): string {
   return value.replace(/\r\n/g, '\n').replace(/\u00a0/g, ' ').trim()
+}
+
+function previewText(value: string, max = TEXT_PREVIEW_LEN): string {
+  return value.replace(/\r\n/g, '\n').replace(/\n/g, ' ').trim().slice(0, max)
+}
+
+function notionRating(properties: Record<string, any>): number | null {
+  const n = properties['Hinne']?.number
+  return typeof n === 'number' && Number.isFinite(n) ? n : null
+}
+
+function pushUncertainSample(summary: ResyncOriginalTextSummary, sample: SkippedUncertainSample) {
+  if (summary.skippedUncertainSamples.length >= MAX_UNCERTAIN_SAMPLES) return
+  summary.skippedUncertainSamples.push(sample)
 }
 
 function googleReviewIdFromPage(properties: Record<string, any>): string {
@@ -216,6 +254,7 @@ export async function resyncGmbReviewOriginalText(
     notFound: 0,
     errors: 0,
     errorSamples: [],
+    skippedUncertainSamples: [],
   }
 
   console.log(
@@ -234,11 +273,22 @@ export async function resyncGmbReviewOriginalText(
     const name = titlePlain(props['Nimi']) || 'Anonüümne'
     const reviewId = googleReviewIdFromPage(props)
     const notionText = normalizeReviewText(richTextPlain(props['Arvustuse tekst']))
+    const rating = notionRating(props)
     const n = `${i + 1}/${pages.length}`
 
     if (!reviewId) {
       summary.checked++
       summary.skippedUncertain++
+      const sample: SkippedUncertainSample = {
+        pageId: page.id,
+        reviewId: '',
+        reviewerName: name,
+        rating,
+        notionTextStart: previewText(notionText),
+        reason: 'no-review-id',
+        gmb: null,
+      }
+      pushUncertainSample(summary, sample)
       console.log(`[${n}] SKIP no-review-id page=${page.id} ${name}`)
       continue
     }
@@ -265,10 +315,28 @@ export async function resyncGmbReviewOriginalText(
         )
       }
 
-      const original = pickConfidentOriginalFromGmbReview(gmb)
-      if (!original || gmbCommentLooksTranslated(original)) {
+      const diagnosis = diagnoseGmbOriginalPick(gmb)
+      const original = diagnosis.picked
+      if (!original || diagnosis.reason) {
+        const reason = diagnosis.reason || 'parser-returned-null'
         summary.skippedUncertain++
-        console.log(`[${n}] SKIP uncertain reviewId=${reviewId} ${name}`)
+        const sample: SkippedUncertainSample = {
+          pageId: page.id,
+          reviewId,
+          reviewerName: name,
+          rating,
+          notionTextStart: previewText(notionText),
+          reason,
+          gmb: {
+            starRating: gmb.starRating ?? null,
+            comment: diagnosis.fields.comment,
+            originalText: diagnosis.fields.originalText,
+            originalComment: diagnosis.fields.originalComment,
+            originalReviewText: diagnosis.fields.originalReviewText,
+          },
+        }
+        pushUncertainSample(summary, sample)
+        console.log(`[${n}] SKIP uncertain reviewId=${reviewId} ${name} reason=${reason}`)
         await sleep(GMB_GET_GAP_MS)
         continue
       }
@@ -281,6 +349,22 @@ export async function resyncGmbReviewOriginalText(
       const unmarkedComment = !namedOriginal && !gmbCommentLooksTranslated(gmb.comment || '')
       if (unmarkedComment && looksNonEnglish(notionText) && !looksNonEnglish(gmbText)) {
         summary.skippedUncertain++
+        const sample: SkippedUncertainSample = {
+          pageId: page.id,
+          reviewId,
+          reviewerName: name,
+          rating,
+          notionTextStart: previewText(notionText),
+          reason: 'unmarked-en-over-et-ru',
+          gmb: {
+            starRating: gmb.starRating ?? null,
+            comment: diagnosis.fields.comment,
+            originalText: diagnosis.fields.originalText,
+            originalComment: diagnosis.fields.originalComment,
+            originalReviewText: diagnosis.fields.originalReviewText,
+          },
+        }
+        pushUncertainSample(summary, sample)
         console.log(`[${n}] SKIP unmarked-en-over-et/ru reviewId=${reviewId} ${name}`)
         await sleep(GMB_GET_GAP_MS)
         continue
@@ -331,6 +415,7 @@ export async function resyncGmbReviewOriginalText(
         limit: summary.limit,
         offset: summary.offset,
         errorSamples: summary.errorSamples,
+        skippedUncertainSamples: summary.skippedUncertainSamples,
       },
       null,
       2,
