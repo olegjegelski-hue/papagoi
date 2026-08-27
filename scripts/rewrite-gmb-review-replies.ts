@@ -5,12 +5,13 @@ import 'dotenv/config'
  * Ei ole cron. Ei postita Google’isse. Vaikimisi dry-run.
  *
  *   npm run rewrite-gmb-review-replies -- --dry-run
- *   npm run rewrite-gmb-review-replies -- --dry-run --limit=10
+ *   npm run rewrite-gmb-review-replies -- --dry-run --limit=5
  *   npm run rewrite-gmb-review-replies -- --dry-run --review-ids id1,id2
- *   npm run rewrite-gmb-review-replies -- --apply --limit=10
+ *   Esimene apply soovitatavalt --limit=5 või --limit=10 (max 20).
+ *   npm run rewrite-gmb-review-replies -- --apply --limit=5
  */
 
-import { generateGmbReviewReplyDraft } from '@/lib/ai/gmb-review-reply-client'
+import { generateGmbReviewReplyDraft, isGmbReplyAiRateLimitError } from '@/lib/ai/gmb-review-reply-client'
 import { extractOriginalGmbComment, toNotionRichText } from '@/lib/gmb-review-comment'
 import {
   GMB_REWRITE_ALLOWED_STATUSES,
@@ -19,11 +20,12 @@ import {
 } from '@/lib/gmb-review-workflow'
 
 const DEFAULT_LIMIT = 10
-const HARD_MAX_LIMIT = 50
+const HARD_MAX_LIMIT = 20
 const MAX_TARGET_IDS = 20
 const MAX_SAMPLES = 10
 const TEXT_PREVIEW_LEN = 180
-const AI_GAP_MS = 350
+const DEFAULT_AI_GAP_MS = 2500
+const RATE_LIMIT_RETRY_MS = 8000
 
 type NotionPage = {
   id: string
@@ -46,7 +48,7 @@ export type RewriteGmbReplySample = {
   oldReplyStart: string
   newReplyStart: string | null
   replyType: string | null
-  decision: 'draft' | 'skip' | 'skipped-unsafe' | 'error'
+  decision: 'draft' | 'skip' | 'skipped-unsafe' | 'error' | 'rate-limited' | 'batch-stopped'
   reason: string
 }
 
@@ -60,7 +62,9 @@ export type RewriteGmbRepliesSummary = {
   wouldRewrite: number
   rewritten: number
   skipped: number
+  rateLimited: number
   errors: number
+  stoppedEarly: boolean
   samples: RewriteGmbReplySample[]
 }
 
@@ -151,6 +155,28 @@ function defaultLimit(): number {
 
 function clampLimit(n: number): number {
   return Math.min(Math.max(1, n), HARD_MAX_LIMIT)
+}
+
+function aiGapMs(): number {
+  const raw = process.env.GMB_REPLY_REWRITE_GAP_MS?.trim()
+  const n = raw ? Number.parseInt(raw, 10) : DEFAULT_AI_GAP_MS
+  if (!Number.isFinite(n) || n < 1500) return DEFAULT_AI_GAP_MS
+  return Math.min(n, 10000)
+}
+
+async function generateDraftWithOneRetry(input: {
+  reviewerName: string
+  rating: number | null
+  reviewText: string | null
+  reviewDate: string | null
+}) {
+  try {
+    return await generateGmbReviewReplyDraft(input)
+  } catch (error) {
+    if (!isGmbReplyAiRateLimitError(error)) throw error
+    await sleep(RATE_LIMIT_RETRY_MS)
+    return await generateGmbReviewReplyDraft(input)
+  }
 }
 
 function richTextPlain(prop: any): string {
@@ -376,19 +402,25 @@ export async function rewriteGmbReviewReplies(
     wouldRewrite: 0,
     rewritten: 0,
     skipped: 0,
+    rateLimited: 0,
     errors: 0,
+    stoppedEarly: false,
     samples: [],
   }
 
+  const gapMs = aiGapMs()
+  let stopRemaining = false
+
   console.log(
     JSON.stringify({
-      note: 'Manual GMB reply rewrite. Never posts to Google. Default dry-run. apply=1 writes Notion only.',
+      note: 'Manual GMB reply rewrite. Never posts to Google. Default dry-run. apply=1 writes Notion only. Sequential AI with throttle; 429 stops the batch.',
       dryRun,
       targeted,
       reviewIds,
       pageIds,
       limit,
       batch: work.length,
+      aiGapMs: gapMs,
     }),
   )
 
@@ -397,6 +429,24 @@ export async function rewriteGmbReviewReplies(
     const page = item.page
     const n = `${i + 1}/${work.length}`
     summary.checked++
+
+    if (stopRemaining) {
+      summary.skipped++
+      pushSample(summary, {
+        pageId: page?.id || item.requestedPageId || '',
+        reviewId: item.reviewId,
+        reviewerName: page ? titlePlain(page.properties['Nimi']) || 'Anonüümne' : '',
+        rating: page ? notionRating(page.properties) : null,
+        reviewTextStart: page ? previewText(richTextPlain(page.properties['Arvustuse tekst'])) : '',
+        oldReplyStart: page ? previewText(richTextPlain(page.properties['Vastus'])) : '',
+        newReplyStart: null,
+        replyType: null,
+        decision: 'batch-stopped',
+        reason: 'batch-stopped-after-rate-limit',
+      })
+      console.log(`[${n}] STOPPED reviewId=${item.reviewId} after rate limit`)
+      continue
+    }
 
     if (!page) {
       summary.skipped++
@@ -447,7 +497,7 @@ export async function rewriteGmbReviewReplies(
     const reviewDate = props['Arvustuse kuupäev']?.date?.start || null
 
     try {
-      const ai = await generateGmbReviewReplyDraft({
+      const ai = await generateDraftWithOneRetry({
         reviewerName: name,
         rating,
         reviewText,
@@ -477,7 +527,7 @@ export async function rewriteGmbReviewReplies(
             'Vastus postitatud?': { checkbox: false },
           })
         }
-        await sleep(AI_GAP_MS)
+        await sleep(gapMs)
         continue
       }
 
@@ -500,7 +550,7 @@ export async function rewriteGmbReviewReplies(
         console.log(`[${n}] DRY would-rewrite page=${page.id} reviewId=${reviewId} type=${ai.replyType}`)
         console.log(`  old: ${previewText(oldReply)}`)
         console.log(`  new: ${previewText(newReply)}`)
-        await sleep(AI_GAP_MS)
+        await sleep(gapMs)
         continue
       }
 
@@ -516,9 +566,28 @@ export async function rewriteGmbReviewReplies(
       await patchNotion(page.id, properties)
       summary.rewritten++
       console.log(`[${n}] REWRITE page=${page.id} reviewId=${reviewId} type=${ai.replyType}`)
-      await sleep(AI_GAP_MS)
+      await sleep(gapMs)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
+      if (isGmbReplyAiRateLimitError(error)) {
+        summary.rateLimited++
+        summary.stoppedEarly = true
+        stopRemaining = true
+        pushSample(summary, {
+          pageId: page.id,
+          reviewId,
+          reviewerName: name,
+          rating,
+          reviewTextStart: previewText(reviewTextRaw),
+          oldReplyStart: previewText(oldReply),
+          newReplyStart: null,
+          replyType: null,
+          decision: 'rate-limited',
+          reason: message.slice(0, TEXT_PREVIEW_LEN),
+        })
+        console.warn(`[${n}] RATE_LIMITED page=${page.id} reviewId=${reviewId} — stopping batch; Notion unchanged`)
+        continue
+      }
       summary.errors++
       pushSample(summary, {
         pageId: page.id,
@@ -540,11 +609,11 @@ export async function rewriteGmbReviewReplies(
             Kinnitatud: { checkbox: false },
             'Vastus postitatud?': { checkbox: false },
           })
-        } catch (patchError) {
+        } catch {
           console.error(`Failed to mark Viga for page=${page.id}`)
         }
       }
-      await sleep(AI_GAP_MS)
+      await sleep(gapMs)
     }
   }
 
@@ -559,7 +628,9 @@ export async function rewriteGmbReviewReplies(
         wouldRewrite: summary.wouldRewrite,
         rewritten: summary.rewritten,
         skipped: summary.skipped,
+        rateLimited: summary.rateLimited,
         errors: summary.errors,
+        stoppedEarly: summary.stoppedEarly,
         samples: summary.samples,
       },
       null,

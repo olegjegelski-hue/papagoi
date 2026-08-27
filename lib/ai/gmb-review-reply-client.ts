@@ -21,6 +21,19 @@ export class GmbReplyAiValidationError extends Error {
   }
 }
 
+export class GmbReplyAiRateLimitError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'GmbReplyAiRateLimitError'
+  }
+}
+
+export function isGmbReplyAiRateLimitError(error: unknown): boolean {
+  if (error instanceof GmbReplyAiRateLimitError) return true
+  const message = error instanceof Error ? error.message : String(error)
+  return /\b429\b/.test(message) || /rate[- ]limited|too many requests/i.test(message)
+}
+
 export function getGmbReplyAiModel(): string {
   return process.env.GMB_REPLY_AI_MODEL?.trim() || DEFAULT_MODEL
 }
@@ -169,7 +182,11 @@ export async function generateGmbReviewReplyDraft(
     bodyText = await response.text()
   }
   if (!response.ok) {
-    throw new Error(`AI Gateway ${response.status}: ${bodyText.slice(0, 400)}`)
+    const snippet = bodyText.slice(0, 400)
+    if (response.status === 429 || /rate[- ]limited|too many requests/i.test(bodyText)) {
+      throw new GmbReplyAiRateLimitError(`AI Gateway ${response.status}: ${snippet}`)
+    }
+    throw new Error(`AI Gateway ${response.status}: ${snippet}`)
   }
 
   const data = JSON.parse(bodyText) as {

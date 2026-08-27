@@ -64,6 +64,13 @@ Variatsioon:
 - Sama mõtet võib väljendada erinevalt.
 - Kui arvustuse tekst on detailne, peab vastus olema konkreetsem.
 - Kui arvustuse tekst on napp, peab vastus olema lühem.
+- Inglisekeelne vastus peab olema konkreetne, mitte üldmall („Thanks for visiting, we look forward to seeing you again“).
+
+Nimed ja sõnastus:
+- Tänades nimega kasuta koma, mitte alaleütlevat: „Aitäh, Triinu“, mitte „Aitäh Triinule“. Inglise keeles: „Thanks, Kelly“.
+- Ära ütle „nii noortele kui vanadele“. Kui vanusevahemik on asjakohane, ütle „nii noorematele kui vanematele“.
+- Ära lisa uusi väiteid. Kui klient ütles „informatiivne“, ära kirjuta „palju uut“ ega muid asju, mida ta ei öelnud.
+- Peegelda ainult seda, mis arvustuses päriselt on.
 
 Keelatud:
 - Ära leiuta detaile, mida arvustuses pole.
@@ -99,10 +106,10 @@ Hindepõhine loogika:
 Pikkus:
 - Tekstita 5★: 0–1 lauset.
 - Lühike positiivne arvustus: 1–2 lauset.
-- Sisuline positiivne arvustus: 2–3 lauset.
-- 4★: 2–3 lauset.
+- Sisuline positiivne arvustus: 2 lauset, vajadusel 3.
+- 4★: 1–2 lauset, vajadusel 3.
 - 1–3★: 2–3 lauset.
-- Üldjuhul mitte üle 4 lause.
+- Üldjuhul mitte üle 3 lause. Eelista lühemat ja loomulikumat.
 
 Reply type:
 - Kui rating on 5 ja decision = "draft", replyType = "5★ – tänu ja kutse tagasi".
