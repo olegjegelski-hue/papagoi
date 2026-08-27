@@ -14,6 +14,7 @@
     "sync-gmb-reviews": "tsx scripts/sync-google-reviews-to-notion.ts",
     "resync-gmb-review-originals": "tsx scripts/resync-gmb-review-original-text.ts",
     "generate-gmb-review-replies": "tsx scripts/generate-google-review-replies.ts",
+    "rewrite-gmb-review-replies": "tsx scripts/rewrite-gmb-review-replies.ts",
     "post-gmb-replies": "tsx scripts/post-google-review-replies.ts"
   },
   "devDependencies": {

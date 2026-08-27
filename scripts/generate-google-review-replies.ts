@@ -2,8 +2,7 @@ import 'dotenv/config'
 
 /**
  * AI mustandid ainult uutele ridadele (Staatus=Uus, tühi Vastus, alates GMB_AUTO_REPLY_SINCE).
- * Vanade ridade rewrite/backfill on peatatud, kuni GMB originaalteksti resync on tehtud
- * (`scripts/resync-gmb-review-original-text.ts`).
+ * Vanade postitamata vastuste rewrite: scripts/rewrite-gmb-review-replies.ts (käsitsi, mitte cron).
  */
 
 import { generateGmbReviewReplyDraft } from '@/lib/ai/gmb-review-reply-client'

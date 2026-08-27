@@ -53,3 +53,38 @@ export function isGmbReplyReadyToPost(
   }
   return { ok: true }
 }
+
+export const GMB_REWRITE_ALLOWED_STATUSES: readonly GmbStatus[] = [
+  GMB_STATUS.uus,
+  GMB_STATUS.draft,
+  GMB_STATUS.error,
+  GMB_STATUS.skip,
+]
+
+/** Vanade postitamata vastuste AI rewrite. Ei puutu postitatud ega Valmis postitamiseks ridu. */
+export function isGmbReplySafeToRewrite(
+  input: GmbPostGateInput,
+): { ok: true } | { ok: false; reason: string } {
+  if (!input.reviewId?.trim()) {
+    return { ok: false, reason: 'Google review ID puudub' }
+  }
+  if (!input.replyText?.trim()) {
+    return { ok: false, reason: 'Vastus on tühi' }
+  }
+  if (input.replyPosted) {
+    return { ok: false, reason: 'Vastus postitatud? on true' }
+  }
+  if (input.confirmed) {
+    return { ok: false, reason: 'Kinnitatud on true' }
+  }
+  if (input.status === GMB_STATUS.posted) {
+    return { ok: false, reason: `staatus on "${GMB_STATUS.posted}"` }
+  }
+  if (input.status === GMB_STATUS.ready) {
+    return { ok: false, reason: `staatus on "${GMB_STATUS.ready}"` }
+  }
+  if (!input.status || !(GMB_REWRITE_ALLOWED_STATUSES as readonly string[]).includes(input.status)) {
+    return { ok: false, reason: `staatus pole rewrite'iks lubatud (oli: ${input.status || 'tühi'})` }
+  }
+  return { ok: true }
+}
