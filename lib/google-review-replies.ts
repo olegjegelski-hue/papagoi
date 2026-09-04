@@ -127,12 +127,15 @@ export type AutoReplyInput = {
   createTime?: string | null
 }
 
+/** Sama värav synci mallil ja generate'il: tärn-ainult / tühi tekst ei lähe vastusesse. */
+export function hasReviewTextForReply(comment: string | null | undefined): boolean {
+  return Boolean(extractOriginalGmbComment(comment)?.trim())
+}
+
 export function isEligibleForAutoReply(input: AutoReplyInput): boolean {
   if (input.rating !== 4 && input.rating !== 5) return false
   if (!isOnOrAfterAutoReplySince(input.createTime)) return false
-  const comment = extractOriginalGmbComment(input.comment)
-  if (!comment) return false
-  return true
+  return hasReviewTextForReply(input.comment)
 }
 
 export function generateAutoReplyDraft(input: AutoReplyInput): string | null {

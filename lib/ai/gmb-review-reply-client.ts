@@ -4,6 +4,8 @@ import {
   GMB_REVIEW_REPLY_SYSTEM_PROMPT,
   buildGmbReviewReplyUserPrompt,
   expectedReplyTypeForRating,
+  resolveGmbDraftReplyLanguage,
+  type GmbDraftReplyLanguage,
   type GmbReviewReplyAiOutput,
   type GmbReviewReplyDecision,
   type GmbReviewReplyPromptInput,
@@ -47,6 +49,26 @@ export function getAiGatewayToken(): string | null {
 
 function isReplyType(value: unknown): value is GmbReviewReplyType {
   return typeof value === 'string' && (GMB_REVIEW_REPLY_REPLY_TYPES as readonly string[]).includes(value)
+}
+
+const ESTONIAN_LEAK_RE = /[äöüõ]|\b(aitäh|teile|linnud|oleksid|suur tänu|meil on)\b|\bet\s+linnud\b/i
+
+export function replyLeaksWrongLanguage(
+  reply: string,
+  language: GmbDraftReplyLanguage,
+): string | null {
+  if (language === 'ru' && ESTONIAN_LEAK_RE.test(reply)) {
+    return 'reply mixes Estonian into a Russian draft'
+  }
+  if (language === 'en') {
+    if (ESTONIAN_LEAK_RE.test(reply)) {
+      return 'reply mixes Estonian into an English draft'
+    }
+    if (/[а-яё]/i.test(reply) || /\b(paldies|kiitos|danke|vielen)\b/i.test(reply)) {
+      return 'reply is not English (et/en/ru lock)'
+    }
+  }
+  return null
 }
 
 function looksLikeForbiddenReplyShape(reply: string): string | null {
@@ -137,9 +159,11 @@ export async function generateGmbReviewReplyDraft(
     throw new Error('AI Gateway token missing (AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN)')
   }
 
+  const language = resolveGmbDraftReplyLanguage(input.reviewText)
+  const userPrompt = buildGmbReviewReplyUserPrompt(input)
   const messages = [
     { role: 'system', content: GMB_REVIEW_REPLY_SYSTEM_PROMPT },
-    { role: 'user', content: buildGmbReviewReplyUserPrompt(input) },
+    { role: 'user', content: userPrompt },
   ]
 
   const schemaFormat = {
@@ -152,7 +176,10 @@ export async function generateGmbReviewReplyDraft(
   }
   const objectFormat = { type: 'json_object' }
 
-  async function callGateway(responseFormat: unknown): Promise<Response> {
+  async function callGateway(
+    responseFormat: unknown,
+    requestMessages: Array<{ role: string; content: string }>,
+  ): Promise<Response> {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 25000)
     try {
@@ -166,7 +193,7 @@ export async function generateGmbReviewReplyDraft(
         body: JSON.stringify({
           model: getGmbReplyAiModel(),
           temperature: 0.6,
-          messages,
+          messages: requestMessages,
           response_format: responseFormat,
         }),
       })
@@ -175,27 +202,56 @@ export async function generateGmbReviewReplyDraft(
     }
   }
 
-  let response = await callGateway(schemaFormat)
-  let bodyText = await response.text()
-  if (!response.ok && response.status === 400) {
-    response = await callGateway(objectFormat)
-    bodyText = await response.text()
-  }
-  if (!response.ok) {
-    const snippet = bodyText.slice(0, 400)
-    if (response.status === 429 || /rate[- ]limited|too many requests/i.test(bodyText)) {
-      throw new GmbReplyAiRateLimitError(`AI Gateway ${response.status}: ${snippet}`)
+  async function complete(
+    requestMessages: Array<{ role: string; content: string }>,
+  ): Promise<GmbReviewReplyAiOutput> {
+    let response = await callGateway(schemaFormat, requestMessages)
+    let bodyText = await response.text()
+    if (!response.ok && response.status === 400) {
+      response = await callGateway(objectFormat, requestMessages)
+      bodyText = await response.text()
     }
-    throw new Error(`AI Gateway ${response.status}: ${snippet}`)
+    if (!response.ok) {
+      const snippet = bodyText.slice(0, 400)
+      if (response.status === 429 || /rate[- ]limited|too many requests/i.test(bodyText)) {
+        throw new GmbReplyAiRateLimitError(`AI Gateway ${response.status}: ${snippet}`)
+      }
+      throw new Error(`AI Gateway ${response.status}: ${snippet}`)
+    }
+
+    const data = JSON.parse(bodyText) as {
+      choices?: { message?: { content?: string } }[]
+    }
+    const content = data.choices?.[0]?.message?.content
+    if (!content || !content.trim()) {
+      throw new GmbReplyAiValidationError('AI Gateway returned empty content')
+    }
+
+    return parseGmbReplyAiJson(content, input.rating)
   }
 
-  const data = JSON.parse(bodyText) as {
-    choices?: { message?: { content?: string } }[]
-  }
-  const content = data.choices?.[0]?.message?.content
-  if (!content || !content.trim()) {
-    throw new GmbReplyAiValidationError('AI Gateway returned empty content')
+  let output = await complete(messages)
+  if (output.decision === 'draft' && output.reply) {
+    const leak = replyLeaksWrongLanguage(output.reply, language)
+    if (leak) {
+      output = await complete([
+        ...messages,
+        {
+          role: 'user',
+          content:
+            'The previous reply used a language outside et/en/ru or mixed languages. Rewrite the entire reply in the required language only (English if the review is not Estonian, English or Russian).',
+        },
+      ])
+      if (output.decision === 'draft' && output.reply && replyLeaksWrongLanguage(output.reply, language)) {
+        return {
+          decision: 'skip',
+          reply: null,
+          replyType: null,
+          reason: leak,
+        }
+      }
+    }
   }
 
-  return parseGmbReplyAiJson(content, input.rating)
+  return output
 }

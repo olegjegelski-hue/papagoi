@@ -14,11 +14,11 @@
     },
     {
       "path": "/api/post-gmb-replies",
-      "schedule": "0 8 * * *"
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/generate-gmb-review-replies",
-      "schedule": "0 17,18 * * *"
+      "schedule": "5 16 * * *"
     }
   ]
 }

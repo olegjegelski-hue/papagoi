@@ -1,15 +1,18 @@
 import 'dotenv/config'
 
 /**
- * AI mustandid ainult uutele ridadele (Staatus=Uus, tühi Vastus, alates GMB_AUTO_REPLY_SINCE).
- * Vanade postitamata vastuste rewrite: scripts/rewrite-gmb-review-replies.ts (käsitsi, mitte cron).
+ * AI mustandid ridadele Staatus=Uus, tühi Vastus, tekst olemas, alates GMB_AUTO_REPLY_SINCE.
+ * Cron: kohe pärast sync-gmb-reviews. Vanade rewrite: scripts/rewrite-gmb-review-replies.ts.
  */
 
-import { generateGmbReviewReplyDraft } from '@/lib/ai/gmb-review-reply-client'
+import {
+  generateGmbReviewReplyDraft,
+  isGmbReplyAiRateLimitError,
+} from '@/lib/ai/gmb-review-reply-client'
 import { extractOriginalGmbComment, toNotionRichText } from '@/lib/gmb-review-comment'
-import { isGmbReplyGenerateWindow, tallinnHour } from '@/lib/gmb-review-generate-window'
+import { tallinnHour } from '@/lib/gmb-review-generate-window'
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
-import { autoReplySinceDate } from '@/lib/google-review-replies'
+import { autoReplySinceDate, hasReviewTextForReply } from '@/lib/google-review-replies'
 
 function assertEnv(name: string): string {
   const value = process.env[name]
@@ -26,20 +29,23 @@ type NotionPage = {
 
 export type GenerateGmbRepliesOptions = {
   dryRun?: boolean
-  /** Jäta vahele Tallinna kella 20:00 aken (käsitsi / test). */
+  /** Alles API/CLI ühilduvuseks; ajaakent enam pole. */
   force?: boolean
   limit?: number
 }
 
 export type GenerateGmbRepliesSummary = {
-  skippedWindow?: boolean
   tallinnHour: string
   found: number
   drafted: number
   skipped: number
   errors: number
+  rateLimited: boolean
+  stoppedEarly: boolean
   dryRun: boolean
 }
+
+const DEFAULT_AI_GAP_MS = 2500
 
 function parseArgs(argv: string[]): GenerateGmbRepliesOptions {
   const dryRun = argv.includes('--dry-run')
@@ -92,6 +98,7 @@ async function fetchCandidatePages(): Promise<NotionPage[]> {
           { property: 'Kinnitatud', checkbox: { equals: false } },
           { property: 'Vastus postitatud?', checkbox: { equals: false } },
           { property: 'Google review ID', rich_text: { is_not_empty: true } },
+          { property: 'Arvustuse tekst', rich_text: { is_not_empty: true } },
           {
             property: 'Arvustuse kuupäev',
             date: { on_or_after: autoReplySinceDate() },
@@ -131,6 +138,7 @@ function isSafeToGenerate(props: Record<string, any>): boolean {
   if (props['Kinnitatud']?.checkbox === true) return false
   if (props['Vastus postitatud?']?.checkbox === true) return false
   if (!richTextPlain(props['Google review ID']).trim()) return false
+  if (!hasReviewTextForReply(richTextPlain(props['Arvustuse tekst']))) return false
   return true
 }
 
@@ -155,27 +163,7 @@ export async function generateGmbReviewReplies(
   options: GenerateGmbRepliesOptions = {},
 ): Promise<GenerateGmbRepliesSummary> {
   const dryRun = Boolean(options.dryRun)
-  const force = Boolean(options.force)
   const hour = tallinnHour()
-
-  if (!force && !isGmbReplyGenerateWindow()) {
-    const summary: GenerateGmbRepliesSummary = {
-      skippedWindow: true,
-      tallinnHour: hour,
-      found: 0,
-      drafted: 0,
-      skipped: 0,
-      errors: 0,
-      dryRun,
-    }
-    console.log(
-      JSON.stringify({
-        ...summary,
-        note: 'Not 20:00 Europe/Tallinn — no-op (Vercel UTC 17:00/18:00). Use --force to run anyway.',
-      }),
-    )
-    return summary
-  }
 
   const pages = await fetchCandidatePages()
   const limit = options.limit ?? defaultLimit()
@@ -195,6 +183,8 @@ export async function generateGmbReviewReplies(
   let drafted = 0
   let skipped = 0
   let errors = 0
+  let rateLimited = false
+  let stoppedEarly = false
 
   for (const page of targets) {
     const props = page.properties
@@ -228,6 +218,9 @@ export async function generateGmbReviewReplies(
       if (ai.decision === 'skip') {
         skipped++
         console.log(`SKIP page=${page.id} reviewId=${reviewId}: ${ai.reason}`)
+        if (/mixes Estonian/i.test(ai.reason)) {
+          continue
+        }
         const technical = /tehniline|timeout|valideer|ebaselge|json|gateway|parse/i.test(ai.reason)
         await patchNotion(page.id, {
           Staatus: { select: { name: technical ? GMB_STATUS.error : GMB_STATUS.skip } },
@@ -248,8 +241,14 @@ export async function generateGmbReviewReplies(
       drafted++
       console.log(`DRAFT page=${page.id} reviewId=${reviewId} type=${ai.replyType}`)
     } catch (error) {
-      errors++
       const message = error instanceof Error ? error.message : String(error)
+      if (isGmbReplyAiRateLimitError(error)) {
+        console.warn(`RATE LIMIT page=${page.id} reviewId=${reviewId}: ${message}`)
+        rateLimited = true
+        stoppedEarly = true
+        break
+      }
+      errors++
       console.error(`ERROR page=${page.id} reviewId=${reviewId}: ${message}`)
       if (!dryRun) {
         try {
@@ -262,7 +261,7 @@ export async function generateGmbReviewReplies(
       }
     }
 
-    await sleep(250)
+    await sleep(DEFAULT_AI_GAP_MS)
   }
 
   const summary: GenerateGmbRepliesSummary = {
@@ -271,6 +270,8 @@ export async function generateGmbReviewReplies(
     drafted,
     skipped,
     errors,
+    rateLimited,
+    stoppedEarly,
     dryRun,
   }
   console.log('--- KOKKUVÕTE ---')

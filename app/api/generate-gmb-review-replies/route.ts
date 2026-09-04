@@ -3,7 +3,7 @@ import { requireCronAuth } from '@/lib/cron-auth'
 import { generateGmbReviewReplies } from '@/scripts/generate-google-review-replies'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60
+export const maxDuration = 300
 
 export async function GET(request: Request) {
   const unauthorized = requireCronAuth(request)

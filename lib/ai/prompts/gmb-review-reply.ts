@@ -22,6 +22,36 @@ export type GmbReviewReplyPromptInput = {
   reviewDate?: string | null
 }
 
+/** Avalik mustand ainult et / en / ru. Muu arvustuse keel → en. */
+export type GmbDraftReplyLanguage = 'et' | 'en' | 'ru'
+
+export function resolveGmbDraftReplyLanguage(reviewText?: string | null): GmbDraftReplyLanguage {
+  const text = (reviewText || '').trim()
+  if (!text) return 'et'
+  if (/[а-яё]/i.test(text)) return 'ru'
+  const lower = text.toLowerCase()
+  if (
+    /[õ]/.test(lower) ||
+    /\b(väga|aitäh|papagoi|lapsed|koht|meeldis|tore|käisime|peremees|armas|soovitan|kindlasti)\b/.test(
+      lower,
+    )
+  ) {
+    return 'et'
+  }
+  return 'en'
+}
+
+function replyLanguageInstruction(language: GmbDraftReplyLanguage): string {
+  switch (language) {
+    case 'et':
+      return 'Kogu reply ainult eesti keeles. Ära vaheta keelt.'
+    case 'en':
+      return 'The entire reply must be English only. If the review is not Estonian, English or Russian, still reply in English. Do not reply in Latvian, Finnish, German or any other language.'
+    case 'ru':
+      return 'Весь reply только на русском. Ни одного эстонского или английского слова.'
+  }
+}
+
 export const GMB_REVIEW_REPLY_SYSTEM_PROMPT = `
 Sa kirjutad Papagoi Keskuse Google arvustustele vastusemustandeid.
 
@@ -39,13 +69,13 @@ Peamine eesmärk:
 - Ära tee kõigile ühesugust standardvastust.
 
 Keelepoliitika:
-- Avalik reply peab järgima arvustuse keelt.
-- Kui arvustus on eesti keeles, vasta eesti keeles.
-- Kui arvustus on inglise keeles, vasta inglise keeles.
-- Kui arvustus on vene keeles, vasta vene keeles.
-- Kui arvustus on muus keeles, vasta samas keeles, kui suudad; muidu eesti keeles neutraalselt.
-- Kui arvustuse tekst puudub, vasta eesti keeles.
-- Ära tõlgi arvustust vastuses.
+- Avalik reply tohib olla ainult eesti, inglise või vene keeles.
+- Kui arvustus on eesti keeles → eesti; inglise keeles → inglise; vene keeles → vene.
+- Kui arvustus on muus keeles (läti, soome, saksa jt), vasta inglise keeles. Ära vasta arvustuse keeles.
+- Reply peab olema TERVIKUNA ühes keeles. Ära vaheta keelt lause keskel ega lõpus.
+- Vene arvustusele ei tohi reply'sse panna eesti ega inglise sõnu (nt „et linnud oleksid“).
+- Kui kasutaja prompt määrab keele, järgi seda rangelt.
+- Ära tsiteeri ega tõlgi arvustust sõna-sõnalt vastusesse.
 - Ära maini keelevalikut ega seda, mis keeles vastad.
 - JSON-väli reason võib olla inglise keeles; reply mitte.
 
@@ -96,9 +126,7 @@ Hindepõhine loogika:
 - Kui arvustuses on tekst, täna ja peegelda konkreetset kogemust (lühike tekst → 1 lause; muidu 1–2).
 - Ära lõpeta liiga tihti: „Olete alati oodatud tagasi“, „Ootame teid jälle“, „Thank you for your visit“.
 - Eelista loomulikke lõppe, nt: „Seda on väga hea kuulda.“ / „Selline tagasiside teeb rõõmu.“ / „Aitäh, et kogemust jagasite.“ / „Täname soovitamast.“ / „Glad it left such a good impression.“
-- Kui arvustus on ainult 5★ ilma tekstita, kas:
-  - loo maksimaalselt üks väga lühike tänu
-  - või tagasta decision = "skip", kui vastus jääks liiga tühi.
+- Tekstita 5★ ridu generate ei saada; kui tekst puudub, decision = "skip".
 
 2. 4★
 - Rahulik, mitte müügilik (2–3 lauset, ilma lubadusteta).
@@ -116,7 +144,6 @@ Hindepõhine loogika:
 - Hoia vastus lühike ja rahulik.
 
 Pikkus:
-- Tekstita 5★: 0–1 lauset.
 - Lühike 5★ tekst (nt üks hüüdlause): 1 lause, mitte 2–3.
 - 5★ sisulisema tekstiga: 1–2 lauset.
 - 4★: 2–3 lauset, rahulik, ilma lubadusteta.
@@ -197,10 +224,12 @@ export function buildGmbReviewReplyUserPrompt(input: GmbReviewReplyPromptInput):
       : 'Puudub'
   const reviewText = cleanPromptValue(input.reviewText) || 'Puudub'
   const reviewDate = cleanPromptValue(input.reviewDate) || 'Puudub'
+  const language = resolveGmbDraftReplyLanguage(input.reviewText)
 
   return `
 Koosta Google arvustuse vastuse mustand.
-Avalik reply arvustuse keeles; reason võib olla inglise keeles.
+${replyLanguageInstruction(language)}
+Reason võib olla inglise keeles; reply mitte.
 Eesti keeles teie-vorm, kui arvustus pole selgelt familiaarne.
 Ära luba 4★ puhul 5 tärni ega rõhuta järgmist külastust.
 Ära kasuta nime ega „oodatud tagasi“ automaatselt. Lühike arvustus → üks lühike lause.
