@@ -127,11 +127,67 @@ export type AutoReplyInput = {
   createTime?: string | null
 }
 
-/** Sama värav synci mallil ja generate'il: tärn-ainult / tühi tekst ei lähe vastusesse. */
+/** Kas arvustuses on tekst, millele AI / nimeline mall saab reageerida. */
 export function hasReviewTextForReply(comment: string | null | undefined): boolean {
   return Boolean(extractOriginalGmbComment(comment)?.trim())
 }
 
+/**
+ * Tärnita 4–5★: ainult eesti keel (keelt ei ole tuvastada).
+ * Rotatsioon reviewId järgi — sama arvustus saab alati sama vastuse.
+ */
+export const STARLESS_REPLY_VARIANTS_5 = [
+  'Aitäh hea hinnangu eest!',
+  'Suur tänu! Tore, et külastus meeldis.',
+  'Aitäh, et meid külastasite!',
+  'Tänan hinnangu eest — tulge jälle!',
+  'Aitäh! Papagoid ootavad teid tagasi.',
+  'Suur tänu! Hea meel, et meeldis.',
+  'Aitäh tagasiside eest — rõõm, et käisite.',
+  'Tore kuulda, et külastus korda läks. Aitäh!',
+  'Aitäh sooja hinnangu eest!',
+  'Tänan! Kohtumiseni papagoide juures.',
+  'Aitäh, et aega leidsite ja hinnangu jätsite.',
+  'Suur tänu! Olete alati teretulnud.',
+  'Aitäh! Hea meel, et meie juures käisite.',
+  'Tänan — papagoid ootavad teid jälle.',
+] as const
+
+export const STARLESS_REPLY_VARIANTS_4 = [
+  'Aitäh hinnangu eest!',
+  'Tänan, et külastasite ja tagasiside jätsite.',
+  'Aitäh! Hea meel, et käisite.',
+  'Suur tänu tagasiside eest.',
+  'Aitäh, et meid külastasite.',
+  'Tänan hinnangu eest — olete teretulnud tagasi.',
+  'Aitäh tagasiside eest!',
+  'Tore, et käisite. Aitäh hinnangu eest.',
+  'Aitäh! Loodame teid jälle näha.',
+  'Tänan, et aega leidsite.',
+  'Aitäh tagasiside eest — papagoid ootavad teid.',
+  'Suur tänu! Kohtumiseni.',
+] as const
+
+export function generateStarlessAutoReplyDraft(input: {
+  reviewId?: string | null
+  rating: number | null
+}): string | null {
+  if (input.rating !== 4 && input.rating !== 5) return null
+  const reviewId = (input.reviewId || '').trim()
+  if (!reviewId) return null
+  const variants =
+    input.rating === 5 ? STARLESS_REPLY_VARIANTS_5 : STARLESS_REPLY_VARIANTS_4
+  return pickVariant([...variants], `${reviewId}|${input.rating}|starless`)
+}
+
+export function isEligibleForStarlessAutoReply(input: AutoReplyInput): boolean {
+  if (input.rating !== 4 && input.rating !== 5) return false
+  if (hasReviewTextForReply(input.comment)) return false
+  if (!isOnOrAfterAutoReplySince(input.createTime)) return false
+  return Boolean((input.reviewId || '').trim())
+}
+
+/** Tekstiga 4–5★ mall (nimega, keele järgi). Tärnita read kasutavad generateStarlessAutoReplyDraft. */
 export function isEligibleForAutoReply(input: AutoReplyInput): boolean {
   if (input.rating !== 4 && input.rating !== 5) return false
   if (!isOnOrAfterAutoReplySince(input.createTime)) return false

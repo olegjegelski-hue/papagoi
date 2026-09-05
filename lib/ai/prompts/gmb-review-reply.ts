@@ -126,7 +126,7 @@ Hindepõhine loogika:
 - Kui arvustuses on tekst, täna ja peegelda konkreetset kogemust (lühike tekst → 1 lause; muidu 1–2).
 - Ära lõpeta liiga tihti: „Olete alati oodatud tagasi“, „Ootame teid jälle“, „Thank you for your visit“.
 - Eelista loomulikke lõppe, nt: „Seda on väga hea kuulda.“ / „Selline tagasiside teeb rõõmu.“ / „Aitäh, et kogemust jagasite.“ / „Täname soovitamast.“ / „Glad it left such a good impression.“
-- Tekstita 5★ ridu generate ei saada; kui tekst puudub, decision = "skip".
+- Tekstita ridu siia ei saadeta (need saavad koodis fikseeritud eesti variandi). Kui tekst puudub, decision = "skip".
 
 2. 4★
 - Rahulik, mitte müügilik (2–3 lauset, ilma lubadusteta).
