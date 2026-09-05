@@ -13,7 +13,7 @@ import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 
 const DEFAULT_TOTAL_LIMIT = 30
 const HARD_MAX_TOTAL_LIMIT = 50
-const DEFAULT_OLD_LIMIT = 10
+const DEFAULT_OLD_LIMIT = 20
 const HARD_MAX_OLD_LIMIT = 20
 const FRESH_DAYS = 7
 
