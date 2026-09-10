@@ -6,7 +6,7 @@ import {
   type SitePartner,
 } from '@/lib/partners'
 
-const LOGO_CLASS = 'h-16 w-auto'
+const LOGO_CLASS = 'h-24 w-auto'
 
 function PartnerLogo({ partner }: { partner: SitePartner }) {
   return (
@@ -24,7 +24,7 @@ function PartnerLogo({ partner }: { partner: SitePartner }) {
         width={partner.logoWidth}
         height={partner.logoHeight}
         className={LOGO_CLASS}
-        sizes="99px"
+        sizes="360px"
       />
     </a>
   )
@@ -72,15 +72,21 @@ export default async function HomePartners() {
                   : 'flex flex-col items-center gap-6'
               }
             >
-              <div className="flex justify-center">
-                <PartnerLogo partner={primary} />
-              </div>
+              {bothSides ? (
+                <div className="flex justify-center">
+                  <PartnerLogo partner={primary} />
+                </div>
+              ) : null}
               <PartnerCopy partner={primary} lead={lead} />
               {bothSides ? (
                 <div className="hidden justify-center md:flex">
                   <PartnerLogo partner={primary} />
                 </div>
-              ) : null}
+              ) : (
+                <div className="flex justify-center">
+                  <PartnerLogo partner={primary} />
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center gap-6">

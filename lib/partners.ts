@@ -6,7 +6,7 @@
  *
  * Ühe partneri logo paigutus — muuda ainult järgmist rida:
  */
-export const HOME_PARTNER_LOGO_LAYOUT: 'both-sides' | 'center' = 'both-sides'
+export const HOME_PARTNER_LOGO_LAYOUT: 'both-sides' | 'center' = 'center'
 
 export type SitePartner = {
   id: string
@@ -23,7 +23,7 @@ export const HOME_PARTNERS: readonly SitePartner[] = [
     name: 'Grüne Fee',
     href: 'https://grynefee.ee',
     logoSrc: '/partners/grune-fee.png',
-    logoWidth: 247,
-    logoHeight: 160,
+    logoWidth: 1200,
+    logoHeight: 687,
   },
 ]
