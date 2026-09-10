@@ -14,35 +14,18 @@ function PartnerLogo({ partner }: { partner: SitePartner }) {
       href={partner.href}
       target="_blank"
       rel="sponsored noopener noreferrer"
-      aria-hidden="true"
-      tabIndex={-1}
-      className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded transition-transform duration-300 hover:scale-[1.02]"
+      aria-label={partner.name}
+      className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-papagoi-green/50"
     >
       <Image
         src={partner.logoSrc}
-        alt=""
+        alt={partner.name}
         width={partner.logoWidth}
         height={partner.logoHeight}
         className={LOGO_CLASS}
         sizes="360px"
       />
     </a>
-  )
-}
-
-function PartnerCopy({ partner, lead }: { partner: SitePartner; lead: string }) {
-  return (
-    <div className="text-center">
-      <p className="text-gray-700 leading-relaxed">{lead}</p>
-      <a
-        href={partner.href}
-        target="_blank"
-        rel="sponsored noopener noreferrer"
-        className="mt-1 inline-flex min-h-[44px] items-center font-semibold text-papagoi-green underline underline-offset-2 hover:text-papagoi-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-papagoi-green/50 rounded-sm"
-      >
-        {partner.name}
-      </a>
-    </div>
   )
 }
 
@@ -77,7 +60,7 @@ export default async function HomePartners() {
                   <PartnerLogo partner={primary} />
                 </div>
               ) : null}
-              <PartnerCopy partner={primary} lead={lead} />
+              <p className="text-center text-gray-700 leading-relaxed">{lead}</p>
               {bothSides ? (
                 <div className="hidden justify-center md:flex">
                   <PartnerLogo partner={primary} />
@@ -90,7 +73,7 @@ export default async function HomePartners() {
             </div>
           ) : (
             <div className="flex flex-col items-center gap-6">
-              <PartnerCopy partner={primary} lead={lead} />
+              <p className="text-center text-gray-700 leading-relaxed">{lead}</p>
               <ul className="flex flex-wrap items-center justify-center gap-8">
                 {partners.map((partner) => (
                   <li key={partner.id}>
