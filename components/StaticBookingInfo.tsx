@@ -368,13 +368,13 @@ export default function StaticBookingInfo() {
       <h2 className="text-2xl font-bold text-deep-anthracite mb-6 sm:mb-8 font-heading">{t('title')}</h2>
       
       {/* Important Notice */}
-      <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 sm:p-6 mb-6 sm:mb-8">
+      <div className="bg-papagoi-orange-50 border-l-4 border-papagoi-orange rounded-r-lg p-4 sm:p-6 mb-6 sm:mb-8">
         <div className="flex items-center space-x-3 mb-3">
-          <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
-          <h3 className="text-lg sm:text-xl font-bold text-amber-800 font-heading">{t('importantTitle')}</h3>
+          <AlertCircle className="w-6 h-6 text-papagoi-orange flex-shrink-0" />
+          <h3 className="text-lg sm:text-xl font-bold text-papagoi-orange-800 font-heading">{t('importantTitle')}</h3>
         </div>
-        <p className="text-amber-800 font-medium mb-1">{t('importantLine1')}</p>
-        <p className="text-amber-800">{t('importantLine2')}</p>
+        <p className="text-papagoi-orange-800 font-medium mb-1">{t('importantLine1')}</p>
+        <p className="text-papagoi-orange-800">{t('importantLine2')}</p>
       </div>
 
         {/* Calendar — grid-cols-7 (mitte minmax(44px)), et mahuks kitsasse telefoniekraani */}
@@ -414,7 +414,9 @@ export default function StaticBookingInfo() {
               {t('parrotsRestQuote')}
             </blockquote>
             <div className="h-2" />
-            <p className="text-warm-gray-600">{t('morningTip')}</p>
+            <p className="rounded-md border border-papagoi-orange/40 bg-papagoi-orange-50 px-3 py-2 font-medium text-papagoi-orange-800">
+              {t('morningTip')}
+            </p>
           </div>
 
           {bookingsLoadError && !isLoadingBookings && (
