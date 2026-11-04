@@ -171,20 +171,20 @@ export default async function ToetusegaPage({ params }: Props) {
                 <p className="text-gray-600">{t('pathSchoolText')}</p>
               </a>
               <a
-                href="#kingi"
-                className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-orange hover:shadow-xl transition-shadow"
-              >
-                <div className="text-4xl mb-4" aria-hidden>💛</div>
-                <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathGiftTitle')}</h3>
-                <p className="text-gray-600">{t('pathGiftText')}</p>
-              </a>
-              <a
                 href="#vald"
                 className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-blue hover:shadow-xl transition-shadow"
               >
                 <div className="text-4xl mb-4" aria-hidden>🏡</div>
                 <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathMuniTitle')}</h3>
                 <p className="text-gray-600">{t('pathMuniText')}</p>
+              </a>
+              <a
+                href="#kingi"
+                className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-orange hover:shadow-xl transition-shadow"
+              >
+                <div className="text-4xl mb-4" aria-hidden>💛</div>
+                <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathGiftTitle')}</h3>
+                <p className="text-gray-600">{t('pathGiftText')}</p>
               </a>
             </div>
           </div>
