@@ -1,4 +1,4 @@
-import { Calendar, Clock, Euro, Info, Phone, Users } from 'lucide-react'
+import { Calendar, Info, Phone } from 'lucide-react'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -110,7 +110,6 @@ export default async function ToetusegaPage({ params }: Props) {
   setRequestLocale(locale)
   const t = await getTranslations('ToetusegaPage')
   const names = t.raw('programs') as Record<string, string>
-  const schoolSteps = t.raw('schoolSteps') as StepCopy[]
   const giftSteps = t.raw('giftSteps') as StepCopy[]
   const showEstonianNote = locale !== 'et'
 
@@ -147,14 +146,6 @@ export default async function ToetusegaPage({ params }: Props) {
               </span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">{t('intro')}</p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#kool" className="papagoi-cta inline-flex items-center justify-center">
-                {t('heroTeacher')} →
-              </a>
-              <a href="#kingi" className="papagoi-cta-white inline-flex items-center justify-center">
-                {t('heroSupport')} →
-              </a>
-            </div>
           </div>
 
           <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-16 max-w-5xl mx-auto h-64 md:h-80">
@@ -203,7 +194,7 @@ export default async function ToetusegaPage({ params }: Props) {
               <span className="mr-2" aria-hidden>🎒</span>
               {t('ranitsTitle')}
             </h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-8">
+            <p className="text-lg text-gray-700 leading-relaxed">
               {t.rich('ranitsBody', {
                 list: (chunks) => (
                   <a href={KUL_LIST_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
@@ -212,26 +203,6 @@ export default async function ToetusegaPage({ params }: Props) {
                 ),
               })}
             </p>
-            <div className="mb-8">
-              <StepGrid steps={schoolSteps} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-green">
-                <Users className="w-8 h-8 text-papagoi-green mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-800 mb-2">{t('infoSizeLabel')}</h3>
-                <p className="text-gray-600 font-medium">{t('infoSizeValue')}</p>
-              </div>
-              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-blue">
-                <Clock className="w-8 h-8 text-papagoi-blue mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-800 mb-2">{t('infoDurationLabel')}</h3>
-                <p className="text-gray-600 font-medium">{t('infoDurationValue')}</p>
-              </div>
-              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-yellow">
-                <Euro className="w-8 h-8 text-papagoi-yellow mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-800 mb-2">{t('infoPriceLabel')}</h3>
-                <p className="text-gray-600 font-medium">{t('infoPriceValue')}</p>
-              </div>
-            </div>
           </section>
 
           <section className="mb-16">

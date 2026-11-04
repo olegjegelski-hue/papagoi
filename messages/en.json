@@ -1062,10 +1062,8 @@
     "metaDescription": "A school in grades 1–9 can pay for a visit from the Culture Backpack. A supporter can gift a visit to a group that could not come otherwise.",
     "title": "Visit with support",
     "intro": "You can come to the Parrot Centre even when the child or family does not pay for the visit. A school can use the Culture Backpack, and people who care can gift a visit to a group that could not come otherwise.",
-    "heroTeacher": "I'm a teacher",
-    "heroSupport": "I want to support",
     "heroImageAlt": "Children with parrots at the Parrot Centre",
-    "howTitle": "How it works",
+    "howTitle": "Who can pay for the visit?",
     "pathSchoolTitle": "School",
     "pathSchoolText": "A school can pay for a grades 1–9 visit from its Culture Backpack budget.",
     "pathGiftTitle": "Supporter",
@@ -1078,31 +1076,6 @@
     "muniTip": "Could your municipality help? Tell them you would like this, or write to us at <mail>keskus@papagoi.ee</mail> and we will get in touch.",
     "ranitsTitle": "Culture Backpack",
     "ranitsBody": "The Culture Backpack (Kultuuriranits) is a Ministry of Culture grant in every general-education school’s budget. Pupils in grades 1–9 can use it for curriculum-related cultural visits. The Parrot Centre is on the Ministry of Culture website, in the list <list>Museums in Tartu County</list>.",
-    "schoolSteps": [
-      {
-        "title": "Choose a programme",
-        "text": "See below, by class."
-      },
-      {
-        "title": "Book a time",
-        "text": "On the website or by phone. School groups can come at 10–12 by arrangement.",
-        "action": "book"
-      },
-      {
-        "title": "Write “Kultuuriranits” in the notes",
-        "text": "Then we know the invoice goes to the school."
-      },
-      {
-        "title": "The invoice comes after the visit",
-        "text": "The school pays it from the Culture Backpack budget."
-      }
-    ],
-    "infoSizeLabel": "Group size",
-    "infoSizeValue": "up to 30 children",
-    "infoDurationLabel": "Duration",
-    "infoDurationValue": "about 60 min",
-    "infoPriceLabel": "Price",
-    "infoPriceValue": "€10 per pupil",
     "programsTitle": "Programmes",
     "programsIntro": "Our learning programmes follow the national curriculum. The full description, including learning outcomes, is in the national environmental education portal <site>keskkonnaharidus.ee</site>.",
     "legendRanitsTitle": "On the Culture Backpack list",

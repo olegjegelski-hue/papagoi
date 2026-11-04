@@ -1062,10 +1062,8 @@
     "metaDescription": "Kooli 1.–9. klass saab külastuse eest tasuda Kultuuriranitsast. Toetaja saab kinkida külastuse rühmale, kes muidu tulla ei saaks.",
     "title": "Külastus toetusega",
     "intro": "Papagoi Keskusesse saab tulla ka siis, kui külastuse eest ei pea maksma laps ega pere ise. Kool saab kasutada Kultuuriranitsat ja hoolivad inimesed saavad kinkida külastuse rühmale, kes muidu tulla ei saaks.",
-    "heroTeacher": "Olen õpetaja",
-    "heroSupport": "Soovin toetada",
     "heroImageAlt": "Lapsed papagoidega Papagoi Keskuses",
-    "howTitle": "Kuidas see käib?",
+    "howTitle": "Kes saab külastuse eest tasuda?",
     "pathSchoolTitle": "Kool",
     "pathSchoolText": "1.–9. klassi külastuse saab kool tasuda oma Kultuuriranitsa eelarvest.",
     "pathGiftTitle": "Toetaja",
@@ -1078,31 +1076,6 @@
     "muniTip": "Kas sinu vald võiks toetada? Anna oma vallale teada, et sooviksid sellist võimalust, või kirjuta meile aadressil <mail>keskus@papagoi.ee</mail> ja võtame ise ühendust.",
     "ranitsTitle": "Kultuuriranits",
     "ranitsBody": "Kultuuriranits on Kultuuriministeeriumi toetus, mille raha on igal üldhariduskoolil eelarves. Selle eest saavad 1.–9. klassi õpilased käia õppekavaga seotud kultuurikülastustel. Papagoi Keskus on Kultuuriministeeriumi kodulehel nimekirjas <list>Muuseumid Tartumaal</list>.",
-    "schoolSteps": [
-      {
-        "title": "Vali programm",
-        "text": "Vaata allpool klassi järgi."
-      },
-      {
-        "title": "Broneeri aeg",
-        "text": "Kodulehel või telefonil. Koolirühmad saavad kokkuleppel tulla ka kell 10–12.",
-        "action": "book"
-      },
-      {
-        "title": "Märgi lisainfosse „Kultuuriranits“",
-        "text": "Siis teame, et arve läheb kooli nimele."
-      },
-      {
-        "title": "Arve tuleb pärast külastust",
-        "text": "Kool tasub selle oma Kultuuriranitsa eelarvest."
-      }
-    ],
-    "infoSizeLabel": "Grupi suurus",
-    "infoSizeValue": "kuni 30 last",
-    "infoDurationLabel": "Kestus",
-    "infoDurationValue": "ca 60 min",
-    "infoPriceLabel": "Hind",
-    "infoPriceValue": "10 € õpilase kohta",
     "programsTitle": "Programmid",
     "programsIntro": "Meie õppeprogrammid on seotud riikliku õppekavaga. Iga programmi täielik kirjeldus koos õpitulemustega on riiklikus keskkonnahariduse portaalis <site>keskkonnaharidus.ee</site>.",
     "legendRanitsTitle": "Kultuuriranitsa nimekirjas",
