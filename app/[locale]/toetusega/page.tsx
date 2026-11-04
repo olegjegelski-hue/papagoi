@@ -216,30 +216,6 @@ export default async function ToetusegaPage({ params }: Props) {
                 ),
               })}
             </p>
-            <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200 mb-8">
-              <div className="flex items-start gap-4">
-                <Info className="w-6 h-6 text-papagoi-blue flex-shrink-0 mt-1" />
-                <div className="space-y-5 flex-1">
-                  <div>
-                    <h3 className="font-semibold text-gray-800 text-lg">🎒 {t('legendRanitsTitle')}</h3>
-                    <p className="text-gray-700 mt-1">{t('legendRanitsText')}</p>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <Image
-                      src="/toetusega/murakamargis.png"
-                      alt={t('murakaAlt')}
-                      width={80}
-                      height={80}
-                      className="h-20 w-20 flex-shrink-0"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-gray-800 text-lg">{t('legendMurakaTitle')}</h3>
-                      <p className="text-gray-700 mt-1">{t('legendMurakaText')}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <ProgramAccordion
               groups={groups}
               markRanits={t('markRanits')}
