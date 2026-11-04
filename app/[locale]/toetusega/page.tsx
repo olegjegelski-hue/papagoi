@@ -203,7 +203,7 @@ export default async function ToetusegaPage({ params }: Props) {
               <span className="mr-2" aria-hidden>🎒</span>
               {t('ranitsTitle')}
             </h2>
-            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">
+            <p className="text-lg text-gray-700 leading-relaxed mb-8">
               {t.rich('ranitsBody', {
                 list: (chunks) => (
                   <a href={KUL_LIST_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
@@ -236,7 +236,7 @@ export default async function ToetusegaPage({ params }: Props) {
 
           <section className="mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('programsTitle')}</h2>
-            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">
+            <p className="text-lg text-gray-700 leading-relaxed mb-8">
               {t.rich('programsIntro', {
                 site: (chunks) => (
                   <a href={PROGRAMS_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
@@ -282,11 +282,11 @@ export default async function ToetusegaPage({ params }: Props) {
               <span className="mr-2" aria-hidden>🏡</span>
               {t('muniTitle')}
             </h2>
-            <div className="max-w-3xl space-y-4 text-lg text-gray-700 leading-relaxed mb-8">
+            <div className="space-y-4 text-lg text-gray-700 leading-relaxed mb-8">
               <p>{t('muniLead')}</p>
               <p>{t('muniFollow')}</p>
             </div>
-            <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200 max-w-3xl">
+            <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200">
               <div className="flex items-start gap-4">
                 <Info className="w-6 h-6 text-papagoi-blue flex-shrink-0 mt-1" />
                 <p className="text-gray-700 leading-relaxed">
@@ -331,7 +331,7 @@ export default async function ToetusegaPage({ params }: Props) {
               <span className="mr-2" aria-hidden>💛</span>
               {t('giftTitle')}
             </h2>
-            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">{t('giftIntro')}</p>
+            <p className="text-lg text-gray-700 leading-relaxed mb-8">{t('giftIntro')}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-green">
                 <div className="text-4xl mb-4" aria-hidden>👤</div>
