@@ -4,6 +4,23 @@ import { routing } from './i18n/routing'
 
 const handleI18n = createMiddleware(routing)
 
+/** /toetusega on ümber nimetatud — püsiv 301 samas keeles /toetused peale. */
+function toetusegaRedirect(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl
+  const withLocale = pathname.match(/^\/(et|en|ru)\/toetusega\/?$/)
+  if (withLocale) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${withLocale[1]}/toetused`
+    return NextResponse.redirect(url, 301)
+  }
+  if (pathname === '/toetusega' || pathname === '/toetusega/') {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${routing.defaultLocale}/toetused`
+    return NextResponse.redirect(url, 301)
+  }
+  return null
+}
+
 /** /grupid on eemaldatud — püsiv 301 samas keeles /teenused peale. */
 function grupidRedirect(request: NextRequest): NextResponse | null {
   const { pathname } = request.nextUrl
@@ -22,7 +39,7 @@ function grupidRedirect(request: NextRequest): NextResponse | null {
 }
 
 export default function middleware(request: NextRequest) {
-  return grupidRedirect(request) ?? handleI18n(request)
+  return toetusegaRedirect(request) ?? grupidRedirect(request) ?? handleI18n(request)
 }
 
 export const config = {

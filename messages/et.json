@@ -1058,10 +1058,10 @@
     "notFoundBody": "See postitus ei ole avaldatud või seda ei ole olemas."
   },
   "ToetusegaPage": {
-    "metaTitle": "Külastus toetusega | Papagoi Keskus",
-    "metaDescription": "Kooli 1.–9. klass saab külastuse eest tasuda Kultuuriranitsast. Toetaja saab kinkida külastuse rühmale, kes muidu tulla ei saaks.",
-    "title": "Külastus toetusega",
-    "intro": "Papagoi Keskusesse saab tulla ka siis, kui külastuse eest ei pea maksma laps ega pere ise. Kool saab kasutada Kultuuriranitsat ja hoolivad inimesed saavad kinkida külastuse rühmale, kes muidu tulla ei saaks.",
+    "metaTitle": "Toetused — Kultuuriranits ja toetatud külastused | Papagoi Keskus",
+    "metaDescription": "Kooli 1.–9. klass saab külastuse eest tasuda Kultuuriranitsast. Kohalik omavalitsus saab toetada oma elanike külastusi ja hooliv inimene saab külastuse kinkida.",
+    "title": "Toetused",
+    "intro": "Papagoi Keskusesse saab tulla ka siis, kui külastuse eest ei maksa laps ega pere ise. Siit leiad, kuidas saavad külastust toetada kool, kohalik omavalitsus või hooliv inimene.",
     "heroImageAlt": "Lapsed papagoidega Papagoi Keskuses",
     "howTitle": "Kes saab külastuse eest tasuda?",
     "pathSchoolTitle": "Kool",

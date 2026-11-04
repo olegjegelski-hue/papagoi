@@ -16,7 +16,7 @@ export default function Navigation() {
   const links = [
     { href: '/', key: 'home' as const, hover: 'hover:text-papagoi-green' },
     { href: '/teenused', key: 'services' as const, hover: 'hover:text-papagoi-green' },
-    { href: '/toetusega', key: 'funding' as const, hover: 'hover:text-papagoi-green' },
+    { href: '/toetused', key: 'funding' as const, hover: 'hover:text-papagoi-green' },
     { href: '/meist', key: 'about' as const, hover: 'hover:text-papagoi-blue' },
     { href: '/papagoid', key: 'parrots' as const, hover: 'hover:text-papagoi-green' },
     { href: '/kulastajatele', key: 'visitors' as const, hover: 'hover:text-papagoi-orange' },

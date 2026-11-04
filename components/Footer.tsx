@@ -131,7 +131,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/toetusega" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                <Link href="/toetused" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
                   {t('supportedVisit')}
                 </Link>
               </li>

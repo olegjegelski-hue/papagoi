@@ -1,4 +1,4 @@
-/** Õppeprogrammid lehele /toetusega. Uus programm = üks rida siin + nimi messages/{et,en,ru}.json. */
+/** Õppeprogrammid lehele /toetused. Uus programm = üks rida siin + nimi messages/{et,en,ru}.json. */
 
 export const PROGRAM_STAGES = ['lasteaed', 'i', 'ii', 'iii', 'gymnasium'] as const
 

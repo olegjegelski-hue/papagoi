@@ -14,7 +14,7 @@ const PATHS = [
   { path: 'papagoid', changeFrequency: 'monthly' as const, priority: 0.8 },
   { path: 'blogi', changeFrequency: 'weekly' as const, priority: 0.7 },
   { path: 'ristiisa-programm', changeFrequency: 'monthly' as const, priority: 0.7 },
-  { path: 'toetusega', changeFrequency: 'monthly' as const, priority: 0.7 },
+  { path: 'toetused', changeFrequency: 'monthly' as const, priority: 0.7 },
   { path: 'privaatsus', changeFrequency: 'yearly' as const, priority: 0.3 },
 ]
 

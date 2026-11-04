@@ -47,13 +47,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: pageAlternates(locale, 'toetusega'),
+    alternates: pageAlternates(locale, 'toetused'),
     openGraph: {
       title,
       description,
       type: 'website',
       locale: ogLocale,
-      url: `${base}/${locale}/toetusega`,
+      url: `${base}/${locale}/toetused`,
       images: shareImages(locale),
     },
     twitter: {
@@ -134,7 +134,7 @@ export default async function ToetusegaPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-papagoi-beige-50 via-papagoi-beige to-papagoi-green-50/50">
-      <BreadcrumbJsonLd locale={locale} items={[{ name: t('title'), path: 'toetusega' }]} />
+      <BreadcrumbJsonLd locale={locale} items={[{ name: t('title'), path: 'toetused' }]} />
       <ScrollToHash />
 
       <main className="pt-12 pb-16">

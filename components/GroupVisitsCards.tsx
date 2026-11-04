@@ -51,7 +51,7 @@ export default async function GroupVisitsCards() {
           </ul>
           <p className="mt-5 text-sm text-deep-anthracite/80">{t('ranitsPrompt')}</p>
           <Link
-            href="/toetusega"
+            href="/toetused"
             className="mt-1 inline-flex min-h-11 items-center font-semibold text-papagoi-green hover:text-papagoi-blue"
           >
             {t('ranitsPageLink')} →
