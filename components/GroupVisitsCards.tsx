@@ -1,5 +1,6 @@
 import { Clock, Euro, Users, GraduationCap, Building, Heart } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import { Link } from '@/i18n/navigation'
 
 /** Neli grupikülastuse kaarti (koolid, ettevõtted, perekonnad, erivajadused). */
 export default async function GroupVisitsCards() {
@@ -48,6 +49,13 @@ export default async function GroupVisitsCards() {
               </li>
             ))}
           </ul>
+          <p className="mt-5 text-sm text-deep-anthracite/80">{t('ranitsPrompt')}</p>
+          <Link
+            href="/toetusega"
+            className="mt-1 inline-flex min-h-11 items-center font-semibold text-papagoi-green hover:text-papagoi-blue"
+          >
+            {t('ranitsPageLink')} →
+          </Link>
         </div>
       </div>
 

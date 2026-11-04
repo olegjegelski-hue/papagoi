@@ -130,6 +130,11 @@ export default function Footer() {
                   {tNav('contact')}
                 </Link>
               </li>
+              <li>
+                <Link href="/toetusega" className="inline-flex h-11 min-w-11 items-center leading-none text-deep-anthracite hover:text-papagoi-green transition-colors duration-300">
+                  {t('supportedVisit')}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -188,7 +193,7 @@ export default function Footer() {
         <div className="border-t border-papagoi-green/30 pt-6">
           <div className="text-deep-anthracite text-sm text-center space-y-2">
             <p>
-              Koduinfo OÜ | Reg nr. 11105156
+              Papagoi Keskus MTÜ | Reg nr 80647595
             </p>
             <p>
               © 2015 - {new Date().getFullYear()} Papagoi Keskus. {t('rightsReserved')}

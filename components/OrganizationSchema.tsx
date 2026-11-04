@@ -25,11 +25,11 @@ export default function OrganizationSchema() {
         '@type': 'Organization',
         '@id': organizationId,
         name: 'Papagoi Keskus',
-        legalName: 'Koduinfo OÜ',
+        legalName: 'Papagoi Keskus MTÜ',
         identifier: {
           '@type': 'PropertyValue',
           name: 'Registrikood',
-          value: '11105156',
+          value: '80647595',
         },
         url: base,
         logo: {

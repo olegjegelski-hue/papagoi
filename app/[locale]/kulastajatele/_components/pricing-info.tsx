@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useInView } from 'react-intersection-observer';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 export default function PricingInfo() {
+  const locale = useLocale();
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
 
   const pricingExamples = [
@@ -142,7 +144,7 @@ export default function PricingInfo() {
                   <span><strong>Suuremad grupid:</strong> lepime külastuse detailid kokku</span>
                 </div>
               </div>
-              <Link href="/grupid" className="block mt-4">
+              <Link href={`/${locale}/teenused#grupikylastused`} className="block mt-4">
                 <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50">
                   Vaata gruppide pakkumisi
                 </Button>

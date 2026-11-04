@@ -1,7 +1,29 @@
 import createMiddleware from 'next-intl/middleware'
+import { NextRequest, NextResponse } from 'next/server'
 import { routing } from './i18n/routing'
 
-export default createMiddleware(routing)
+const handleI18n = createMiddleware(routing)
+
+/** /grupid on eemaldatud — püsiv 301 samas keeles /teenused peale. */
+function grupidRedirect(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl
+  const withLocale = pathname.match(/^\/(et|en|ru)\/grupid\/?$/)
+  if (withLocale) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${withLocale[1]}/teenused`
+    return NextResponse.redirect(url, 301)
+  }
+  if (pathname === '/grupid' || pathname === '/grupid/') {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${routing.defaultLocale}/teenused`
+    return NextResponse.redirect(url, 301)
+  }
+  return null
+}
+
+export default function middleware(request: NextRequest) {
+  return grupidRedirect(request) ?? handleI18n(request)
+}
 
 export const config = {
   // dev/* jääb ilma locale prefiksita (app/dev/… ei ole [locale] all)

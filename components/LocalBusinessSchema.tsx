@@ -13,6 +13,7 @@ export default async function LocalBusinessSchema() {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'Papagoi Keskus',
+    legalName: 'Papagoi Keskus MTÜ',
     description:
       'Eesti esimene Papagoi Keskus Tartus, alates 2015. Külastus broneerimisega, digitaalne kinkekaart, sünnipäevad ja grupikülastused. Üle 50 papagoi – tule tutvuge meie värvilise perekonnaga!',
     image: `${normalizedBaseUrl}/og/default.jpg`,

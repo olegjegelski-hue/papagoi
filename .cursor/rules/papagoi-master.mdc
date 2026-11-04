@@ -5,7 +5,7 @@ alwaysApply: true
 
 # 🧭 Master System Prompt (papagoi.ee)
 
-Allikas Notionis: Papagoi.ee Koduleht → „Master System Prompt (Cursor)“.
+Allikas Notionis: Papagoi.ee Koduleht → „Master System Prompt (Papagoi Koduleht)“.
 Kui Notionis muudad, ütle Cursorile: **sünki Master Prompt projekti**.
 
 ## 1. Projekt & kontekst
@@ -13,7 +13,7 @@ Kui Notionis muudad, ütle Cursorile: **sünki Master Prompt projekti**.
 Ehitad / hooldad **Papagoi Keskuse** kodulehte: https://papagoi.ee — Eesti esimene papagoidekeskus Tartu lähedal (Soinaste).
 Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET/EN/RU), operatiivsed töövood Notionis.
 
-- **Äriüksus:** PetsVilla OÜ · **Kontakt:** +372 512 7938 · keskus@papagoi.ee
+- **Äriüksus:** Papagoi Keskus MTÜ (reg nr 80647595) · **Kontakt:** +372 512 7938 · keskus@papagoi.ee
 - **Aadress:** Tartu mnt 80, Soinaste, Kambja vald
 - **Repo:** `olegjegelski-hue/papagoi` · **Hosting:** Vercel (auto-deploy `main` peale)
 - Sait on **juba väga valmis** — uued tööd on enamasti täiendused, GAP-ide sulgemine ja hooldus, mitte greenfield
@@ -76,6 +76,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 
 ## 8. SEO & jõudlus
 
+- **Kanooniline domeen: `https://papagoi.ee` (non-www).** Kõik URL-id (sitemap, canonical, hreflang, og:url, JSON-LD) kasutavad non-www. Ära genereeri `www.papagoi.ee` viiteid — 301 www→non-www on juba serveris
 - Meta, Open Graph, schema.org LocalBusiness jms säilitada/täiendada
 - `robots` / noindex tundlike lehtede jaoks (nt trükileht)
 - Pildid ja Core Web Vitals — ära lõhu LCP asjatult
@@ -106,7 +107,10 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 ### Muudatuste logi (Notion)
 
 - **2026-07-19:** Loodud Master System Prompt papagoi.ee jaoks (Cursor), peegeldades olemasolevat koodibaasi + inventuuri (juuli 2026)
-- **2026-07-19:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`)
-- **2026-07-19:** Prisma staatus kontrollitud — surnud jäänuk; andmekiht on Notion API
-- **2026-07-19:** GAP-id suletud: Cookie↔Pixel nõusolek; Cron/endpoint auth (SMS + GMB). Uus lahtine GAP: e-kirjade kohaletoimetavus (SPF/DKIM/DMARC)
-- **2026-07-19:** Prisma jäänuk eemaldatud — kustutatud `prisma/schema.prisma` + `DATABASE_URL` `.env`-ist + `.gitignore` rida. Andmekiht = Notion API
+- **2026-07-19:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`). Kui muudad Notionis, ütle Cursorile: „sünki Master Prompt projekti“
+- **2026-07-19:** Prisma staatus kontrollitud (Cursor) — surnud jäänuk, paketti ja runtime kasutust pole; andmekiht on Notion API
+- **2026-07-19:** GAP-id suletud (Cursor): Cookie↔Pixel nõusolek (Pixel laeb ainult nõusolekul), Cron/endpoint auth guard (SMS-cron token env-i + GMB sync/replies auth guard, `401`). Uus lahtine GAP: e-kirjade kohaletoimetavus (SPF/DKIM/DMARC)
+- **2026-07-19:** Prisma jäänuk eemaldatud (Cursor) — kustutatud `prisma/schema.prisma` + `DATABASE_URL` `.env`-ist + `.gitignore` rida. Andmekiht = Notion API
+- **2026-07-19:** Lisatud kanoonilise domeeni reegel (§8): non-www `https://papagoi.ee`; kõik URL-id (sitemap, canonical, hreflang, og:url, JSON-LD) non-www; `www` ei genereerita (301 www→non-www serveris)
+- **2026-11-04:** Äriüksus muudetud: PetsVilla OÜ → Papagoi Keskus MTÜ (reg nr 80647595). Saidi jaluse/privaatsuse/JSON-LD muudatus eraldi ülesandena.
+- **2026-11-04:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`)
