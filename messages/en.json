@@ -1,5 +1,5 @@
 {
-  "Nav": { "home": "Home", "services": "Services", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language", "chooseLanguage": "Choose language"},
+  "Nav": { "home": "Home", "services": "Services", "funding": "Funding", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language", "chooseLanguage": "Choose language"},
   "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "cookieSettings": "Cookie settings", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved", "supportedVisit": "Visit with support" },
   "Common": { "logoAlt": "Parrot Centre - three beautiful parrots on a branch - Life full of colours and voices" },
   "Hero": {
@@ -348,7 +348,7 @@
     "schoolSize": "up to 30 children",
     "schoolDuration": "approx. 60 min",
     "schoolPrice": "€10 per person",
-    "schoolProgramLi": ["Interactive learning programme", "Scientific facts about parrots", "Takeaway materials", "Opportunity to ask questions", "Suitable for all age groups"],
+    "schoolProgramLi": ["Interactive learning programme", "Scientific facts about parrots", "Opportunity to ask questions", "Suitable for all age groups"],
     "ranitsPrompt": "Can a school pay from the Culture Backpack?",
     "ranitsPageLink": "Visit with support",
     "companyTitle": "Companies",
@@ -1058,39 +1058,96 @@
     "notFoundBody": "This post is not published or does not exist."
   },
   "ToetusegaPage": {
-    "metaTitle": "Visit with support — Culture Backpack | Parrot Centre",
-    "metaDescription": "A school in grades 1–9 can pay for a visit to the Parrot Centre from the Culture Backpack (Kultuuriranits). See the programmes and book a time.",
+    "metaTitle": "Visit with support | Parrot Centre",
+    "metaDescription": "A school in grades 1–9 can pay for a visit from the Culture Backpack. A supporter can gift a visit to a group that could not come otherwise.",
     "title": "Visit with support",
-    "intro": "The group does not always have to pay for the visit itself. A school can pay from the Culture Backpack (Kultuuriranits). See what applies to your group.",
-    "ctaBook": "Book a time",
-    "ctaContact": "Get in touch",
+    "intro": "You can come to the Parrot Centre even when the child or family does not pay for the visit. A school can use the Culture Backpack, and people who care can gift a visit to a group that could not come otherwise.",
+    "heroTeacher": "I'm a teacher",
+    "heroSupport": "I want to support",
+    "heroImageAlt": "Children with parrots at the Parrot Centre",
+    "howTitle": "How it works",
+    "pathSchoolTitle": "School",
+    "pathSchoolText": "A school can pay for a grades 1–9 visit from its Culture Backpack budget.",
+    "pathGiftTitle": "Supporter",
+    "pathGiftText": "A person, company or fund can gift a visit to a group of children that could not come on their own.",
+    "pathMuniTitle": "Your municipality",
+    "pathMuniText": "We have approached several municipalities so they can support visits by their residents to the Parrot Centre.",
+    "muniTitle": "Support from your municipality",
+    "muniLead": "We want families, groups of children and older people to be able to come to the Parrot Centre even when a visit would otherwise be too much. That is why we have applied to neighbouring municipalities, so they can support visits by their residents.",
+    "muniFollow": "If a municipality decides to support what we do, we will add here which residents the support covers and how to use it.",
+    "muniTip": "Could your municipality help? Tell them you would like this, or write to us at <mail>keskus@papagoi.ee</mail> and we will get in touch.",
     "ranitsTitle": "Culture Backpack",
-    "ranitsLead": "A general education school can pay for a grades 1–9 programme from its Culture Backpack budget.",
-    "ranitsWhoLabel": "Who it is for",
-    "ranitsWho": "Grades 1–9 in general education schools.",
-    "ranitsPaysLabel": "Who pays",
-    "ranitsPays": "The school, from its Culture Backpack budget. The invoice is issued in the school’s name.",
-    "ranitsHowLabel": "How",
-    "ranitsHow": "Book a time and write “Kultuuriranits” in the notes. The invoice is sent after the visit.",
-    "ranitsListLink": "Museums in Tartu County — Ministry of Culture",
+    "ranitsBody": "The Culture Backpack (Kultuuriranits) is a Ministry of Culture grant in every general-education school’s budget. Pupils in grades 1–9 can use it for curriculum-related cultural visits. The Parrot Centre is on the Ministry of Culture website, in the list <list>Museums in Tartu County</list>.",
+    "schoolSteps": [
+      {
+        "title": "Choose a programme",
+        "text": "See below, by class."
+      },
+      {
+        "title": "Book a time",
+        "text": "On the website or by phone. School groups can come at 10–12 by arrangement.",
+        "action": "book"
+      },
+      {
+        "title": "Write “Kultuuriranits” in the notes",
+        "text": "Then we know the invoice goes to the school."
+      },
+      {
+        "title": "The invoice comes after the visit",
+        "text": "The school pays it from the Culture Backpack budget."
+      }
+    ],
+    "infoSizeLabel": "Group size",
+    "infoSizeValue": "up to 30 children",
+    "infoDurationLabel": "Duration",
+    "infoDurationValue": "about 60 min",
+    "infoPriceLabel": "Price",
+    "infoPriceValue": "€10 per pupil",
     "programsTitle": "Programmes",
-    "programsIntro": "The full description opens on keskkonnaharidus.ee. The Culture Backpack and cloudberry marks appear only on the cards that carry them.",
+    "programsIntro": "Our learning programmes follow the national curriculum. The full description, including learning outcomes, is in the national environmental education portal <site>keskkonnaharidus.ee</site>.",
+    "legendRanitsTitle": "On the Culture Backpack list",
+    "legendRanitsText": "A culture programme (colour, sound, rhythm) that is on the Ministry of Culture list.",
+    "legendMurakaTitle": "Cloudberry mark “Thoughtful programme”",
+    "legendMurakaText": "A quality mark from the Estonian Environmental Education Association. External assessors award it to a programme that meets the quality criteria for environmental education.",
+    "murakaAlt": "Thoughtful programme — cloudberry mark",
     "stageLasteaed": "Kindergarten",
     "stageI": "Stage I (grades 1–3)",
     "stageII": "Stage II (grades 4–6)",
     "stageIII": "Stage III (grades 7–9)",
     "stageGymnasium": "Upper secondary",
-    "duration": "60 min",
-    "badgeRanits": "Culture Backpack",
-    "badgeMurakas": "Cloudberry mark",
-    "murakaAlt": "Thoughtful programme — cloudberry mark",
+    "markRanits": "Culture Backpack",
     "themeCircular": "Circular economy",
     "themeClimate": "Climate",
     "viewProgram": "View the programme",
     "descriptionNote": "Description in Estonian",
-    "helpTitle": "Want to help?",
-    "helpText": "If you would like to support a visit for a group of children, write to us.",
-    "funders": {},
+    "giftTitle": "Gift a visit",
+    "giftIntro": "Many kindergartens, groups of children with special needs and smaller schools cannot pay for a visit. The Culture Backpack does not cover everyone. If you want a group to meet the parrots, you can gift their visit.",
+    "giftPersonTitle": "An individual",
+    "giftPersonText": "Gift one group's visit, or part of it.",
+    "giftCompanyTitle": "A company",
+    "giftCompanyText": "Support a kindergarten or school visit in your area.",
+    "giftFundTitle": "A fund or organisation",
+    "giftFundText": "We can work together over a longer time.",
+    "giftSteps": [
+      {
+        "title": "Write to us",
+        "text": "We will talk about who the visit would suit.",
+        "action": "write"
+      },
+      {
+        "title": "We find a group together",
+        "text": "Or name the group you want to support."
+      },
+      {
+        "title": "The group comes to visit",
+        "text": "We will tell you whose visit your support made possible."
+      }
+    ],
+    "giftCta": "Write to us",
+    "ctaTitle": "Questions?",
+    "ctaText": "Write or call — we will help you find a programme and a time.",
+    "ctaBook": "Book a time",
+    "ctaCall": "Call",
     "programs": {
       "hool": "A parrot is a bird that needs care",
       "uhesugused": "No two parrots are the same",

@@ -1,21 +1,28 @@
-import { Calendar, ExternalLink, Mail } from 'lucide-react'
+import { Calendar, Clock, Euro, Info, Phone, Users } from 'lucide-react'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
+import ScrollToHash from '@/components/ScrollToHash'
+import { MUNICIPALITIES } from '@/lib/municipalities'
 import {
-  FUNDING_SOURCES,
   LEARNING_PROGRAMS,
   PROGRAM_STAGES,
-  type LearningProgram,
   type ProgramStage,
+  type ProgramTheme,
 } from '@/lib/programs'
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
+import ProgramAccordion, { type ProgramGroup } from './program-accordion'
 
 type Props = { params: Promise<{ locale: string }> }
 
 const KUL_LIST_URL = 'https://www.kul.ee/muuseumid-tartumaal'
+const PROGRAMS_URL = 'https://keskkonnaharidus.ee/et/oppeprogrammid'
+const GROUP_PHOTO = 'https://cdn.abacus.ai/images/6974aef7-abf0-4482-b928-511e386f539e.png'
+const PHONE_TEL = 'tel:+3725127938'
+const PHONE_DISPLAY = '+372 512 7938'
+const EMAIL = 'keskus@papagoi.ee'
 
 const STAGE_KEY: Record<ProgramStage, 'stageLasteaed' | 'stageI' | 'stageII' | 'stageIII' | 'stageGymnasium'> = {
   lasteaed: 'stageLasteaed',
@@ -24,6 +31,10 @@ const STAGE_KEY: Record<ProgramStage, 'stageLasteaed' | 'stageI' | 'stageII' | '
   iii: 'stageIII',
   gymnasium: 'stageGymnasium',
 }
+
+const STEP_COLORS = ['bg-papagoi-green', 'bg-papagoi-blue', 'bg-papagoi-orange', 'bg-papagoi-green'] as const
+
+type StepCopy = { title: string; text: string; action?: 'book' | 'write' }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
@@ -54,223 +65,315 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function StepGrid({ steps }: { steps: StepCopy[] }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {steps.map((step, index) => (
+        <div key={step.title} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className={`${STEP_COLORS[index % STEP_COLORS.length]} p-6 text-white`}>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="text-xl font-bold">{step.title}</h3>
+              <div className="bg-white/20 rounded-full px-3 py-1 text-sm font-semibold">{index + 1}</div>
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-gray-600 leading-relaxed">{step.text}</p>
+            {step.action === 'book' && (
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <Link href="/broneeri" className="font-semibold text-papagoi-green hover:underline">
+                  {step.title} →
+                </Link>
+                <a href={PHONE_TEL} className="font-semibold text-papagoi-red hover:underline">
+                  {PHONE_DISPLAY}
+                </a>
+              </div>
+            )}
+            {step.action === 'write' && (
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <a href={`mailto:${EMAIL}`} className="font-semibold text-papagoi-green hover:underline">
+                  {EMAIL}
+                </a>
+                <a href={PHONE_TEL} className="font-semibold text-papagoi-red hover:underline">
+                  {PHONE_DISPLAY}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default async function ToetusegaPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('ToetusegaPage')
   const names = t.raw('programs') as Record<string, string>
+  const schoolSteps = t.raw('schoolSteps') as StepCopy[]
+  const giftSteps = t.raw('giftSteps') as StepCopy[]
   const showEstonianNote = locale !== 'et'
 
+  const themeLabel = (theme: ProgramTheme) =>
+    theme === 'ringmajandus' ? t('themeCircular') : t('themeClimate')
+
+  const groups: ProgramGroup[] = PROGRAM_STAGES.map((stage) => ({
+    id: stage,
+    title: t(STAGE_KEY[stage]),
+    items: LEARNING_PROGRAMS.filter((program) => program.stage === stage).map((program) => ({
+      id: program.id,
+      name: names[program.id] ?? program.id,
+      url: program.url,
+      ranits: program.kultuuriranits,
+      muraka: program.murakamargis,
+      theme: program.theme ? themeLabel(program.theme) : null,
+      estonianNote: showEstonianNote ? t('descriptionNote') : null,
+    })),
+  })).filter((group) => group.items.length > 0)
+
+  const textLink = 'font-semibold text-papagoi-green hover:underline'
+
   return (
-    <div className="min-h-screen bg-papagoi-beige-50">
+    <div className="min-h-screen bg-gradient-to-b from-papagoi-beige-50 via-papagoi-beige to-papagoi-green-50/50">
       <BreadcrumbJsonLd locale={locale} items={[{ name: t('title'), path: 'toetusega' }]} />
+      <ScrollToHash />
 
-      <section className="pt-12 pb-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="font-heading text-4xl md:text-5xl font-bold text-deep-anthracite">{t('title')}</h1>
-          <p className="mt-5 text-lg leading-relaxed text-deep-anthracite/80">{t('intro')}</p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/broneeri" className="papagoi-cta">
-              <Calendar className="w-5 h-5" aria-hidden />
-              <span>{t('ctaBook')}</span>
-            </Link>
-            <Link href="/kontakt" className="papagoi-cta-white">
-              <span>{t('ctaContact')}</span>
-            </Link>
+      <main className="pt-12 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">
+                {t('title')}
+              </span>
+            </h1>
+            <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">{t('intro')}</p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#kool" className="papagoi-cta inline-flex items-center justify-center">
+                {t('heroTeacher')} →
+              </a>
+              <a href="#kingi" className="papagoi-cta-white inline-flex items-center justify-center">
+                {t('heroSupport')} →
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <section className="pb-12">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="rounded-2xl border border-papagoi-beige-200 bg-papagoi-beige-100 p-6 sm:p-8 shadow-sm">
-            <h2 className="font-heading text-2xl md:text-3xl font-bold text-deep-anthracite">{t('ranitsTitle')}</h2>
-            <p className="mt-3 text-deep-anthracite/80 leading-relaxed">{t('ranitsLead')}</p>
-            <dl className="mt-6 space-y-4">
-              <div>
-                <dt className="font-semibold text-deep-anthracite">{t('ranitsWhoLabel')}</dt>
-                <dd className="mt-1 text-deep-anthracite/80">{t('ranitsWho')}</dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-deep-anthracite">{t('ranitsPaysLabel')}</dt>
-                <dd className="mt-1 text-deep-anthracite/80">{t('ranitsPays')}</dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-deep-anthracite">{t('ranitsHowLabel')}</dt>
-                <dd className="mt-1 text-deep-anthracite/80">{t('ranitsHow')}</dd>
-              </div>
-            </dl>
-            <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-              <Link href="/broneeri" className="papagoi-cta">
-                <Calendar className="w-5 h-5" aria-hidden />
-                <span>{t('ctaBook')}</span>
-              </Link>
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-16 max-w-5xl mx-auto h-64 md:h-80">
+            <Image
+              src={GROUP_PHOTO}
+              alt={t('heroImageAlt')}
+              fill
+              priority
+              className="object-cover"
+              sizes="(min-width: 1024px) 1024px, 100vw"
+            />
+          </div>
+
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t('howTitle')}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <a
-                href={KUL_LIST_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 min-h-11 text-papagoi-green font-semibold hover:text-papagoi-blue"
+                href="#kool"
+                className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-green hover:shadow-xl transition-shadow"
               >
-                {t('ranitsListLink')}
-                <ExternalLink className="w-4 h-4 shrink-0" aria-hidden />
+                <div className="text-4xl mb-4" aria-hidden>🎒</div>
+                <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathSchoolTitle')}</h3>
+                <p className="text-gray-600">{t('pathSchoolText')}</p>
+              </a>
+              <a
+                href="#kingi"
+                className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-orange hover:shadow-xl transition-shadow"
+              >
+                <div className="text-4xl mb-4" aria-hidden>💛</div>
+                <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathGiftTitle')}</h3>
+                <p className="text-gray-600">{t('pathGiftText')}</p>
+              </a>
+              <a
+                href="#vald"
+                className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-blue hover:shadow-xl transition-shadow"
+              >
+                <div className="text-4xl mb-4" aria-hidden>🏡</div>
+                <h3 className="font-semibold text-gray-800 text-lg mb-2">{t('pathMuniTitle')}</h3>
+                <p className="text-gray-600">{t('pathMuniText')}</p>
+              </a>
+            </div>
+          </div>
+
+          <section id="kool" className="scroll-mt-[12.5rem] mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="mr-2" aria-hidden>🎒</span>
+              {t('ranitsTitle')}
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">
+              {t.rich('ranitsBody', {
+                list: (chunks) => (
+                  <a href={KUL_LIST_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </p>
+            <div className="mb-8">
+              <StepGrid steps={schoolSteps} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-green">
+                <Users className="w-8 h-8 text-papagoi-green mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">{t('infoSizeLabel')}</h3>
+                <p className="text-gray-600 font-medium">{t('infoSizeValue')}</p>
+              </div>
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-blue">
+                <Clock className="w-8 h-8 text-papagoi-blue mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">{t('infoDurationLabel')}</h3>
+                <p className="text-gray-600 font-medium">{t('infoDurationValue')}</p>
+              </div>
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-yellow">
+                <Euro className="w-8 h-8 text-papagoi-yellow mx-auto mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">{t('infoPriceLabel')}</h3>
+                <p className="text-gray-600 font-medium">{t('infoPriceValue')}</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('programsTitle')}</h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">
+              {t.rich('programsIntro', {
+                site: (chunks) => (
+                  <a href={PROGRAMS_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </p>
+            <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200 mb-8">
+              <div className="flex items-start gap-4">
+                <Info className="w-6 h-6 text-papagoi-blue flex-shrink-0 mt-1" />
+                <div className="space-y-5 flex-1">
+                  <div>
+                    <h3 className="font-semibold text-gray-800 text-lg">🎒 {t('legendRanitsTitle')}</h3>
+                    <p className="text-gray-700 mt-1">{t('legendRanitsText')}</p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <Image
+                      src="/toetusega/murakamargis.png"
+                      alt={t('murakaAlt')}
+                      width={80}
+                      height={80}
+                      className="h-20 w-20 flex-shrink-0"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-gray-800 text-lg">{t('legendMurakaTitle')}</h3>
+                      <p className="text-gray-700 mt-1">{t('legendMurakaText')}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ProgramAccordion
+              groups={groups}
+              markRanits={t('markRanits')}
+              viewProgram={t('viewProgram')}
+              murakaAlt={t('murakaAlt')}
+            />
+          </section>
+
+          <section id="vald" className="scroll-mt-[12.5rem] mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="mr-2" aria-hidden>🏡</span>
+              {t('muniTitle')}
+            </h2>
+            <div className="max-w-3xl space-y-4 text-lg text-gray-700 leading-relaxed mb-8">
+              <p>{t('muniLead')}</p>
+              <p>{t('muniFollow')}</p>
+            </div>
+            <div className="bg-papagoi-blue-50 rounded-xl p-6 border border-papagoi-blue-200 max-w-3xl">
+              <div className="flex items-start gap-4">
+                <Info className="w-6 h-6 text-papagoi-blue flex-shrink-0 mt-1" />
+                <p className="text-gray-700 leading-relaxed">
+                  {t.rich('muniTip', {
+                    mail: (chunks) => (
+                      <a href={`mailto:${EMAIL}`} className={textLink}>
+                        {chunks}
+                      </a>
+                    ),
+                  })}
+                </p>
+              </div>
+            </div>
+            {MUNICIPALITIES.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                {MUNICIPALITIES.map((municipality) => (
+                  <div
+                    key={municipality.id}
+                    className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl border-t-4 border-papagoi-blue"
+                  >
+                    <h3 className="font-semibold text-gray-800 text-lg mb-2">{municipality.name}</h3>
+                    <p className="text-sm font-medium text-papagoi-green mb-2">{municipality.status}</p>
+                    <p className="text-gray-600">{municipality.description}</p>
+                    {municipality.url && (
+                      <a
+                        href={municipality.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${textLink} mt-3 inline-flex`}
+                      >
+                        {t('viewProgram')} →
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section id="kingi" className="scroll-mt-[12.5rem] mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="mr-2" aria-hidden>💛</span>
+              {t('giftTitle')}
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mb-8">{t('giftIntro')}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-green">
+                <div className="text-4xl mb-4" aria-hidden>👤</div>
+                <h3 className="font-semibold text-gray-800 mb-2">{t('giftPersonTitle')}</h3>
+                <p className="text-gray-600">{t('giftPersonText')}</p>
+              </div>
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-blue">
+                <div className="text-4xl mb-4" aria-hidden>🏢</div>
+                <h3 className="font-semibold text-gray-800 mb-2">{t('giftCompanyTitle')}</h3>
+                <p className="text-gray-600">{t('giftCompanyText')}</p>
+              </div>
+              <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl text-center border-t-4 border-papagoi-orange">
+                <div className="text-4xl mb-4" aria-hidden>🤝</div>
+                <h3 className="font-semibold text-gray-800 mb-2">{t('giftFundTitle')}</h3>
+                <p className="text-gray-600">{t('giftFundText')}</p>
+              </div>
+            </div>
+            <div className="mb-8">
+              <StepGrid steps={giftSteps} />
+            </div>
+            {/* Hiljem: Montonio annetuse nupp siia, enne „Kirjuta meile“. */}
+            <a href={`mailto:${EMAIL}`} className="papagoi-cta inline-flex items-center justify-center">
+              {t('giftCta')}
+            </a>
+          </section>
+
+          <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-12 text-white text-center">
+            <h2 className="text-3xl font-bold mb-6">{t('ctaTitle')}</h2>
+            <p className="text-xl mb-8 opacity-90">{t('ctaText')}</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/broneeri" className="papagoi-cta-white inline-flex items-center justify-center">
+                <Calendar className="w-5 h-5 mr-2" />
+                {t('ctaBook')}
+              </Link>
+              <a href={PHONE_TEL} className="papagoi-cta-outline inline-flex items-center justify-center">
+                <Phone className="w-5 h-5 mr-2" />
+                {t('ctaCall')}
               </a>
             </div>
           </div>
         </div>
-      </section>
-
-      <section className="pb-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-deep-anthracite">{t('programsTitle')}</h2>
-          <p className="mt-3 max-w-3xl text-deep-anthracite/80 leading-relaxed">{t('programsIntro')}</p>
-
-          {PROGRAM_STAGES.map((stage) => {
-            const items = LEARNING_PROGRAMS.filter((program) => program.stage === stage)
-            if (items.length === 0) return null
-            return (
-              <div key={stage} className="mt-10">
-                <h3 className="text-xl font-bold text-deep-anthracite">{t(STAGE_KEY[stage])}</h3>
-                <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {items.map((program) => (
-                    <li key={program.id}>
-                      <ProgramCard
-                        program={program}
-                        name={names[program.id]}
-                        stageLabel={t(STAGE_KEY[stage])}
-                        durationLabel={t('duration')}
-                        ranitsLabel={t('badgeRanits')}
-                        murakaLabel={t('badgeMurakas')}
-                        murakaAlt={t('murakaAlt')}
-                        themeLabel={
-                          program.theme === 'ringmajandus'
-                            ? t('themeCircular')
-                            : program.theme === 'kliima'
-                              ? t('themeClimate')
-                              : null
-                        }
-                        viewLabel={t('viewProgram')}
-                        estonianNote={showEstonianNote ? t('descriptionNote') : null}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
-      {FUNDING_SOURCES.length > 0 && (
-        <section className="pb-16">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-6">
-            {FUNDING_SOURCES.map((source) => (
-              <FundingBlock key={source.id} id={source.id} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="rounded-2xl border border-papagoi-beige-200 bg-papagoi-beige-100 p-6 sm:p-8">
-            <h2 className="font-heading text-2xl font-bold text-deep-anthracite">{t('helpTitle')}</h2>
-            <p className="mt-3 text-deep-anthracite/80 leading-relaxed">{t('helpText')}</p>
-            <a
-              href="mailto:keskus@papagoi.ee"
-              className="mt-5 inline-flex items-center gap-2 min-h-11 font-semibold text-papagoi-green hover:text-papagoi-blue"
-            >
-              <Mail className="w-5 h-5" aria-hidden />
-              keskus@papagoi.ee
-            </a>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function ProgramCard({
-  program,
-  name,
-  stageLabel,
-  durationLabel,
-  ranitsLabel,
-  murakaLabel,
-  murakaAlt,
-  themeLabel,
-  viewLabel,
-  estonianNote,
-}: {
-  program: LearningProgram
-  name: string
-  stageLabel: string
-  durationLabel: string
-  ranitsLabel: string
-  murakaLabel: string
-  murakaAlt: string
-  themeLabel: string | null
-  viewLabel: string
-  estonianNote: string | null
-}) {
-  return (
-    <article className="flex h-full flex-col rounded-2xl border border-papagoi-beige-200 bg-white p-5 shadow-sm">
-      <h4 className="text-lg font-bold text-deep-anthracite leading-snug">{name}</h4>
-      <p className="mt-2 text-sm text-deep-anthracite/70">
-        {stageLabel}
-        <span aria-hidden> · </span>
-        {durationLabel}
-      </p>
-      {(program.kultuuriranits || program.murakamargis || themeLabel) && (
-        <ul className="mt-4 flex flex-wrap items-center gap-2">
-          {program.kultuuriranits && (
-            <li className="inline-flex items-center rounded-full bg-papagoi-green/15 px-3 py-1 text-sm font-medium text-deep-anthracite">
-              {ranitsLabel}
-            </li>
-          )}
-          {program.murakamargis && (
-            <li className="inline-flex items-center gap-2 rounded-2xl bg-papagoi-beige-50 pr-3 text-sm font-medium text-deep-anthracite">
-              <Image
-                src="/toetusega/murakamargis.png"
-                alt={murakaAlt}
-                width={72}
-                height={72}
-                className="h-[4.5rem] w-[4.5rem]"
-              />
-              <span>{murakaLabel}</span>
-            </li>
-          )}
-          {themeLabel && (
-            <li className="inline-flex items-center rounded-full bg-papagoi-orange/15 px-3 py-1 text-sm font-medium text-deep-anthracite">
-              {themeLabel}
-            </li>
-          )}
-        </ul>
-      )}
-      <div className="mt-auto pt-4">
-        {estonianNote && <p className="mb-2 text-sm text-deep-anthracite/60">{estonianNote}</p>}
-        <a
-          href={program.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 min-h-11 font-semibold text-papagoi-green hover:text-papagoi-blue"
-        >
-          {viewLabel}
-          <ExternalLink className="w-4 h-4 shrink-0" aria-hidden />
-        </a>
-      </div>
-    </article>
-  )
-}
-
-async function FundingBlock({ id }: { id: string }) {
-  const t = await getTranslations('ToetusegaPage')
-  const funders = t.raw('funders') as Record<string, { title: string; body: string }>
-  const copy = funders[id]
-  if (!copy) return null
-  return (
-    <div className="rounded-2xl border border-papagoi-beige-200 bg-papagoi-beige-100 p-6 sm:p-8">
-      <h2 className="font-heading text-2xl font-bold text-deep-anthracite">{copy.title}</h2>
-      <p className="mt-3 text-deep-anthracite/80 leading-relaxed">{copy.body}</p>
+      </main>
     </div>
   )
 }

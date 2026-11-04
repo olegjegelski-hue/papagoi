@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Link } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -12,6 +12,20 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const t = useTranslations('Nav')
   const tCommon = useTranslations('Common')
+  const pathname = usePathname()
+  const links = [
+    { href: '/', key: 'home' as const, hover: 'hover:text-papagoi-green' },
+    { href: '/teenused', key: 'services' as const, hover: 'hover:text-papagoi-green' },
+    { href: '/toetusega', key: 'funding' as const, hover: 'hover:text-papagoi-green' },
+    { href: '/meist', key: 'about' as const, hover: 'hover:text-papagoi-blue' },
+    { href: '/papagoid', key: 'parrots' as const, hover: 'hover:text-papagoi-green' },
+    { href: '/kulastajatele', key: 'visitors' as const, hover: 'hover:text-papagoi-orange' },
+    { href: '/broneeri', key: 'book' as const, hover: 'hover:text-papagoi-orange' },
+    { href: KINKEKAART_PATH, key: 'giftCard' as const, hover: 'hover:text-papagoi-orange' },
+    { href: '/kontakt', key: 'contact' as const, hover: 'hover:text-papagoi-green' },
+  ]
+  const isCurrent = (href: string) =>
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)
 
   useScrollLock(isOpen)
 
@@ -142,31 +156,22 @@ export default function Navigation() {
 
         {/* Desktop Navigation Menu Row - centered below logo - UUS LIHTSUSTATUD VERSIOON */}
         <div className="hidden md:flex md:items-center md:justify-between w-full pb-4 border-t border-papagoi-green/10 pt-4">
-          <div className="flex-1 flex justify-center items-center space-x-6 lg:space-x-8">
-            <Link href="/" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('home')}
-            </Link>
-            <Link href="/teenused" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('services')}
-            </Link>
-            <Link href="/meist" className="text-deep-anthracite hover:text-papagoi-blue font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('about')}
-            </Link>
-            <Link href="/papagoid" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('parrots')}
-            </Link>
-            <Link href="/kulastajatele" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('visitors')}
-            </Link>
-            <Link href="/broneeri" className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('book')}
-            </Link>
-            <Link href={KINKEKAART_PATH} className="text-deep-anthracite hover:text-papagoi-orange font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('giftCard')}
-            </Link>
-            <Link href="/kontakt" className="text-deep-anthracite hover:text-papagoi-green font-medium transition-all duration-300 hover:scale-105 hover:font-semibold">
-              {t('contact')}
-            </Link>
+          <div className="flex-1 flex flex-nowrap justify-center items-center gap-x-2 xl:gap-x-5 min-w-0">
+            {links.map((link) => {
+              const active = isCurrent(link.href)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`whitespace-nowrap text-[13px] xl:text-base font-medium transition-colors duration-300 ${
+                    active ? 'text-papagoi-green font-semibold' : `text-deep-anthracite ${link.hover}`
+                  }`}
+                >
+                  {t(link.key)}
+                </Link>
+              )
+            })}
           </div>
           <div className="pl-6 lg:pl-8 border-l border-papagoi-green/20 shrink-0">
             <LanguageSwitcher />
@@ -179,30 +184,22 @@ export default function Navigation() {
             data-scroll-lock-scrollable=""
             className="md:hidden min-h-0 flex-1 overflow-y-auto overscroll-contain max-h-[calc(100svh-9rem)] pb-4 space-y-2 bg-papagoi-beige-300/98 backdrop-blur-md rounded-b-lg border-t border-papagoi-green/30"
           >
-            <Link href="/" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('home')}
-            </Link>
-            <Link href="/teenused" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('services')}
-            </Link>
-            <Link href="/meist" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-blue font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('about')}
-            </Link>
-            <Link href="/papagoid" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('parrots')}
-            </Link>
-            <Link href="/kulastajatele" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('visitors')}
-            </Link>
-            <Link href="/broneeri" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('book')}
-            </Link>
-            <Link href={KINKEKAART_PATH} className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-orange font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('giftCard')}
-            </Link>
-            <Link href="/kontakt" className="block px-3 py-2 text-deep-anthracite hover:text-papagoi-green font-medium transition-colors duration-300" onClick={() => setIsOpen(false)}>
-              {t('contact')}
-            </Link>
+            {links.map((link) => {
+              const active = isCurrent(link.href)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`block px-3 py-2 font-medium transition-colors duration-300 ${
+                    active ? 'text-papagoi-green font-semibold' : `text-deep-anthracite ${link.hover}`
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t(link.key)}
+                </Link>
+              )
+            })}
             <div className="px-3 pt-3 mt-3 border-t border-papagoi-green/20">
               <span className="text-sm text-warm-gray-600 font-medium block mb-2">{t('language')}</span>
               <LanguageSwitcher />
