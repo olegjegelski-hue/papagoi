@@ -65,6 +65,7 @@ export async function POST(request: Request) {
     await sendGiftCardOrderEmail({
       to: cleanedEmail,
       buyerName: cleanedName,
+      buyerPhone: cleanedPhone,
       amountEur: amountNum,
       code: result.code,
       locale,

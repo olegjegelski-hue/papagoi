@@ -377,6 +377,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       greeting: (name: string) => `Tere, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Tere, ${name}!`,
       thanks: 'Täname teid kinkekaardi päringu eest.',
+      customerPhone: 'Kliendi telefon:',
       questions:
         'Kui teil on küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.',
       transferLead: 'Palume teha ülekanne:',
@@ -403,6 +404,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       greeting: (name: string) => `Hello, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Hello, ${name}!`,
       thanks: 'Thank you for your gift card enquiry.',
+      customerPhone: 'Customer phone:',
       questions:
         'If you have any questions, please contact us: +372 512 7938 or keskus@papagoi.ee.',
       transferLead: 'Please make a bank transfer:',
@@ -430,6 +432,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       greeting: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Здравствуйте, ${name}!`,
       thanks: 'Спасибо за ваш запрос подарочной карты.',
+      customerPhone: 'Телефон клиента:',
       questions:
         'Если у вас есть вопросы, свяжитесь с нами: +372 512 7938 или keskus@papagoi.ee.',
       transferLead: 'Просим сделать перевод:',

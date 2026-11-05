@@ -475,6 +475,7 @@ export async function sendConfirmationEmail(data: {
 export async function sendGiftCardOrderEmail(data: {
   to: string
   buyerName: string
+  buyerPhone?: string
   amountEur: number
   code: string
   locale?: VisitMailLocale
@@ -484,6 +485,11 @@ export async function sendGiftCardOrderEmail(data: {
   const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
   const locale = data.locale ?? 'et'
   const t = getGiftCardOrderEmailCopy(locale)
+  const buyerPhone = (data.buyerPhone ?? '').trim()
+  const phoneHtml = buyerPhone
+    ? `<a href="tel:${buyerPhone.replace(/[^\d+]/g, '')}">${buyerPhone.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</a>`
+    : '—'
+  const phoneText = buyerPhone || '—'
   const subject = t.subject(data.amountEur)
   const visitsLabel = t.visits(data.amountEur / 10)
   const refLine = t.referenceValue(data.code)
@@ -496,6 +502,9 @@ export async function sendGiftCardOrderEmail(data: {
       <p style="font-size: 16px; line-height: 1.6;">${t.greeting(data.buyerName)}</p>
       <p style="font-size: 15px; line-height: 1.6;">
         ${t.thanks}
+      </p>
+      <p style="font-size: 15px; line-height: 1.6; margin: 12px 0;">
+        <strong>${t.customerPhone}</strong> ${phoneHtml}
       </p>
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
         <h3 style="color: #059669; margin-top: 0;">${t.detailsTitle}</h3>
@@ -534,6 +543,8 @@ export async function sendGiftCardOrderEmail(data: {
 ${t.greetingText(data.buyerName)}
 
 ${t.thanks}
+
+${t.customerPhone} ${phoneText}
 
 ${t.detailsTitle}:
 - ${t.value} ${data.amountEur} € (${visitsLabel})
