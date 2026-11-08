@@ -1090,6 +1090,22 @@
     "muniTip": "Kas sinu vald võiks toetada? Anna oma vallale teada, et sooviksid sellist võimalust, või kirjuta meile aadressil <mail>keskus@papagoi.ee</mail> ja võtame ise ühendust.",
     "ranitsTitle": "Kultuuriranits",
     "ranitsBody": "Kultuuriranits on Kultuuriministeeriumi toetus, mille raha on igal üldhariduskoolil eelarves. Selle eest saavad 1.–9. klassi õpilased käia õppekavaga seotud kultuurikülastustel. Papagoi Keskus on oma programmidega (värvid, helid, rütm) Kultuuriministeeriumi kodulehel nimekirjas <list>Muuseumid Tartumaal</list>.",
+    "ranitsSteps": [
+      {
+        "title": "Broneeri aeg",
+        "text": "Broneerimislehel vali Grupi tüüp „Kool/Lasteaed“ või kirjuta keskus@papagoi.ee.",
+        "action": "book"
+      },
+      {
+        "title": "Saadame arve kooli nimele",
+        "text": "Arvele kooli nimi ja registrikood; arve tuleb e-postiga."
+      },
+      {
+        "title": "Kool tasub Kultuuriranitsast",
+        "text": "Arve tasutakse kooli Kultuuriranitsa eelarvest."
+      }
+    ],
+    "ranitsCta": "Broneeri aeg",
     "programsTitle": "Programmid",
     "programsIntro": "Meie õppeprogrammid on seotud riikliku õppekavaga. Iga programmi täielik kirjeldus koos õpitulemustega on riiklikus keskkonnahariduse portaalis <site>keskkonnaharidus.ee</site>. Kuus meie programmi on saanud kvaliteedimärgise „Läbimõeldud programm“ (murakamärgis), mille annavad välishindajad programmile, mis vastab keskkonnahariduse kvaliteedikriteeriumidele.",
     "murakaAlt": "Läbimõeldud programm — murakamärgis",
@@ -1127,6 +1143,25 @@
       }
     ],
     "giftCta": "Kirjuta meile",
+    "whoTitle": "Kes me oleme ja kuhu raha läheb",
+    "whoPurpose": "Papagoi Keskus on keskkonnahariduse keskus. Pakume õppeprogramme lastele, õpilastele, peredele, erivajadustega inimestele ja eakatele. Meie töö keskmes on elurikkus, loomade heaolu ja vastutustundlik lemmikloomapidamine.",
+    "whoGuides": "Külastusi viivad läbi Oleg ja Uljana Jegelski.",
+    "whoNameLabel": "Nimi",
+    "whoName": "MTÜ Papagoi Keskus",
+    "whoRegLabel": "Registrikood",
+    "whoReg": "80647595",
+    "whoFoundedLabel": "Asutatud",
+    "whoFounded": "07.11.2024",
+    "whoAddressLabel": "Aadress",
+    "whoAddress": "Tartu mnt 80, Soinaste küla, Kambja vald, Tartumaa",
+    "whoContactLabel": "Kontakt",
+    "whoContact": "<mail>keskus@papagoi.ee</mail>, <phone>+372 512 7938</phone>",
+    "whoStatute": "Põhikiri (PDF)",
+    "whoStatuteEdition": "redaktsioon 19.05.2026",
+    "whoReport": "Majandusaasta aruanne 2024–2025 (äriregister)",
+    "whoDonationsTitle": "Kuhu annetus läheb",
+    "whoDonationsHonest": "Annetusi oleme seni kogunud ainult üksikjuhtudel. Alates 2027. aastast avaldame siin igal aastal, kui palju annetusi laekus ja mitme rühma külastust need võimaldasid.",
+    "whoDonationsCover": "Annetus katab ühe rühma külastuse: juhendaja töö, lindude ja merisigade toidu ning ruumi ettevalmistuse. Külastuse hind on 10 € inimese kohta.",
     "ctaTitle": "Küsimusi?",
     "ctaText": "Kirjuta või helista — aitame sobiva programmi ja aja leida.",
     "ctaBook": "Broneeri aeg",
