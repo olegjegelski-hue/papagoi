@@ -1090,6 +1090,22 @@
     "muniTip": "Could your municipality help? Tell them you would like this, or write to us at <mail>keskus@papagoi.ee</mail> and we will get in touch.",
     "ranitsTitle": "Culture Backpack",
     "ranitsBody": "The Culture Backpack (Kultuuriranits) is a Ministry of Culture grant in every general-education school’s budget. Pupils in grades 1–9 can use it for curriculum-related cultural visits. With its programmes (colour, sound, rhythm), the Parrot Centre is on the Ministry of Culture website, in the list <list>Museums in Tartu County</list>.",
+    "ranitsSteps": [
+      {
+        "title": "Book a time",
+        "text": "On the booking page choose group type “School / kindergarten”, or write to keskus@papagoi.ee.",
+        "action": "book"
+      },
+      {
+        "title": "We send an invoice in the school’s name",
+        "text": "The invoice has the school’s name and registry code; it arrives by email."
+      },
+      {
+        "title": "The school pays from the Culture Backpack",
+        "text": "The invoice is paid from the school’s Culture Backpack budget."
+      }
+    ],
+    "ranitsCta": "Book a time",
     "programsTitle": "Programmes",
     "programsIntro": "Our learning programmes follow the national curriculum. The full description of each programme, including learning outcomes, is in the national environmental education portal <site>keskkonnaharidus.ee</site>. Six of our programmes have received the quality mark “Thoughtful programme” (cloudberry mark), which external assessors award to a programme that meets the quality criteria for environmental education.",
     "murakaAlt": "Thoughtful programme — cloudberry mark",
@@ -1127,6 +1143,25 @@
       }
     ],
     "giftCta": "Write to us",
+    "whoTitle": "Who we are and where the money goes",
+    "whoPurpose": "The Parrot Centre is an environmental education centre. We offer learning programmes for children, students, families, people with special needs and older people. Our work focuses on biodiversity, animal welfare and responsible pet keeping.",
+    "whoGuides": "Visits are led by Oleg and Uljana Jegelski.",
+    "whoNameLabel": "Name",
+    "whoName": "MTÜ Papagoi Keskus",
+    "whoRegLabel": "Registry code",
+    "whoReg": "80647595",
+    "whoFoundedLabel": "Founded",
+    "whoFounded": "07.11.2024",
+    "whoAddressLabel": "Address",
+    "whoAddress": "Tartu mnt 80, Soinaste village, Kambja parish, Tartu County",
+    "whoContactLabel": "Contact",
+    "whoContact": "<mail>keskus@papagoi.ee</mail>, <phone>+372 512 7938</phone>",
+    "whoStatute": "Articles of association (PDF)",
+    "whoStatuteEdition": "edition 19.05.2026",
+    "whoReport": "Annual report 2024–2025 (Business Register)",
+    "whoDonationsTitle": "Where a donation goes",
+    "whoDonationsHonest": "So far we have received donations only in a few individual cases. From 2027 we will publish here each year how much was donated and how many group visits that made possible.",
+    "whoDonationsCover": "A donation covers one group visit: the guide’s work, food for the birds and guinea pigs, and preparing the rooms. A visit costs €10 per person.",
     "ctaTitle": "Questions?",
     "ctaText": "Write or call — we will help you find a programme and a time.",
     "ctaBook": "Book a time",

@@ -23,6 +23,16 @@ const GROUP_PHOTO = 'https://cdn.abacus.ai/images/6974aef7-abf0-4482-b928-511e38
 const PHONE_TEL = 'tel:+3725127938'
 const PHONE_DISPLAY = '+372 512 7938'
 const EMAIL = 'keskus@papagoi.ee'
+const STATUTE_HREF = '/dokumendid/papagoi-keskus-mtu-pohikiri-2026-05-19.pdf'
+const ARIREGISTER_ET = 'https://ariregister.rik.ee/est/company/80647595'
+const ARIREGISTER_EN = 'https://ariregister.rik.ee/eng/company/80647595'
+
+const ORG_FIELDS = [
+  ['whoNameLabel', 'whoName'],
+  ['whoRegLabel', 'whoReg'],
+  ['whoFoundedLabel', 'whoFounded'],
+  ['whoAddressLabel', 'whoAddress'],
+] as const
 
 const STAGE_KEY: Record<ProgramStage, 'stageLasteaed' | 'stageI' | 'stageII' | 'stageIII' | 'stageGymnasium'> = {
   lasteaed: 'stageLasteaed',
@@ -111,7 +121,9 @@ export default async function ToetusegaPage({ params }: Props) {
   const t = await getTranslations('ToetusegaPage')
   const names = t.raw('programs') as Record<string, string>
   const giftSteps = t.raw('giftSteps') as StepCopy[]
+  const ranitsSteps = t.raw('ranitsSteps') as StepCopy[]
   const showEstonianNote = locale !== 'et'
+  const ariregisterHref = locale === 'et' ? ARIREGISTER_ET : ARIREGISTER_EN
 
   const themeLabel = (theme: ProgramTheme) =>
     theme === 'ringmajandus' ? t('themeCircular') : t('themeClimate')
@@ -194,7 +206,7 @@ export default async function ToetusegaPage({ params }: Props) {
               <span className="mr-2" aria-hidden>🎒</span>
               {t('ranitsTitle')}
             </h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-lg text-gray-700 leading-relaxed mb-8">
               {t.rich('ranitsBody', {
                 list: (chunks) => (
                   <a href={KUL_LIST_URL} target="_blank" rel="noopener noreferrer" className={textLink}>
@@ -203,6 +215,12 @@ export default async function ToetusegaPage({ params }: Props) {
                 ),
               })}
             </p>
+            <div className="mb-8">
+              <StepGrid steps={ranitsSteps} />
+            </div>
+            <Link href="/broneeri" className="papagoi-cta inline-flex items-center justify-center">
+              {t('ranitsCta')}
+            </Link>
           </section>
 
           <section className="mb-16">
@@ -303,6 +321,69 @@ export default async function ToetusegaPage({ params }: Props) {
             <a href={`mailto:${EMAIL}`} className="papagoi-cta inline-flex items-center justify-center">
               {t('giftCta')}
             </a>
+          </section>
+
+          <section id="kesmeoleme" className="scroll-mt-[12.5rem] mb-16">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('whoTitle')}</h2>
+            <div className="space-y-4 text-lg text-gray-700 leading-relaxed mb-8">
+              <p>{t('whoPurpose')}</p>
+              <p>{t('whoGuides')}</p>
+            </div>
+            <div className="bg-card text-card-foreground border rounded-xl p-6 shadow-2xl mb-8">
+              <dl className="space-y-3">
+                {ORG_FIELDS.map(([labelKey, valueKey]) => (
+                  <div key={labelKey} className="flex flex-col sm:flex-row sm:gap-4">
+                    <dt className="font-semibold text-gray-800 sm:w-40 shrink-0">{t(labelKey)}</dt>
+                    <dd className="text-gray-700">{t(valueKey)}</dd>
+                  </div>
+                ))}
+                <div className="flex flex-col sm:flex-row sm:gap-4">
+                  <dt className="font-semibold text-gray-800 sm:w-40 shrink-0">{t('whoContactLabel')}</dt>
+                  <dd className="text-gray-700">
+                    {t.rich('whoContact', {
+                      mail: (chunks) => (
+                        <a href={`mailto:${EMAIL}`} className={textLink}>
+                          {chunks}
+                        </a>
+                      ),
+                      phone: (chunks) => (
+                        <a href={PHONE_TEL} className={textLink}>
+                          {chunks}
+                        </a>
+                      ),
+                    })}
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
+                <p>
+                  <a
+                    href={STATUTE_HREF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={textLink}
+                  >
+                    {t('whoStatute')}
+                  </a>
+                  <span className="text-gray-600"> — {t('whoStatuteEdition')}</span>
+                </p>
+                <p>
+                  <a
+                    href={ariregisterHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={textLink}
+                  >
+                    {t('whoReport')}
+                  </a>
+                </p>
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('whoDonationsTitle')}</h3>
+            <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
+              <p>{t('whoDonationsHonest')}</p>
+              <p>{t('whoDonationsCover')}</p>
+            </div>
           </section>
 
           <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-12 text-white text-center">
