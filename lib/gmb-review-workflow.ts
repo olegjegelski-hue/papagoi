@@ -27,6 +27,7 @@ export type GmbPostGateInput = {
   replyPosted: boolean
   replyText: string | null | undefined
   reviewId: string | null | undefined
+  rating?: number | null
 }
 
 /** Range värav: Mustand loodud ei ole kunagi postitatav, isegi kui Kinnitatud on true. */
@@ -50,6 +51,9 @@ export function isGmbReplyReadyToPost(
   }
   if (!input.reviewId?.trim()) {
     return { ok: false, reason: 'Google review ID puudub' }
+  }
+  if (typeof input.rating === 'number' && Number.isFinite(input.rating) && input.rating <= 3) {
+    return { ok: false, reason: 'cron ei vasta 1–3★ arvustustele' }
   }
   return { ok: true }
 }

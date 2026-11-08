@@ -4,6 +4,7 @@ import { syncGoogleReviewsToNotion } from '@/scripts/sync-google-reviews-to-noti
 
 // Vältime agressiivset vahemälu – seda kutsub Verceli cron
 export const dynamic = 'force-dynamic'
+export const maxDuration = 300
 
 export async function GET(request: Request) {
   const unauthorized = requireCronAuth(request)

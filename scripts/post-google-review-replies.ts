@@ -10,6 +10,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { getGmbAccessToken } from './sync-google-reviews-to-notion'
 import { createTransporter } from '../lib/email'
 import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
+import { gmbReviewReplyUrl, googleReviewIdFromNotionProperty } from '@/lib/gmb-review-id'
 
 const DEFAULT_TOTAL_LIMIT = 30
 const HARD_MAX_TOTAL_LIMIT = 50
@@ -229,15 +230,17 @@ async function attemptPostReply(input: {
 }): Promise<{ result: PostAttempt; stopReason?: string; rateLimited?: boolean }> {
   const { page, apiKey, accountId, locationId, accessToken } = input
   const props = page.properties
-  const reviewId = getRichTextPlainText(props['Google review ID'])
+  const reviewId = googleReviewIdFromNotionProperty(props['Google review ID']) || getRichTextPlainText(props['Google review ID'])
   const replyText = getRichTextPlainText(props['Vastus'])
   const status = props['Staatus']?.select?.name || null
+  const rating = typeof props['Hinne']?.number === 'number' ? props['Hinne'].number : null
   const gate = isGmbReplyReadyToPost({
     status,
     confirmed: props['Kinnitatud']?.checkbox === true,
     replyPosted: props['Vastus postitatud?']?.checkbox === true,
     replyText,
     reviewId,
+    rating,
   })
 
   if (!gate.ok) {
@@ -245,8 +248,7 @@ async function attemptPostReply(input: {
     return { result: 'skipped' }
   }
 
-  const name = `accounts/${accountId}/locations/${locationId}/reviews/${reviewId}`
-  const url = `https://mybusiness.googleapis.com/v4/${encodeURI(name)}/reply`
+  const url = gmbReviewReplyUrl(accountId, locationId, reviewId as string)
 
   let gmbResponse: Response
   try {
