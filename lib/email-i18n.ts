@@ -544,8 +544,7 @@ export function donationAdminSubject(code: string, amountEur: number, purpose: D
 export function getDonationEmailCopy(locale: VisitMailLocale) {
   const c = {
     et: {
-      subject: (code: string, amountEur: number) =>
-        `Aitäh annetuse eest – Papagoi Keskus (${code}, ${amountEur} €)`,
+      subject: (code: string) => `Aitäh toetuse eest — Annetus ${code}`,
       title: 'Aitäh annetuse eest',
       greeting: (name: string) => `Tere, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Tere, ${name}!`,
@@ -572,8 +571,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       tel: 'Tel +372 51 27 938',
     },
     en: {
-      subject: (code: string, amountEur: number) =>
-        `Thank you for your donation – Papagoi Centre (${code}, ${amountEur} €)`,
+      subject: (code: string) => `Thank you for your support — Donation ${code}`,
       title: 'Thank you for your donation',
       greeting: (name: string) => `Hello, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Hello, ${name}!`,
@@ -600,8 +598,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       tel: 'Tel +372 51 27 938',
     },
     ru: {
-      subject: (code: string, amountEur: number) =>
-        `Спасибо за пожертвование – центр Papagoi (${code}, ${amountEur} €)`,
+      subject: (code: string) => `Спасибо за поддержку — пожертвование ${code}`,
       title: 'Спасибо за пожертвование',
       greeting: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Здравствуйте, ${name}!`,

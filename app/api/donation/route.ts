@@ -104,9 +104,12 @@ export async function POST(request: NextRequest) {
     await sendDonationEmail({
       to: cleanedEmail,
       donorName: cleanedName,
+      donorEmail: cleanedEmail,
       amountEur: amountNum,
       purpose,
       code: result.code,
+      comment: cleanedComment,
+      publishName: publishName === true,
       locale,
     })
 

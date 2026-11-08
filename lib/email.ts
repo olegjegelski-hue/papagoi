@@ -1,8 +1,9 @@
 
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
-import type { DonationPurpose } from '@/lib/donation'
-import type { VisitMailLocale } from '@/lib/visit-language'
+import { DONATION_PURPOSE_NOTION, type DonationPurpose } from '@/lib/donation'
+import { escapeHtml } from '@/lib/sanitize'
+import { visitMailLocaleToNotionSelectLabel, type VisitMailLocale } from '@/lib/visit-language'
 import {
   bookingGroupTypeLabel,
   calendarStrings,
@@ -669,9 +670,12 @@ Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
 export async function sendDonationEmail(data: {
   to: string
   donorName: string
+  donorEmail: string
   amountEur: number
   purpose: DonationPurpose
   code: string
+  comment?: string
+  publishName: boolean
   locale?: VisitMailLocale
 }) {
   const transporter = createTransporter()
@@ -681,14 +685,20 @@ export async function sendDonationEmail(data: {
   const t = getDonationEmailCopy(locale)
   const purposeLabel = t.purposes[data.purpose]
   const refLine = t.referenceValue(data.code)
-  const subject = donationAdminSubject(data.code, data.amountEur, data.purpose)
+  const safeName = escapeHtml(data.donorName)
+  const safeEmail = escapeHtml(data.donorEmail)
+  const comment = (data.comment ?? '').trim()
+  const safeComment = comment ? escapeHtml(comment) : '—'
+  const languageLabel = visitMailLocaleToNotionSelectLabel(locale)
+  const purposeEt = DONATION_PURPOSE_NOTION[data.purpose]
+  const publishLabel = data.publishName ? 'Jah' : 'Ei'
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
         ${t.title}
       </h2>
-      <p style="font-size: 16px; line-height: 1.6;">${t.greeting(data.donorName)}</p>
+      <p style="font-size: 16px; line-height: 1.6;">${t.greeting(safeName)}</p>
       <p style="font-size: 15px; line-height: 1.6;">
         ${t.thanks}
       </p>
@@ -751,9 +761,45 @@ https://papagoi.ee/
   await transporter.sendMail({
     from: `"Papagoi Keskus" <${fromAddress}>`,
     to: data.to,
-    cc: centerEmail,
-    subject,
+    subject: t.subject(data.code),
     html,
     text,
+  })
+
+  const adminHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        Uus annetus ${escapeHtml(data.code)}
+      </h2>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>Annetaja:</strong> ${safeName}</p>
+        <p style="margin: 6px 0;"><strong>E-post:</strong> ${safeEmail}</p>
+        <p style="margin: 6px 0;"><strong>Summa:</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>Sihtotstarve:</strong> ${escapeHtml(purposeEt)}</p>
+        <p style="margin: 6px 0;"><strong>Keel:</strong> ${escapeHtml(languageLabel)}</p>
+        <p style="margin: 6px 0;"><strong>Kommentaar:</strong> ${safeComment}</p>
+        <p style="margin: 6px 0;"><strong>Nime võib avaldada:</strong> ${publishLabel}</p>
+      </div>
+    </div>
+  `
+
+  const adminText = `
+Uus annetus ${data.code}
+
+Annetaja: ${data.donorName}
+E-post: ${data.donorEmail}
+Summa: ${data.amountEur} €
+Sihtotstarve: ${purposeEt}
+Keel: ${languageLabel}
+Kommentaar: ${comment || '—'}
+Nime võib avaldada: ${publishLabel}
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: centerEmail,
+    subject: donationAdminSubject(data.code, data.amountEur, data.purpose),
+    html: adminHtml,
+    text: adminText,
   })
 }
