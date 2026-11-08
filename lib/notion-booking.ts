@@ -6,6 +6,7 @@
 
 import { randomBytes } from 'crypto'
 import { fromZonedTime, formatInTimeZone } from 'date-fns-tz'
+import { groupTypeToNotionSelect } from '@/lib/email-i18n'
 import { extractVipFlag, isVipVisitPropertyName } from '@/lib/vip-visit'
 
 /** Notioni väljanimed: ä/ö/ü/õ → ASCII, tühikud maha. */
@@ -465,6 +466,16 @@ export async function createVisitor(payload: {
     }
   }
 
+  const groupTypePropName = findProperty(properties, [
+    { type: 'select', normalizedEquals: 'grupituup' },
+    { type: 'select', normalizedIncludes: ['grupituup'] },
+    { type: 'select', normalizedIncludes: ['grouptype'] },
+  ])
+  const groupTypeSelect = groupTypeToNotionSelect(payload.groupType)
+  if (groupTypePropName && groupTypeSelect && properties[groupTypePropName]?.type === 'select') {
+    visitorProps[groupTypePropName] = { select: { name: groupTypeSelect } }
+  }
+
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {
     method: 'POST',
     headers: {
@@ -485,4 +496,22 @@ export async function createVisitor(payload: {
   }
 
   return true
+}
+
+/** Loeb Külastajad kirjest Select/tekst „Grupi tüüp“. Puudub → null (väli jääb tühjaks). */
+export function extractGroupTypeFromNotionVisitorProps(
+  properties: Record<string, any> | null | undefined
+): string | null {
+  if (!properties) return null
+  const key = findProperty(properties, [
+    { type: 'select', normalizedEquals: 'grupituup' },
+    { type: 'select', normalizedIncludes: ['grupituup'] },
+    { type: 'select', normalizedIncludes: ['grouptype'] },
+    { type: 'rich_text', normalizedEquals: 'grupituup' },
+  ])
+  if (!key) return null
+  const prop = properties[key]
+  if (prop?.type === 'select') return prop.select?.name ?? null
+  if (prop?.type === 'rich_text') return prop.rich_text?.[0]?.plain_text ?? null
+  return null
 }

@@ -1,6 +1,7 @@
 import type { DonationPurpose } from '@/lib/donation'
 import { DONATION_PURPOSE_NOTION } from '@/lib/donation'
 import type { VisitMailLocale } from '@/lib/visit-language'
+import { VIP_GROUP_TYPE, isVipGroupType } from '@/lib/vip-visit'
 
 export type { VisitMailLocale }
 
@@ -61,6 +62,28 @@ export function bookingGroupTypeLabel(
     'vip-kulastus': { et: 'VIP külastus', en: 'VIP visit', ru: 'VIP-визит' },
   }
   return map[groupType]?.[locale] ?? map.muu[locale]
+}
+
+/** Vormi `groupType` → Külastajad Select „Grupi tüüp“. Tühi → ära kirjuta; tundmatu → „Muu“. */
+export function groupTypeToNotionSelect(groupType?: string | null): string | undefined {
+  if (!groupType?.trim()) return undefined
+  if (isVipGroupType(groupType)) return 'VIP külastus'
+  const n = groupType.trim().toLowerCase().replace(/_/g, '-').replace(/\s+/g, '')
+  return bookingGroupTypeLabel('et', n === VIP_GROUP_TYPE ? VIP_GROUP_TYPE : n)
+}
+
+const REVIEW_DONATION_GROUP_TYPES = new Set(['Perevisit', 'Ettevõte', 'Muu', 'VIP külastus'])
+
+/** Annetuse rida arvustuskirjas: Perevisit / Ettevõte / Muu / VIP. Kool/Lasteaed ja tühi → ei. */
+export function shouldShowReviewDonationLine(groupType?: string | null): boolean {
+  if (!groupType?.trim()) return false
+  const raw = groupType.trim()
+  if (raw === 'Kool/Lasteaed') return false
+  if (REVIEW_DONATION_GROUP_TYPES.has(raw)) return true
+  if (isVipGroupType(raw)) return true
+  const n = raw.toLowerCase().replace(/_/g, '-').replace(/\s+/g, '')
+  if (n === 'kool') return false
+  return n === 'perevisit' || n === 'ettevote' || n === 'muu' || n === VIP_GROUP_TYPE
 }
 
 export function visitLanguageLabelForEmail(locale: VisitMailLocale, code: VisitMailLocale): string {
@@ -624,6 +647,108 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       regards: 'С уважением',
       centre: 'Центр Papagoi',
       tel: 'Тел. +372 51 27 938',
+    },
+  }
+  return c[locale]
+}
+
+export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
+  const c = {
+    et: {
+      subject: 'Aitäh külastuse eest! Jäta palun meile Google’i arvustus',
+      greetingFallback: 'Papagoi sõber',
+      greetingHtml: (name: string) => `Tere, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Tere, ${name}!`,
+      introHtml:
+        'Aitäh, et käisite täna <strong>Papagoi Keskuses</strong> külas. Loodame, et külastus pakkus teile rõõmu ja häid elamusi.',
+      introText:
+        'Aitäh, et käisite täna Papagoi Keskuses külas. Loodame, et külastus pakkus teile rõõmu ja häid elamusi.',
+      askHtml:
+        'Kui teil on hetk aega, oleksime väga tänulikud, kui jätaksite meile <strong>Google’is lühikese arvustuse</strong>. See aitab teistel külastajatel meid leida ja meil papagoide eest hoolitseda.',
+      askText:
+        'Kui teil on hetk aega, oleksime väga tänulikud, kui jätaksite meile Google’is lühikese arvustuse. See aitab teistel külastajatel meid leida ja meil papagoide eest hoolitseda.',
+      button: 'Jäta arvustus siia',
+      photosHtml:
+        '<strong>Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.</strong>',
+      photosText: 'Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.',
+      boxTitle: 'Kui külastus teile meeldis, saate seda elamust edasi kinkida:',
+      giftHtml:
+        '<strong>Kinkekaardiga</strong> sõbrale, tuttavale või pereliikmele — kingisaaja valib ise sobiva aja.',
+      giftText:
+        'Kinkekaardiga sõbrale, tuttavale või pereliikmele — kingisaaja valib ise sobiva aja.',
+      donateHtml:
+        'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+      donateText:
+        'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+      giftHref: 'https://papagoi.ee/et/kinkekaart',
+      donateHref: 'https://papagoi.ee/et/toetused#anneta',
+      feedback: 'Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.',
+      signOff: 'Papagoid tänavad Teid.',
+      centre: 'Papagoi Keskus',
+    },
+    en: {
+      subject: 'Thank you for visiting! Please leave us a Google review',
+      greetingFallback: 'Parrot friend',
+      greetingHtml: (name: string) => `Hello, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Hello, ${name}!`,
+      introHtml:
+        'Thank you for visiting the <strong>Papagoi Centre</strong> today. We hope the visit brought you joy and great experiences.',
+      introText:
+        'Thank you for visiting the Papagoi Centre today. We hope the visit brought you joy and great experiences.',
+      askHtml:
+        'If you have a moment, we would be very grateful if you left us a <strong>short Google review</strong>. It helps other visitors find us and helps us take care of the parrots.',
+      askText:
+        'If you have a moment, we would be very grateful if you left us a short Google review. It helps other visitors find us and helps us take care of the parrots.',
+      button: 'Leave a review',
+      photosHtml:
+        '<strong>Feel free to add photos from your visit – it makes us very happy.</strong>',
+      photosText: 'Feel free to add photos from your visit – it makes us very happy.',
+      boxTitle: 'If you enjoyed your visit, you can pass the experience on:',
+      giftHtml:
+        'With a <strong>gift card</strong> for a friend, acquaintance or family member — they choose the time themselves.',
+      giftText:
+        'With a gift card for a friend, acquaintance or family member — they choose the time themselves.',
+      donateHtml:
+        'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+      donateText:
+        'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+      giftHref: 'https://papagoi.ee/en/kinkekaart',
+      donateHref: 'https://papagoi.ee/en/toetused#anneta',
+      feedback: 'If you have feedback or questions, just reply to this email.',
+      signOff: 'The parrots thank you.',
+      centre: 'Papagoi Centre',
+    },
+    ru: {
+      subject: 'Спасибо за визит! Пожалуйста, оставьте нам отзыв в Google',
+      greetingFallback: 'Друг попугаев',
+      greetingHtml: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
+      greetingText: (name: string) => `Здравствуйте, ${name}!`,
+      introHtml:
+        'Спасибо, что вы сегодня побывали в <strong>Центре попугаев</strong>. Надеемся, визит подарил вам радость и яркие впечатления.',
+      introText:
+        'Спасибо, что вы сегодня побывали в Центре попугаев. Надеемся, визит подарил вам радость и яркие впечатления.',
+      askHtml:
+        'Если у вас найдётся минутка, мы будем очень благодарны за <strong>короткий отзыв в Google</strong>. Это помогает другим посетителям найти нас, а нам — заботиться о попугаях.',
+      askText:
+        'Если у вас найдётся минутка, мы будем очень благодарны за короткий отзыв в Google. Это помогает другим посетителям найти нас, а нам — заботиться о попугаях.',
+      button: 'Оставить отзыв',
+      photosHtml:
+        '<strong>Можете добавить и фото с визита – нам будет очень приятно.</strong>',
+      photosText: 'Можете добавить и фото с визита – нам будет очень приятно.',
+      boxTitle: 'Если визит вам понравился, вы можете подарить это впечатление дальше:',
+      giftHtml:
+        '<strong>Подарочной картой</strong> другу, знакомому или члену семьи — получатель сам выберет удобное время.',
+      giftText:
+        'Подарочной картой другу, знакомому или члену семьи — получатель сам выберет удобное время.',
+      donateHtml:
+        'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+      donateText:
+        'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+      giftHref: 'https://papagoi.ee/ru/kinkekaart',
+      donateHref: 'https://papagoi.ee/ru/toetused#anneta',
+      feedback: 'Если у вас есть отзывы или вопросы, просто ответьте на это письмо.',
+      signOff: 'Попугаи благодарят вас.',
+      centre: 'Papagoi Keskus',
     },
   }
   return c[locale]
