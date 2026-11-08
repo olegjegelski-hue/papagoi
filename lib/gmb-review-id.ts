@@ -43,16 +43,28 @@ export function googleReviewIdFromNotionProperty(prop: unknown): string {
   return normalizeGoogleReviewId(richTextPlainFromProp(prop))
 }
 
-export function reviewDateYmd(start: string | null | undefined): string {
-  if (!start || typeof start !== 'string') return ''
-  const trimmed = start.trim()
-  return trimmed.length >= 10 ? trimmed.slice(0, 10) : ''
+/**
+ * Dedupe ainult normaliseeritud Google review ID järgi.
+ * Nimi+kuupäev ei ole identiteet: sama inimene võib jätta mitu arvustust
+ * ühel päeval (Kadri Türna 29.10.2026 13:03 ja 16:51).
+ */
+export function isSameGoogleReview(
+  a: { reviewId?: string | null; name?: string | null },
+  b: { reviewId?: string | null; name?: string | null },
+): boolean {
+  const idA = googleReviewIdFromGmbReview(a)
+  const idB = googleReviewIdFromGmbReview(b)
+  if (!idA || !idB) return false
+  return idA === idB
 }
 
-export function reviewIdentityKey(name: string | null | undefined, dateYmd: string): string {
-  const n = (name || '').trim().toLowerCase()
-  if (!n || !dateYmd) return ''
-  return `${n}|${dateYmd}`
+export function findExistingByGoogleReviewId<T>(
+  byId: Map<string, T>,
+  reviewId: string | null | undefined,
+): T | undefined {
+  const id = normalizeGoogleReviewId(reviewId)
+  if (!id) return undefined
+  return byId.get(id)
 }
 
 export function gmbReviewReplyUrl(accountId: string, locationId: string, reviewId: string): string {

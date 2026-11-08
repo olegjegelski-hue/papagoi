@@ -7,6 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test:gmb-review-id": "tsx --test lib/gmb-review-id.test.ts",
     "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts",
     "send-visit-sms-reminders": "VISIT_SMS_CLI=1 tsx scripts/send-visit-sms-reminders.ts",
     "send-test-sms": "TEST_SMS_CLI=1 tsx scripts/send-test-sms.ts",

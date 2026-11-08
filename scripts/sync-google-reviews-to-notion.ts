@@ -6,10 +6,9 @@ import {
   toNotionRichText,
 } from '@/lib/gmb-review-comment'
 import {
+  findExistingByGoogleReviewId,
   googleReviewIdFromGmbReview,
   googleReviewIdFromNotionProperty,
-  reviewDateYmd,
-  reviewIdentityKey,
   richTextPlainFromProp,
 } from '@/lib/gmb-review-id'
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
@@ -384,10 +383,6 @@ function buildNotionPropertiesFromReview(
   return props
 }
 
-function notionTitlePlain(prop: unknown): string {
-  return richTextPlainFromProp(prop).trim()
-}
-
 function notionPageRank(page: NotionPage): number {
   const status = page.properties['Staatus']?.select?.name
   const posted = page.properties['Vastus postitatud?']?.checkbox === true
@@ -407,27 +402,11 @@ function preferNotionReviewPage(a: NotionPage, b: NotionPage): NotionPage {
   return rb > ra ? b : a
 }
 
-function identityKeyFromPage(page: NotionPage): string {
-  const name = notionTitlePlain(page.properties['Nimi'])
-  const ymd = reviewDateYmd(page.properties['Arvustuse kuupäev']?.date?.start)
-  return reviewIdentityKey(name, ymd)
-}
-
-function rememberExistingPage(
-  byId: Map<string, NotionPage>,
-  byIdentity: Map<string, NotionPage>,
-  page: NotionPage,
-) {
+function rememberExistingPage(byId: Map<string, NotionPage>, page: NotionPage) {
   const id = googleReviewIdFromNotionProperty(page.properties['Google review ID'])
-  if (id) {
-    const prev = byId.get(id)
-    byId.set(id, prev ? preferNotionReviewPage(prev, page) : page)
-  }
-  const identity = identityKeyFromPage(page)
-  if (identity) {
-    const prev = byIdentity.get(identity)
-    byIdentity.set(identity, prev ? preferNotionReviewPage(prev, page) : page)
-  }
+  if (!id) return
+  const prev = byId.get(id)
+  byId.set(id, prev ? preferNotionReviewPage(prev, page) : page)
 }
 
 async function findNotionPageByGoogleReviewId(
@@ -473,17 +452,15 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
   console.log(`Loading existing Notion reviews from database ${databaseId}...`)
   const existingPages = await fetchAllNotionReviewPages(databaseId, NOTION_API_KEY)
   const existingByReviewId = new Map<string, NotionPage>()
-  const existingByIdentity = new Map<string, NotionPage>()
 
   for (const page of existingPages) {
-    rememberExistingPage(existingByReviewId, existingByIdentity, page)
+    rememberExistingPage(existingByReviewId, page)
   }
 
   console.log(
     JSON.stringify({
       existingPages: existingPages.length,
       mappedByReviewId: existingByReviewId.size,
-      mappedByNameDate: existingByIdentity.size,
     }),
   )
 
@@ -498,20 +475,15 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
       skippedNoId++
       continue
     }
-    const name =
-      (review.reviewer?.displayName && review.reviewer.displayName.trim()) || 'Anonüümne'
-    const identity = reviewIdentityKey(name, reviewDateYmd(review.createTime || null))
 
-    let existing =
-      existingByReviewId.get(reviewId) ||
-      (identity ? existingByIdentity.get(identity) : undefined)
+    let existing = findExistingByGoogleReviewId(existingByReviewId, reviewId)
 
     if (!existing) {
       const live = await findNotionPageByGoogleReviewId(NOTION_API_KEY, databaseId, reviewId)
       if (live) {
         liveLookupHits++
         existing = live
-        rememberExistingPage(existingByReviewId, existingByIdentity, live)
+        rememberExistingPage(existingByReviewId, live)
       }
     }
 
@@ -544,12 +516,12 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
       }
       const createdPage = (await response.json()) as { id?: string; properties?: Record<string, unknown> }
       if (createdPage.id) {
-        rememberExistingPage(existingByReviewId, existingByIdentity, {
+        rememberExistingPage(existingByReviewId, {
           id: createdPage.id,
           properties: createdPage.properties || properties,
         })
       } else {
-        rememberExistingPage(existingByReviewId, existingByIdentity, {
+        rememberExistingPage(existingByReviewId, {
           id: `created-${reviewId}`,
           properties,
         })
@@ -576,7 +548,7 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
         )
         continue
       }
-      rememberExistingPage(existingByReviewId, existingByIdentity, {
+      rememberExistingPage(existingByReviewId, {
         id: existing.id,
         properties: { ...existing.properties, ...properties },
       })
