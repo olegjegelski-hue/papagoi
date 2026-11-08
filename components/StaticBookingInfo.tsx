@@ -478,11 +478,11 @@ export default function StaticBookingInfo({ initialGroupType = '' }: { initialGr
               className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base bg-white"
             >
               <option value="">{t('groupTypePlaceholder')}</option>
+              <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
               <option value="perevisit">{t('groupTypeFamily')}</option>
               <option value="kool">{t('groupTypeSchool')}</option>
               <option value="ettevote">{t('groupTypeBusiness')}</option>
               <option value="muu">{t('groupTypeOther')}</option>
-              <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
             </select>
             {isVip && <p className="text-sm text-deep-anthracite">{t('vipHint')}</p>}
           </div>
@@ -806,11 +806,11 @@ export default function StaticBookingInfo({ initialGroupType = '' }: { initialGr
                         className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base bg-white"
                       >
                         <option value="">{t('groupTypePlaceholder')}</option>
+                        <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
                         <option value="perevisit">{t('groupTypeFamily')}</option>
                         <option value="kool">{t('groupTypeSchool')}</option>
                         <option value="ettevote">{t('groupTypeBusiness')}</option>
                         <option value="muu">{t('groupTypeOther')}</option>
-                        <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
                       </select>
                     </div>
                     <div className="space-y-2 w-full">
