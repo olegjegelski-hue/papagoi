@@ -38,7 +38,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **Broneering:** vorm → Notion Visits/Visitors → kinnitusmeilid → webhook/kinnitusvoog; kalendrilingid
   - VIP külastus: privaatne slot 1–20 inimest, hinnaastmed, kestus 45–60 min, ajad (E–R iga täistund 10–18, L/P ja riigipühad 10:00, 11:00 või 18:00; iga külastus sulgeb tunni enne ja pärast), sloti kahepoolne blokk Notioni välja „VIP külastus“ (Külastused) järgi, eraldi VIP kirjad ET/EN/RU — kogu loogika failis `lib/vip-visit.ts`. Notioni Külastajad → Summa jääb Arv × 10 (VIP hinda koodist Notionisse ei kirjutata).
 - **Kinkekaardid:** tellimusvorm → Notion + päringu e-kiri (IBAN/ülekande juhised) → admin väljastus → PNG/PDF render → trükileht `/[locale]/kinkekaart/truki?code=`
-- **Annetused:** vorm `/[locale]/annetus` (sihtotstarve kingi/toit/uldine, summa 10–1000 € 10 € sammuga, ?purpose= eelvalik) → Notion „Annetused“ (env `NOTION_DONATIONS_DATABASE_ID`, staatus „Ootab ülekannet“, number ANN-x) → kiri annetajale (MTÜ IBAN, selgitus „Annetus ANN-x“, palve pärast ülekannet vastata) + eraldi adminikiri keskus@papagoi.ee. Failid `lib/donation.ts`, `lib/notion-donations.ts`, `app/api/donation`, `components/DonationForm.tsx`; IBAN on üks konstant `PAPAGOI_IBAN` (`lib/email-i18n.ts`). Maksusoodustusest ega vastusoodustusest ei kirjutata (MTÜ ei ole TMIN nimekirjas).
+- **Annetused:** vorm `/[locale]/annetus` (sihtotstarve kingi/toit/uldine, summa 10–1000 € 10 € sammuga, ?purpose= eelvalik) → Notion „Annetused“ (env `NOTION_DONATIONS_DATABASE_ID`, staatus „Ootab ülekannet“, number ANN-x) → kiri annetajale (MTÜ IBAN, selgitus „Annetus ANN-x“, palve pärast ülekannet vastata) + eraldi adminikiri keskus@papagoi.ee. Failid `lib/donation.ts`, `lib/notion-donations.ts`, `app/api/donation`, `components/DonationForm.tsx`; IBAN on üks konstant `PAPAGOI_IBAN` (`lib/email-i18n.ts`). Maksusoodustusest ega vastusoodustusest ei kirjutata (MTÜ ei ole TMIN nimekirjas). Sama vorm on ka /toetused lehel ankru #anneta all (vahetult enne „Kuhu annetus läheb“; „Anneta“ nupp kerib vormini ja eelvalib „kingi“); /annetus leht jääb QR- ja otselinkide jaoks.
 - **Cron:** arvustuskutsed, SMS meeldetuletused, GMB sync, GMB vastused
 - **Sisu:** blogi, papagoid, teenused, külastajatele, toetused (Kultuuriranits, läbipaistvuse plokk #kesmeoleme, põhikiri public/dokumendid), i18n lehed
 - **Meta:** Lead (broneering/kinkekaart), PetsVilla outbound click tracking
@@ -60,6 +60,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **Notion = allikas** broneeringutele, kinkekaartidele, blogile — ära dubleeri uut DB-d ilma põhjuseta
 - **Saladused ainult env-is** (Vercel + `.env`); ära commitita võtmeid
 - **Väikesed diffid:** ära refaktori laialt „samal ajal“; ära lisa MD faile / commitita ilma kasutaja palumiseta
+- **Kirjuta-nupud:** kasutajale suunatud „Kirjuta meile“ nupud ja lingid viivad meie kontaktivormi `/kontakt#kirjuta`, mitte mailto. E-posti aadress võib jääda nähtavaks infoks (nt saidi jalus).
 
 ## 6. Kodeerimisreeglid
 
@@ -121,3 +122,5 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-11-08:** VIP ajad ja kestus uuendatud (§3) — PR #3, commit 8a23746: tööpäeviti iga täistund 10–18, L/P ja riigipühad 10/11/18, kestus 45–60 min, kinkekaardi piirang VIP-ilt eemaldatud.
 - **2026-11-08:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #4.
 - **2026-11-08:** Lisatud annetuste vorm (§3 Annetused, §2, §4) — PR #7, commit fca0f2e; /toetused läbipaistvuse plokk + põhikiri — PR #6.
+- **2026-11-08:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #8, commit c37db44.
+- **2026-11-08:** /toetused — „Kirjuta“ nupud kontaktivormi `/kontakt#kirjuta` (mitte mailto), „Küsimusi?“ 3 nuppu, annetusvorm samal lehel `#anneta` (§3 Annetused, §5 Kirjuta-nupud) — PR #9, commit d5aa4e2.
