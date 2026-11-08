@@ -8,8 +8,15 @@ import { randomBytes } from 'crypto'
 import { fromZonedTime, formatInTimeZone } from 'date-fns-tz'
 import { extractVipFlag, isVipVisitPropertyName } from '@/lib/vip-visit'
 
-function normalizeKey(value: string) {
-  return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
+/** Notioni väljanimed: ä/ö/ü/õ → ASCII, tühikud maha. */
+export function normalizeKey(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/ä/g, 'a')
+    .replace(/ö/g, 'o')
+    .replace(/ü/g, 'u')
+    .replace(/õ/g, 'o')
+    .replace(/\s+/g, '')
 }
 
 /** Notioni Select „Külastuse keel“ valikud: Est, Rus, Eng */
@@ -61,7 +68,7 @@ function findVipCheckboxPropName(properties: Record<string, any>): string | null
   )
 }
 
-function extractGuestCount(properties: Record<string, any>): number {
+export function extractGuestCount(properties: Record<string, any>): number {
   const priceLike = (n: string) =>
     n.includes('summa') || n.includes('hind') || n.includes('price') || n.includes('euro')
   for (const key of Object.keys(properties)) {
@@ -88,6 +95,19 @@ function extractGuestCount(properties: Record<string, any>): number {
     return properties[relation].relation.length
   }
   return 0
+}
+
+/** VIP/tavasloti konflikt olemasolevate Külastused-kirjete põhjal (ilma Notion API-ta). */
+export function visitSlotConflict(
+  existingPages: { properties?: Record<string, any> }[],
+  wantVip: boolean
+): 'SLOT_VIP' | 'SLOT_OCCUPIED' | null {
+  for (const page of existingPages) {
+    const pageProps = page.properties || {}
+    if (extractVipFlag(pageProps)) return 'SLOT_VIP'
+    if (wantVip && extractGuestCount(pageProps) > 0) return 'SLOT_OCCUPIED'
+  }
+  return null
 }
 
 /**
@@ -204,16 +224,9 @@ export async function reserveVisitSlot(payload: {
   const queryData = await queryRes.json()
   const existingPages: any[] = queryData.results || []
 
-  for (const page of existingPages) {
-    const pageProps = page.properties || {}
-    const isVip = extractVipFlag(pageProps)
-    const guests = extractGuestCount(pageProps)
-    if (isVip) {
-      return { ok: false, reason: 'SLOT_VIP' }
-    }
-    if (wantVip && guests > 0) {
-      return { ok: false, reason: 'SLOT_OCCUPIED' }
-    }
+  const conflict = visitSlotConflict(existingPages, wantVip)
+  if (conflict) {
+    return { ok: false, reason: conflict }
   }
 
   const emptyExisting = existingPages.find((page) => extractGuestCount(page.properties || {}) === 0)
