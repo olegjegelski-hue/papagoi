@@ -924,17 +924,12 @@ export async function sendReviewInviteEmail(params: {
     groupType: params.groupType,
   })
 
-  const mailOptions: Parameters<typeof transporter.sendMail>[0] = {
+  await transporter.sendMail({
     from: `"Papagoi Keskus" <${fromAddress}>`,
     to: params.to,
     subject: built.subject,
     html: built.html,
     text: built.text,
-  }
-  if (process.env.REVIEW_CC_CENTER === '1') {
-    mailOptions.cc = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
-  }
-
-  await transporter.sendMail(mailOptions)
+  })
   return built
 }

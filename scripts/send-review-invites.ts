@@ -1,7 +1,9 @@
 import 'dotenv/config'
 import { formatInTimeZone } from 'date-fns-tz'
-import { createTransporter, sendReviewInviteEmail } from '../lib/email'
+import { buildReviewInviteEmail, createTransporter, sendReviewInviteEmail } from '../lib/email'
+import { shouldShowReviewDonationLine } from '../lib/email-i18n'
 import { extractGroupTypeFromNotionVisitorProps } from '../lib/notion-booking'
+import { escapeHtml } from '../lib/sanitize'
 import {
   extractVisitLanguageFromNotionVisitorProps,
   parseVisitMailLocale,
@@ -287,6 +289,152 @@ export async function sendReviewEmail(
   })
 }
 
+type ReviewInviteRecipientRow = {
+  name: string | null
+  email: string
+  locale: VisitMailLocale
+  groupType: string | null
+  showDonation: boolean
+  failed?: boolean
+}
+
+const VARIANT_LOCALE_ORDER: VisitMailLocale[] = ['et', 'en', 'ru']
+
+function localeCodeUpper(locale: VisitMailLocale) {
+  return locale.toUpperCase()
+}
+
+function recipientLine(row: ReviewInviteRecipientRow) {
+  const name = row.name?.trim() || '—'
+  const groupType = row.groupType?.trim() || '—'
+  const donation = row.showDonation ? 'jah' : 'ei'
+  const failed = row.failed ? ' · ebaõnnestus' : ''
+  return `${name} · ${row.email} · ${localeCodeUpper(row.locale)} · ${groupType} · annetuse rida: ${donation}${failed}`
+}
+
+function variantKey(locale: VisitMailLocale, showDonation: boolean) {
+  return `${locale}:${showDonation ? '1' : '0'}`
+}
+
+function variantHeading(locale: VisitMailLocale, showDonation: boolean, count: number) {
+  return `${localeCodeUpper(locale)} · ${showDonation ? 'annetuse reaga' : 'ilma annetuseta'} · ${count} kirja`
+}
+
+function collectReviewInviteVariants(recipients: ReviewInviteRecipientRow[]) {
+  type Variant = {
+    locale: VisitMailLocale
+    showDonation: boolean
+    count: number
+    groupType: string | null
+  }
+  const map = new Map<string, Variant>()
+  for (const row of recipients) {
+    if (row.failed) continue
+    const key = variantKey(row.locale, row.showDonation)
+    const existing = map.get(key)
+    if (existing) {
+      existing.count += 1
+    } else {
+      map.set(key, {
+        locale: row.locale,
+        showDonation: row.showDonation,
+        count: 1,
+        groupType: row.groupType,
+      })
+    }
+  }
+  return VARIANT_LOCALE_ORDER.flatMap((locale) =>
+    [true, false]
+      .map((showDonation) => map.get(variantKey(locale, showDonation)))
+      .filter((v): v is Variant => Boolean(v))
+  )
+}
+
+function shouldIncludeLetterSamples(params: {
+  sentCount: number
+  dryRun: boolean
+  earlyReason?: string
+  recipients: ReviewInviteRecipientRow[]
+}) {
+  if (params.earlyReason) return false
+  if (params.dryRun) return params.recipients.some((row) => !row.failed)
+  return params.sentCount > 0
+}
+
+export function buildReviewCronSummaryContent(params: {
+  visitsCount: number
+  uniqueEmailsCount: number
+  sentCount: number
+  errorCount: number
+  dryRun: boolean
+  earlyReason?: string
+  errorMessage?: string
+  recipients?: ReviewInviteRecipientRow[]
+  nowLabel: string
+}) {
+  const recipients = params.recipients ?? []
+  const lines = [
+    `Käivitus: ${params.nowLabel} (Tallinna aeg)`,
+    params.dryRun ? 'Režiim: DRY RUN' : '',
+    params.earlyReason ? `Põhjus: ${params.earlyReason}` : '',
+    `Külastusi täna: ${params.visitsCount}`,
+    `E-posti aadresse: ${params.uniqueEmailsCount}`,
+    `Saadetud: ${params.sentCount}`,
+    `Ebaõnnestus: ${params.errorCount}`,
+    params.errorMessage ? `Viga: ${params.errorMessage}` : '',
+  ].filter(Boolean)
+
+  const includeLetters = shouldIncludeLetterSamples({
+    sentCount: params.sentCount,
+    dryRun: params.dryRun,
+    earlyReason: params.earlyReason,
+    recipients,
+  })
+  const variants = includeLetters ? collectReviewInviteVariants(recipients) : []
+
+  const letterSamples = variants.map((variant) => ({
+    heading: variantHeading(variant.locale, variant.showDonation, variant.count),
+    built: buildReviewInviteEmail({
+      name: null,
+      locale: variant.locale,
+      groupType: variant.groupType,
+    }),
+  }))
+
+  const textParts = [lines.join('\n')]
+  if (recipients.length) {
+    textParts.push('', 'Kellele saadeti', ...recipients.map((row) => `- ${recipientLine(row)}`))
+  }
+  if (letterSamples.length) {
+    textParts.push('', 'Saadetud kirja tekst')
+    for (const sample of letterSamples) {
+      textParts.push('', sample.heading, `Teema: ${sample.built.subject}`, '', sample.built.text)
+    }
+  }
+  textParts.push('', 'See kiri saadetakse iga kord, kui cron käivitatakse.')
+
+  const recipientHtml = recipients.length
+    ? `<h3 style="color: #333; margin: 24px 0 8px;">Kellele saadeti</h3><ul style="padding-left: 20px; line-height: 1.7;">${recipients
+        .map((row) => `<li>${escapeHtml(recipientLine(row))}</li>`)
+        .join('')}</ul>`
+    : ''
+
+  const letterHtml = letterSamples
+    .map(
+      (sample) =>
+        `<h4 style="color: #333; margin: 20px 0 8px;">${escapeHtml(sample.heading)}</h4><p style="margin: 0 0 10px;"><strong>Teema:</strong> ${escapeHtml(sample.built.subject)}</p><div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; background: #fff;">${sample.built.html}</div>`
+    )
+    .join('')
+
+  const letterSectionHtml = letterHtml
+    ? `<h3 style="color: #333; margin: 24px 0 8px;">Saadetud kirja tekst</h3>${letterHtml}`
+    : ''
+
+  const html = `<div style="font-family: Arial, sans-serif; max-width: 640px;"><h2 style="color: #333; border-bottom: 2px solid #43A047;">Arvustuskutsete cron – kokkuvõte</h2><pre style="background: #f5f5f5; padding: 16px; border-radius: 8px;">${lines.join('\n')}</pre>${recipientHtml}${letterSectionHtml}<p style="font-size: 13px; color: #666;">See kiri saadetakse iga kord, kui cron käivitatakse.</p></div>`
+
+  return { html, text: textParts.join('\n') }
+}
+
 /** Saadab keskusele kokkuvõtte iga croni käivitusest. */
 async function sendReviewCronSummaryEmail(params: {
   visitsCount: number
@@ -296,28 +444,18 @@ async function sendReviewCronSummaryEmail(params: {
   dryRun: boolean
   earlyReason?: string
   errorMessage?: string
+  recipients?: ReviewInviteRecipientRow[]
 }) {
-  const { visitsCount, uniqueEmailsCount, sentCount, errorCount, dryRun, earlyReason, errorMessage } = params
   const to = process.env.CENTER_EMAIL || process.env.SMTP_USER || 'keskus@papagoi.ee'
   const now = formatInTimeZone(new Date(), 'Europe/Tallinn', 'dd.MM.yyyy HH:mm')
-  const subject = earlyReason
-    ? `[Papagoi] Arvustuskutsete cron – ${earlyReason}`
-    : `[Papagoi] Arvustuskutsete cron: ${sentCount} kirja saadetud`
-  const lines = [
-    `Käivitus: ${now} (Tallinna aeg)`,
-    dryRun ? 'Režiim: DRY RUN' : '',
-    earlyReason ? `Põhjus: ${earlyReason}` : '',
-    `Külastusi täna: ${visitsCount}`,
-    `E-posti aadresse: ${uniqueEmailsCount}`,
-    `Saadetud: ${sentCount}`,
-    `Ebaõnnestus: ${errorCount}`,
-    errorMessage ? `Viga: ${errorMessage}` : '',
-  ].filter(Boolean)
-  const html = `<div style="font-family: Arial, sans-serif; max-width: 560px;"><h2 style="color: #333; border-bottom: 2px solid #43A047;">Arvustuskutsete cron – kokkuvõte</h2><pre style="background: #f5f5f5; padding: 16px; border-radius: 8px;">${lines.join('\n')}</pre><p style="font-size: 13px; color: #666;">See kiri saadetakse iga kord, kui cron käivitatakse.</p></div>`
+  const subject = params.earlyReason
+    ? `[Papagoi] Arvustuskutsete cron – ${params.earlyReason}`
+    : `[Papagoi] Arvustuskutsete cron: ${params.sentCount} kirja saadetud`
+  const { html, text } = buildReviewCronSummaryContent({ ...params, nowLabel: now })
   try {
     const transporter = createTransporter()
     const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
-    await transporter.sendMail({ from: `"Papagoi Keskus" <${fromAddress}>`, to, subject, html, text: lines.join('\n') })
+    await transporter.sendMail({ from: `"Papagoi Keskus" <${fromAddress}>`, to, subject, html, text })
   } catch (err) {
     console.error('Failed to send cron summary email:', err)
   }
@@ -403,10 +541,19 @@ export async function runReviewInvitesFromEnv() {
 
   let successCount = 0
   let errorCount = 0
+  const recipients: ReviewInviteRecipientRow[] = []
 
   for (const [email, visitors] of uniqueByEmail.entries()) {
     const first = visitors[0]
+    const showDonation = shouldShowReviewDonationLine(first.groupType)
     if (dryRun) {
+      recipients.push({
+        name: first.name,
+        email,
+        locale: first.locale,
+        groupType: first.groupType,
+        showDonation,
+      })
       console.log(
         `[DRY RUN] Would send review email to ${email} (name: ${first.name || '—'}, locale: ${
           first.locale
@@ -420,9 +567,24 @@ export async function runReviewInvitesFromEnv() {
         groupType: first.groupType,
       })
       successCount++
+      recipients.push({
+        name: first.name,
+        email,
+        locale: first.locale,
+        groupType: first.groupType,
+        showDonation,
+      })
       console.log(`Review email sent to ${email}`)
     } catch (error) {
       errorCount++
+      recipients.push({
+        name: first.name,
+        email,
+        locale: first.locale,
+        groupType: first.groupType,
+        showDonation,
+        failed: true,
+      })
       console.error(`Failed to send review email to ${email}:`, error)
     }
   }
@@ -437,6 +599,7 @@ export async function runReviewInvitesFromEnv() {
     sentCount: successCount,
     errorCount,
     dryRun,
+    recipients,
   })
 }
 
