@@ -1,6 +1,6 @@
 {
   "Nav": { "home": "Главная", "services": "Услуги", "funding": "Поддержка", "about": "О нас", "parrots": "Наши попугаи", "visitors": "Посетителям", "book": "Забронировать", "giftCard": "Подарочная карта", "contact": "Контакты", "blog": "Блог", "language": "Язык", "chooseLanguage": "Выберите язык"},
-  "Footer": { "tagline": "Жизнь полна красок и звуков", "description": "Первый в Эстонии Центр попугаев с 2015 года. Приходите познакомиться с нашей яркой семьёй!", "quickLinks": "Ссылки", "contact": "Контакты", "privacy": "Конфиденциальность и cookie", "cookieSettings": "Настройки cookie", "viewOnMap": "Показать на карте", "byAppointmentOnly": "Только по записи", "bookingRequired": "Требуется бронирование", "rightsReserved": "Все права защищены", "supportedVisit": "Визит с поддержкой" },
+  "Footer": { "tagline": "Жизнь полна красок и звуков", "description": "Первый в Эстонии Центр попугаев с 2015 года. Приходите познакомиться с нашей яркой семьёй!", "quickLinks": "Ссылки", "contact": "Контакты", "privacy": "Конфиденциальность и cookie", "cookieSettings": "Настройки cookie", "viewOnMap": "Показать на карте", "byAppointmentOnly": "Только по записи", "bookingRequired": "Требуется бронирование", "rightsReserved": "Все права защищены", "supportedVisit": "Поддержка" },
   "Common": { "logoAlt": "Центр попугаев — три попугая на ветке" },
   "Hero": {
     "welcome": "Добро пожаловать в Центр попугаев в Тарту!",

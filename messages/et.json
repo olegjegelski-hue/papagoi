@@ -1,6 +1,6 @@
 {
   "Nav": { "home": "Avaleht", "services": "Teenused", "funding": "Toetused", "about": "Meist", "parrots": "Meie papagoid", "visitors": "Külastajatele", "book": "Broneeri", "giftCard": "Kinkekaart", "contact": "Kontakt", "blog": "Blogi", "language": "Keel", "chooseLanguage": "Vali keel"},
-  "Footer": { "tagline": "Elu täis värve ja hääli", "description": "Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015. Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!", "quickLinks": "Kiirlingid", "contact": "Kontakt", "privacy": "Privaatsus ja küpsised", "cookieSettings": "Küpsiste seaded", "viewOnMap": "Vaata kaardil", "byAppointmentOnly": "Ainult eelneval kokkuleppel", "bookingRequired": "Broneerimine vajalik", "rightsReserved": "Kõik õigused kaitstud", "supportedVisit": "Külastus toetusega" },
+  "Footer": { "tagline": "Elu täis värve ja hääli", "description": "Eesti esimene Papagoi Keskus, mis tegutseb aastast 2015. Tulge tutvuge meie värvilise perekonnaga ja kogege midagi erilist!", "quickLinks": "Kiirlingid", "contact": "Kontakt", "privacy": "Privaatsus ja küpsised", "cookieSettings": "Küpsiste seaded", "viewOnMap": "Vaata kaardil", "byAppointmentOnly": "Ainult eelneval kokkuleppel", "bookingRequired": "Broneerimine vajalik", "rightsReserved": "Kõik õigused kaitstud", "supportedVisit": "Toetused" },
   "Common": { "logoAlt": "Papagoi Keskus - kolm kaunist papagoid oksal - Elu täis värve ja hääli" },
   "Hero": {
     "welcome": "Tere tulemast Papagoi Keskusesse Tartus!",
