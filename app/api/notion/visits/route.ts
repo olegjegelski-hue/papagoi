@@ -5,6 +5,7 @@ import {
   extractVisitLanguageFromNotionVisitorProps,
   sortVisitLanguageLabels,
 } from '@/lib/visit-language'
+import { extractVipFlag } from '@/lib/vip-visit'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -354,7 +355,13 @@ export async function GET(request: Request) {
 
     const results = allResults
     const visitorsDb = await resolveVisitorsDatabase(NOTION_API_KEY, NOTION_VISITORS_DATABASE_ID)
-    const bookings: { date: string; time: string | null; guests: number | null; languages: string[] }[] = (
+    const bookings: {
+      date: string
+      time: string | null
+      guests: number | null
+      languages: string[]
+      vip: boolean
+    }[] = (
       await Promise.all(
         results.map(async (page: any) => {
           const pageProperties = page.properties || {}
@@ -380,7 +387,8 @@ export async function GET(request: Request) {
             guestsValue = visitorAgg.guestSum > 0 ? visitorAgg.guestSum : null
           }
           const languages = visitorAgg.languages
-          return { date: dateValue, time: normalizedTime, guests: guestsValue, languages }
+          const vip = extractVipFlag(pageProperties)
+          return { date: dateValue, time: normalizedTime, guests: guestsValue, languages, vip }
         })
       )
     ).filter((b): b is NonNullable<typeof b> => b !== null)

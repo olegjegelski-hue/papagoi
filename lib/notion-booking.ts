@@ -6,9 +6,17 @@
 
 import { randomBytes } from 'crypto'
 import { fromZonedTime, formatInTimeZone } from 'date-fns-tz'
+import { extractVipFlag, isVipVisitPropertyName } from '@/lib/vip-visit'
 
-function normalizeKey(value: string) {
-  return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
+/** Notioni väljanimed: ä/ö/ü/õ → ASCII, tühikud maha. */
+export function normalizeKey(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/ä/g, 'a')
+    .replace(/ö/g, 'o')
+    .replace(/ü/g, 'u')
+    .replace(/õ/g, 'o')
+    .replace(/\s+/g, '')
 }
 
 /** Notioni Select „Külastuse keel“ valikud: Est, Rus, Eng */
@@ -48,6 +56,60 @@ function findProperty(
   return null
 }
 
+export type ReserveVisitResult =
+  | { ok: true; visitId: string }
+  | { ok: false; reason: 'SLOT_VIP' | 'SLOT_OCCUPIED' | 'NOTION_ERROR' }
+
+function findVipCheckboxPropName(properties: Record<string, any>): string | null {
+  return (
+    Object.keys(properties).find(
+      (key) => properties[key]?.type === 'checkbox' && isVipVisitPropertyName(key)
+    ) || null
+  )
+}
+
+export function extractGuestCount(properties: Record<string, any>): number {
+  const priceLike = (n: string) =>
+    n.includes('summa') || n.includes('hind') || n.includes('price') || n.includes('euro')
+  for (const key of Object.keys(properties)) {
+    const n = normalizeKey(key)
+    const prop = properties[key]
+    if (!prop || priceLike(n) || n.includes('vip')) continue
+    const looksLikeGuests =
+      n === 'kulalised' ||
+      n.includes('kulal') ||
+      (n.includes('kulastaj') && (n.includes('arv') || n.includes('kokku'))) ||
+      n === 'arv'
+    if (!looksLikeGuests) continue
+    if (prop.type === 'number' && typeof prop.number === 'number') return prop.number
+    if (prop.type === 'rollup' && prop.rollup?.type === 'number' && typeof prop.rollup.number === 'number') {
+      return prop.rollup.number
+    }
+    if (prop.type === 'relation' && Array.isArray(prop.relation)) return prop.relation.length
+  }
+  const relation = Object.keys(properties).find((key) => {
+    const n = normalizeKey(key)
+    return properties[key]?.type === 'relation' && (n.includes('kulastaj') || n.includes('kulaline'))
+  })
+  if (relation && Array.isArray(properties[relation]?.relation)) {
+    return properties[relation].relation.length
+  }
+  return 0
+}
+
+/** VIP/tavasloti konflikt olemasolevate Külastused-kirjete põhjal (ilma Notion API-ta). */
+export function visitSlotConflict(
+  existingPages: { properties?: Record<string, any> }[],
+  wantVip: boolean
+): 'SLOT_VIP' | 'SLOT_OCCUPIED' | null {
+  for (const page of existingPages) {
+    const pageProps = page.properties || {}
+    if (extractVipFlag(pageProps)) return 'SLOT_VIP'
+    if (wantVip && extractGuestCount(pageProps) > 0) return 'SLOT_OCCUPIED'
+  }
+  return null
+}
+
 /**
  * Leiab olemasoleva Külastused rea (kuupäev + kellaaeg) või loob uue.
  * Tagastab page ID.
@@ -56,13 +118,30 @@ export async function findOrCreateVisit(payload: {
   date: string
   timeSlot?: string
   totalPrice?: number
+  vip?: boolean
 }): Promise<string | null> {
+  const reserved = await reserveVisitSlot(payload)
+  return reserved.ok ? reserved.visitId : null
+}
+
+/**
+ * Broneerib Külastused-rea, kontrollides VIP/tavalise slotti reegleid submiti hetkel.
+ */
+export async function reserveVisitSlot(payload: {
+  date: string
+  timeSlot?: string
+  totalPrice?: number
+  vip?: boolean
+}): Promise<ReserveVisitResult> {
   const NOTION_API_KEY = process.env.NOTION_API_KEY
   const NOTION_VISITS_DATABASE_ID = process.env.NOTION_VISITS_DATABASE_ID
 
-  if (!NOTION_API_KEY || !NOTION_VISITS_DATABASE_ID || !payload.date?.trim()) return null
+  if (!NOTION_API_KEY || !NOTION_VISITS_DATABASE_ID || !payload.date?.trim()) {
+    return { ok: false, reason: 'NOTION_ERROR' }
+  }
 
   const dbId = NOTION_VISITS_DATABASE_ID.replace(/-/g, '')
+  const wantVip = Boolean(payload.vip)
 
   const dbRes = await fetchNotion(`https://api.notion.com/v1/databases/${dbId}`, {
     method: 'GET',
@@ -73,11 +152,12 @@ export async function findOrCreateVisit(payload: {
   })
   if (!dbRes.ok) {
     console.error('Notion Külastused DB fetch viga:', dbRes.status)
-    return null
+    return { ok: false, reason: 'NOTION_ERROR' }
   }
 
   const dbData = await dbRes.json()
   const properties = dbData.properties || {}
+  const vipPropName = findVipCheckboxPropName(properties)
 
   const datePropName = findProperty(properties, [
     { type: 'date', normalizedIncludes: ['kuupaev'] },
@@ -91,7 +171,7 @@ export async function findOrCreateVisit(payload: {
   const titlePropName = Object.keys(properties).find((k) => properties[k]?.type === 'title')
   if (!titlePropName || !datePropName) {
     console.warn('Notion Külastused: puuduvad Kuupäev või Title väljad')
-    return null
+    return { ok: false, reason: 'NOTION_ERROR' }
   }
 
   let dateFilterValue = payload.date
@@ -132,19 +212,55 @@ export async function findOrCreateVisit(payload: {
     },
     body: JSON.stringify({
       filter: andFilters.length === 1 ? andFilters[0] : { and: andFilters },
-      page_size: 1,
+      page_size: 10,
     }),
   })
 
   if (!queryRes.ok) {
     console.error('Notion Külastused query viga:', queryRes.status)
-    return null
+    return { ok: false, reason: 'NOTION_ERROR' }
   }
 
   const queryData = await queryRes.json()
-  const existing = queryData.results?.[0]
-  if (existing) {
-    return existing.id
+  const existingPages: any[] = queryData.results || []
+
+  const conflict = visitSlotConflict(existingPages, wantVip)
+  if (conflict) {
+    return { ok: false, reason: conflict }
+  }
+
+  const emptyExisting = existingPages.find((page) => extractGuestCount(page.properties || {}) === 0)
+  const joinable = existingPages[0]
+
+  if (wantVip) {
+    const reusable = emptyExisting
+    if (reusable) {
+      if (vipPropName) {
+        const patchRes = await fetchNotion(
+          `https://api.notion.com/v1/pages/${String(reusable.id).replace(/-/g, '')}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${NOTION_API_KEY}`,
+              'Notion-Version': '2022-06-28',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              properties: { [vipPropName]: { checkbox: true } },
+            }),
+          }
+        )
+        if (!patchRes.ok) {
+          console.error('Notion VIP linnukese uuendus ebaõnnestus:', patchRes.status)
+        }
+      }
+      return { ok: true, visitId: reusable.id }
+    }
+    if (existingPages.length > 0) {
+      return { ok: false, reason: 'SLOT_OCCUPIED' }
+    }
+  } else if (joinable) {
+    return { ok: true, visitId: joinable.id }
   }
 
   const titleContent = [payload.date, payload.timeSlot || ''].filter(Boolean).join(' ')
@@ -172,6 +288,11 @@ export async function findOrCreateVisit(payload: {
       }
     }
   }
+  if (wantVip && vipPropName) {
+    visitProps[vipPropName] = { checkbox: true }
+  } else if (wantVip && !vipPropName) {
+    console.warn('Notion Külastused: VIP külastus checkboxi ei leitud')
+  }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {
     method: 'POST',
@@ -189,11 +310,11 @@ export async function findOrCreateVisit(payload: {
   if (!createRes.ok) {
     const errText = await createRes.text()
     console.error('Notion Külastused create viga:', createRes.status, errText)
-    return null
+    return { ok: false, reason: 'NOTION_ERROR' }
   }
 
   const created = await createRes.json()
-  return created.id
+  return { ok: true, visitId: created.id }
 }
 
 /**

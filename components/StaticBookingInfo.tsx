@@ -8,10 +8,17 @@ import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-r
 import { useTranslations, useLocale } from 'next-intl'
 import { sortVisitLanguageLabels, visitMailLocaleToNotionSelectLabel } from '@/lib/visit-language'
 import { trackBooking } from '@/lib/meta'
+import {
+  VIP_GROUP_TYPE,
+  VIP_MAX_PEOPLE,
+  isVipGroupType,
+  vipSlotsForDate,
+  vipVisitPrice,
+} from '@/lib/vip-visit'
 
 export type VisitLanguageCode = 'et' | 'en' | 'ru'
 
-export type BookedSlotEntry = { time: string; guests: number | null; languages: string[] }
+export type BookedSlotEntry = { time: string; guests: number | null; languages: string[]; vip?: boolean }
 
 function visitLanguageFromLocale(locale: string): VisitLanguageCode {
   if (locale === 'en') return 'en'
@@ -19,7 +26,7 @@ function visitLanguageFromLocale(locale: string): VisitLanguageCode {
   return 'et'
 }
 
-export default function StaticBookingInfo() {
+export default function StaticBookingInfo({ initialGroupType = '' }: { initialGroupType?: string }) {
   const t = useTranslations('StaticBookingInfo')
   const locale = useLocale()
   const dateFnsLocale = locale === 'ru' ? ru : locale === 'en' ? en : et
@@ -42,11 +49,12 @@ export default function StaticBookingInfo() {
     email: '',
     phone: '',
     groupSize: '',
-    groupType: '',
+    groupType: isVipGroupType(initialGroupType) ? VIP_GROUP_TYPE : '',
     visitLanguage: visitLanguageFromLocale(locale) as VisitLanguageCode,
     message: '',
     website: '',
   })
+  const isVip = isVipGroupType(formData.groupType)
   const calendarDays = eachDayOfInterval({
     start: startOfWeek(monthDate, { weekStartsOn: 1 }),
     end: endOfWeek(endOfMonth(monthDate), { weekStartsOn: 1 }),
@@ -88,13 +96,15 @@ export default function StaticBookingInfo() {
     () => bookedEntriesForSelectedDate.find((entry) => entry.time === selectedTime) || null,
     [bookedEntriesForSelectedDate, selectedTime]
   )
-  const minGroupSize = selectedBookingEntry ? 1 : 3
+  const minGroupSize = isVip ? 1 : selectedBookingEntry ? 1 : 3
   const remainingSeats = useMemo(() => {
+    if (isVip) return VIP_MAX_PEOPLE
     if (!selectedTime) return 20
     if (!selectedBookingEntry) return 20
+    if (selectedBookingEntry.vip) return 0
     if (selectedBookingEntry.guests === null) return null
     return Math.max(0, 20 - selectedBookingEntry.guests)
-  }, [selectedBookingEntry, selectedTime])
+  }, [selectedBookingEntry, selectedTime, isVip])
   const formatJoinPlaces = (remaining: number | null) => {
     if (remaining === null) return t('guestsNotSet')
     return t('joinPlaces', { count: remaining })
@@ -116,7 +126,7 @@ export default function StaticBookingInfo() {
   }, [bookedTimesForSelectedDate, timeSlots])
   const fullSlots = useMemo(() => {
     return bookedEntriesForSelectedDate
-      .filter((e) => e.guests !== null && e.guests >= 20)
+      .filter((e) => e.vip || (e.guests !== null && e.guests >= 20))
       .map((e) => e.time)
   }, [bookedEntriesForSelectedDate])
 
@@ -133,11 +143,19 @@ export default function StaticBookingInfo() {
       if (!isSelectedToday) return true
       return isBefore(now, addMinutes(slotStart, -30))
     }
+    const vipAllowed = isVip && selectedDate ? vipSlotsForDate(format(selectedDate, 'yyyy-MM-dd')) : null
     return timeSlots.filter((time) => {
+      if (vipAllowed && !vipAllowed.includes(time)) return false
       if (restBlockedTimes.includes(time)) return false
       if (fullSlots.includes(time)) return false
       const bookedEntry = bookedEntriesForSelectedDate.find((e) => e.time === time)
-      if (bookedEntry) {
+      if (bookedEntry?.vip) return false
+      if (isVip) {
+        const occupied =
+          Boolean(bookedEntry) &&
+          (bookedEntry!.vip || bookedEntry!.guests === null || (bookedEntry!.guests ?? 0) > 0)
+        if (occupied) return false
+      } else if (bookedEntry) {
         const remaining = bookedEntry.guests === null ? null : Math.max(0, 20 - bookedEntry.guests)
         if (remaining === 0) return false
         return remaining !== null && remaining > 0 && canJoinSlot(time)
@@ -150,7 +168,7 @@ export default function StaticBookingInfo() {
       const cutoff = addMinutes(slotStart, -30)
       return isBefore(now, cutoff)
     })
-  }, [restBlockedTimes, selectedDate, timeSlots, fullSlots, bookedEntriesForSelectedDate])
+  }, [restBlockedTimes, selectedDate, timeSlots, fullSlots, bookedEntriesForSelectedDate, isVip])
 
   const isJoinableTime = (time: string) => {
     if (!selectedDate) return false
@@ -172,8 +190,19 @@ export default function StaticBookingInfo() {
       document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     })
   }
+  const displayedTimeSlots = useMemo(() => {
+    if (!isVip || !selectedDate) return timeSlots
+    return vipSlotsForDate(format(selectedDate, 'yyyy-MM-dd'))
+  }, [isVip, selectedDate, timeSlots])
+  const vipPricePreview = isVip ? vipVisitPrice(Number(formData.groupSize)) : null
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value }
+      return next
+    })
+    if (field === 'groupType') {
+      setSelectedTime(null)
+    }
   }
   const normalizeEstonianPhone = (value: string) => {
     const trimmed = value.trim()
@@ -199,10 +228,19 @@ export default function StaticBookingInfo() {
         throw new Error(`HTTP ${response.status}`)
       }
       const data = await response.json()
-      const grouped: Record<string, Record<string, { guests: number | null; languages: Set<string> }>> = {}
+      const grouped: Record<
+        string,
+        Record<string, { guests: number | null; languages: Set<string>; vip: boolean }>
+      > = {}
       const bookings = Array.isArray(data?.bookings) ? data.bookings : []
       bookings.forEach(
-        (booking: { date?: string; time?: string | null; guests?: number | null; languages?: string[] }) => {
+        (booking: {
+          date?: string
+          time?: string | null
+          guests?: number | null
+          languages?: string[]
+          vip?: boolean
+        }) => {
           if (!booking?.date) return
           const key = booking.date.split('T')[0]
           if (!grouped[key]) grouped[key] = {}
@@ -213,10 +251,12 @@ export default function StaticBookingInfo() {
             grouped[key][timeKey] = {
               guests: guestsValue,
               languages: new Set(langArr),
+              vip: Boolean(booking.vip),
             }
           } else {
             const cell = grouped[key][timeKey]
             langArr.forEach((l) => cell.languages.add(l))
+            if (booking.vip) cell.vip = true
             if (cell.guests !== null && guestsValue !== null) {
               cell.guests = cell.guests + guestsValue
             } else {
@@ -232,6 +272,7 @@ export default function StaticBookingInfo() {
             time,
             guests: cell.guests,
             languages: sortVisitLanguageLabels(Array.from(cell.languages)),
+            vip: cell.vip,
           }))
           .sort((a, b) => {
             if (a.time === 'Määramata') return 1
@@ -280,7 +321,11 @@ export default function StaticBookingInfo() {
       toast.error(t('errorEnterGroupSize'))
       return
     }
-    if (remainingSeats !== null && groupSizeNum > remainingSeats) {
+    if (isVip && (groupSizeNum < 1 || groupSizeNum > VIP_MAX_PEOPLE || vipVisitPrice(groupSizeNum) == null)) {
+      toast.error(t('errorVipPeople'))
+      return
+    }
+    if (!isVip && remainingSeats !== null && groupSizeNum > remainingSeats) {
       toast.error(t('errorSeatsLeft', { count: remainingSeats }))
       return
     }
@@ -300,17 +345,18 @@ export default function StaticBookingInfo() {
           ...formData,
           date: selectedDateValue,
           timeSlot: selectedTime,
-          joinExisting: Boolean(selectedBookingEntry),
+          joinExisting: isVip ? false : Boolean(selectedBookingEntry),
         }),
       })
 
       const result = await response.json()
 
       if (response.ok) {
+        const trackingValue = isVip ? vipVisitPrice(groupSizeNum) ?? groupSizeNum * 10 : groupSizeNum * 10
         void trackBooking({
           email: formData.email.trim(),
           phone: formData.phone.trim(),
-          value: groupSizeNum * 10,
+          value: trackingValue,
         })
         setSubmitMessage(result.message || t('submitSuccess'))
         setFormData({
@@ -318,7 +364,7 @@ export default function StaticBookingInfo() {
           email: '',
           phone: '',
           groupSize: '',
-          groupType: '',
+          groupType: isVip ? VIP_GROUP_TYPE : '',
           visitLanguage: visitLanguageFromLocale(locale),
           message: '',
           website: '',
@@ -337,12 +383,14 @@ export default function StaticBookingInfo() {
                       ...e,
                       guests: (e.guests ?? 0) + groupSizeNum,
                       languages: sortVisitLanguageLabels([...e.languages, notionLang]),
+                      vip: e.vip || isVip,
                     }
                   : e
               )
-            : [...entries, { time: selectedTime, guests: groupSizeNum, languages: [notionLang] }].sort((a, b) =>
-                a.time.localeCompare(b.time)
-              )
+            : [
+                ...entries,
+                { time: selectedTime, guests: groupSizeNum, languages: [notionLang], vip: isVip },
+              ].sort((a, b) => a.time.localeCompare(b.time))
           return { ...prev, [key]: newEntries }
         })
         loadBookings()
@@ -408,15 +456,35 @@ export default function StaticBookingInfo() {
 
           <div className="mb-6 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
             <p className="font-semibold mb-1">{t('selectDateAndTime')}</p>
-            <p className="text-warm-gray-600">{t('typicalTimes')}</p>
+            <p className="text-warm-gray-600">{isVip ? t('vipTimesHint') : t('typicalTimes')}</p>
             <div className="h-2" />
             <blockquote className="border-l-2 border-papagoi-green/40 pl-3 text-warm-gray-600 italic">
               {t('parrotsRestQuote')}
             </blockquote>
             <div className="h-2" />
             <p className="rounded-md border border-papagoi-orange/40 bg-papagoi-orange-50 px-3 py-2 font-medium text-papagoi-orange-800">
-              {t('morningTip')}
+              {isVip ? t('vipGiftCardNote') : t('morningTip')}
             </p>
+          </div>
+
+          <div className="mb-6 space-y-2">
+            <label htmlFor="booking-group-type-top" className="text-sm font-semibold text-deep-anthracite">
+              {t('labelGroupType')}
+            </label>
+            <select
+              id="booking-group-type-top"
+              value={formData.groupType}
+              onChange={(event) => handleInputChange('groupType', event.target.value)}
+              className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base bg-white"
+            >
+              <option value="">{t('groupTypePlaceholder')}</option>
+              <option value="perevisit">{t('groupTypeFamily')}</option>
+              <option value="kool">{t('groupTypeSchool')}</option>
+              <option value="ettevote">{t('groupTypeBusiness')}</option>
+              <option value="muu">{t('groupTypeOther')}</option>
+              <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
+            </select>
+            {isVip && <p className="text-sm text-deep-anthracite">{t('vipHint')}</p>}
           </div>
 
           {bookingsLoadError && !isLoadingBookings && (
@@ -513,11 +581,11 @@ export default function StaticBookingInfo() {
               </div>
 
               <div className="mb-4 rounded-lg border border-papagoi-green/20 bg-papagoi-beige-100 p-3 text-sm text-deep-anthracite">
-                {t('nbTimes')}
+                {isVip ? t('vipNbTimes') : t('nbTimes')}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
-                {timeSlots.map((time) => {
+                {displayedTimeSlots.map((time) => {
                   const isActive = selectedTime === time
                   const isBooked = bookedTimesForSelectedDate.includes(time)
                   const isRestBlocked = restBlockedTimes.includes(time)
@@ -529,7 +597,15 @@ export default function StaticBookingInfo() {
                       type="button"
                       onClick={() => handleTimeClick(time)}
                       disabled={disabled}
-                      title={isBooked ? t('titleBooked') : isRestBlocked ? t('titleRestBlocked') : undefined}
+                      title={
+                        bookedEntriesForSelectedDate.find((e) => e.time === time)?.vip
+                          ? t('titleVipBlocked')
+                          : isBooked
+                            ? t('titleBooked')
+                            : isRestBlocked
+                              ? t('titleRestBlocked')
+                              : undefined
+                      }
                       className={[
                         'min-h-[44px] px-3 sm:px-4 py-2 rounded-lg border font-semibold transition-colors touch-manipulation',
                         disabled ? 'border-warm-gray-200 text-warm-gray-400 bg-warm-gray-50 cursor-not-allowed' : '',
@@ -550,8 +626,14 @@ export default function StaticBookingInfo() {
                   <p className="text-xs text-warm-gray-600 mt-1 mb-3 leading-relaxed">{t('bookedSlotsLanguageIntro')}</p>
                   <div className="space-y-2">
                     {bookedEntriesForSelectedDate.map((entry) => {
-                      const remaining = entry.guests === null ? null : Math.max(0, 20 - entry.guests)
+                      const remaining = entry.vip
+                        ? 0
+                        : entry.guests === null
+                          ? null
+                          : Math.max(0, 20 - entry.guests)
                       const canJoin =
+                        !isVip &&
+                        !entry.vip &&
                         entry.time !== 'Määramata' &&
                         remaining !== null &&
                         remaining > 0 &&
@@ -563,6 +645,11 @@ export default function StaticBookingInfo() {
                         >
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                             <span className="text-sm font-semibold text-deep-anthracite">{entry.time}</span>
+                            {entry.vip && (
+                              <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-800">
+                                {t('vipSlotLabel')}
+                              </span>
+                            )}
                             {entry.languages.length > 0 && (
                               <span className="text-xs text-warm-gray-700">
                                 <span className="font-semibold text-deep-anthracite">{t('bookedSlotLanguagesLabel')}:</span>{' '}
@@ -662,14 +749,20 @@ export default function StaticBookingInfo() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="booking-group-size" className="text-sm font-semibold text-deep-anthracite">
-                        {t('labelGroupSize')}{minGroupSize === 3 ? ` (${t('labelGroupSizeMin', { min: 3 })})` : ` (${t('labelGroupSizeMinOne')})`} *
+                        {t('labelGroupSize')}
+                        {isVip
+                          ? ` (${t('labelGroupSizeVip')})`
+                          : minGroupSize === 3
+                            ? ` (${t('labelGroupSizeMin', { min: 3 })})`
+                            : ` (${t('labelGroupSizeMinOne')})`}{' '}
+                        *
                       </label>
                       <input
                         id="booking-group-size"
                         type="number"
                         inputMode="numeric"
                         min={minGroupSize}
-                        max={remainingSeats ?? 50}
+                        max={isVip ? VIP_MAX_PEOPLE : remainingSeats ?? 50}
                         value={formData.groupSize}
                         onChange={(event) => handleInputChange('groupSize', event.target.value)}
                         placeholder={t('placeholderGroupSize')}
@@ -677,8 +770,11 @@ export default function StaticBookingInfo() {
                         className="w-full min-h-[44px] rounded-lg border border-warm-gray-200 px-3 py-2 text-base"
                       />
                       <p className="text-xs text-warm-gray-500">
-                        {t('minGroupSize', { min: minGroupSize })}
-                        {remainingSeats !== null ? ` • ${t('freePlaces', { count: remainingSeats })}` : ''}
+                        {isVip
+                          ? t('vipGroupSizeHint')
+                          : `${t('minGroupSize', { min: minGroupSize })}${
+                              remainingSeats !== null ? ` • ${t('freePlaces', { count: remainingSeats })}` : ''
+                            }`}
                       </p>
                     </div>
                   </div>
@@ -714,6 +810,7 @@ export default function StaticBookingInfo() {
                         <option value="kool">{t('groupTypeSchool')}</option>
                         <option value="ettevote">{t('groupTypeBusiness')}</option>
                         <option value="muu">{t('groupTypeOther')}</option>
+                        <option value={VIP_GROUP_TYPE}>{t('groupTypeVip')}</option>
                       </select>
                     </div>
                     <div className="space-y-2 w-full">
@@ -761,6 +858,18 @@ export default function StaticBookingInfo() {
                       autoComplete="off"
                     />
                   </div>
+
+                  {isVip && vipPricePreview != null && (
+                    <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
+                      <p className="text-sm font-semibold text-indigo-900">
+                        {t('vipPricePreview', { price: vipPricePreview })}
+                      </p>
+                      <p className="mt-1 text-xs text-indigo-800">{t('vipGiftCardNote')}</p>
+                    </div>
+                  )}
+                  {isVip && vipPricePreview == null && Number(formData.groupSize) > 0 && (
+                    <p className="text-sm text-papagoi-red">{t('errorVipPeople')}</p>
+                  )}
 
                   <label className="flex items-start gap-3 text-sm text-warm-gray-700">
                     <input

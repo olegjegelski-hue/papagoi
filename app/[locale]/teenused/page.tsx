@@ -9,6 +9,7 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
+import { VIP_PRICE_TIERS } from '@/lib/vip-visit'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -68,6 +69,14 @@ export default async function TeenusedPage({ params }: Props) {
       <Link href="/broneeri" className="papagoi-cta text-white shadow-2xl">
         <Calendar className="w-5 h-5" aria-hidden />
         <span>{t('ctaBook')}</span>
+      </Link>
+    </div>
+  )
+  const vipBookButton = (
+    <div className="flex justify-center mt-8">
+      <Link href="/broneeri?group=vip" className="papagoi-cta text-white shadow-2xl">
+        <Calendar className="w-5 h-5" aria-hidden />
+        <span>{t('ctaBookVip')}</span>
       </Link>
     </div>
   )
@@ -138,7 +147,7 @@ export default async function TeenusedPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
+          <div id="vip" className="scroll-mt-[12.5rem] bg-papagoi-beige-100 border border-papagoi-beige-200 rounded-2xl shadow-2xl overflow-hidden mb-12">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('vipTitle')}</h2>
               <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8 mb-4">
@@ -172,11 +181,21 @@ export default async function TeenusedPage({ params }: Props) {
                     ))}
                   </ul>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <p className="text-gray-700">{t('vipPrice')}</p>
+                <div className="bg-blue-50 rounded-xl p-4 mb-4">
+                  <h4 className="font-semibold mb-3 text-indigo-700">{t('vipPriceTitle')}</h4>
+                  <ul className="space-y-2 text-gray-700">
+                    {VIP_PRICE_TIERS.map((tier) => (
+                      <li key={`${tier.min}-${tier.max}`}>
+                        {t('vipPriceTier', { min: tier.min, max: tier.max, price: tier.price })}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-indigo-50 rounded-xl p-4">
+                  <p className="text-gray-700">{t('vipTimes')}</p>
                 </div>
               </div>
-              {bookButton}
+              {vipBookButton}
             </div>
           </div>
 

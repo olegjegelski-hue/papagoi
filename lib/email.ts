@@ -11,14 +11,22 @@ import {
   getBookingEmailCopy,
   getConfirmationEmailCopy,
   getGiftCardOrderEmailCopy,
+  getVipBookingEmailCopy,
+  getVipConfirmationEmailCopy,
   visitLanguageLabelForEmail,
 } from '@/lib/email-i18n'
+import { isVipGroupType } from '@/lib/vip-visit'
 
 const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
 const CALENDAR_LOCATION = 'Tartu mnt 80, Soinaste, Kambja vald'
 
-function buildCalendarUrls(startIso: string, endIso: string, locale: VisitMailLocale = 'et') {
-  const cal = calendarStrings(locale)
+function buildCalendarUrls(
+  startIso: string,
+  endIso: string,
+  locale: VisitMailLocale = 'et',
+  vip = false
+) {
+  const cal = calendarStrings(locale, vip)
   const start = new Date(startIso)
   const end = new Date(endIso)
   const toGoogleFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
@@ -174,7 +182,8 @@ export async function sendBookingEmail(data: {
   try {
     const transporter = createTransporter()
     const locale = data.visitLanguage ?? 'et'
-    const copy = getBookingEmailCopy(locale)
+    const isVip = isVipGroupType(data.groupType)
+    const copy = isVip ? getVipBookingEmailCopy(locale) : getBookingEmailCopy(locale)
     const tsLocale = locale === 'en' ? 'en-GB' : locale === 'ru' ? 'ru-RU' : 'et-EE'
 
     const formattedDate = data.date ? formatVisitDateLongFromDate(data.date, locale) : ''
@@ -302,11 +311,12 @@ export async function sendConfirmationEmail(data: {
   adminOnly?: boolean
   /** Külastuse keel Notionist / broneeringust – määrab meili keele */
   locale?: VisitMailLocale
+  vip?: boolean
 }) {
   try {
     const transporter = createTransporter()
     const locale = data.locale ?? 'et'
-    const cr = getConfirmationEmailCopy(locale)
+    const cr = data.vip ? getVipConfirmationEmailCopy(locale) : getConfirmationEmailCopy(locale)
     const tsLocale = locale === 'en' ? 'en-GB' : locale === 'ru' ? 'ru-RU' : 'et-EE'
 
     const guestName =
@@ -327,7 +337,7 @@ export async function sendConfirmationEmail(data: {
 
     const calendarUrls =
       data.calendarStartIso && data.calendarEndIso
-        ? buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale)
+        ? buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale, Boolean(data.vip))
         : null
     const calendarSection = calendarUrls
       ? `
@@ -422,7 +432,7 @@ export async function sendConfirmationEmail(data: {
     const calendarText =
       data.calendarStartIso && data.calendarEndIso
         ? (() => {
-            const urls = buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale)
+            const urls = buildCalendarUrls(data.calendarStartIso, data.calendarEndIso, locale, Boolean(data.vip))
             return `\n${cr.calendarTextIntro}\n* Google Calendar: ${urls.googleUrl}\n* Outlook: ${urls.outlookUrl}\n* ${cr.ics}: ${urls.icsUrl}\n`
           })()
         : ''

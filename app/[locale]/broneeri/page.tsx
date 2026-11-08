@@ -1,4 +1,5 @@
 import StaticBookingInfo from '@/components/StaticBookingInfo'
+import { groupTypeFromQuery } from '@/lib/vip-visit'
 import GiftCardCTA from '@/components/GiftCardCTA'
 import { Calendar, Users, Clock, Euro, Phone, AlertCircle } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -6,7 +7,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
-type Props = { params: Promise<{ locale: string }> }
+type Props = {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
@@ -41,10 +45,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function BookingPage({ params }: Props) {
+export default async function BookingPage({ params, searchParams }: Props) {
   const { locale } = await params
+  const sp = await searchParams
   setRequestLocale(locale)
   const t = await getTranslations('BroneeriPage')
+  const initialGroupType =
+    groupTypeFromQuery(sp.group) || groupTypeFromQuery(sp.type) || groupTypeFromQuery(sp.groupType)
 
   return (
     <div className="min-h-screen bg-papagoi-beige-50 pt-8 sm:pt-12 pb-28 sm:pb-20">
@@ -58,7 +65,7 @@ export default async function BookingPage({ params }: Props) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           <div className="lg:col-span-2 min-w-0">
-            <StaticBookingInfo />
+            <StaticBookingInfo initialGroupType={initialGroupType} />
           </div>
 
           <div className="space-y-8">

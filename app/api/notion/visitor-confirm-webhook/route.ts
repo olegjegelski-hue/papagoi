@@ -7,6 +7,7 @@ import {
   parseVisitMailLocale,
   type VisitMailLocale,
 } from '@/lib/visit-language'
+import { extractVipFlag, vipVisitPrice } from '@/lib/vip-visit'
 
 export const dynamic = 'force-dynamic'
 
@@ -349,6 +350,7 @@ export async function POST(request: NextRequest) {
     let dateForSubject = ''
     let calendarStartIso: string | undefined
     let calendarEndIso: string | undefined
+    let visitIsVip = extractVipFlag(props)
     let debugVisit: Record<string, unknown> | undefined
     let debugVisitRaw: Record<string, unknown> | undefined
 
@@ -371,6 +373,7 @@ export async function POST(request: NextRequest) {
       if (visitPageRes.ok) {
         const visitPage = await visitPageRes.json()
         const visitProps = visitPage.properties || {}
+        visitIsVip = extractVipFlag(visitProps) || visitIsVip
 
         // Kuupäev: otsi Kuupäev, Date või esimene date-tüüpi tulp
         const datePropName =
@@ -499,12 +502,16 @@ export async function POST(request: NextRequest) {
           date: dateStr,
           timeSlot,
           groupSize: groupSize ?? undefined,
-          price: price ?? undefined,
+          price:
+            visitIsVip && groupSize != null
+              ? vipVisitPrice(groupSize) ?? price ?? undefined
+              : price ?? undefined,
           dateForSubject: dateForSubject || undefined,
           calendarStartIso,
           calendarEndIso,
           cc: ADMIN_EMAIL,
           locale: mailLocale,
+          vip: visitIsVip,
         })
       } catch (err: any) {
         console.error('[visitor-confirm-webhook] Email send failed:', err)
@@ -555,12 +562,16 @@ export async function POST(request: NextRequest) {
           date: dateStr,
           timeSlot,
           groupSize: groupSize ?? undefined,
-          price: price ?? undefined,
+          price:
+            visitIsVip && groupSize != null
+              ? vipVisitPrice(groupSize) ?? price ?? undefined
+              : price ?? undefined,
           dateForSubject: dateForSubject || undefined,
           calendarStartIso,
           calendarEndIso,
           adminOnly: true,
           locale: mailLocale,
+          vip: visitIsVip,
         })
       } catch {
         /* ignore */

@@ -7,6 +7,7 @@ import {
   parseVisitMailLocale,
   type VisitMailLocale,
 } from '@/lib/visit-language'
+import { extractVipFlag, vipVisitPrice } from '@/lib/vip-visit'
 
 export const dynamic = 'force-dynamic'
 
@@ -163,6 +164,17 @@ export async function GET(request: NextRequest) {
     let timeSlot: string | undefined
     let calendarStartIso: string | undefined
     let calendarEndIso: string | undefined
+    let visitIsVip = extractVipFlag(props)
+    const arvProp = Object.keys(props).find((k) => {
+      const n = normalizeKey(k)
+      return n === 'arv' && (props[k]?.type === 'number' || props[k]?.type === 'formula')
+    })
+    const groupSize =
+      arvProp && typeof props[arvProp]?.number === 'number'
+        ? props[arvProp].number
+        : arvProp && typeof props[arvProp]?.formula?.number === 'number'
+          ? props[arvProp].formula.number
+          : undefined
 
     if (visitId) {
       const visitPageRes = await fetchNotion(`https://api.notion.com/v1/pages/${visitId.replace(/-/g, '')}`, {
@@ -175,6 +187,7 @@ export async function GET(request: NextRequest) {
       if (visitPageRes.ok) {
         const visitPage = await visitPageRes.json()
         const visitProps = visitPage.properties || {}
+        visitIsVip = extractVipFlag(visitProps) || visitIsVip
         const datePropName = Object.keys(visitProps).find((k) =>
           visitProps[k]?.type === 'date' && (normalizeKey(k).includes('kuupaev') || normalizeKey(k) === 'kuupaev')
         ) || Object.keys(visitProps).find((k) => visitProps[k]?.type === 'date')
@@ -234,10 +247,13 @@ export async function GET(request: NextRequest) {
       email,
       date: dateStr,
       timeSlot,
+      groupSize,
+      price: visitIsVip && groupSize != null ? vipVisitPrice(groupSize) ?? undefined : undefined,
       calendarStartIso,
       calendarEndIso,
       cc: 'keskus@papagoi.ee',
       locale: mailLocale,
+      vip: visitIsVip,
     })
 
     return new NextResponse(SUCCESS_HTML, {
