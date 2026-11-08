@@ -36,7 +36,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 ## 3. Peamised süsteemid (mis juba töötab)
 
 - **Broneering:** vorm → Notion Visits/Visitors → kinnitusmeilid → webhook/kinnitusvoog; kalendrilingid
-  - VIP külastus: privaatne slot 1–20 inimest, hinnaastmed, ajad (E–R 10–18, L/P ja riigipühad 10:00 või 18:00), sloti kahepoolne blokk Notioni välja „VIP külastus“ (Külastused) järgi, eraldi VIP kirjad ET/EN/RU — kogu loogika failis `lib/vip-visit.ts`. Notioni Külastajad → Summa jääb Arv × 10 (VIP hinda koodist Notionisse ei kirjutata).
+  - VIP külastus: privaatne slot 1–20 inimest, hinnaastmed, kestus 45–60 min, ajad (E–R iga täistund 10–18, L/P ja riigipühad 10:00, 11:00 või 18:00; iga külastus sulgeb tunni enne ja pärast), sloti kahepoolne blokk Notioni välja „VIP külastus“ (Külastused) järgi, eraldi VIP kirjad ET/EN/RU — kogu loogika failis `lib/vip-visit.ts`. Notioni Külastajad → Summa jääb Arv × 10 (VIP hinda koodist Notionisse ei kirjutata).
 - **Kinkekaardid:** tellimusvorm → Notion + päringu e-kiri (IBAN/ülekande juhised) → admin väljastus → PNG/PDF render → trükileht `/[locale]/kinkekaart/truki?code=`
 - **Cron:** arvustuskutsed, SMS meeldetuletused, GMB sync, GMB vastused
 - **Sisu:** blogi, papagoid, teenused, külastajatele, i18n lehed
@@ -116,3 +116,5 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-11-04:** Äriüksus muudetud: PetsVilla OÜ → Papagoi Keskus MTÜ (reg nr 80647595). Saidi jaluse/privaatsuse/JSON-LD muudatus eraldi ülesandena.
 - **2026-11-04:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`)
 - **2026-11-08:** Lisatud VIP külastus (§3 Broneering) — PR #1, commit f8ed1a3. Uus fail `lib/vip-visit.ts` (hinnaastmed, riigipühad, VIP slotireeglid); `lib/notion-booking.ts` normalizeKey teisendab ä/ö/ü/õ.
+- **2026-11-08:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #2, commit fd8cd6c.
+- **2026-11-08:** VIP ajad ja kestus uuendatud (§3) — PR #3, commit 8a23746: tööpäeviti iga täistund 10–18, L/P ja riigipühad 10/11/18, kestus 45–60 min, kinkekaardi piirang VIP-ilt eemaldatud.
