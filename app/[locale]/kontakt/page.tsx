@@ -4,6 +4,7 @@ import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
+import ScrollToHash from '@/components/ScrollToHash'
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
@@ -76,6 +77,7 @@ export default async function ContactPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
+      <ScrollToHash />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -151,7 +153,9 @@ export default async function ContactPage({ params }: Props) {
               </div>
             </div>
           </div>
-          <ContactForm />
+          <div id="kirjuta" className="scroll-mt-[12.5rem]">
+            <ContactForm />
+          </div>
         </div>
 
         <div className="mb-16">

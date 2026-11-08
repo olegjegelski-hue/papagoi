@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Heart, ChevronUp, ChevronDown } from 'lucide-react'
 import { trackDonationSubmit } from '@/lib/meta-pixel'
@@ -28,6 +28,11 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
   const t = useTranslations('DonationForm')
   const parsedInitial = parseDonationPurpose(initialPurpose)
   const [purpose, setPurpose] = useState<DonationPurpose | ''>(parsedInitial ?? '')
+
+  useEffect(() => {
+    const parsed = parseDonationPurpose(initialPurpose)
+    if (parsed) setPurpose(parsed)
+  }, [initialPurpose])
   const [amount, setAmount] = useState<number>(10)
   const [submitted, setSubmitted] = useState(false)
   const [orderCode, setOrderCode] = useState('')

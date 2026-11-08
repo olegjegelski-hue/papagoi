@@ -1,4 +1,4 @@
-import { Calendar, Info, Phone } from 'lucide-react'
+import { Calendar, Info, Mail, Phone } from 'lucide-react'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation'
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
 import ScrollToHash from '@/components/ScrollToHash'
 import { MUNICIPALITIES } from '@/lib/municipalities'
+import ToetusedDonationBlock, { GiftDonateLink } from './donation-block'
 import {
   LEARNING_PROGRAMS,
   PROGRAM_STAGES,
@@ -22,7 +23,6 @@ const PROGRAMS_URL = 'https://keskkonnaharidus.ee/et/oppeprogrammid'
 const GROUP_PHOTO = 'https://cdn.abacus.ai/images/6974aef7-abf0-4482-b928-511e386f539e.png'
 const PHONE_TEL = 'tel:+3725127938'
 const PHONE_DISPLAY = '+372 512 7938'
-const EMAIL = 'keskus@papagoi.ee'
 const STATUTE_HREF = '/dokumendid/papagoi-keskus-mtu-pohikiri-2026-05-19.pdf'
 const ARIREGISTER_ET = 'https://ariregister.rik.ee/est/company/80647595'
 const ARIREGISTER_EN = 'https://ariregister.rik.ee/eng/company/80647595'
@@ -100,9 +100,12 @@ function StepGrid({ steps }: { steps: StepCopy[] }) {
             )}
             {step.action === 'write' && (
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <a href={`mailto:${EMAIL}`} className="font-semibold text-papagoi-green hover:underline">
-                  {EMAIL}
-                </a>
+                <Link
+                  href={{ pathname: '/kontakt', hash: 'kirjuta' }}
+                  className="font-semibold text-papagoi-green hover:underline"
+                >
+                  {step.title} →
+                </Link>
                 <a href={PHONE_TEL} className="font-semibold text-papagoi-red hover:underline">
                   {PHONE_DISPLAY}
                 </a>
@@ -257,9 +260,9 @@ export default async function ToetusegaPage({ params }: Props) {
                 <p className="text-gray-700 leading-relaxed">
                   {t.rich('muniTip', {
                     mail: (chunks) => (
-                      <a href={`mailto:${EMAIL}`} className={textLink}>
+                      <Link href={{ pathname: '/kontakt', hash: 'kirjuta' }} className={textLink}>
                         {chunks}
-                      </a>
+                      </Link>
                     ),
                   })}
                 </p>
@@ -317,14 +320,13 @@ export default async function ToetusegaPage({ params }: Props) {
             <div className="mb-8">
               <StepGrid steps={giftSteps} />
             </div>
-            {/* Hiljem: Montonio annetuse nupp siia, enne „Kirjuta meile“. */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/annetus?purpose=kingi" className="papagoi-cta inline-flex items-center justify-center">
+              <GiftDonateLink
+                purpose="kingi"
+                className="papagoi-cta inline-flex items-center justify-center"
+              >
                 {t('giftDonateCta')}
-              </Link>
-              <a href={`mailto:${EMAIL}`} className="papagoi-cta inline-flex items-center justify-center">
-                {t('giftCta')}
-              </a>
+              </GiftDonateLink>
             </div>
           </section>
 
@@ -346,11 +348,7 @@ export default async function ToetusegaPage({ params }: Props) {
                   <dt className="font-semibold text-gray-800 sm:w-40 shrink-0">{t('whoContactLabel')}</dt>
                   <dd className="text-gray-700">
                     {t.rich('whoContact', {
-                      mail: (chunks) => (
-                        <a href={`mailto:${EMAIL}`} className={textLink}>
-                          {chunks}
-                        </a>
-                      ),
+                      mail: (chunks) => chunks,
                       phone: (chunks) => (
                         <a href={PHONE_TEL} className={textLink}>
                           {chunks}
@@ -384,6 +382,7 @@ export default async function ToetusegaPage({ params }: Props) {
                 </p>
               </div>
             </div>
+            <ToetusedDonationBlock title={t('donateSectionTitle')} />
             <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('whoDonationsTitle')}</h3>
             <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
               <p>{t('whoDonationsHonest')}</p>
@@ -398,6 +397,13 @@ export default async function ToetusegaPage({ params }: Props) {
               <Link href="/broneeri" className="papagoi-cta-white inline-flex items-center justify-center">
                 <Calendar className="w-5 h-5 mr-2" />
                 {t('ctaBook')}
+              </Link>
+              <Link
+                href={{ pathname: '/kontakt', hash: 'kirjuta' }}
+                className="papagoi-cta-outline inline-flex items-center justify-center"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                {t('ctaWrite')}
               </Link>
               <a href={PHONE_TEL} className="papagoi-cta-outline inline-flex items-center justify-center">
                 <Phone className="w-5 h-5 mr-2" />
