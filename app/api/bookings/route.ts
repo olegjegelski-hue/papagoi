@@ -1,12 +1,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sendBookingEmail } from '@/lib/email';
-import { findOrCreateVisit, createVisitor } from '@/lib/notion-booking';
+import { reserveVisitSlot, createVisitor } from '@/lib/notion-booking';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { errorResponse } from '@/lib/errors';
 import { captureError } from '@/lib/sentry';
 import { isAllowedOrigin } from '@/lib/origin';
 import { cleanText } from '@/lib/sanitize';
+import {
+  VIP_MAX_PEOPLE,
+  VIP_MIN_PEOPLE,
+  isVipGroupType,
+  isVipTimeAllowed,
+  vipVisitPrice,
+} from '@/lib/vip-visit';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,16 +34,18 @@ async function saveBookingToNotion(payload: {
   message?: string;
   totalPrice?: number;
   visitLanguage?: 'et' | 'en' | 'ru';
-}) {
+  vip?: boolean;
+}): Promise<{ ok: true } | { ok: false; reason: 'SLOT_VIP' | 'SLOT_OCCUPIED' | 'NOTION_ERROR' }> {
   try {
-    const visitId = await findOrCreateVisit({
+    const reserved = await reserveVisitSlot({
       date: payload.date || '',
       timeSlot: payload.timeSlot,
       totalPrice: payload.totalPrice,
+      vip: payload.vip,
     });
-    if (!visitId) return;
-    await createVisitor({
-      visitPageId: visitId,
+    if (!reserved.ok) return reserved;
+    const created = await createVisitor({
+      visitPageId: reserved.visitId,
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
@@ -46,8 +55,11 @@ async function saveBookingToNotion(payload: {
       totalPrice: payload.totalPrice,
       visitLanguage: payload.visitLanguage,
     });
+    if (!created) return { ok: false, reason: 'NOTION_ERROR' };
+    return { ok: true };
   } catch (err) {
     console.error('Notion broneering salvestamine ebaõnnestus:', err);
+    return { ok: false, reason: 'NOTION_ERROR' };
   }
 }
 
@@ -88,7 +100,8 @@ export async function POST(request: NextRequest) {
       website: cleanText(website, { max: 200 }),
     };
     const visitLanguage = parseVisitLanguage(rawVisitLanguage);
-    const isJoinRequest = Boolean(joinExisting);
+    const isVip = isVipGroupType(cleaned.groupType);
+    const isJoinRequest = isVip ? false : Boolean(joinExisting);
 
     // Validate required fields
     if (!cleaned.name || !cleaned.email || !cleaned.phone || !cleaned.groupSize) {
@@ -160,17 +173,84 @@ export async function POST(request: NextRequest) {
 
     // Validate group size
     const groupSizeNum = Number(cleaned.groupSize);
-    const minGroupSize = isJoinRequest ? 1 : 3;
+    const minGroupSize = isVip ? VIP_MIN_PEOPLE : isJoinRequest ? 1 : 3;
     if (isNaN(groupSizeNum) || groupSizeNum < minGroupSize) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', `Minimaalne grupi suurus on ${minGroupSize} inimest`),
         { status: 400 }
       );
     }
+    if (isVip && groupSizeNum > VIP_MAX_PEOPLE) {
+      return NextResponse.json(
+        errorResponse('VALIDATION_ERROR', `VIP külastusel on maksimaalselt ${VIP_MAX_PEOPLE} inimest`),
+        { status: 400 }
+      );
+    }
 
-    // Calculate total price (10€ inimene)
-    const basePrice = 10; // EUR per person
-    const totalPrice = groupSizeNum * basePrice;
+    const dateStr = /^\d{4}-\d{2}-\d{2}/.test(cleaned.date)
+      ? cleaned.date.slice(0, 10)
+      : bookingDate
+        ? bookingDate.toISOString().slice(0, 10)
+        : cleaned.date;
+
+    if (isVip) {
+      if (!cleaned.timeSlot || !dateStr || !isVipTimeAllowed(dateStr, cleaned.timeSlot)) {
+        return NextResponse.json(
+          errorResponse(
+            'VALIDATION_ERROR',
+            'VIP külastuseks palun valige lubatud aeg (tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel 10:00 või 18:00).'
+          ),
+          { status: 400 }
+        );
+      }
+    }
+
+    // Hind: tavakülastus 10€/inimene; VIP astmetabel (jagatud funktsioon)
+    const vipPrice = isVip ? vipVisitPrice(groupSizeNum) : null;
+    if (isVip && vipPrice == null) {
+      return NextResponse.json(
+        errorResponse('VALIDATION_ERROR', 'VIP külastuse inimeste arv peab olema 1–20'),
+        { status: 400 }
+      );
+    }
+    const totalPrice = isVip ? Number(vipPrice) : groupSizeNum * 10;
+
+    // Salvesta Notioni enne kirja — VIP/tavaslotti kontrollitakse uuesti submiti hetkel
+    if (dateStr) {
+      const saved = await saveBookingToNotion({
+        name: cleaned.name,
+        email: cleaned.email,
+        phone: cleaned.phone,
+        date: dateStr || undefined,
+        timeSlot: cleaned.timeSlot || undefined,
+        groupSize: groupSizeNum,
+        groupType: cleaned.groupType || undefined,
+        message: cleaned.message ? cleaned.message : undefined,
+        totalPrice: Number(totalPrice),
+        visitLanguage,
+        vip: isVip,
+      });
+      if (!saved.ok) {
+        if (saved.reason === 'SLOT_VIP') {
+          return NextResponse.json(
+            errorResponse(
+              'VALIDATION_ERROR',
+              'See aeg on VIP külastuseks suletud. Palun valige teine aeg.'
+            ),
+            { status: 409 }
+          );
+        }
+        if (saved.reason === 'SLOT_OCCUPIED') {
+          return NextResponse.json(
+            errorResponse(
+              'VALIDATION_ERROR',
+              'VIP külastust saab broneerida ainult täiesti tühjale ajale. Palun valige teine aeg.'
+            ),
+            { status: 409 }
+          );
+        }
+      }
+    }
 
     // Saada email
     await sendBookingEmail({
@@ -186,23 +266,6 @@ export async function POST(request: NextRequest) {
       bookingId: `BKG-${Date.now()}`,
       visitLanguage,
     });
-
-    // Salvesta Notioni (Külastused + Külastajad) – ei muuda olemasolevaid kirjeid
-    const dateStr = bookingDate ? bookingDate.toISOString().slice(0, 10) : cleaned.date;
-    if (dateStr) {
-      await saveBookingToNotion({
-      name: cleaned.name,
-      email: cleaned.email,
-      phone: cleaned.phone,
-      date: dateStr || undefined,
-      timeSlot: cleaned.timeSlot || undefined,
-      groupSize: groupSizeNum,
-      groupType: cleaned.groupType || undefined,
-      message: cleaned.message ? cleaned.message : undefined,
-      totalPrice: Number(totalPrice),
-      visitLanguage,
-    });
-    }
 
     return NextResponse.json(
       {
