@@ -27,6 +27,16 @@ export function trackGiftCardSubmit(params: { value: number }) {
   })
 }
 
+/** Annetus edukalt saadetud (ainult küpsistenõusoleku korral) */
+export function trackDonationSubmit(params: { value: number }) {
+  track('Donate', {
+    content_name: 'Annetus',
+    content_category: 'annetus',
+    value: params.value,
+    currency: 'EUR',
+  })
+}
+
 /** Klõps petsvilla.ee lingil */
 export function trackPetsVillaClick(source?: string) {
   track(

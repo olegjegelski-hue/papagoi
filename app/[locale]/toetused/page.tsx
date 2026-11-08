@@ -318,9 +318,14 @@ export default async function ToetusegaPage({ params }: Props) {
               <StepGrid steps={giftSteps} />
             </div>
             {/* Hiljem: Montonio annetuse nupp siia, enne „Kirjuta meile“. */}
-            <a href={`mailto:${EMAIL}`} className="papagoi-cta inline-flex items-center justify-center">
-              {t('giftCta')}
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/annetus?purpose=kingi" className="papagoi-cta inline-flex items-center justify-center">
+                {t('giftDonateCta')}
+              </Link>
+              <a href={`mailto:${EMAIL}`} className="papagoi-cta inline-flex items-center justify-center">
+                {t('giftCta')}
+              </a>
+            </div>
           </section>
 
           <section id="kesmeoleme" className="scroll-mt-[12.5rem] mb-16">

@@ -1,6 +1,7 @@
 
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
+import type { DonationPurpose } from '@/lib/donation'
 import type { VisitMailLocale } from '@/lib/visit-language'
 import {
   bookingGroupTypeLabel,
@@ -10,6 +11,8 @@ import {
   formatVisitDateForSubject,
   getBookingEmailCopy,
   getConfirmationEmailCopy,
+  donationAdminSubject,
+  getDonationEmailCopy,
   getGiftCardOrderEmailCopy,
   getVipBookingEmailCopy,
   getVipConfirmationEmailCopy,
@@ -660,5 +663,97 @@ Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
       { filename: `kinkekaart-${data.code}.png`, content: data.pngBuffer, contentType: 'image/png' },
       { filename: `kinkekaart-${data.code}.pdf`, content: data.pdfBuffer, contentType: 'application/pdf' },
     ],
+  })
+}
+
+export async function sendDonationEmail(data: {
+  to: string
+  donorName: string
+  amountEur: number
+  purpose: DonationPurpose
+  code: string
+  locale?: VisitMailLocale
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  const locale = data.locale ?? 'et'
+  const t = getDonationEmailCopy(locale)
+  const purposeLabel = t.purposes[data.purpose]
+  const refLine = t.referenceValue(data.code)
+  const subject = donationAdminSubject(data.code, data.amountEur, data.purpose)
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        ${t.title}
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">${t.greeting(data.donorName)}</p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.thanks}
+      </p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <p style="margin: 10px 0;"><strong>${t.purpose}</strong> ${purposeLabel}</p>
+        <p style="margin: 10px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
+      </div>
+      <p style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">${t.transferLead}</p>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; margin: 0 0 16px 0; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.iban}</strong> ${t.ibanValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>${t.reference}</strong> ${refLine}</p>
+      </div>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.afterTransfer}
+      </p>
+      <p style="font-size: 14px; color: #4b5563;">
+        ${t.questions.replace(
+          '+372 512 7938',
+          '<a href="tel:+3725127938">+372 512 7938</a>'
+        ).replace(
+          'keskus@papagoi.ee',
+          '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>'
+        )}
+      </p>
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">${t.regards}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${t.centre}</p>
+        <p style="margin: 5px 0;">${t.tel}</p>
+        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
+      </div>
+    </div>
+  `
+
+  const text = `
+${t.greetingText(data.donorName)}
+
+${t.thanks}
+
+${t.purpose} ${purposeLabel}
+${t.amount} ${data.amountEur} €
+
+${t.transferLead}
+${t.recipient} ${t.recipientValue}
+${t.iban} ${t.ibanValue}
+${t.amount} ${data.amountEur} €
+${t.reference} ${refLine}
+
+${t.afterTransfer}
+
+${t.questions}
+
+${t.regards}
+${t.centre}
+${t.tel}
+https://papagoi.ee/
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: data.to,
+    cc: centerEmail,
+    subject,
+    html,
+    text,
   })
 }

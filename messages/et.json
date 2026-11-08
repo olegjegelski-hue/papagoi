@@ -234,6 +234,73 @@
       "unknown": "Tellimus ebaõnnestus. Proovi uuesti."
     }
   },
+  "AnnetusPage": {
+    "metaTitle": "Anneta — toeta Papagoi Keskust | Papagoi Keskus",
+    "metaDescription": "Toeta Papagoi Keskust pangaülekandega. Kingi külastus, loomade toit või üldine toetus. Aitähkiri pangaandmetega tuleb e-postile.",
+    "title": "Anneta",
+    "intro": "Toeta Papagoi Keskuse tööd. Vali sihtotstarve ja summa, kinnita annetus ja tee ülekanne MTÜ arvele. Tänukiri pangaandmetega tuleb sinu e-postile.",
+    "formTitle": "Annetus Papagoi Keskusele",
+    "howItWorks": "Kuidas see töötab?",
+    "step1Title": "Vali sihtotstarve ja summa",
+    "step1Desc": "Kingi külastus, loomade toit või üldine toetus. Summa 10 € sammuga.",
+    "step2Title": "Täida vorm",
+    "step2Desc": "Saadame e-kirjaga pangaandmed (saaja, IBAN, summa, selgitus).",
+    "step3Title": "Tee ülekanne",
+    "step3Desc": "Pärast ülekannet vasta kirjale, et saaksime laekumise kinnitada.",
+    "questions": "Küsimused?"
+  },
+  "DonationForm": {
+    "successTitle": "Aitäh annetuse eest! 💛",
+    "successBody": "Saatsime teie e-postile tänukirja ja ülekande juhised (saaja, IBAN, summa, selgitus). Palun tehke ülekanne ja vastake kirjale — siis saame laekumise kinnitada. Kui kirja kohe ei näe, vaadake ka rämpsposti.",
+    "transferLead": "Palume teha ülekanne:",
+    "recipient": "Saaja:",
+    "recipientValue": "Papagoi Keskus MTÜ",
+    "iban": "IBAN:",
+    "reference": "Selgitus:",
+    "referenceValue": "Annetus {code}",
+    "amountLabel": "Summa:",
+    "questions": "Küsimuste korral:",
+    "purposeSelect": "Vali sihtotstarve",
+    "purpose": {
+      "kingi": "Kingi külastus",
+      "toit": "Loomade toit",
+      "uldine": "Üldine"
+    },
+    "purposeHint": {
+      "kingi": "Ühe rühma külastus lastele, kes ise tulla ei saa",
+      "toit": "Lindude ja merisigade toit",
+      "uldine": "Keskuse tegevus"
+    },
+    "amountSelect": "Vali annetuse summa",
+    "decreaseAmount": "Vähenda summat",
+    "increaseAmount": "Suurenda summat",
+    "amountAria": "Summa eurodes",
+    "name": "Nimi",
+    "namePlaceholder": "Teie nimi",
+    "email": "E-post",
+    "emailPlaceholder": "email@näide.ee",
+    "comment": "Kommentaar (valikuline)",
+    "commentPlaceholder": "Kui soovite midagi lisada",
+    "publishNameLabel": "Minu nime võib avaldada toetajate seas",
+    "confirmLabel": "Saan aru, et annetus tehakse pangaülekandega ja selle eest ei saa vastu soodustust ega teenust.",
+    "privacyNote": "Nime ja e-posti kasutame ainult annetuse töötlemiseks ja tänukirja saatmiseks.",
+    "submit": "Anneta {amount} €",
+    "submitting": "Saadan…",
+    "errorGeneric": "Annetuse saatmine ebaõnnestus",
+    "errorNetwork": "Ühendusviga. Proovi uuesti või võta ühendust.",
+    "companyHoneypot": "Ettevõte",
+    "errors": {
+      "nameRequired": "Nimi on kohustuslik",
+      "emailRequired": "E-post on kohustuslik",
+      "confirmRequired": "Palun kinnita, et saad annetuse tingimustest aru.",
+      "emailInvalid": "Palun sisestage kehtiv e-posti aadress",
+      "amountInvalid": "Summa peab olema vahemikus 10–1000 € ja 10 € kordne",
+      "purposeRequired": "Palun vali sihtotstarve",
+      "rateLimited": "Päringuid on liiga palju. Palun proovi mõne hetke pärast uuesti.",
+      "serverConfig": "Serveri seadistus puudub",
+      "unknown": "Annetuse saatmine ebaõnnestus. Proovi uuesti."
+    }
+  },
   "TeenusedPage": {
     "title": "Teenused",
     "intro": "Kõik külastused toimuvad ainult eelneval kokkuleppel.",
@@ -1143,6 +1210,7 @@
       }
     ],
     "giftCta": "Kirjuta meile",
+    "giftDonateCta": "Anneta",
     "whoTitle": "Kes me oleme ja kuhu raha läheb",
     "whoPurpose": "Papagoi Keskus on keskkonnahariduse keskus. Pakume õppeprogramme lastele, õpilastele, peredele, erivajadustega inimestele ja eakatele. Meie töö keskmes on elurikkus, loomade heaolu ja vastutustundlik lemmikloomapidamine.",
     "whoGuides": "Külastusi viivad läbi Oleg ja Uljana Jegelski.",
