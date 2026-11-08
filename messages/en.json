@@ -1,6 +1,6 @@
 {
   "Nav": { "home": "Home", "services": "Services", "funding": "Funding", "about": "About us", "parrots": "Our parrots", "visitors": "For visitors", "book": "Book", "giftCard": "Gift card", "contact": "Contact", "blog": "Blog", "language": "Language", "chooseLanguage": "Choose language"},
-  "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "cookieSettings": "Cookie settings", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved", "supportedVisit": "Visit with support" },
+  "Footer": { "tagline": "Life full of colours and voices", "description": "Estonia's first Parrot Centre, running since 2015. Come meet our colourful family and experience something special!", "quickLinks": "Quick links", "contact": "Contact", "privacy": "Privacy and cookies", "cookieSettings": "Cookie settings", "viewOnMap": "View on map", "byAppointmentOnly": "By appointment only", "bookingRequired": "Booking required", "rightsReserved": "All rights reserved", "supportedVisit": "Funding" },
   "Common": { "logoAlt": "Parrot Centre - three beautiful parrots on a branch - Life full of colours and voices" },
   "Hero": {
     "welcome": "Welcome to Parrot Centre in Tartu!",
