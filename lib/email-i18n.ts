@@ -72,19 +72,19 @@ export function calendarStrings(locale: VisitMailLocale, vip = false) {
     et: {
       title: vip ? 'VIP külastus Papagoi Keskuses' : 'Broneering Papagoi Keskuses',
       description: vip
-        ? 'Privaatne VIP külastus Papagoi Keskuses. Kestus ~45 min. Slot on ainult teie seltskonnale. Palume olla kohal 5–10 min varem.'
+        ? 'Privaatne VIP külastus Papagoi Keskuses. Kestus 45–60 min. Slot on ainult teie seltskonnale. Palume olla kohal 5–10 min varem.'
         : 'Külastus Papagoi Keskuses. Külastuse kestus: 45–60 min. Palume olla kohal 5–10 min varem.',
     },
     en: {
       title: vip ? 'VIP visit — Papagoi Centre' : 'Booking — Papagoi Centre',
       description: vip
-        ? 'Private VIP visit at Papagoi Centre. Duration ~45 min. The slot is reserved for your party only. Please arrive 5–10 minutes early.'
+        ? 'Private VIP visit at Papagoi Centre. Duration 45–60 min. The slot is reserved for your party only. Please arrive 5–10 minutes early.'
         : 'Visit at Papagoi Centre. Duration: about 45–60 min. Please arrive 5–10 minutes early.',
     },
     ru: {
       title: vip ? 'VIP-визит — центр попугаев Papagoi' : 'Бронирование — центр попугаев Papagoi',
       description: vip
-        ? 'Приватный VIP-визит в центре Papagoi. Длительность ~45 мин. Слот только для вашей компании. Просим приехать за 5–10 минут.'
+        ? 'Приватный VIP-визит в центре Papagoi. Длительность 45–60 мин. Слот только для вашей компании. Просим приехать за 5–10 минут.'
         : 'Визит в центр попугаев Papagoi. Длительность: около 45–60 мин. Просим приехать за 5–10 минут до начала.',
     },
   }
@@ -378,33 +378,33 @@ export function getVipBookingEmailCopy(locale: VisitMailLocale) {
   const v = {
     et: {
       title: 'VIP külastuse päring',
-      nbHtml: `NB! Tegemist on <strong>privaatse VIP külastuse</strong> päringuga. Broneering jõustub pärast meie kinnituskirja (kinnitus tuleb eraldi).<br><br>Slot on ainult teie seltskonnale — teisi gruppe samale ajale ei lisata.<br>Kestus ~45 min. Ettemaksu ei ole; tasumine kohapeal või ülekandega. <strong>Kinkekaart VIP külastusele ei kehti.</strong><br><em>Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.</em>`,
-      durationVal: '~45 min',
+      nbHtml: `NB! Tegemist on <strong>privaatse VIP külastuse</strong> päringuga. Broneering jõustub pärast meie kinnituskirja (kinnitus tuleb eraldi).<br><br>Slot on ainult teie seltskonnale — teisi gruppe samale ajale ei lisata.<br>Kestus 45–60 min. Ettemaksu ei ole; tasumine kohapeal või ülekandega.<br><em>Kui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.</em>`,
+      durationVal: '45–60 min',
       groupSizeNote: ' inimest (privaatne VIP külastus — slot on ainult teile)',
-      paymentVal: 'kohapeal või ülekandega (ettemaksu ei ole; kinkekaart ei kehti)',
+      paymentVal: 'kohapeal või ülekandega (ettemaksu ei ole)',
       subjectPrefix: '👑 VIP külastus:',
       textHeader: 'VIP KÜLASTUSE PÄRING',
-      textNb: `NB! Tegemist on privaatse VIP külastuse päringuga. Broneering jõustub pärast meie kinnituskirja (kinnitus tuleb eraldi).\n\nSlot on ainult teie seltskonnale — teisi gruppe samale ajale ei lisata.\nKestus ~45 min. Ettemaksu ei ole; tasumine kohapeal või ülekandega. Kinkekaart VIP külastusele ei kehti.\nKui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.`,
+      textNb: `NB! Tegemist on privaatse VIP külastuse päringuga. Broneering jõustub pärast meie kinnituskirja (kinnitus tuleb eraldi).\n\nSlot on ainult teie seltskonnale — teisi gruppe samale ajale ei lisata.\nKestus 45–60 min. Ettemaksu ei ole; tasumine kohapeal või ülekandega.\nKui kinnitust ei tule 24 h jooksul, palume vastata sellele kirjale või helistada.`,
     },
     en: {
       title: 'VIP visit request',
-      nbHtml: `This is a <strong>private VIP visit</strong> request. Your booking is confirmed only after our confirmation email (sent separately).<br><br>The slot is reserved for your party only — no other groups will be added at this time.<br>Duration ~45 min. No prepayment; pay on site or by bank transfer. <strong>Gift cards cannot be used for a VIP visit.</strong><br><em>If you do not hear from us within 24 hours, please reply to this email or call us.</em>`,
-      durationVal: '~45 min',
+      nbHtml: `This is a <strong>private VIP visit</strong> request. Your booking is confirmed only after our confirmation email (sent separately).<br><br>The slot is reserved for your party only — no other groups will be added at this time.<br>Duration 45–60 min. No prepayment; pay on site or by bank transfer.<br><em>If you do not hear from us within 24 hours, please reply to this email or call us.</em>`,
+      durationVal: '45–60 min',
       groupSizeNote: ' people (private VIP visit — the slot is yours only)',
-      paymentVal: 'on site or by bank transfer (no prepayment; gift cards not accepted)',
+      paymentVal: 'on site or by bank transfer (no prepayment)',
       subjectPrefix: '👑 VIP visit:',
       textHeader: 'VIP VISIT REQUEST',
-      textNb: `This is a private VIP visit request. Your booking is confirmed only after our confirmation email (sent separately).\n\nThe slot is reserved for your party only — no other groups will be added at this time.\nDuration ~45 min. No prepayment; pay on site or by bank transfer. Gift cards cannot be used for a VIP visit.\nIf you do not hear from us within 24 hours, please reply to this email or call us.`,
+      textNb: `This is a private VIP visit request. Your booking is confirmed only after our confirmation email (sent separately).\n\nThe slot is reserved for your party only — no other groups will be added at this time.\nDuration 45–60 min. No prepayment; pay on site or by bank transfer.\nIf you do not hear from us within 24 hours, please reply to this email or call us.`,
     },
     ru: {
       title: 'Запрос на VIP-визит',
-      nbHtml: `Это запрос на <strong>приватный VIP-визит</strong>. Бронирование действует только после нашего письма с подтверждением (придёт отдельно).<br><br>Слот только для вашей компании — другие группы в это время не добавляются.<br>Длительность ~45 мин. Предоплаты нет; оплата на месте или переводом. <strong>Подарочная карта на VIP-визит не действует.</strong><br><em>Если ответа нет в течение 24 часов, ответьте на это письмо или позвоните нам.</em>`,
-      durationVal: '~45 мин',
+      nbHtml: `Это запрос на <strong>приватный VIP-визит</strong>. Бронирование действует только после нашего письма с подтверждением (придёт отдельно).<br><br>Слот только для вашей компании — другие группы в это время не добавляются.<br>Длительность 45–60 мин. Предоплаты нет; оплата на месте или переводом.<br><em>Если ответа нет в течение 24 часов, ответьте на это письмо или позвоните нам.</em>`,
+      durationVal: '45–60 мин',
       groupSizeNote: ' чел. (приватный VIP-визит — слот только для вас)',
-      paymentVal: 'на месте или банковским переводом (предоплаты нет; подарочная карта не действует)',
+      paymentVal: 'на месте или банковским переводом (предоплаты нет)',
       subjectPrefix: '👑 VIP-визит:',
       textHeader: 'ЗАПРОС НА VIP-ВИЗИТ',
-      textNb: `Это запрос на приватный VIP-визит. Бронирование действует только после нашего письма с подтверждением (придёт отдельно).\n\nСлот только для вашей компании — другие группы в это время не добавляются.\nДлительность ~45 мин. Предоплаты нет; оплата на месте или переводом. Подарочная карта на VIP-визит не действует.\nЕсли ответа нет в течение 24 часов, ответьте на это письмо или позвоните.`,
+      textNb: `Это запрос на приватный VIP-визит. Бронирование действует только после нашего письма с подтверждением (придёт отдельно).\n\nСлот только для вашей компании — другие группы в это время не добавляются.\nДлительность 45–60 мин. Предоплаты нет; оплата на месте или переводом.\nЕсли ответа нет в течение 24 часов, ответьте на это письмо или позвоните.`,
     },
   }
   return { ...base, ...v[locale] }
@@ -415,27 +415,27 @@ export function getVipConfirmationEmailCopy(locale: VisitMailLocale) {
   const v = {
     et: {
       title: 'VIP külastus on kinnitatud — Papagoi Keskus',
-      durationVal: '~45 min',
+      durationVal: '45–60 min',
       groupSizeNote: ' inimest (privaatne VIP külastus — slot on ainult teile)',
-      paymentVal: 'kohapeal või ülekandega (ettemaksu ei ole; kinkekaart ei kehti)',
+      paymentVal: 'kohapeal või ülekandega (ettemaksu ei ole)',
       subjectNormal: '👑 VIP külastus kinnitatud – Papagoi Keskus',
       subjectAdmin: '[Admin] 👑 VIP külastus kinnitus – puudub kliendi e-post:',
       textTitle: 'VIP KÜLASTUS ON KINNITATUD — PAPAGOI KESKUS',
     },
     en: {
       title: 'Your VIP visit is confirmed — Papagoi Centre',
-      durationVal: '~45 min',
+      durationVal: '45–60 min',
       groupSizeNote: ' people (private VIP visit — the slot is yours only)',
-      paymentVal: 'on site or by bank transfer (no prepayment; gift cards not accepted)',
+      paymentVal: 'on site or by bank transfer (no prepayment)',
       subjectNormal: '👑 VIP visit confirmed — Papagoi Centre',
       subjectAdmin: '[Admin] 👑 VIP visit confirmation — missing guest email:',
       textTitle: 'VIP VISIT CONFIRMED — PAPAGOI CENTRE',
     },
     ru: {
       title: 'VIP-визит подтверждён — центр Papagoi',
-      durationVal: '~45 мин',
+      durationVal: '45–60 мин',
       groupSizeNote: ' чел. (приватный VIP-визит — слот только для вас)',
-      paymentVal: 'на месте или банковским переводом (предоплаты нет; подарочная карта не действует)',
+      paymentVal: 'на месте или банковским переводом (предоплаты нет)',
       subjectNormal: '👑 VIP-визит подтверждён — центр Papagoi',
       subjectAdmin: '[Админ] 👑 VIP-визит — нет email гостя:',
       textTitle: 'VIP-ВИЗИТ ПОДТВЕРЖДЁН — ЦЕНТР PAPAGOI',

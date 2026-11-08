@@ -60,7 +60,7 @@ export default function ServiceSchema() {
       "@type": "Service",
       "serviceType": "VIP külastus",
       "name": "VIP külastus Papagoi Keskuses",
-      "description": "Privaatne külastus ainult ühele seltskonnale, 1–20 inimest, kestus ~45 min. Tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel kell 10:00 või 18:00. Giidi juhendus, papagoide käest söötmine värske puuviljaga.",
+      "description": "Privaatne külastus ainult ühele seltskonnale, 1–20 inimest, kestus 45–60 min. Tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel kell 10:00, 11:00 või 18:00. Giidi juhendus, papagoide käest söötmine värske puuviljaga.",
       "provider": {
         "@type": "LocalBusiness",
         "name": "Papagoi Keskus"

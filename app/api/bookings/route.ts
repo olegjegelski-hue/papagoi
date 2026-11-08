@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           errorResponse(
             'VALIDATION_ERROR',
-            'VIP külastuseks palun valige lubatud aeg (tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel 10:00 või 18:00).'
+            'VIP külastuseks palun valige lubatud aeg (tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel 10:00, 11:00 või 18:00).'
           ),
           { status: 400 }
         );
