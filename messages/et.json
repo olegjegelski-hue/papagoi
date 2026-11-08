@@ -1154,7 +1154,7 @@
     "muniTitle": "Toetus kohalikult omavalitsuselt",
     "muniLead": "Soovime, et Papagoi Keskusesse saaksid tulla ka pered, lasterühmad ja eakad, kellele külastus muidu üle jõu käiks. Selleks oleme esitanud taotlused lähiümbruse valdadele, et nad toetaksid oma elanike külastusi meie juurde.",
     "muniFollow": "Kui vald otsustab meie tegevust toetada, lisame siia, millise valla elanikele toetus kehtib ja kuidas seda kasutada.",
-    "muniTip": "Kas sinu vald võiks toetada? Anna oma vallale teada, et sooviksid sellist võimalust, või kirjuta meile aadressil <mail>keskus@papagoi.ee</mail> ja võtame ise ühendust.",
+    "muniTip": "Kas sinu vald võiks toetada? Anna oma vallale teada, et sooviksid sellist võimalust, või <mail>kirjuta meile</mail> ja võtame ise ühendust.",
     "ranitsTitle": "Kultuuriranits",
     "ranitsBody": "Kultuuriranits on Kultuuriministeeriumi toetus, mille raha on igal üldhariduskoolil eelarves. Selle eest saavad 1.–9. klassi õpilased käia õppekavaga seotud kultuurikülastustel. Papagoi Keskus on oma programmidega (värvid, helid, rütm) Kultuuriministeeriumi kodulehel nimekirjas <list>Muuseumid Tartumaal</list>.",
     "ranitsSteps": [
@@ -1227,12 +1227,14 @@
     "whoStatute": "Põhikiri (PDF)",
     "whoStatuteEdition": "redaktsioon 19.05.2026",
     "whoReport": "Majandusaasta aruanne 2024–2025 (äriregister)",
+    "donateSectionTitle": "Anneta",
     "whoDonationsTitle": "Kuhu annetus läheb",
     "whoDonationsHonest": "Annetusi oleme seni kogunud ainult üksikjuhtudel. Alates 2027. aastast avaldame siin igal aastal, kui palju annetusi laekus ja mitme rühma külastust need võimaldasid.",
     "whoDonationsCover": "Annetus katab ühe rühma külastuse: juhendaja töö, lindude ja merisigade toidu ning ruumi ettevalmistuse. Külastuse hind on 10 € inimese kohta.",
     "ctaTitle": "Küsimusi?",
     "ctaText": "Kirjuta või helista — aitame sobiva programmi ja aja leida.",
     "ctaBook": "Broneeri aeg",
+    "ctaWrite": "Kirjuta",
     "ctaCall": "Helista",
     "programs": {
       "hool": "Papagoi – lind, kes vajab hoolt",
