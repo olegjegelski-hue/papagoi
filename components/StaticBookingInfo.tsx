@@ -463,7 +463,7 @@ export default function StaticBookingInfo({ initialGroupType = '' }: { initialGr
             </blockquote>
             <div className="h-2" />
             <p className="rounded-md border border-papagoi-orange/40 bg-papagoi-orange-50 px-3 py-2 font-medium text-papagoi-orange-800">
-              {isVip ? t('vipGiftCardNote') : t('morningTip')}
+              {t('morningTip')}
             </p>
           </div>
 
@@ -864,7 +864,6 @@ export default function StaticBookingInfo({ initialGroupType = '' }: { initialGr
                       <p className="text-sm font-semibold text-indigo-900">
                         {t('vipPricePreview', { price: vipPricePreview })}
                       </p>
-                      <p className="mt-1 text-xs text-indigo-800">{t('vipGiftCardNote')}</p>
                     </div>
                   )}
                   {isVip && vipPricePreview == null && Number(formData.groupSize) > 0 && (

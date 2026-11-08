@@ -5,8 +5,20 @@
 
 export const VIP_GROUP_TYPE = 'vip-kulastus'
 
-export const VIP_WEEKDAY_SLOTS = ['10:00', '12:00', '14:00', '16:00', '18:00'] as const
-export const VIP_WEEKEND_HOLIDAY_SLOTS = ['10:00', '18:00'] as const
+/** Tööpäeviti kõik täistunnid 10:00–18:00 (sama võrk mis vormi timeSlots). */
+export const VIP_WEEKDAY_SLOTS = [
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+] as const
+/** Nädalavahetus ja riigipühad: 10:00, 11:00 või 18:00. */
+export const VIP_WEEKEND_HOLIDAY_SLOTS = ['10:00', '11:00', '18:00'] as const
 
 export const VIP_MIN_PEOPLE = 1
 export const VIP_MAX_PEOPLE = 20
