@@ -5,10 +5,19 @@ import {
   extractOriginalGmbComment,
   toNotionRichText,
 } from '@/lib/gmb-review-comment'
+import {
+  googleReviewIdFromGmbReview,
+  googleReviewIdFromNotionProperty,
+  reviewDateYmd,
+  reviewIdentityKey,
+  richTextPlainFromProp,
+} from '@/lib/gmb-review-id'
+import { GMB_STATUS } from '@/lib/gmb-review-workflow'
 
 // Sisemine ühtlustatud arvustuse kuju
 type GoogleReview = {
-  reviewId: string
+  reviewId?: string | null
+  name?: string | null
   reviewer?: { displayName?: string | null }
   starRating?: string | null
   comment?: string | null
@@ -219,6 +228,7 @@ async function fetchAllGoogleReviewsViaPlaces(): Promise<GoogleReview[]> {
     return {
       // Places API ei anna eraldi reviewId-d; kasutame deterministlikku kombinatsiooni
       reviewId: r.time ? String(r.time) : `places-review-${index}`,
+      name: null,
       reviewer: { displayName: r.author_name ?? null },
       starRating: r.rating != null ? String(r.rating) : null,
       comment: r.text ?? null,
@@ -314,13 +324,14 @@ function buildNotionPropertiesFromReview(
     }
   }
 
-  // Google review ID
-  if (review.reviewId) {
+  // Google review ID — salvesta normaliseeritud lühike ID (mitte resource name)
+  const reviewId = googleReviewIdFromGmbReview(review)
+  if (reviewId) {
     props['Google review ID'] = {
       rich_text: [
         {
           type: 'text',
-          text: { content: review.reviewId },
+          text: { content: reviewId },
         },
       ],
     }
@@ -333,10 +344,13 @@ function buildNotionPropertiesFromReview(
     }
   }
 
-  // Staatus
+  // Staatus: Google'i vastus võidab lokaalse „Valmis postitamiseks“ ilma tekstita.
+  const existingStatus = existingProperties?.['Staatus']?.select?.name as string | undefined
+  const alreadyPosted = existingProperties?.['Vastus postitatud?']?.checkbox === true
   const status =
-    existingProperties?.['Staatus']?.select?.name ||
-    (replyExists ? 'Vastus postitatud' : 'Uus')
+    replyExists || alreadyPosted
+      ? GMB_STATUS.posted
+      : existingStatus || GMB_STATUS.uus
   props['Staatus'] = {
     select: { name: status },
   }
@@ -350,9 +364,9 @@ function buildNotionPropertiesFromReview(
 
   // Vastus täidab /api/generate-gmb-review-replies. Sync ei kirjuta ega tühjenda seda.
 
-  // Vastus postitatud?
+  // Vastus postitatud? — ära võta maha, kui Notion juba ütleb et postitatud (GMB viivitus).
   props['Vastus postitatud?'] = {
-    checkbox: Boolean(review.reviewReply && review.reviewReply.comment),
+    checkbox: alreadyPosted || replyExists,
   }
 
   // Vastuse postitamise kuupäev
@@ -370,6 +384,86 @@ function buildNotionPropertiesFromReview(
   return props
 }
 
+function notionTitlePlain(prop: unknown): string {
+  return richTextPlainFromProp(prop).trim()
+}
+
+function notionPageRank(page: NotionPage): number {
+  const status = page.properties['Staatus']?.select?.name
+  const posted = page.properties['Vastus postitatud?']?.checkbox === true
+  const confirmed = page.properties['Kinnitatud']?.checkbox === true
+  const hasReply = Boolean(richTextPlainFromProp(page.properties['Vastus']).trim())
+  if (posted || status === GMB_STATUS.posted) return 50
+  if (confirmed && status === GMB_STATUS.ready) return 40
+  if (hasReply) return 30
+  if (status === GMB_STATUS.draft) return 20
+  if (status === GMB_STATUS.skip) return 10
+  return 0
+}
+
+function preferNotionReviewPage(a: NotionPage, b: NotionPage): NotionPage {
+  const ra = notionPageRank(a)
+  const rb = notionPageRank(b)
+  return rb > ra ? b : a
+}
+
+function identityKeyFromPage(page: NotionPage): string {
+  const name = notionTitlePlain(page.properties['Nimi'])
+  const ymd = reviewDateYmd(page.properties['Arvustuse kuupäev']?.date?.start)
+  return reviewIdentityKey(name, ymd)
+}
+
+function rememberExistingPage(
+  byId: Map<string, NotionPage>,
+  byIdentity: Map<string, NotionPage>,
+  page: NotionPage,
+) {
+  const id = googleReviewIdFromNotionProperty(page.properties['Google review ID'])
+  if (id) {
+    const prev = byId.get(id)
+    byId.set(id, prev ? preferNotionReviewPage(prev, page) : page)
+  }
+  const identity = identityKeyFromPage(page)
+  if (identity) {
+    const prev = byIdentity.get(identity)
+    byIdentity.set(identity, prev ? preferNotionReviewPage(prev, page) : page)
+  }
+}
+
+async function findNotionPageByGoogleReviewId(
+  apiKey: string,
+  databaseId: string,
+  reviewId: string,
+): Promise<NotionPage | null> {
+  const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      page_size: 5,
+      filter: {
+        property: 'Google review ID',
+        rich_text: { equals: reviewId },
+      },
+    }),
+  })
+  if (!response.ok) {
+    const text = await response.text()
+    console.error(`Failed to query Notion by review ID ${reviewId}: ${response.status} - ${text}`)
+    return null
+  }
+  const data = await response.json()
+  const pages: NotionPage[] = (data.results || []).map((page: { id: string; properties?: Record<string, unknown> }) => ({
+    id: page.id,
+    properties: page.properties || {},
+  }))
+  if (pages.length === 0) return null
+  return pages.reduce(preferNotionReviewPage)
+}
+
 async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
   const NOTION_API_KEY = assertEnv('NOTION_API_KEY')
   const rawDbId = assertEnv('NOTION_REVIEWS_DATABASE_ID')
@@ -379,38 +473,55 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
   console.log(`Loading existing Notion reviews from database ${databaseId}...`)
   const existingPages = await fetchAllNotionReviewPages(databaseId, NOTION_API_KEY)
   const existingByReviewId = new Map<string, NotionPage>()
+  const existingByIdentity = new Map<string, NotionPage>()
 
   for (const page of existingPages) {
-    const prop = page.properties['Google review ID']
-    let id: string | null = null
-    if (prop?.type === 'rich_text') {
-      id = prop.rich_text?.[0]?.plain_text || null
-    } else if (prop?.type === 'title') {
-      id = prop.title?.[0]?.plain_text || null
-    }
-    if (id) {
-      existingByReviewId.set(id, page)
-    }
+    rememberExistingPage(existingByReviewId, existingByIdentity, page)
   }
 
   console.log(
-    `Existing Notion review pages: ${existingPages.length}, mapped by review ID: ${existingByReviewId.size}`
+    JSON.stringify({
+      existingPages: existingPages.length,
+      mappedByReviewId: existingByReviewId.size,
+      mappedByNameDate: existingByIdentity.size,
+    }),
   )
 
   let created = 0
   let updated = 0
+  let skippedNoId = 0
+  let liveLookupHits = 0
 
   for (const review of reviews) {
-    if (!review.reviewId) continue
-    const existing = existingByReviewId.get(review.reviewId)
+    const reviewId = googleReviewIdFromGmbReview(review)
+    if (!reviewId) {
+      skippedNoId++
+      continue
+    }
+    const name =
+      (review.reviewer?.displayName && review.reviewer.displayName.trim()) || 'Anonüümne'
+    const identity = reviewIdentityKey(name, reviewDateYmd(review.createTime || null))
+
+    let existing =
+      existingByReviewId.get(reviewId) ||
+      (identity ? existingByIdentity.get(identity) : undefined)
+
+    if (!existing) {
+      const live = await findNotionPageByGoogleReviewId(NOTION_API_KEY, databaseId, reviewId)
+      if (live) {
+        liveLookupHits++
+        existing = live
+        rememberExistingPage(existingByReviewId, existingByIdentity, live)
+      }
+    }
+
     const properties = buildNotionPropertiesFromReview(
       review,
       existing?.properties || null,
-      reviewUrl
+      reviewUrl,
     )
 
     if (!existing) {
-      // Create new page
       const response = await fetch('https://api.notion.com/v1/pages', {
         method: 'POST',
         headers: {
@@ -427,13 +538,24 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
       if (!response.ok) {
         const text = await response.text()
         console.error(
-          `Failed to create Notion review page for reviewId=${review.reviewId}: ${response.status} - ${text}`
+          `Failed to create Notion review page for reviewId=${reviewId}: ${response.status} - ${text}`,
         )
         continue
       }
+      const createdPage = (await response.json()) as { id?: string; properties?: Record<string, unknown> }
+      if (createdPage.id) {
+        rememberExistingPage(existingByReviewId, existingByIdentity, {
+          id: createdPage.id,
+          properties: createdPage.properties || properties,
+        })
+      } else {
+        rememberExistingPage(existingByReviewId, existingByIdentity, {
+          id: `created-${reviewId}`,
+          properties,
+        })
+      }
       created++
     } else {
-      // Update existing page
       const pageId = existing.id.replace(/-/g, '')
       const response = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
         method: 'PATCH',
@@ -450,15 +572,21 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
       if (!response.ok) {
         const text = await response.text()
         console.error(
-          `Failed to update Notion review page for reviewId=${review.reviewId}: ${response.status} - ${text}`
+          `Failed to update Notion review page for reviewId=${reviewId}: ${response.status} - ${text}`,
         )
         continue
       }
+      rememberExistingPage(existingByReviewId, existingByIdentity, {
+        id: existing.id,
+        properties: { ...existing.properties, ...properties },
+      })
       updated++
     }
   }
 
-  console.log(`Sync complete. Created: ${created}, Updated: ${updated}, Total from Google: ${reviews.length}`)
+  console.log(
+    `Sync complete. Created: ${created}, Updated: ${updated}, Skipped no ID: ${skippedNoId}, Live ID hits: ${liveLookupHits}, Total from Google: ${reviews.length}`,
+  )
 }
 
 export async function syncGoogleReviewsToNotion() {
