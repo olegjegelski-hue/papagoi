@@ -1,6 +1,12 @@
 import 'dotenv/config'
 import { formatInTimeZone } from 'date-fns-tz'
-import { createTransporter } from '../lib/email'
+import { createTransporter, sendReviewInviteEmail } from '../lib/email'
+import { extractGroupTypeFromNotionVisitorProps } from '../lib/notion-booking'
+import {
+  extractVisitLanguageFromNotionVisitorProps,
+  parseVisitMailLocale,
+  type VisitMailLocale,
+} from '../lib/visit-language'
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
@@ -185,6 +191,8 @@ interface VisitorRecord {
   email: string
   name: string | null
   visitDate: string | null
+  locale: VisitMailLocale
+  groupType: string | null
 }
 
 async function getVisitorsForVisit(
@@ -253,6 +261,8 @@ async function getVisitorsForVisit(
         email: emailValue,
         name: nameValue,
         visitDate,
+        locale: parseVisitMailLocale(extractVisitLanguageFromNotionVisitorProps(props)),
+        groupType: extractGroupTypeFromNotionVisitorProps(props),
       })
     }
 
@@ -262,98 +272,19 @@ async function getVisitorsForVisit(
   return allVisitors
 }
 
-export async function sendReviewEmail(to: string, name: string | null, visitDateIso: string | null) {
-  const transporter = createTransporter()
-  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
-  const reviewLink =
-    process.env.REVIEW_GOOGLE_URL || 'https://g.page/r/CXfsGh_UtN6-EBM/review'
-
-  const greetingName = name || 'Papagoi sõber'
-
-  const subject = 'Aitäh külastuse eest! Jäta palun meile Google’i arvustus'
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Aitäh külastuse eest! Jäta palun meile Google’i arvustus
-      </h2>
-      <p style="font-size: 16px; line-height: 1.6;">
-        Tere, <strong>${greetingName}</strong>!
-      </p>
-      <p style="font-size: 15px; line-height: 1.6;">
-        Aitäh, et käisite täna <strong>Papagoi Keskuses</strong> külas. Loodame, et külastus pakkus teile rõõmu ja häid elamusi.
-      </p>
-      <p style="font-size: 15px; line-height: 1.6;">
-        Kui teil on hetk aega, oleksime väga tänulikud, kui jätaksite meile <strong>Google’is lühikese arvustuse</strong>.
-        See aitab teistel külastajatel meid leida ja toetab meie väikest peretegemist.
-      </p>
-      <p style="margin: 24px 0;">
-        👉 <a href="${reviewLink}" style="background-color: #f59e0b; color: #fff; padding: 12px 20px; border-radius: 999px; text-decoration: none; font-weight: 600;">
-          Jäta arvustus siia
-        </a>
-      </p>
-      <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
-        <strong>Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.</strong>
-      </p>
-      <p style="font-size: 15px; line-height: 1.8; margin-top: 20px; padding: 16px 18px; background-color: #FFF7ED; border-left: 4px solid #F97316; border-radius: 8px;">
-        <strong>
-          Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – Papagoi Keskuse kinkekaardiga saab kingisaaja ise valida endale sobiva aja ja külastuse.
-        </strong>
-        <br/>
-        Kinkekaardi leiate siit:
-        <a href="https://papagoi.ee/kinkekaart" style="color: #ea580c; font-weight: 600; text-decoration: underline; margin-left: 4px;">
-          https://papagoi.ee/kinkekaart
-        </a>
-      </p>
-      <p style="margin-top: 16px; font-size: 14px; color: #4b5563;">
-        Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.
-      </p>
-      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 5px 0;">Papagoid tänavad Teid.</p>
-        <p style="margin: 5px 0; font-weight: 600;">Papagoi Keskus</p>
-        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
-        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
-        <p style="margin: 5px 0;"><a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
-      </div>
-    </div>
-  `
-
-  const text = `
-Tere, ${greetingName}!
-
-Aitäh, et käisite täna Papagoi Keskuses külas. Loodame, et külastus pakkus teile rõõmu ja häid elamusi.
-
-Kui teil on hetk aega, oleksime väga tänulikud, kui jätaksite meile Google’is lühikese arvustuse. See aitab teistel külastajatel meid leida ja toetab meie väikest peretegemist.
-
-Jäta arvustus siia:
-${reviewLink}
-
-Võite vabalt lisada ka pilte oma külastusest – see rõõmustab meid väga.
-
-Kui külastus teile meeldis ja soovite seda elamust kellegagi jagada, siis saate teha toreda üllatuse sõbrale, tuttavale või pereliikmele – Papagoi Keskuse kinkekaardiga saab kingisaaja ise valida endale sobiva aja ja külastuse. Kinkekaardi leiate siit: https://papagoi.ee/kinkekaart
-
-Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.
-
-Papagoid tänavad Teid.
-
-Papagoi Keskus
-Tel +372 51 27 938
-https://papagoi.ee/
-keskus@papagoi.ee
-  `.trim()
-
-  const mailOptions: Parameters<typeof transporter.sendMail>[0] = {
-    from: `"Papagoi Keskus" <${fromAddress}>`,
+export async function sendReviewEmail(
+  to: string,
+  name: string | null,
+  visitDateIso: string | null,
+  options?: { locale?: VisitMailLocale; groupType?: string | null }
+) {
+  return sendReviewInviteEmail({
     to,
-    subject,
-    html,
-    text,
-  }
-  if (process.env.REVIEW_CC_CENTER === '1') {
-    mailOptions.cc = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
-  }
-
-  await transporter.sendMail(mailOptions)
+    name,
+    visitDateIso,
+    locale: options?.locale,
+    groupType: options?.groupType,
+  })
 }
 
 /** Saadab keskusele kokkuvõtte iga croni käivitusest. */
@@ -477,14 +408,17 @@ export async function runReviewInvitesFromEnv() {
     const first = visitors[0]
     if (dryRun) {
       console.log(
-        `[DRY RUN] Would send review email to ${email} (name: ${first.name || '—'}, visits: ${
-          visitors.length
-        })`
+        `[DRY RUN] Would send review email to ${email} (name: ${first.name || '—'}, locale: ${
+          first.locale
+        }, groupType: ${first.groupType || '—'}, visits: ${visitors.length})`
       )
       continue
     }
     try {
-      await sendReviewEmail(email, first.name, first.visitDate)
+      await sendReviewEmail(email, first.name, first.visitDate, {
+        locale: first.locale,
+        groupType: first.groupType,
+      })
       successCount++
       console.log(`Review email sent to ${email}`)
     } catch (error) {

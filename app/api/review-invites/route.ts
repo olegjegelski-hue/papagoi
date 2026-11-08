@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
+import { sendReviewInviteEmail } from '@/lib/email'
+import { shouldShowReviewDonationLine } from '@/lib/email-i18n'
+import { parseVisitMailLocale } from '@/lib/visit-language'
 import { runReviewInvitesFromEnv } from '../../../scripts/send-review-invites'
 
 export const dynamic = 'force-dynamic'
+
+const TEST_REVIEW_TO = 'keskus@papagoi.ee'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -22,16 +27,27 @@ export async function GET(request: Request) {
     const isTest = url.searchParams.get('test') === '1'
 
     if (isTest) {
-      // Testrežiim: saadab ühe näidis-arvustuskirja keskuse mailile (Notionit ei kasutata).
-      const { sendReviewEmail } = await import('../../../scripts/send-review-invites')
-      const to =
-        process.env.CENTER_EMAIL || process.env.SMTP_USER || 'keskus@papagoi.ee'
-      await sendReviewEmail(to, 'Test', new Date().toISOString().slice(0, 10))
+      // Testrežiim: saadab ühe näidis-arvustuskirja ainult keskus@papagoi.ee (Notionit ei kasutata).
+      const locale = parseVisitMailLocale(
+        url.searchParams.get('locale') || url.searchParams.get('lang')
+      )
+      const groupType =
+        url.searchParams.get('groupType') || url.searchParams.get('group') || undefined
+      const built = await sendReviewInviteEmail({
+        to: TEST_REVIEW_TO,
+        name: 'Test',
+        visitDateIso: new Date().toISOString().slice(0, 10),
+        locale,
+        groupType,
+      })
       return NextResponse.json({
         ok: true,
         test: true,
-        sentTo: to,
-        message: 'Naidiskiri saadetud keskuse mailile.',
+        sentTo: TEST_REVIEW_TO,
+        locale: built.locale,
+        groupType: groupType || null,
+        donationLine: shouldShowReviewDonationLine(groupType),
+        message: 'Naidiskiri saadetud keskus@papagoi.ee.',
       })
     }
 
@@ -53,4 +69,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: (error as Error).message }, { status: 500 })
   }
 }
-

@@ -15,8 +15,10 @@ import {
   donationAdminSubject,
   getDonationEmailCopy,
   getGiftCardOrderEmailCopy,
+  getReviewInviteEmailCopy,
   getVipBookingEmailCopy,
   getVipConfirmationEmailCopy,
+  shouldShowReviewDonationLine,
   visitLanguageLabelForEmail,
 } from '@/lib/email-i18n'
 import { isVipGroupType } from '@/lib/vip-visit'
@@ -802,4 +804,137 @@ Nime võib avaldada: ${publishLabel}
     html: adminHtml,
     text: adminText,
   })
+}
+
+export function buildReviewInviteEmail(params: {
+  name: string | null
+  locale?: VisitMailLocale
+  groupType?: string | null
+  reviewLink?: string
+}): { subject: string; html: string; text: string; locale: VisitMailLocale; showDonation: boolean } {
+  const locale = params.locale ?? 'et'
+  const copy = getReviewInviteEmailCopy(locale)
+  const reviewLink =
+    params.reviewLink ||
+    process.env.REVIEW_GOOGLE_URL ||
+    'https://g.page/r/CXfsGh_UtN6-EBM/review'
+  const greetingName = params.name?.trim() || copy.greetingFallback
+  const safeName = escapeHtml(greetingName)
+  const showDonation = shouldShowReviewDonationLine(params.groupType)
+
+  const donationHtml = showDonation
+    ? `<br/><br/>
+        ${copy.donateHtml}
+        <br/>
+        <a href="${copy.donateHref}" style="color: #ea580c; font-weight: 600; text-decoration: underline;">
+          ${copy.donateHref}
+        </a>`
+    : ''
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        ${copy.subject}
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">
+        ${copy.greetingHtml(safeName)}
+      </p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${copy.introHtml}
+      </p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${copy.askHtml}
+      </p>
+      <p style="margin: 24px 0;">
+        👉 <a href="${reviewLink}" style="background-color: #f59e0b; color: #fff; padding: 12px 20px; border-radius: 999px; text-decoration: none; font-weight: 600;">
+          ${copy.button}
+        </a>
+      </p>
+      <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+        ${copy.photosHtml}
+      </p>
+      <p style="font-size: 15px; line-height: 1.8; margin-top: 20px; padding: 16px 18px; background-color: #FFF7ED; border-left: 4px solid #F97316; border-radius: 8px;">
+        <strong>${copy.boxTitle}</strong>
+        <br/><br/>
+        ${copy.giftHtml}
+        <br/>
+        <a href="${copy.giftHref}" style="color: #ea580c; font-weight: 600; text-decoration: underline;">
+          ${copy.giftHref}
+        </a>
+        ${donationHtml}
+      </p>
+      <p style="margin-top: 16px; font-size: 14px; color: #4b5563;">
+        ${copy.feedback}
+      </p>
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">${copy.signOff}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${copy.centre}</p>
+        <p style="margin: 5px 0;">Tel +372 51 27 938</p>
+        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
+        <p style="margin: 5px 0;"><a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a></p>
+      </div>
+    </div>
+  `
+
+  const donationText = showDonation
+    ? `\n${copy.donateText}\n${copy.donateHref}\n`
+    : ''
+
+  const text = `
+${copy.greetingText(greetingName)}
+
+${copy.introText}
+
+${copy.askText}
+
+${copy.button}:
+${reviewLink}
+
+${copy.photosText}
+
+${copy.boxTitle}
+${copy.giftText}
+${copy.giftHref}
+${donationText}
+${copy.feedback}
+
+${copy.signOff}
+
+${copy.centre}
+Tel +372 51 27 938
+https://papagoi.ee/
+keskus@papagoi.ee
+  `.trim()
+
+  return { subject: copy.subject, html, text, locale, showDonation }
+}
+
+export async function sendReviewInviteEmail(params: {
+  to: string
+  name: string | null
+  visitDateIso?: string | null
+  locale?: VisitMailLocale
+  groupType?: string | null
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const built = buildReviewInviteEmail({
+    name: params.name,
+    locale: params.locale,
+    groupType: params.groupType,
+  })
+
+  const mailOptions: Parameters<typeof transporter.sendMail>[0] = {
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: params.to,
+    subject: built.subject,
+    html: built.html,
+    text: built.text,
+  }
+  if (process.env.REVIEW_CC_CENTER === '1') {
+    mailOptions.cc = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  }
+
+  await transporter.sendMail(mailOptions)
+  return built
 }
