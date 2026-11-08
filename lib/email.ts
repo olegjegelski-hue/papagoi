@@ -1,7 +1,9 @@
 
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
-import type { VisitMailLocale } from '@/lib/visit-language'
+import { DONATION_PURPOSE_NOTION, type DonationPurpose } from '@/lib/donation'
+import { escapeHtml } from '@/lib/sanitize'
+import { visitMailLocaleToNotionSelectLabel, type VisitMailLocale } from '@/lib/visit-language'
 import {
   bookingGroupTypeLabel,
   calendarStrings,
@@ -10,6 +12,8 @@ import {
   formatVisitDateForSubject,
   getBookingEmailCopy,
   getConfirmationEmailCopy,
+  donationAdminSubject,
+  getDonationEmailCopy,
   getGiftCardOrderEmailCopy,
   getVipBookingEmailCopy,
   getVipConfirmationEmailCopy,
@@ -660,5 +664,142 @@ Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
       { filename: `kinkekaart-${data.code}.png`, content: data.pngBuffer, contentType: 'image/png' },
       { filename: `kinkekaart-${data.code}.pdf`, content: data.pdfBuffer, contentType: 'application/pdf' },
     ],
+  })
+}
+
+export async function sendDonationEmail(data: {
+  to: string
+  donorName: string
+  donorEmail: string
+  amountEur: number
+  purpose: DonationPurpose
+  code: string
+  comment?: string
+  publishName: boolean
+  locale?: VisitMailLocale
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  const locale = data.locale ?? 'et'
+  const t = getDonationEmailCopy(locale)
+  const purposeLabel = t.purposes[data.purpose]
+  const refLine = t.referenceValue(data.code)
+  const safeName = escapeHtml(data.donorName)
+  const safeEmail = escapeHtml(data.donorEmail)
+  const comment = (data.comment ?? '').trim()
+  const safeComment = comment ? escapeHtml(comment) : '—'
+  const languageLabel = visitMailLocaleToNotionSelectLabel(locale)
+  const purposeEt = DONATION_PURPOSE_NOTION[data.purpose]
+  const publishLabel = data.publishName ? 'Jah' : 'Ei'
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        ${t.title}
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">${t.greeting(safeName)}</p>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.thanks}
+      </p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <p style="margin: 10px 0;"><strong>${t.purpose}</strong> ${purposeLabel}</p>
+        <p style="margin: 10px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
+      </div>
+      <p style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">${t.transferLead}</p>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; margin: 0 0 16px 0; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.iban}</strong> ${t.ibanValue}</p>
+        <p style="margin: 6px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>${t.reference}</strong> ${refLine}</p>
+      </div>
+      <p style="font-size: 15px; line-height: 1.6;">
+        ${t.afterTransfer}
+      </p>
+      <p style="font-size: 14px; color: #4b5563;">
+        ${t.questions.replace(
+          '+372 512 7938',
+          '<a href="tel:+3725127938">+372 512 7938</a>'
+        ).replace(
+          'keskus@papagoi.ee',
+          '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>'
+        )}
+      </p>
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;">${t.regards}</p>
+        <p style="margin: 5px 0; font-weight: 600;">${t.centre}</p>
+        <p style="margin: 5px 0;">${t.tel}</p>
+        <p style="margin: 5px 0;"><a href="https://papagoi.ee/">https://papagoi.ee/</a></p>
+      </div>
+    </div>
+  `
+
+  const text = `
+${t.greetingText(data.donorName)}
+
+${t.thanks}
+
+${t.purpose} ${purposeLabel}
+${t.amount} ${data.amountEur} €
+
+${t.transferLead}
+${t.recipient} ${t.recipientValue}
+${t.iban} ${t.ibanValue}
+${t.amount} ${data.amountEur} €
+${t.reference} ${refLine}
+
+${t.afterTransfer}
+
+${t.questions}
+
+${t.regards}
+${t.centre}
+${t.tel}
+https://papagoi.ee/
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: data.to,
+    subject: t.subject(data.code),
+    html,
+    text,
+  })
+
+  const adminHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        Uus annetus ${escapeHtml(data.code)}
+      </h2>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>Annetaja:</strong> ${safeName}</p>
+        <p style="margin: 6px 0;"><strong>E-post:</strong> ${safeEmail}</p>
+        <p style="margin: 6px 0;"><strong>Summa:</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>Sihtotstarve:</strong> ${escapeHtml(purposeEt)}</p>
+        <p style="margin: 6px 0;"><strong>Keel:</strong> ${escapeHtml(languageLabel)}</p>
+        <p style="margin: 6px 0;"><strong>Kommentaar:</strong> ${safeComment}</p>
+        <p style="margin: 6px 0;"><strong>Nime võib avaldada:</strong> ${publishLabel}</p>
+      </div>
+    </div>
+  `
+
+  const adminText = `
+Uus annetus ${data.code}
+
+Annetaja: ${data.donorName}
+E-post: ${data.donorEmail}
+Summa: ${data.amountEur} €
+Sihtotstarve: ${purposeEt}
+Keel: ${languageLabel}
+Kommentaar: ${comment || '—'}
+Nime võib avaldada: ${publishLabel}
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: centerEmail,
+    subject: donationAdminSubject(data.code, data.amountEur, data.purpose),
+    html: adminHtml,
+    text: adminText,
   })
 }
