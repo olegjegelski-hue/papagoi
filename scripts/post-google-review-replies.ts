@@ -11,6 +11,16 @@ import { getGmbAccessToken } from './sync-google-reviews-to-notion'
 import { createTransporter } from '../lib/email'
 import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 import { gmbReviewReplyUrl, googleReviewIdFromNotionProperty } from '@/lib/gmb-review-id'
+import {
+  GMB_PROBE_GOOGLE_REVIEW_ID,
+  confirmedUnpostedFilter,
+  googleReviewIdEqualsFilter,
+  notionSelectName,
+  pendingReplyFilter,
+  queryNotionReviewPages,
+  recoverPendingPages,
+  resolveReviewDataSourceIds,
+} from '@/lib/notion-reviews-query'
 
 const DEFAULT_TOTAL_LIMIT = 30
 const HARD_MAX_TOTAL_LIMIT = 50
@@ -124,70 +134,56 @@ function shouldStopGmbPostBatch(status: number): boolean {
 
 async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
   const NOTION_API_KEY = assertEnv('NOTION_API_KEY')
-  const rawDbId = assertEnv('NOTION_REVIEWS_DATABASE_ID')
-  const databaseId = rawDbId.replace(/-/g, '')
+  const databaseId = assertEnv('NOTION_REVIEWS_DATABASE_ID').replace(/-/g, '')
+  const resolved = await resolveReviewDataSourceIds({ apiKey: NOTION_API_KEY, databaseId })
+  const queryOpts = {
+    apiKey: NOTION_API_KEY,
+    databaseId,
+    dataSourceIds: resolved.ids,
+  }
 
-  const results: NotionPage[] = []
-  let startCursor: string | undefined
+  const pending = await queryNotionReviewPages({
+    ...queryOpts,
+    filter: pendingReplyFilter(GMB_STATUS.ready),
+  })
+  const withoutStatus = await queryNotionReviewPages({
+    ...queryOpts,
+    filter: confirmedUnpostedFilter(),
+  })
+  const allPages = await queryNotionReviewPages(queryOpts)
+  const probe = await queryNotionReviewPages({
+    ...queryOpts,
+    filter: googleReviewIdEqualsFilter(GMB_PROBE_GOOGLE_REVIEW_ID),
+    pageSize: 5,
+  })
 
-  do {
-    const body: Record<string, any> = {
-      page_size: 100,
-      filter: {
-        and: [
-          {
-            property: 'Google review ID',
-            rich_text: { is_not_empty: true },
-          },
-          {
-            property: 'Vastus',
-            rich_text: { is_not_empty: true },
-          },
-          {
-            property: 'Vastus postitatud?',
-            checkbox: { equals: false },
-          },
-          {
-            property: 'Kinnitatud',
-            checkbox: { equals: true },
-          },
-          {
-            property: 'Staatus',
-            select: { equals: GMB_STATUS.ready },
-          },
-        ],
-      },
-    }
+  const recovered = recoverPendingPages({
+    pending: pending.pages,
+    withoutStatus: withoutStatus.pages,
+    allPages: allPages.pages,
+    readyStatus: GMB_STATUS.ready,
+  })
 
-    if (startCursor) {
-      body.start_cursor = startCursor
-    }
+  console.log(
+    JSON.stringify({
+      note: 'post-gmb-replies Notion diagnostics',
+      databaseId,
+      dataSourceIds: resolved.ids,
+      dataSourceSource: resolved.source,
+      queryPath: pending.queryPath,
+      pendingFilterCount: pending.pages.length,
+      withoutStatusFilterCount: withoutStatus.pages.length,
+      fetchAllCount: allPages.pages.length,
+      probeReviewId: GMB_PROBE_GOOGLE_REVIEW_ID,
+      probeFound: probe.pages.length,
+      probePageIds: probe.pages.map((page) => page.id),
+      probeStatus: probe.pages.map((page) => notionSelectName(page.properties['Staatus'])),
+      recoveredVia: recovered.recoveredVia,
+      recoveredCount: recovered.pages.length,
+    }),
+  )
 
-    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${NOTION_API_KEY}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (!response.ok) {
-      const text = await response.text()
-      throw new Error(`Failed to query Notion reviews needing reply: ${response.status} - ${text}`)
-    }
-
-    const data = await response.json()
-    const pageResults: any[] = data.results || []
-    for (const page of pageResults) {
-      results.push({ id: page.id, properties: page.properties || {} })
-    }
-
-    startCursor = data.has_more ? data.next_cursor : undefined
-  } while (startCursor)
-
-  return results
+  return recovered.pages
 }
 
 function getRichTextPlainText(prop: any): string | null {

@@ -12,6 +12,11 @@ import {
   richTextPlainFromProp,
 } from '@/lib/gmb-review-id'
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
+import {
+  googleReviewIdEqualsFilter,
+  queryNotionReviewPages,
+  resolveReviewDataSourceIds,
+} from '@/lib/notion-reviews-query'
 
 // Sisemine ühtlustatud arvustuse kuju
 type GoogleReview = {
@@ -240,43 +245,21 @@ async function fetchAllGoogleReviewsViaPlaces(): Promise<GoogleReview[]> {
   return mapped
 }
 
-export async function fetchAllNotionReviewPages(databaseId: string, apiKey: string): Promise<NotionPage[]> {
-  const results: NotionPage[] = []
-  let startCursor: string | undefined
-
-  do {
-    const body: Record<string, any> = {
-      page_size: 100,
-    }
-    if (startCursor) {
-      body.start_cursor = startCursor
-    }
-
-    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (!response.ok) {
-      const text = await response.text()
-      throw new Error(`Failed to query Notion reviews database: ${response.status} - ${text}`)
-    }
-
-    const data = await response.json()
-    const pageResults: any[] = data.results || []
-    for (const page of pageResults) {
-      results.push({ id: page.id, properties: page.properties || {} })
-    }
-
-    startCursor = data.has_more ? data.next_cursor : undefined
-  } while (startCursor)
-
-  return results
+export async function fetchAllNotionReviewPages(
+  databaseId: string,
+  apiKey: string,
+  dataSourceIds?: string[],
+): Promise<NotionPage[]> {
+  const result = await queryNotionReviewPages({ apiKey, databaseId, dataSourceIds })
+  console.log(
+    JSON.stringify({
+      note: 'fetchAllNotionReviewPages',
+      queryPath: result.queryPath,
+      dataSourceIds: result.dataSourceIds,
+      existingPages: result.pages.length,
+    }),
+  )
+  return result.pages
 }
 
 function buildNotionPropertiesFromReview(
@@ -413,34 +396,23 @@ async function findNotionPageByGoogleReviewId(
   apiKey: string,
   databaseId: string,
   reviewId: string,
+  dataSourceIds?: string[],
 ): Promise<NotionPage | null> {
-  const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      page_size: 5,
-      filter: {
-        property: 'Google review ID',
-        rich_text: { equals: reviewId },
-      },
-    }),
-  })
-  if (!response.ok) {
-    const text = await response.text()
-    console.error(`Failed to query Notion by review ID ${reviewId}: ${response.status} - ${text}`)
+  try {
+    const result = await queryNotionReviewPages({
+      apiKey,
+      databaseId,
+      dataSourceIds,
+      pageSize: 5,
+      filter: googleReviewIdEqualsFilter(reviewId),
+    })
+    if (result.pages.length === 0) return null
+    return result.pages.reduce(preferNotionReviewPage)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`Failed to query Notion by review ID ${reviewId}: ${message}`)
     return null
   }
-  const data = await response.json()
-  const pages: NotionPage[] = (data.results || []).map((page: { id: string; properties?: Record<string, unknown> }) => ({
-    id: page.id,
-    properties: page.properties || {},
-  }))
-  if (pages.length === 0) return null
-  return pages.reduce(preferNotionReviewPage)
 }
 
 async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
@@ -450,7 +422,15 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
   const reviewUrl = process.env.REVIEW_GOOGLE_URL || 'https://g.page/r/CXfsGh_UtN6-EBM/review'
 
   console.log(`Loading existing Notion reviews from database ${databaseId}...`)
-  const existingPages = await fetchAllNotionReviewPages(databaseId, NOTION_API_KEY)
+  const resolved = await resolveReviewDataSourceIds({ apiKey: NOTION_API_KEY, databaseId })
+  console.log(
+    JSON.stringify({
+      note: 'Notion reviews data sources',
+      dataSourceIds: resolved.ids,
+      dataSourceSource: resolved.source,
+    }),
+  )
+  const existingPages = await fetchAllNotionReviewPages(databaseId, NOTION_API_KEY, resolved.ids)
   const existingByReviewId = new Map<string, NotionPage>()
 
   for (const page of existingPages) {
@@ -479,7 +459,12 @@ async function upsertReviewsIntoNotion(reviews: GoogleReview[]) {
     let existing = findExistingByGoogleReviewId(existingByReviewId, reviewId)
 
     if (!existing) {
-      const live = await findNotionPageByGoogleReviewId(NOTION_API_KEY, databaseId, reviewId)
+      const live = await findNotionPageByGoogleReviewId(
+        NOTION_API_KEY,
+        databaseId,
+        reviewId,
+        resolved.ids,
+      )
       if (live) {
         liveLookupHits++
         existing = live
