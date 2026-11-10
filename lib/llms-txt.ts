@@ -3,7 +3,11 @@ import {
   ADDRESS_LOCALITY,
   ADDRESS_REGION,
   BIRTHDAY_PRICE_EUR,
+  BUS_LINE,
+  BUS_STOP,
   CLOSES,
+  DISTANCE_FROM_TARTU_KM,
+  DRIVE_TIME_FROM_TARTU_MIN,
   EMAIL,
   GEO_LATITUDE,
   GEO_LONGITUDE,
@@ -75,7 +79,7 @@ export function buildLlmsTxt(baseUrl: string): string {
 
 ${LEGAL_NAME}, registrikood ${REG_CODE}.
 Aadress: ${STREET_ADDRESS}, ${ADDRESS_LOCALITY}, ${ADDRESS_REGION} ${POSTAL_CODE}, Eesti.
-Koordinaadid: ${GEO_LATITUDE}, ${GEO_LONGITUDE} (~8 km Tartu kesklinnast, sõiduaeg ~15 min).
+Koordinaadid: ${GEO_LATITUDE}, ${GEO_LONGITUDE} (~${DISTANCE_FROM_TARTU_KM} km Tartu kesklinnast, sõiduaeg ~${DRIVE_TIME_FROM_TARTU_MIN} min). Buss: Tartu linnaliin nr ${BUS_LINE}, peatus ${BUS_STOP}.
 Kontakt: ${PHONE}, ${EMAIL}.
 Lahtiolekuajad: E–P ${OPENS}–${CLOSES}. Külastus ainult eelneval kokkuleppel.
 
@@ -140,7 +144,7 @@ export function buildLlmsFullTxt(baseUrl: string): string {
 - Üritus papagoidega väljas: 250 € + kohalesõidutasu, ca 1 tund (Teenused).
 - Grupid: koolid, lasteaiad, ettevõtted, suured perekonnad; 10 € / inimene.
 - Ligipääs: ratastooliga võimalik, sissepääsul üks aste. Parkimine tasuta maja ees.
-- Tartust: Tartu–Võru mnt (E263) Ülenurme suunas, ~8 km pärast paremale Soinaste suunas.
+- Tartust: mööda Võru tänavat Ülenurme suunas; keskus Tartu mnt 80 (Tartu–Võru maantee ääres, Soinastes), enne Ülenurmet. ~${DISTANCE_FROM_TARTU_KM} km / ~${DRIVE_TIME_FROM_TARTU_MIN} min. Buss: linnaliin nr ${BUS_LINE}, peatus ${BUS_STOP}.
 - Annetuse sihtotstarbed: kingi külastus, loomade toit, üldine. MTÜ ei ole TMIN nimekirjas; maksusoodustust ei lubata.
 - VIP hinnatabel: ${vipTiersLine()} (vahemik ${vip.low}–${vip.high} €).
 - Kinkekaart lunastatakse keskuses; 10 € samm 10–1000 €.

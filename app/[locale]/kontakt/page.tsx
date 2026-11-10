@@ -1,5 +1,6 @@
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react'
 import ContactForm from './_components/contact-form'
+import LocationMap from './_components/location-map'
 import PetsVillaLink from '@/components/PetsVillaLink'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -157,7 +158,11 @@ export default async function ContactPage({ params }: Props) {
             <ContactForm />
           </div>
         </div>
+      </div>
 
+      <LocationMap />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="bg-gradient-to-r from-papagoi-green to-papagoi-blue rounded-2xl p-6 text-white">
             <h3 className="text-2xl font-bold mb-4 text-center">{t('quickActions')}</h3>

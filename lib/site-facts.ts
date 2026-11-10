@@ -23,6 +23,17 @@ export const GEO_LATITUDE = 58.3345959
 export const GEO_LONGITUDE = 26.7161083
 export const GOOGLE_PLACE_ID = 'ChIJcxmPH0U360YRd-waH9S03r4'
 
+/** Tartu kesklinnast (Oleg 10.11.2026; Kontakt, KKK, llms.txt). */
+export const DISTANCE_FROM_TARTU_KM = 6
+export const DRIVE_TIME_FROM_TARTU_MIN = 10
+export const BUS_LINE = '7'
+export const BUS_STOP = 'Vana-Linnaveere'
+
+/** Kontakt-kaardi GPS-rida: 58.3346, 26.7161. */
+export function formatGeoCoordinates(): string {
+  return `${GEO_LATITUDE.toFixed(4)}, ${GEO_LONGITUDE.toFixed(4)}`
+}
+
 export const OPENS = '12:00'
 export const CLOSES = '18:00'
 export const DAYS_OF_WEEK = [

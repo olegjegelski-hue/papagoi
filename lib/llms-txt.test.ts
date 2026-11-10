@@ -26,6 +26,14 @@ describe('buildLlmsTxt', () => {
     assert.ok(text.includes('Kultuuriranits'))
     assert.ok(text.includes('#anneta'))
     assert.equal(text.includes('58.2344'), false)
+    assert.equal(text.includes('58.3485'), false)
+    assert.equal(text.includes('~8 km'), false)
+    assert.equal(text.includes('~15 min'), false)
+    assert.equal(text.includes('paremale'), false)
+    assert.ok(text.includes('~6 km Tartu kesklinnast'))
+    assert.ok(text.includes('~10 min'))
+    assert.ok(text.includes('Vana-Linnaveere'))
+    assert.ok(text.includes('linnaliin nr 7'))
     for (const tier of VIP_PRICE_TIERS) {
       assert.ok(text.includes(`${tier.price} €`))
     }
@@ -39,5 +47,8 @@ describe('buildLlmsTxt', () => {
     const full = buildLlmsFullTxt(BASE)
     assert.ok(full.includes('250 €'))
     assert.ok(full.startsWith('# Papagoi Keskus'))
+    assert.ok(full.includes('Võru tänavat Ülenurme suunas'))
+    assert.equal(full.includes('E263'), false)
+    assert.equal(full.includes('paremale'), false)
   })
 })

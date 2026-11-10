@@ -178,6 +178,40 @@
     "faqCancel": "How do I cancel a visit?",
     "faqCancelA": "Please let us know at least 24 hours in advance. We can then reschedule and offer you another time."
   },
+  "LocationMap": {
+    "titleBefore": "How to",
+    "titleHighlight": "find us?",
+    "subtitle": "We are near Tartu, easy to reach by car or public transport",
+    "addressLine": "Tartu mnt 80, Soinaste",
+    "addressRegion": "Kambja parish, Tartu County",
+    "viewOnMaps": "View on Google Maps",
+    "byCar": "By car",
+    "fromTartuLabel": "From Tartu:",
+    "fromTartu": "From Tartu, take Võru tänav towards Ülenurme. The centre is at Tartu mnt 80 (on the Tartu–Võru road, in Soinaste), before Ülenurme.",
+    "fromTallinnLabel": "From Tallinn:",
+    "fromTallinn": "Take the A2 to Tartu, then Võru tänav towards Ülenurme.",
+    "driveTimeLabel": "Driving time from Tartu:",
+    "driveTime": "about {minutes} minutes",
+    "parking": "Free parking in front of the house or by the roadside",
+    "byBus": "By bus",
+    "busInfo": "Tartu city bus no. {line}, stop {stop}.",
+    "tips": "Useful tips",
+    "gps": "GPS coordinates:",
+    "landmarks": "Landmarks:",
+    "landmarksValue": "Kambja parish, Soinaste village",
+    "distance": "Distance:",
+    "distanceValue": "about {km} km from Tartu city centre",
+    "markAs": "Search for:",
+    "markAsValue": "Tartu mnt 80",
+    "important": "Important!",
+    "meetingPoint": "Meeting point:",
+    "meetingPointValue": "We will meet you in the yard or at the door",
+    "ifLost": "If you get lost:",
+    "ifLostValue": "Call {phone}",
+    "onArrival": "When you arrive:",
+    "onArrivalValue": "Let us know that you are here",
+    "callCta": "Call if you have questions"
+  },
   "KinkekaartPage": {
     "title": "Gift card",
     "intro": "Give someone close to you a visit to the Parrot Centre. A digital gift card is ideal for birthdays, anniversaries or just to make someone's day.",
@@ -509,7 +543,7 @@
       },
       {
         "question": "How do I get there and how far is it from Tartu city centre?",
-        "answer": "We are at Tartu mnt 80, Soinaste, Kambja parish — about 8 km from Tartu city centre, around 15 minutes by car. From Tartu: take the Tartu–Võru road (E263) towards Ülenurme, after about 8 km turn right towards Soinaste. Free parking in front of the house. If you get lost, call +372 512 7938."
+        "answer": "We are at Tartu mnt 80, Soinaste, Kambja parish — about 6 km from Tartu city centre, around 10 minutes by car. From Tartu, take Võru tänav towards Ülenurme; the centre is at Tartu mnt 80 (on the Tartu–Võru road, in Soinaste), before Ülenurme. By bus: Tartu city bus no. 7, stop Vana-Linnaveere. Free parking in front of the house or by the roadside."
       }
     ]
   },
