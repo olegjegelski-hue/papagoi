@@ -48,7 +48,6 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 
 ## 4. Teadaolevad GAP-id / prioriteedid (ära „unusta“)
 
-- E-kirjade kohaletoimetavus (SPF/DKIM/DMARC) — SPF + DKIM + DMARC DNS-kirjed puudu/poolik; email-only voog (broneering, kinkekaart) võib rämpsu sattuda. *(DNS-töö, kasutaja teha.)*
 - Online maksed kinkekaardile ja annetustele (praegu käsitsi ülekanne; Montonio MTÜ-le ootel)
 - Ära loo paralleelseid „ajutisi“ lahendusi — sulge GAP või dokumenteeri teadlikult Ootel
 
@@ -142,3 +141,6 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-11-10:** Ristiisa programm suletud (`RISTIISA_ENABLED = false`, 307 → /toetused); /annetus leht kustutatud (308 → /toetused#anneta) (§3 Annetused, Sisu) — PR #25, commit b7cd5fa.
 - **2026-11-10:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #26, commit bb92d18.
 - **2026-11-10:** Faktid ühes kohas `lib/site-facts.ts` (§1); ühtne JSON-LD `@graph` (LocalBusiness + TouristAttraction + Zoo, õige GPS, hasMap, makesOffer), aggregateRating Notioni „Hinne“ väljast, `/llms.txt` + `/llms-full.txt` (§8) — PR #27, commit 86dcad2. Kontaktilehe teejuhis (Võru tänav Ülenurme suunas), 6 km / ~10 min, buss nr 7 Vana-Linnaveere, GPS ET/EN/RU (§1) — PR #28, commit ee5ced9.
+- **2026-11-11:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #29, commit b93735d
+- **2026-11-11:** Lõpplihvimine — PR #30, commit 478c5cb: mobiili horisontaalne kerimine (kontakt, RU H1), metakirjeldused, tekstivead, 22 kasutamata komponenti ja 6 i18n nimeruumi kustutatud, `/api/test-email` kaitstud `requireCronAuth`-iga, `gift-card-order` rate-limit. Reeglid ei muutunud.
+- **2026-11-11:** GAP „E-kirjade kohaletoimetavus (SPF/DKIM/DMARC)“ suletud (§4). Kontrollitud: SPF lubab Alfaneti (80.250.114.243/.239) + Google'i, DKIM `default` + `google`, DMARC `p=quarantine` (aruanded Postmark); saidi kiri läbis Gmailis spf=pass, dkim=pass, dmarc=pass.
