@@ -6,9 +6,7 @@ import { routing } from '@/i18n/routing'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { Toaster } from 'sonner'
-import LocalBusinessSchema from '@/components/LocalBusinessSchema'
-import TouristAttractionSchema from '@/components/TouristAttractionSchema'
-import OrganizationSchema from '@/components/OrganizationSchema'
+import JsonLdSchema from '@/components/JsonLdSchema'
 import CookieBanner from '@/components/CookieBanner'
 import SetHtmlLang from '@/components/SetHtmlLang'
 
@@ -33,9 +31,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <>
       <SetHtmlLang locale={locale} />
-      <LocalBusinessSchema />
-      <TouristAttractionSchema />
-      <OrganizationSchema />
+      <JsonLdSchema />
       <NextIntlClientProvider messages={messages} locale={locale}>
         <Navigation />
         <main className="flex-1 flex flex-col bg-papagoi-beige">

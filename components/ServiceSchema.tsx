@@ -1,14 +1,15 @@
+import { jsonLdId } from '@/lib/json-ld'
+import { getSiteUrl } from '@/lib/seo'
+
 export default function ServiceSchema() {
+  const provider = { '@id': jsonLdId(getSiteUrl(), 'business') }
   const services = [
     {
       "@type": "Service",
       "serviceType": "Külastus Papagoi Keskuses",
       "name": "Külastus Papagoi Keskuses",
       "description": "Külastus Papagoi Keskuses koos üle 50 papagoiga. Peremees räägib papagoidest, võimalus neid toita ja pildistada.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "areaServed": {
         "@type": "Country",
         "name": "Eesti"
@@ -27,10 +28,7 @@ export default function ServiceSchema() {
       "serviceType": "Sünnipäev Papagoi Keskuses",
       "name": "Sünnipäev Papagoi Keskuses",
       "description": "2.5 tunnine sünnipäevaprogramm papagoidega. Tutvustame papagoisid, merisigu, küülikuid ning kameeleone.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "offers": {
         "@type": "Offer",
         "price": "350",
@@ -44,10 +42,7 @@ export default function ServiceSchema() {
       "serviceType": "Üritus papagoidega väljas",
       "name": "Üritus papagoidega väljas",
       "description": "Papagoid tulevad teie juurde. Peremees tutvustab papagoi maailma, kaasas on 2-3 papagoid, jutustamine ja trikid.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "offers": {
         "@type": "Offer",
         "price": "250",
@@ -61,10 +56,7 @@ export default function ServiceSchema() {
       "serviceType": "VIP külastus",
       "name": "VIP külastus Papagoi Keskuses",
       "description": "Privaatne külastus ainult ühele seltskonnale, 1–20 inimest, kestus 45–60 min. Tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel kell 10:00, 11:00 või 18:00. Giidi juhendus, papagoide käest söötmine värske puuviljaga.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "offers": {
         "@type": "AggregateOffer",
         "lowPrice": "50",
@@ -79,10 +71,7 @@ export default function ServiceSchema() {
       "serviceType": "Grupikülastused",
       "name": "Grupikülastused",
       "description": "Grupikülastused koolidele, lasteaiadele, ettevõtetele ja suurematele perekondadele.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "offers": {
         "@type": "Offer",
         "price": "10",
@@ -96,10 +85,7 @@ export default function ServiceSchema() {
       "serviceType": "Digitaalne kinkekaart",
       "name": "Papagoi Keskuse kinkekaart",
       "description": "Digitaalne kinkekaart Papagoi Keskuse külastuseks. 10 € = 1 külastus. Ideaalse kingituseks sünnipäevaks või juubeliks.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Papagoi Keskus"
-      },
+      "provider": provider,
       "areaServed": {
         "@type": "Country",
         "name": "Eesti"
