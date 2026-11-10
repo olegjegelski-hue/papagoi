@@ -62,7 +62,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 group">
             {/* Papagoi text - Nunito Bold (brändi logo font) */}
             <div className="text-right">
-              <h1 className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Papagoi</h1>
+              <span className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Papagoi</span>
             </div>
             
             {/* Logo with integrated slogan */}
@@ -76,7 +76,7 @@ export default function Navigation() {
             
             {/* Keskus text - Nunito Bold (brändi logo font) */}
             <div className="text-left">
-              <h1 className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Keskus</h1>
+              <span className="font-heading text-2xl md:text-3xl font-bold papagoi-text-gradient">Keskus</span>
             </div>
           </Link>
 

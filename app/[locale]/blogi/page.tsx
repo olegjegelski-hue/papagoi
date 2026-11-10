@@ -96,7 +96,7 @@ export default async function BlogPage({ params }: Props) {
       headline: post.title,
       description: post.excerpt || undefined,
       datePublished: post.date || undefined,
-      url: post.slug ? `${baseUrl}/${locale}/blogi/${post.slug}` : undefined,
+      url: post.slug ? `${baseUrl}/et/blogi/${post.slug}` : undefined,
       image: post.cover ? [post.cover] : undefined,
     })),
   }

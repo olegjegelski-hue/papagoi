@@ -106,11 +106,15 @@ export default function BlogPostsClient({ posts }: Props) {
                   )}
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-3">{post.title}</h2>
+                {locale !== 'et' && (
+                  <p className="text-xs text-gray-500 mb-3">{t('inEstonian')}</p>
+                )}
                 {post.excerpt && (
                   <p className="text-gray-600 leading-relaxed mb-6">{post.excerpt}</p>
                 )}
                 <Link
                   href={`/blogi/${post.slug || post.id}`}
+                  locale="et"
                   className="inline-flex items-center text-papagoi-blue font-semibold hover:underline"
                 >
                   {t('readMore')}

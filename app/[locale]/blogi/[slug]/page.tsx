@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { permanentRedirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
+import { getSiteUrl, etOnlyPageAlternates, shareImages } from '@/lib/seo'
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
 
 export const dynamic = 'force-dynamic'
@@ -338,6 +339,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>
 }): Promise<Metadata> {
   const { locale, slug } = await params
+  if (locale !== 'et') {
+    permanentRedirect(`/et/blogi/${slug}`)
+  }
   const post = await getPostBySlug(slug)
   if (!post) {
     return {
@@ -345,13 +349,13 @@ export async function generateMetadata({
     }
   }
   const baseUrl = getSiteUrl()
-  const canonicalUrl = `${baseUrl}/${locale}/blogi/${slug}`
+  const canonicalUrl = `${baseUrl}/et/blogi/${slug}`
   const description = post.excerpt || undefined
   const images = post.cover ? [post.cover] : shareImages(locale)
   return {
     title: `${post.title} | Papagoi Keskus`,
     description,
-    alternates: pageAlternates(locale, `blogi/${slug}`),
+    alternates: etOnlyPageAlternates(`blogi/${slug}`),
     openGraph: {
       type: 'article',
       title: post.title,
@@ -375,6 +379,9 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
+  if (locale !== 'et') {
+    permanentRedirect(`/et/blogi/${slug}`)
+  }
   const t = await getTranslations('BlogPage')
   const post = await getPostBySlug(slug)
   if (!post) {
@@ -398,7 +405,7 @@ export default async function BlogPostPage({
       })
     : ''
   const baseUrl = getSiteUrl()
-  const canonicalUrl = `${baseUrl}/${locale}/blogi/${slug}`
+  const canonicalUrl = `${baseUrl}/et/blogi/${slug}`
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
