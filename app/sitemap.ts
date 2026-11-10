@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
+import { RISTIISA_ENABLED } from '@/lib/features'
 import { getPublishedBlogSlugsForSitemap } from '@/lib/notion-blog-slugs'
 import { etOnlySitemapLanguages, localeUrl, sitemapLanguageAlternates } from '@/lib/seo'
 
@@ -13,9 +14,10 @@ const PATHS = [
   { path: 'kulastajatele', changeFrequency: 'monthly' as const, priority: 0.8 },
   { path: 'papagoid', changeFrequency: 'monthly' as const, priority: 0.8 },
   { path: 'blogi', changeFrequency: 'weekly' as const, priority: 0.7 },
-  { path: 'ristiisa-programm', changeFrequency: 'monthly' as const, priority: 0.7 },
+  ...(RISTIISA_ENABLED
+    ? [{ path: 'ristiisa-programm', changeFrequency: 'monthly' as const, priority: 0.7 }]
+    : []),
   { path: 'toetused', changeFrequency: 'monthly' as const, priority: 0.7 },
-  { path: 'annetus', changeFrequency: 'monthly' as const, priority: 0.6 },
   { path: 'privaatsus', changeFrequency: 'yearly' as const, priority: 0.3 },
 ]
 

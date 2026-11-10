@@ -1,7 +1,8 @@
 import { Heart, Gift, Calendar, Camera, Users, Phone, Mail, Check, Star } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { Link } from '@/i18n/navigation'
+import { Link, redirect } from '@/i18n/navigation'
+import { RISTIISA_ENABLED } from '@/lib/features'
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 
 type Props = { params: Promise<{ locale: string }> }
@@ -77,6 +78,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SponsorshipProgramPage({ params }: Props) {
   const { locale } = await params
+  if (!RISTIISA_ENABLED) {
+    redirect({ href: '/toetused', locale })
+  }
   setRequestLocale(locale)
   const t = await getTranslations('RistiisaPage')
   const baseUrl = getSiteUrl()

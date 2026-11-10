@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Heart, Star, Users, Clock, Euro, Check, Gift, Phone, Mail, X, Eye, Calendar, ExternalLink } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import PetsVillaLink from '@/components/PetsVillaLink'
+import { RISTIISA_ENABLED } from '@/lib/features'
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -165,7 +166,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
         </div>
 
         {/* Filter Buttons */}
-        {false && (
+        {RISTIISA_ENABLED && (
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             <button
               onClick={() => {
@@ -216,7 +217,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        <div className={`grid grid-cols-2 ${RISTIISA_ENABLED ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-6 mb-16`}>
           <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-green-600 mb-2">{baseParrots.length}+</div>
             <p className="text-gray-600">{t('statParrots')}</p>
@@ -225,10 +226,12 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
             <div className="text-3xl font-bold text-blue-600 mb-2">10+</div>
             <p className="text-gray-600">{t('statSpecies')}</p>
           </div>
-          <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
-            <div className="text-3xl font-bold text-red-600 mb-2">{baseParrots.filter(p => p.sponsorship?.status === 'available').length}</div>
-            <p className="text-gray-600">{t('statSeekingSponsor')}</p>
-          </div>
+          {RISTIISA_ENABLED && (
+            <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
+              <div className="text-3xl font-bold text-red-600 mb-2">{baseParrots.filter(p => p.sponsorship?.status === 'available').length}</div>
+              <p className="text-gray-600">{t('statSeekingSponsor')}</p>
+            </div>
+          )}
           <div className="bg-card rounded-xl p-6 text-center shadow-2xl">
             <div className="text-3xl font-bold text-yellow-600 mb-2">100%</div>
             <p className="text-gray-600">{t('statLove')}</p>
@@ -270,7 +273,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 >
                   <X className="w-6 h-6 text-gray-800" />
                 </button>
-                {false && (
+                {RISTIISA_ENABLED && (
                   <div className="absolute top-4 left-4">
                     <div className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedParrot.sponsorship?.status).bg} ${getStatusColor(selectedParrot.sponsorship?.status).text} ${getStatusColor(selectedParrot.sponsorship?.status).border} border backdrop-blur-sm`}>
                       {getStatusText(selectedParrot.sponsorship?.status, t)}
@@ -385,7 +388,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 </div>
               )}
 
-              {false && selectedParrot.sponsorship && (
+              {RISTIISA_ENABLED && selectedParrot.sponsorship && (
                 <div className="border-t pt-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-4">Ristiisa programm</h3>
                   {selectedParrot.sponsorship.status === 'sponsored' ? (
@@ -475,7 +478,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 )}
                 
                 {/* Sponsorship Status Badge */}
-                {false && (
+                {RISTIISA_ENABLED && (
                   <div className="absolute bottom-4 right-4">
                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(parrot.sponsorship.status).bg} ${getStatusColor(parrot.sponsorship.status).text} ${getStatusColor(parrot.sponsorship.status).border} border backdrop-blur-sm`}>
                       {getStatusText(parrot.sponsorship.status, t)}
@@ -528,7 +531,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
                 </div>
 
                 {/* Sponsorship Info - kompaktne */}
-                {parrot.sponsorship.status === 'pending' && (
+                {RISTIISA_ENABLED && parrot.sponsorship.status === 'pending' && (
                   <div className="border-t pt-3">
                     <div className="bg-yellow-50 rounded-lg p-2">
                       <div className="flex items-center justify-between mb-2">
@@ -591,7 +594,7 @@ export default function ParrotsPageClient({ allParrots }: { allParrots: any[] })
           </div>
         </div>
 
-        {false && (
+        {RISTIISA_ENABLED && (
           <div className="mt-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-3xl p-12 text-center">
             <h2 className="text-3xl font-bold text-gray-800 mb-6">
               Meie keskuses elab palju rohkem!
