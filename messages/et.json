@@ -1003,7 +1003,7 @@
     "submitting": "Kontrollin…",
     "logout": "Logi välja",
     "loggedIn": "Oled sisse logitud. Lunastuslehel näed kehtiva kaardi juures nuppu „Märgi kasutatuks“.",
-    "disabled": "Keskuse vaade on väljas. Lisa serverisse GIFT_CARD_STAFF_PIN.",
+    "disabled": "Keskuse vaade on väljas.",
     "goRedeem": "Ava lunastusleht",
     "codeLabel": "Kinkekaardi kood",
     "openCode": "Ava kaart",

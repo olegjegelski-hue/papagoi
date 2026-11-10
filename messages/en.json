@@ -1003,7 +1003,7 @@
     "submitting": "Checking…",
     "logout": "Log out",
     "loggedIn": "You are signed in. On the redeem page, a valid card shows the “Mark as used” button.",
-    "disabled": "Staff view is off. Add GIFT_CARD_STAFF_PIN on the server.",
+    "disabled": "Staff view is off.",
     "goRedeem": "Open redeem page",
     "codeLabel": "Gift card code",
     "openCode": "Open card",
