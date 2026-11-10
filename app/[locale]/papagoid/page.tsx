@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getSiteUrl, pageAlternates, shareImages } from '@/lib/seo'
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd'
+import { RISTIISA_ENABLED } from '@/lib/features'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -13,15 +14,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isEn = locale === 'en'
   const title = isRu ? 'Наши попугаи - Центр попугаев в Тарту' : isEn ? 'Our parrots - Parrot Centre Tartu' : 'Meie papagoid - Papagoi Keskus Tartus'
   const description = isRu
-    ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Каждый уникален. Станьте крёстным или подарите подарочную карту на визит!'
+    ? RISTIISA_ENABLED
+      ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Каждый уникален. Станьте крёстным или подарите подарочную карту на визит!'
+      : 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Каждый уникален. Забронируйте визит или подарите подарочную карту!'
     : isEn
-      ? 'Meet our parrots. Over 50 parrots. Each one is unique. Become a sponsor or give a gift card for a visit!'
-      : 'Tutvuge meie papagoidega. Üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks või kingi kinkekaart külastuseks!'
+      ? RISTIISA_ENABLED
+        ? 'Meet our parrots. Over 50 parrots. Each one is unique. Become a sponsor or give a gift card for a visit!'
+        : 'Meet our parrots. Over 50 parrots. Each one is unique. Book a visit or give a gift card!'
+      : RISTIISA_ENABLED
+        ? 'Tutvuge meie papagoidega. Üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Hakake ristiisaks või kingi kinkekaart külastuseks!'
+        : 'Tutvuge meie papagoidega. Üle 50 papagoi. Iga papagoi on ainulaadne isiksus oma loo ja iseloomuga. Broneeri külastus või kingi kinkekaart!'
   const keywords = isRu
-    ? 'попугаи Тарту, попугаи Эстония, Центр попугаев, программа крёстных, где посмотреть попугаев Эстония'
+    ? RISTIISA_ENABLED
+      ? 'попугаи Тарту, попугаи Эстония, Центр попугаев, программа крёстных, где посмотреть попугаев Эстония'
+      : 'попугаи Тарту, попугаи Эстония, Центр попугаев, забронировать визит, подарочная карта, где посмотреть попугаев Эстония'
     : isEn
-      ? 'parrots Tartu, parrots Estonia, Parrot Centre parrots, sponsor programme, where to see parrots Estonia, parrot photos Tartu'
-      : 'papagoid Tartus, papagoid Eestis, Papagoi Keskus papagoid, ristiisa programm, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus'
+      ? RISTIISA_ENABLED
+        ? 'parrots Tartu, parrots Estonia, Parrot Centre parrots, sponsor programme, where to see parrots Estonia, parrot photos Tartu'
+        : 'parrots Tartu, parrots Estonia, Parrot Centre parrots, book a visit, gift card, where to see parrots Estonia, parrot photos Tartu'
+      : RISTIISA_ENABLED
+        ? 'papagoid Tartus, papagoid Eestis, Papagoi Keskus papagoid, ristiisa programm, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus'
+        : 'papagoid Tartus, papagoid Eestis, Papagoi Keskus papagoid, broneeri külastus, kinkekaart, kus saab papagoid näha Eestis, papagoidega fotod Tartu, papagoidekeskus Tartus'
+  const shareDescription = isRu
+    ? RISTIISA_ENABLED
+      ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Станьте крёстным или подарите подарочную карту.'
+      : 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Забронируйте визит или подарите подарочную карту.'
+    : isEn
+      ? RISTIISA_ENABLED
+        ? 'Meet our parrots. Over 50 parrots. Become a sponsor or give a gift card.'
+        : 'Meet our parrots. Over 50 parrots. Book a visit or give a gift card.'
+      : RISTIISA_ENABLED
+        ? 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.'
+        : 'Tutvuge meie papagoidega. Üle 50 papagoi. Broneeri külastus või kingi kinkekaart.'
   const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_EE' : 'et_EE'
   return {
     title,
@@ -30,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: pageAlternates(locale, 'papagoid'),
     openGraph: {
       title: isRu ? 'Наши попугаи - Центр попугаев в Тарту' : isEn ? 'Our parrots - Parrot Centre Tartu' : 'Meie papagoid - Papagoi Keskus Tartus',
-      description: isRu ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Станьте крёстным или подарите подарочную карту.' : isEn ? 'Meet our parrots. Over 50 parrots. Become a sponsor or give a gift card.' : 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',
+      description: shareDescription,
       type: 'website',
       locale: ogLocale,
       url: `${base}/${locale}/papagoid`,
@@ -39,7 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: isRu ? 'Наши попугаи - Центр попугаев в Тарту' : isEn ? 'Our parrots - Parrot Centre Tartu' : 'Meie papagoid - Papagoi Keskus Tartus',
-      description: isRu ? 'Познакомьтесь с нашими попугаями. Более 50 попугаев. Станьте крёстным или подарите подарочную карту.' : isEn ? 'Meet our parrots. Over 50 parrots. Become a sponsor or give a gift card.' : 'Tutvuge meie papagoidega. Üle 50 papagoi. Hakake ristiisaks või kingi kinkekaart.',
+      description: shareDescription,
       images: shareImages(locale),
     },
   }

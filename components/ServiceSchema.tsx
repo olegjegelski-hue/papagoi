@@ -84,7 +84,7 @@ export default function ServiceSchema() {
       "@type": "Service",
       "serviceType": "Digitaalne kinkekaart",
       "name": "Papagoi Keskuse kinkekaart",
-      "description": "Digitaalne kinkekaart Papagoi Keskuse külastuseks. 10 € = 1 külastus. Ideaalse kingituseks sünnipäevaks või juubeliks.",
+      "description": "Digitaalne kinkekaart Papagoi Keskuse külastuseks. 10 € = 1 külastus. Ideaalne kingitus sünnipäevaks või juubeliks.",
       "provider": provider,
       "areaServed": {
         "@type": "Country",

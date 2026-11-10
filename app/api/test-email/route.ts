@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server';
+import { requireCronAuth } from '@/lib/cron-auth';
 import { testEmailConnection } from '@/lib/test-email';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * API endpoint emaili testimiseks
- * GET /api/test-email - Testib SMTP ühendust ja saadab test emaili
+ * API endpoint emaili testimiseks.
+ * GET /api/test-email — testib SMTP ühendust ja saadab testkirja.
+ * Sama kaitse nagu cron-endpointidel: Authorization: Bearer ${CRON_SECRET}.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = requireCronAuth(request);
+  if (unauthorized) return unauthorized;
+
   try {
     const result = await testEmailConnection();
     return NextResponse.json({
@@ -17,6 +22,7 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('Email test error:', error);
+    const isProd = process.env.NODE_ENV === 'production';
     const code = error?.code || '';
     const hint =
       ['EDNS', 'ENOTFOUND', 'EAI_AGAIN'].includes(code)
@@ -27,16 +33,15 @@ export async function GET() {
             ? 'Ühendus aegus – kontrolli SMTP_HOST ja SMTP_PORT (587)'
             : null;
     return NextResponse.json(
-      {
-        success: false,
-        error: error?.message || 'Emaili test ebaõnnestus',
-        code,
-        hint,
-      },
+      isProd
+        ? { success: false, error: 'Emaili test ebaõnnestus' }
+        : {
+            success: false,
+            error: error?.message || 'Emaili test ebaõnnestus',
+            code,
+            hint,
+          },
       { status: 500 }
     );
   }
 }
-
-
-

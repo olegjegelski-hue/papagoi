@@ -55,6 +55,7 @@ export default function GiftCardForm() {
           'confirmRequired',
           'emailInvalid',
           'amountInvalid',
+          'rateLimited',
           'serverConfig',
           'unknown',
         ] as const

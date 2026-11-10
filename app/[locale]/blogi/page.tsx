@@ -111,7 +111,7 @@ export default async function BlogPage({ params }: Props) {
         
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold papagoi-text-gradient mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold papagoi-text-gradient mb-6 break-words">
             {t('title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">

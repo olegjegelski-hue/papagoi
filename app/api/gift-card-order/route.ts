@@ -3,6 +3,7 @@ import { createGiftCardOrder } from '@/lib/notion-gift-cards'
 import { sendGiftCardOrderEmail } from '@/lib/email'
 import { cleanText } from '@/lib/sanitize'
 import { parseVisitMailLocale } from '@/lib/visit-language'
+import { getClientIp, rateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 const MAX_AMOUNT = 1000
@@ -32,6 +33,12 @@ export async function POST(request: Request) {
 
     if (confirm !== true) {
       return NextResponse.json({ ok: false, errorCode: 'confirmRequired' }, { status: 400 })
+    }
+
+    const ip = getClientIp(request.headers)
+    const rl = rateLimit(`gift-card-order:${ip}`, { windowMs: 10 * 60 * 1000, max: 10, minIntervalMs: 5 * 1000 })
+    if (!rl.allowed) {
+      return NextResponse.json({ ok: false, errorCode: 'rateLimited' }, { status: 429 })
     }
 
     // Emaili formaadi kontroll

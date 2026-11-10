@@ -4,51 +4,6 @@
 import { Clock, Camera, Heart, Sparkles, Users, Gift } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
-const visitSteps = [
-  {
-    icon: Users,
-    title: 'Tervitamine ja tutvustus',
-    description: 'Tutvustame end ja räägime külastuse käigust',
-    details: 'Saate ülevaate meie keskusest ja külastuse reeglitest',
-    color: 'bg-blue-500'
-  },
-  {
-    icon: Sparkles,
-    title: 'Papagoidega tutvumine',
-    description: 'Räägime papagoidest, nende iseloomust ja toitumisest',
-    details: 'Õpite tundma erinevaid liike ja nende käitumist',
-    color: 'bg-green-500'
-  },
-  {
-    icon: Gift,
-    title: 'Pähklite andmine',
-    description: 'Saate käest anda pähkleid meie papagoidele',
-    details: 'Kogemus otsesest kontaktist lindudega',
-    color: 'bg-yellow-500'
-  },
-  {
-    icon: Camera,
-    title: 'Pildistamine papagoidega',
-    description: 'Paneme aara teile käe peale istuma!',
-    details: 'Unustamatuid pilte suure aara papagoiga',
-    color: 'bg-red-500'
-  },
-  {
-    icon: Heart,
-    title: 'Interaktiivne suhtlus',
-    description: 'Papagoid räägivad, trikitavad, vilistavad, tantsivad ...',
-    details: 'Inimese ja papagoi vahetu suhtlus',
-    color: 'bg-purple-500'
-  },
-  {
-    icon: Clock,
-    title: 'Nõuanded ja küsimused',
-    description: 'Õpime, kuidas papagoid lemmikloomana kasvatada',
-    details: 'Vastame kõikidele küsimustele ja jagame kogemusi',
-    color: 'bg-indigo-500'
-  }
-]
-
 export default function VisitProcess() {
   const t = useTranslations('VisitProcess')
   const visitSteps = [
