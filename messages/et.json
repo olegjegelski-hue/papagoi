@@ -178,6 +178,40 @@
     "faqCancel": "Kuidas külastust tühistada?",
     "faqCancelA": "Palun teavitage meid vähemalt 24 tundi ette. Nii saame ümber planeerida ja pakkuda teile teist sobivat aega."
   },
+  "LocationMap": {
+    "titleBefore": "Kuidas meie",
+    "titleHighlight": "juurde jõuda?",
+    "subtitle": "Asume Tartu lähistel, hõlpsa ligipääsuga nii autoga kui ühistranspordiga",
+    "addressLine": "Tartu mnt 80, Soinaste",
+    "addressRegion": "Kambja vald, Tartumaa",
+    "viewOnMaps": "Vaata Google Mapsist",
+    "byCar": "Autoga",
+    "fromTartuLabel": "Tartust:",
+    "fromTartu": "Tartust mööda Võru tänavat Ülenurme suunas. Keskus on Tartu mnt 80 (Tartu–Võru maantee ääres, Soinastes), enne Ülenurmet.",
+    "fromTallinnLabel": "Tallinnast:",
+    "fromTallinn": "A2 kaudu Tartusse, sealt Võru tänavat Ülenurme suunas.",
+    "driveTimeLabel": "Sõiduaeg Tartust:",
+    "driveTime": "umbes {minutes} minutit",
+    "parking": "Parkimine tasuta maja ees või tee äärde",
+    "byBus": "Bussiga",
+    "busInfo": "Tartu linnaliin nr {line}, peatus {stop}.",
+    "tips": "Kasulikud nipid",
+    "gps": "GPS koordinaadid:",
+    "landmarks": "Orientiirid:",
+    "landmarksValue": "Kambja vald, Soinaste küla",
+    "distance": "Lähedus:",
+    "distanceValue": "umbes {km} km Tartu kesklinnast",
+    "markAs": "Märkida:",
+    "markAsValue": "Tartu mnt 80",
+    "important": "Oluline!",
+    "meetingPoint": "Kohtumiskoht:",
+    "meetingPointValue": "Tuleme teid vastu õue või ukse juurde",
+    "ifLost": "Kui ekslesite:",
+    "ifLostValue": "Helistage {phone}",
+    "onArrival": "Kohale jõudes:",
+    "onArrivalValue": "Andke meile märku, et olete kohal",
+    "callCta": "Helistage, kui tekivad küsimused"
+  },
   "KinkekaartPage": {
     "title": "Kinkekaart",
     "intro": "Kingi lähedasele külastus Papagoi Keskuses. Digitaalne kinkekaart on ideaalne sünnipäevaks, juubeliks või lihtsalt hea meele tegemiseks.",
@@ -509,7 +543,7 @@
       },
       {
         "question": "Kuidas kohale saab ja kui kaugel on Tartu kesklinnast?",
-        "answer": "Asume aadressil Tartu mnt 80, Soinaste, Kambja vald — umbes 8 km Tartu kesklinnast, sõiduaeg ca 15 minutit. Tartust: Tartu–Võru mnt (E263) Ülenurme suunas, umbes 8 km pärast pöörake paremale Soinaste suunas. Parkimine tasuta maja ees. Kui eksite, helistage +372 512 7938."
+        "answer": "Asume aadressil Tartu mnt 80, Soinaste, Kambja vald — umbes 6 km Tartu kesklinnast, sõiduaeg umbes 10 minutit. Tartust mööda Võru tänavat Ülenurme suunas; keskus on Tartu mnt 80 (Tartu–Võru maantee ääres, Soinastes), enne Ülenurmet. Bussiga: Tartu linnaliin nr 7, peatus Vana-Linnaveere. Parkimine tasuta maja ees või tee äärde."
       }
     ]
   },

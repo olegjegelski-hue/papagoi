@@ -78,6 +78,8 @@ describe('buildSiteJsonLdGraph', () => {
     const raw = JSON.stringify(buildSiteJsonLdGraph(BASE, null))
     assert.equal(raw.includes('58.2344'), false)
     assert.equal(raw.includes('26.7250'), false)
+    assert.equal(raw.includes('58.3485'), false)
+    assert.equal(raw.includes('26.8239'), false)
   })
 
   it('WebSite ja Organization viitavad @id-ga', () => {
