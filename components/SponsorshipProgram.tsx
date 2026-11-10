@@ -1,6 +1,7 @@
 
 'use client'
 import { Heart, Gift, Calendar, Camera } from 'lucide-react'
+import { RISTIISA_ENABLED } from '@/lib/features'
 
 const benefits = [
   {
@@ -26,6 +27,7 @@ const benefits = [
 ]
 
 export default function SponsorshipProgram() {
+  if (!RISTIISA_ENABLED) return null
 
   return (
     <section className="py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 relative overflow-hidden">
