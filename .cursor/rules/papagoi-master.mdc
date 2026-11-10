@@ -15,6 +15,7 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 
 - **Äriüksus:** Papagoi Keskus MTÜ (reg nr 80647595) · **Kontakt:** +372 512 7938 · keskus@papagoi.ee
 - **Aadress:** Tartu mnt 80, Soinaste, Kambja vald
+- **Faktid ühes kohas:** `lib/site-facts.ts` — nimi, registrikood, telefon, e-post, aadress, GPS 58.3345959, 26.7161083, Google Place ID, lahtiolek, hinnad (külastus 10 €, sünnipäev 350 €, kinkekaart 10 € = 1 külastus, VIP astmed `lib/vip-visit.ts`-ist), kaugus Tartust 6 km / ~10 min autoga, buss nr 7 peatus Vana-Linnaveere. Teejuhis: Tartust mööda Võru tänavat Ülenurme suunas, Tartu mnt 80 enne Ülenurmet. JSON-LD, llms.txt, KKK ja kontaktileht loevad need väärtused siit — ära hardkoodi neid mujale ega lisa fakte, mida lehed ei kinnita.
 - **Repo:** `olegjegelski-hue/papagoi` · **Hosting:** Vercel (auto-deploy `main` peale)
 - Sait on **juba väga valmis** — uued tööd on enamasti täiendused, GAP-ide sulgemine ja hooldus, mitte greenfield
 
@@ -79,7 +80,9 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 ## 8. SEO & jõudlus
 
 - **Kanooniline domeen: `https://papagoi.ee` (non-www).** Kõik URL-id (sitemap, canonical, hreflang, og:url, JSON-LD) kasutavad non-www. Ära genereeri `www.papagoi.ee` viiteid — 301 www→non-www on juba serveris
-- Meta, Open Graph, schema.org LocalBusiness jms säilitada/täiendada
+- Meta ja Open Graph säilitada/täiendada. Struktuurandmed: üks JSON-LD `@graph` (`lib/json-ld.ts`, `components/JsonLdSchema.tsx`) — `#business` tüübiga LocalBusiness + TouristAttraction + Zoo (geo, hasMap, lahtiolek, makesOffer), Organization ja WebSite, seotud `@id` kaudu. Ära lisa lehtedele eraldi paralleelseid LocalBusiness plokke.
+- aggregateRating tuleb Notioni Google Reviews väljast „Hinne“ (`lib/notion-aggregate-rating.ts`, vahemälu 24 h); kui päring ebaõnnestub, jäetakse aggregateRating välja — ära hardkoodi hinnet ega arvustuste arvu.
+- AI-assistentidele: `/llms.txt` ja `/llms-full.txt` (`lib/llms-txt.ts`) genereeritakse `site-facts.ts`-ist ja KKK-st; uue olulise fakti (hind, aeg, teenus) lisamisel uuenda ka need.
 - `robots` / noindex tundlike lehtede jaoks (nt trükileht)
 - Pildid ja Core Web Vitals — ära lõhu LCP asjatult
 - Blogipostitused on ainult eesti keeles: `/en|ru/blogi/[slug]` → 301 `/et/blogi/[slug]`; sitemapis ja hreflang'is ainult et + x-default (`lib/blog-post-locale.ts`, etOnlyPageAlternates). EN/RU blogi nimekiri jääb, postitustel märge „eesti keeles“.
@@ -137,3 +140,5 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-11-10:** SEO: blogipostitused ainult ET (EN/RU 301 → /et/), sitemap/hreflang et + x-default, üks H1 lehel (§8); GAP „Sitemap / SEO“ suletud (§4) — PR #23, commit b0e9e2e.
 - **2026-11-10:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #24.
 - **2026-11-10:** Ristiisa programm suletud (`RISTIISA_ENABLED = false`, 307 → /toetused); /annetus leht kustutatud (308 → /toetused#anneta) (§3 Annetused, Sisu) — PR #25, commit b7cd5fa.
+- **2026-11-10:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #26, commit bb92d18.
+- **2026-11-10:** Faktid ühes kohas `lib/site-facts.ts` (§1); ühtne JSON-LD `@graph` (LocalBusiness + TouristAttraction + Zoo, õige GPS, hasMap, makesOffer), aggregateRating Notioni „Hinne“ väljast, `/llms.txt` + `/llms-full.txt` (§8) — PR #27, commit 86dcad2. Kontaktilehe teejuhis (Võru tänav Ülenurme suunas), 6 km / ~10 min, buss nr 7 Vana-Linnaveere, GPS ET/EN/RU (§1) — PR #28, commit ee5ced9.
