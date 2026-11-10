@@ -47,7 +47,6 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 
 ## 4. Teadaolevad GAP-id / prioriteedid (ära „unusta“)
 
-- Sitemap / SEO: `ru` + blogi slugid vajadusel täiendada
 - E-kirjade kohaletoimetavus (SPF/DKIM/DMARC) — SPF + DKIM + DMARC DNS-kirjed puudu/poolik; email-only voog (broneering, kinkekaart) võib rämpsu sattuda. *(DNS-töö, kasutaja teha.)*
 - Online maksed kinkekaardile ja annetustele (praegu käsitsi ülekanne; Montonio MTÜ-le ootel)
 - Ära loo paralleelseid „ajutisi“ lahendusi — sulge GAP või dokumenteeri teadlikult Ootel
@@ -83,6 +82,8 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - Meta, Open Graph, schema.org LocalBusiness jms säilitada/täiendada
 - `robots` / noindex tundlike lehtede jaoks (nt trükileht)
 - Pildid ja Core Web Vitals — ära lõhu LCP asjatult
+- Blogipostitused on ainult eesti keeles: `/en|ru/blogi/[slug]` → 301 `/et/blogi/[slug]`; sitemapis ja hreflang'is ainult et + x-default (`lib/blog-post-locale.ts`, etOnlyPageAlternates). EN/RU blogi nimekiri jääb, postitustel märge „eesti keeles“.
+- Igal lehel täpselt üks H1. Päise logo („Papagoi“ / „Keskus“) ei ole H1.
 
 ## 9. Turvalisus
 
@@ -132,3 +133,5 @@ Eesmärk: broneeringud, kinkekaardid, usaldus (arvustused), mitmekeelne sisu (ET
 - **2026-11-10:** Annetuste sihtotstarbe viitenumbrid 1012 / 1025 / 1038 (§3 Annetused) — PR #19, commit 911f0c5. Eraldi pangakontot ei tehta.
 - **2026-11-10:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #20.
 - **2026-11-10:** Kinkekaardi lunastus `/kinkekaart/lunasta` + keskuse vaade (PIN + allkirjastatud küpsis), Makseviis „Kinkekaart“ (§3 Kinkekaardid); GAP `/kinkekaart/lunasta` suletud (§4) — PR #21, commit 8e417fc.
+- **2026-11-10:** Sünkitud Cursori projekti faili `.cursor/rules/papagoi-master.mdc` (`alwaysApply`) — PR #22.
+- **2026-11-10:** SEO: blogipostitused ainult ET (EN/RU 301 → /et/), sitemap/hreflang et + x-default, üks H1 lehel (§8); GAP „Sitemap / SEO“ suletud (§4) — PR #23, commit b0e9e2e.
