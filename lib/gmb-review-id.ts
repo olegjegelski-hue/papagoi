@@ -67,7 +67,15 @@ export function findExistingByGoogleReviewId<T>(
   return byId.get(id)
 }
 
-export function gmbReviewReplyUrl(accountId: string, locationId: string, reviewId: string): string {
+export function gmbReviewResourceUrl(
+  accountId: string,
+  locationId: string,
+  reviewId: string,
+): string {
   const id = normalizeGoogleReviewId(reviewId)
-  return `https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews/${encodeURIComponent(id)}/reply`
+  return `https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews/${encodeURIComponent(id)}`
+}
+
+export function gmbReviewReplyUrl(accountId: string, locationId: string, reviewId: string): string {
+  return `${gmbReviewResourceUrl(accountId, locationId, reviewId)}/reply`
 }

@@ -7,18 +7,23 @@ import 'dotenv/config'
  */
 
 import { formatInTimeZone } from 'date-fns-tz'
-import { getGmbAccessToken } from './sync-google-reviews-to-notion'
+import {
+  getGmbAccessToken,
+  logGmbAccessTokenInfo,
+  probeGmbReviewGet,
+} from '@/lib/gmb-access-token'
 import { createTransporter } from '../lib/email'
 import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 import { gmbReviewReplyUrl, googleReviewIdFromNotionProperty } from '@/lib/gmb-review-id'
 import {
-  GMB_PROBE_GOOGLE_REVIEW_ID,
   confirmedUnpostedFilter,
+  gmbDebugQueriesEnabled,
   googleReviewIdEqualsFilter,
   notionSelectName,
   pendingReplyFilter,
   queryNotionReviewPages,
   recoverPendingPages,
+  recoveredViaNeedsWarning,
   resolveReviewDataSourceIds,
 } from '@/lib/notion-reviews-query'
 
@@ -146,16 +151,24 @@ async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
     ...queryOpts,
     filter: pendingReplyFilter(GMB_STATUS.ready),
   })
+
+  if (!gmbDebugQueriesEnabled()) {
+    return pending.pages
+  }
+
   const withoutStatus = await queryNotionReviewPages({
     ...queryOpts,
     filter: confirmedUnpostedFilter(),
   })
   const allPages = await queryNotionReviewPages(queryOpts)
-  const probe = await queryNotionReviewPages({
-    ...queryOpts,
-    filter: googleReviewIdEqualsFilter(GMB_PROBE_GOOGLE_REVIEW_ID),
-    pageSize: 5,
-  })
+  const probeReviewId = process.env.GMB_PROBE_GOOGLE_REVIEW_ID?.trim() || ''
+  const probe = probeReviewId
+    ? await queryNotionReviewPages({
+        ...queryOpts,
+        filter: googleReviewIdEqualsFilter(probeReviewId),
+        pageSize: 5,
+      })
+    : { pages: [] as NotionPage[] }
 
   const recovered = recoverPendingPages({
     pending: pending.pages,
@@ -164,24 +177,27 @@ async function fetchNotionPagesNeedingReply(): Promise<NotionPage[]> {
     readyStatus: GMB_STATUS.ready,
   })
 
-  console.log(
-    JSON.stringify({
-      note: 'post-gmb-replies Notion diagnostics',
-      databaseId,
-      dataSourceIds: resolved.ids,
-      dataSourceSource: resolved.source,
-      queryPath: pending.queryPath,
-      pendingFilterCount: pending.pages.length,
-      withoutStatusFilterCount: withoutStatus.pages.length,
-      fetchAllCount: allPages.pages.length,
-      probeReviewId: GMB_PROBE_GOOGLE_REVIEW_ID,
-      probeFound: probe.pages.length,
-      probePageIds: probe.pages.map((page) => page.id),
-      probeStatus: probe.pages.map((page) => notionSelectName(page.properties['Staatus'])),
-      recoveredVia: recovered.recoveredVia,
-      recoveredCount: recovered.pages.length,
-    }),
-  )
+  const diagnostic = JSON.stringify({
+    note: 'post-gmb-replies Notion diagnostics',
+    databaseId,
+    dataSourceIds: resolved.ids,
+    dataSourceSource: resolved.source,
+    queryPath: pending.queryPath,
+    pendingFilterCount: pending.pages.length,
+    withoutStatusFilterCount: withoutStatus.pages.length,
+    fetchAllCount: allPages.pages.length,
+    probeReviewId: probeReviewId || null,
+    probeFound: probe.pages.length,
+    probePageIds: probe.pages.map((page) => page.id),
+    probeStatus: probe.pages.map((page) => notionSelectName(page.properties['Staatus'])),
+    recoveredVia: recovered.recoveredVia,
+    recoveredCount: recovered.pages.length,
+  })
+  if (recoveredViaNeedsWarning(recovered.recoveredVia)) {
+    console.warn(diagnostic)
+  } else {
+    console.log(diagnostic)
+  }
 
   return recovered.pages
 }
@@ -223,6 +239,7 @@ async function attemptPostReply(input: {
   accountId: string
   locationId: string
   accessToken: string
+  authDebugBeforePut?: (reviewId: string) => Promise<void>
 }): Promise<{ result: PostAttempt; stopReason?: string; rateLimited?: boolean }> {
   const { page, apiKey, accountId, locationId, accessToken } = input
   const props = page.properties
@@ -242,6 +259,10 @@ async function attemptPostReply(input: {
   if (!gate.ok) {
     console.log(`Skipping page ${page.id}: ${gate.reason}`)
     return { result: 'skipped' }
+  }
+
+  if (input.authDebugBeforePut) {
+    await input.authDebugBeforePut(reviewId as string)
   }
 
   const url = gmbReviewReplyUrl(accountId, locationId, reviewId as string)
@@ -367,6 +388,19 @@ export async function postRepliesToGoogle(
   const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
   const accessToken = await getGmbAccessToken()
 
+  let didAuthDebugBeforePut = false
+  const authDebugBeforePut = async (reviewId: string) => {
+    if (didAuthDebugBeforePut) return
+    didAuthDebugBeforePut = true
+    await logGmbAccessTokenInfo(accessToken)
+    await probeGmbReviewGet({
+      accountId,
+      locationId,
+      reviewId,
+      accessToken,
+    })
+  }
+
   const work: Array<{ page: NotionPage; kind: PostKind }> = [
     ...freshPages.map((page) => ({ page, kind: 'fresh' as const })),
     ...oldPages.map((page) => ({ page, kind: 'old' as const })),
@@ -389,6 +423,7 @@ export async function postRepliesToGoogle(
       accountId,
       locationId,
       accessToken,
+      authDebugBeforePut,
     })
 
     if (attempt.result === 'skipped') {

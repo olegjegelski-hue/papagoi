@@ -8,6 +8,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:gmb-review-id": "tsx --test lib/gmb-review-id.test.ts",
+    "test:gmb-access-token": "tsx --test lib/gmb-access-token.test.ts",
     "test:notion-reviews-query": "tsx --test lib/notion-reviews-query.test.ts",
     "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts",
     "send-visit-sms-reminders": "VISIT_SMS_CLI=1 tsx scripts/send-visit-sms-reminders.ts",

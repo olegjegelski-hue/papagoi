@@ -16,10 +16,6 @@ export const NOTION_VERSION_DATA_SOURCES = '2025-09-03'
 /** Ridade tegelik data source (ülesande hüpotees + MCP fetch). */
 export const NOTION_REVIEWS_DATA_SOURCE_ID_FALLBACK = 'a37b127d-017d-429e-9025-9d24875b7884'
 
-/** Kirill Fatun — teadaolev „Valmis postitamiseks“ rida (loodud 7.11). */
-export const GMB_PROBE_GOOGLE_REVIEW_ID =
-  'AbFvOqkrIIWqh9-gae1jP4BjYMn0g4wm4c9kiS9W9GJYdUAf6ycc8SXz8Sz9W06NXktN0zv1tsYHlw'
-
 export type NotionReviewPage = {
   id: string
   properties: Record<string, any>
@@ -135,6 +131,17 @@ export function recoverPendingPages(input: {
   return candidates.reduce((best, candidate) =>
     candidate.pages.length > best.pages.length ? candidate : best,
   )
+}
+
+/** Õige filtri rike ei tohi vaikselt varuteele langeda. */
+export function recoveredViaNeedsWarning(recoveredVia: RecoveredVia): boolean {
+  return recoveredVia !== 'pending-filter'
+}
+
+export function gmbDebugQueriesEnabled(
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  return env.GMB_DEBUG_QUERIES === '1'
 }
 
 async function readErrorBody(response: Response): Promise<string> {

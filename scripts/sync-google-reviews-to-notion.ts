@@ -12,11 +12,14 @@ import {
   richTextPlainFromProp,
 } from '@/lib/gmb-review-id'
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
+import { getGmbAccessToken } from '@/lib/gmb-access-token'
 import {
   googleReviewIdEqualsFilter,
   queryNotionReviewPages,
   resolveReviewDataSourceIds,
 } from '@/lib/notion-reviews-query'
+
+export { getGmbAccessToken }
 
 // Sisemine ühtlustatud arvustuse kuju
 type GoogleReview = {
@@ -68,45 +71,7 @@ function assertEnv(name: string): string {
   return value.trim()
 }
 
-const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 const GOOGLE_MY_BUSINESS_BASE = 'https://mybusiness.googleapis.com/v4'
-
-let cachedGmbAccessToken: string | null = null
-
-export async function getGmbAccessToken() {
-  if (cachedGmbAccessToken) return cachedGmbAccessToken
-
-  const clientId = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_ID')
-  const clientSecret = assertEnv('GOOGLE_MY_BUSINESS_CLIENT_SECRET')
-  const refreshToken = assertEnv('GOOGLE_MY_BUSINESS_REFRESH_TOKEN')
-
-  const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    refresh_token: refreshToken,
-    grant_type: 'refresh_token',
-  })
-
-  const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: body.toString(),
-  })
-
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Failed to get access token from Google: ${response.status} - ${text}`)
-  }
-
-  const data = (await response.json()) as { access_token?: string }
-  if (!data.access_token) {
-    throw new Error('No access_token in Google OAuth response')
-  }
-  cachedGmbAccessToken = data.access_token
-  return cachedGmbAccessToken
-}
 
 export type GmbReviewApiRecord = GoogleReview & {
   originalComment?: string | null
