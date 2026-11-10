@@ -3,21 +3,22 @@ import { describe, it } from 'node:test'
 
 import { GMB_STATUS } from './gmb-review-workflow'
 import {
-  GMB_PROBE_GOOGLE_REVIEW_ID,
   NOTION_REVIEWS_DATA_SOURCE_ID_FALLBACK,
   NOTION_VERSION_DATA_SOURCES,
   confirmedUnpostedFilter,
+  gmbDebugQueriesEnabled,
   googleReviewIdEqualsFilter,
   pageMatchesPendingReply,
   parseDataSourceIdsFromDatabaseResponse,
   pendingReplyFilter,
   queryNotionReviewPages,
   recoverPendingPages,
+  recoveredViaNeedsWarning,
   resolveReviewDataSourceIds,
   type NotionReviewPage,
 } from './notion-reviews-query'
 
-const KIRILL_ID = GMB_PROBE_GOOGLE_REVIEW_ID
+const SAMPLE_REVIEW_ID = 'sample-google-review-id'
 
 function rich(text: string) {
   return { rich_text: [{ plain_text: text, text: { content: text } }] }
@@ -38,7 +39,7 @@ function page(partial: {
       Kinnitatud: { checkbox: partial.confirmed ?? true },
       'Vastus postitatud?': { checkbox: partial.posted ?? false },
       Vastus: rich(partial.reply ?? 'Tänan — papagoid ootavad teid jälle.'),
-      'Google review ID': rich(partial.reviewId ?? KIRILL_ID),
+      'Google review ID': rich(partial.reviewId ?? SAMPLE_REVIEW_ID),
     },
   }
 }
@@ -79,10 +80,10 @@ describe('filters', () => {
     )
   })
 
-  it('probe filter otsib Kirill Fatuni Google review ID-d', () => {
-    assert.deepEqual(googleReviewIdEqualsFilter(KIRILL_ID), {
+  it('googleReviewIdEqualsFilter otsib antud Google review ID-d', () => {
+    assert.deepEqual(googleReviewIdEqualsFilter(SAMPLE_REVIEW_ID), {
       property: 'Google review ID',
-      rich_text: { equals: KIRILL_ID },
+      rich_text: { equals: SAMPLE_REVIEW_ID },
     })
   })
 })
@@ -109,7 +110,7 @@ describe('pageMatchesPendingReply', () => {
         Kinnitatud: { checkbox: true },
         'Vastus postitatud?': { checkbox: false },
         Vastus: rich('ok'),
-        'Google review ID': rich(KIRILL_ID),
+        'Google review ID': rich(SAMPLE_REVIEW_ID),
       },
     }
     assert.equal(pageMatchesPendingReply(statusTyped), true)
@@ -169,6 +170,20 @@ describe('recoverPendingPages', () => {
     assert.equal(result.recoveredVia, 'all-pages-js')
     assert.equal(result.pages.length, 1)
     assert.equal(result.pages[0].id, 'ready-1')
+  })
+
+  it('recoveredVia !== pending-filter on hoiatus', () => {
+    assert.equal(recoveredViaNeedsWarning('pending-filter'), false)
+    assert.equal(recoveredViaNeedsWarning('without-status'), true)
+    assert.equal(recoveredViaNeedsWarning('all-pages-js'), true)
+  })
+})
+
+describe('gmbDebugQueriesEnabled', () => {
+  it('on ainult GMB_DEBUG_QUERIES=1 korral', () => {
+    assert.equal(gmbDebugQueriesEnabled({}), false)
+    assert.equal(gmbDebugQueriesEnabled({ GMB_DEBUG_QUERIES: '0' }), false)
+    assert.equal(gmbDebugQueriesEnabled({ GMB_DEBUG_QUERIES: '1' }), true)
   })
 })
 
