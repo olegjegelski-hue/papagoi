@@ -46,7 +46,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'prod-files-secure.s3.eu-west-1.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'prod-files-secure.s3.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'secure.notion-static.com', pathname: '/**' },
-      // lib/parrots.ts + parrot-gallery / parrot-preview / parrot-categories (next/image)
+      // lib/parrots.ts ja next/image allikad
       { protocol: 'https', hostname: 'images.pexels.com', pathname: '/**' },
       { protocol: 'https', hostname: 'upload.wikimedia.org', pathname: '/**' },
       { protocol: 'https', hostname: 'static.vecteezy.com', pathname: '/**' },

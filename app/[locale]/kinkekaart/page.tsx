@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? 'Купите цифровую подарочную карту Центра попугаев. 10 € = 1 визит. Сумма шагами по 10 €. Идеально на день рождения или юбилей. Быстрый заказ и подтверждение по эл. почте.'
     : isEn
       ? 'Buy a digital gift card for the Parrot Centre. €10 = 1 visit. Choose amount in €10 steps. Ideal for birthdays or anniversaries. Quick order and confirmation by email.'
-      : 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Vali summa 10 € sammuga. Ideaalse kingituseks sünnipäevaks või juubeliks. Kiire tellimine ja kinnitus e-kirjaga.'
+      : 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Vali summa 10 € sammuga. Ideaalne kingitus sünnipäevaks või juubeliks. Kiire tellimine ja kinnitus e-kirjaga.'
   const keywords = isRu
     ? 'подарочная карта Центр попугаев, подарить визит, карта центр попугаев Тарту, цифровая подарочная карта'
     : isEn
@@ -58,7 +58,7 @@ export default async function KinkekaartPage({ params }: Props) {
     <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 break-words">
             <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">
               {t('title')}
             </span>

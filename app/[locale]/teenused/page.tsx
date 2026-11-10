@@ -91,7 +91,7 @@ export default async function TeenusedPage({ params }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 break-words">
               <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">{t('title')}</span>
             </h1>
             <p className="text-xl text-deep-anthracite/80 max-w-3xl mx-auto">

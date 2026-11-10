@@ -22,7 +22,7 @@ export default function LocationMap() {
   const geo = formatGeoCoordinates();
 
   return (
-    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-beige-50" ref={ref}>
+    <section className="py-20 bg-gradient-to-b from-papagoi-blue-50 to-papagoi-beige-50 overflow-x-clip" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -41,8 +41,8 @@ export default function LocationMap() {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Map Placeholder */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="bg-gray-200 rounded-3xl shadow-lg flex items-center justify-center"
             style={{ minHeight: '400px' }}
@@ -67,8 +67,8 @@ export default function LocationMap() {
 
           {/* Directions */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="space-y-6"
           >

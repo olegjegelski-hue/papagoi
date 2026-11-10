@@ -77,7 +77,7 @@ export default async function ContactPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20">
+    <div className="min-h-screen bg-papagoi-beige-50 pt-12 pb-20 overflow-x-clip">
       <ScrollToHash />
       <script
         type="application/ld+json"
@@ -85,7 +85,7 @@ export default async function ContactPage({ params }: Props) {
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6 break-words">
             <span className="bg-gradient-to-r from-papagoi-green to-papagoi-blue bg-clip-text text-transparent">{t('title')}</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t('intro')}</p>
@@ -200,12 +200,12 @@ export default async function ContactPage({ params }: Props) {
 
         <div className="bg-card text-card-foreground border rounded-2xl shadow-2xl p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">{t('followUs')}</h2>
-          <div className="flex justify-center space-x-8">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             <a
               href="https://www.facebook.com/PapagoiKeskus"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-blue-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-4 sm:p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-blue-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#1877F2] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -221,7 +221,7 @@ export default async function ContactPage({ params }: Props) {
               href="https://www.instagram.com/papagoikeskus"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-orange-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-4 sm:p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-orange-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -237,7 +237,7 @@ export default async function ContactPage({ params }: Props) {
               href="https://www.youtube.com/@PetsVillaTartu"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center space-y-3 p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-red-50 transition-all duration-300 hover:scale-105"
+              className="group flex flex-col items-center space-y-3 p-4 sm:p-6 rounded-xl bg-papagoi-beige-100 hover:bg-papagoi-red-50 transition-all duration-300 hover:scale-105"
             >
               <div className="w-16 h-16 bg-[#FF0000] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">

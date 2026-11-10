@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = isRu
     ? 'Забронируйте визит в Центр попугаев в Тарту! Ответ в течение 24 ч. Визиты Пн–Вс 12–18, 10€/чел. Мин. 3 чел. Или купите подарочную карту.'
     : isEn
-      ? 'Book a visit to the Parrot Centre in Tartu! We reply within 24h. Visits Mon–Fri 12–6pm, €10/person. Min 3 people. Or buy a digital gift card.'
-      : 'Broneeri külastus Papagoi Keskusesse Tartus! Vastus 24h jooksul. Külastused E-P 12-18, hind 10€/inimene. Min 3 inimest. Või kingi digitaalne kinkekaart – osta kinkekaart.'
+      ? 'Book a visit to the Parrot Centre in Tartu! We reply within 24h. Visits Mon–Sun 12–6pm, €10/person. Min 3 people. Or buy a digital gift card.'
+      : 'Broneeri külastus Papagoi Keskusesse Tartus! Vastus 24h jooksul. Külastused E-P 12-18, hind 10€/inimene. Min 3 inimest. Või kingi digitaalne kinkekaart.'
   const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_EE' : 'et_EE'
   return {
     title,

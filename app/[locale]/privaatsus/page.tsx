@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? 'Политика конфиденциальности и условия использования cookie Центра попугаев. Как мы защищаем ваши персональные данные.'
     : isEn
       ? 'Parrot Centre privacy policy and cookie terms. Read how we protect your personal data.'
-      : 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused. Lugege, kuidas me kaitstame teie isikuandmeid.'
+      : 'Papagoi Keskuse privaatsuspoliitika ja küpsiste kasutamise tingimused. Lugege, kuidas me kaitseme teie isikuandmeid.'
   const keywords = isRu ? 'политика конфиденциальности, cookie, защита данных, GDPR, Центр попугаев' : isEn ? 'privacy policy, cookies, data protection, GDPR, Parrot Centre' : 'privaatsuspoliitika, küpsised, andmekaitse, GDPR, Papagoi Keskus'
   const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_EE' : 'et_EE'
   return {
@@ -69,7 +69,7 @@ export default async function PrivacyPage({ params }: Props) {
                 <Shield className="w-10 h-10 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 break-words hyphens-auto">
               <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                 {t('title')}
               </span>
