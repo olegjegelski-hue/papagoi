@@ -1,7 +1,7 @@
 
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
-import { DONATION_PURPOSE_NOTION, type DonationPurpose } from '@/lib/donation'
+import { DONATION_PURPOSE_NOTION, DONATION_REFERENCE_NUMBER, type DonationPurpose } from '@/lib/donation'
 import { escapeHtml } from '@/lib/sanitize'
 import { visitMailLocaleToNotionSelectLabel, type VisitMailLocale } from '@/lib/visit-language'
 import {
@@ -687,6 +687,7 @@ export async function sendDonationEmail(data: {
   const t = getDonationEmailCopy(locale)
   const purposeLabel = t.purposes[data.purpose]
   const refLine = t.referenceValue(data.code)
+  const referenceNumber = DONATION_REFERENCE_NUMBER[data.purpose]
   const safeName = escapeHtml(data.donorName)
   const safeEmail = escapeHtml(data.donorEmail)
   const comment = (data.comment ?? '').trim()
@@ -713,6 +714,7 @@ export async function sendDonationEmail(data: {
         <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
         <p style="margin: 6px 0;"><strong>${t.iban}</strong> ${t.ibanValue}</p>
         <p style="margin: 6px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>${t.referenceNumber}</strong> ${referenceNumber}</p>
         <p style="margin: 6px 0;"><strong>${t.reference}</strong> ${refLine}</p>
       </div>
       <p style="font-size: 15px; line-height: 1.6;">
@@ -748,6 +750,7 @@ ${t.transferLead}
 ${t.recipient} ${t.recipientValue}
 ${t.iban} ${t.ibanValue}
 ${t.amount} ${data.amountEur} €
+${t.referenceNumber} ${referenceNumber}
 ${t.reference} ${refLine}
 
 ${t.afterTransfer}
@@ -778,6 +781,7 @@ https://papagoi.ee/
         <p style="margin: 6px 0;"><strong>E-post:</strong> ${safeEmail}</p>
         <p style="margin: 6px 0;"><strong>Summa:</strong> ${data.amountEur} €</p>
         <p style="margin: 6px 0;"><strong>Sihtotstarve:</strong> ${escapeHtml(purposeEt)}</p>
+        <p style="margin: 6px 0;"><strong>Viitenumber:</strong> ${escapeHtml(referenceNumber)}</p>
         <p style="margin: 6px 0;"><strong>Keel:</strong> ${escapeHtml(languageLabel)}</p>
         <p style="margin: 6px 0;"><strong>Kommentaar:</strong> ${safeComment}</p>
         <p style="margin: 6px 0;"><strong>Nime võib avaldada:</strong> ${publishLabel}</p>
@@ -792,6 +796,7 @@ Annetaja: ${data.donorName}
 E-post: ${data.donorEmail}
 Summa: ${data.amountEur} €
 Sihtotstarve: ${purposeEt}
+Viitenumber: ${referenceNumber}
 Keel: ${languageLabel}
 Kommentaar: ${comment || '—'}
 Nime võib avaldada: ${publishLabel}

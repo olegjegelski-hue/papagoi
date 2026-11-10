@@ -256,6 +256,7 @@
     "recipient": "Saaja:",
     "recipientValue": "Papagoi Keskus MTÜ",
     "iban": "IBAN:",
+    "referenceNumber": "Viitenumber:",
     "reference": "Selgitus:",
     "referenceValue": "Annetus {code}",
     "amountLabel": "Summa:",

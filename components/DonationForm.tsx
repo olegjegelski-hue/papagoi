@@ -12,6 +12,7 @@ import {
   DONATION_COMMENT_MAX,
   DONATION_PURPOSES,
   DONATION_QUICK_AMOUNTS,
+  DONATION_REFERENCE_NUMBER,
   parseDonationPurpose,
   roundDonationAmount,
   type DonationPurpose,
@@ -130,6 +131,11 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
           <p className="mb-1">
             <strong>{t('amountLabel')}</strong> {amount} €
           </p>
+          {purpose ? (
+            <p className="mb-1">
+              <strong>{t('referenceNumber')}</strong> {DONATION_REFERENCE_NUMBER[purpose]}
+            </p>
+          ) : null}
           {orderCode ? (
             <p>
               <strong>{t('reference')}</strong> {t('referenceValue', { code: orderCode })}
