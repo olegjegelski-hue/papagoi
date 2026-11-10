@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware'
 import { NextRequest, NextResponse } from 'next/server'
+import { etBlogPostPathFromLocalized } from './lib/blog-post-locale'
 import { routing } from './i18n/routing'
 
 const handleI18n = createMiddleware(routing)
@@ -38,8 +39,22 @@ function grupidRedirect(request: NextRequest): NextResponse | null {
   return null
 }
 
+/** EN/RU blogipostitus → 301 /et/blogi/[slug]. Nimekirjaleht /en/blogi ja /ru/blogi jääb. */
+function blogPostLocaleRedirect(request: NextRequest): NextResponse | null {
+  const target = etBlogPostPathFromLocalized(request.nextUrl.pathname)
+  if (!target) return null
+  const url = request.nextUrl.clone()
+  url.pathname = target
+  return NextResponse.redirect(url, 301)
+}
+
 export default function middleware(request: NextRequest) {
-  return toetusegaRedirect(request) ?? grupidRedirect(request) ?? handleI18n(request)
+  return (
+    toetusegaRedirect(request) ??
+    grupidRedirect(request) ??
+    blogPostLocaleRedirect(request) ??
+    handleI18n(request)
+  )
 }
 
 export const config = {

@@ -40,6 +40,27 @@ export function sitemapLanguageAlternates(path = '') {
   return languages
 }
 
+/** Blogipostitused on ainult eesti keeles — canonical + hreflang et ja x-default. */
+export function etOnlyPageAlternates(path: string): NonNullable<Metadata['alternates']> {
+  const url = localeUrl(routing.defaultLocale, path)
+  return {
+    canonical: url,
+    languages: {
+      [routing.defaultLocale]: url,
+      'x-default': url,
+    },
+  }
+}
+
+/** Sitemap hreflang ainult et + x-default (EN/RU postitusi ei indekseerita). */
+export function etOnlySitemapLanguages(path: string) {
+  const url = localeUrl(routing.defaultLocale, path)
+  return {
+    [routing.defaultLocale]: url,
+    'x-default': url,
+  }
+}
+
 export const OG_IMAGE_WIDTH = 1200
 export const OG_IMAGE_HEIGHT = 630
 

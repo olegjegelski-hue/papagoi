@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { getPublishedBlogSlugsForSitemap } from '@/lib/notion-blog-slugs'
-import { localeUrl, sitemapLanguageAlternates } from '@/lib/seo'
+import { etOnlySitemapLanguages, localeUrl, sitemapLanguageAlternates } from '@/lib/seo'
 
 const PATHS = [
   { path: '', changeFrequency: 'weekly' as const, priority: 1 },
@@ -39,16 +39,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogPosts = await getPublishedBlogSlugsForSitemap()
   for (const post of blogPosts) {
     const path = `blogi/${post.slug}`
-    const languages = sitemapLanguageAlternates(path)
-    for (const locale of routing.locales) {
-      entries.push({
-        url: localeUrl(locale, path),
-        lastModified: post.lastModified || now,
-        changeFrequency: 'monthly',
-        priority: 0.6,
-        alternates: { languages },
-      })
-    }
+    entries.push({
+      url: localeUrl('et', path),
+      lastModified: post.lastModified || now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+      alternates: { languages: etOnlySitemapLanguages(path) },
+    })
   }
 
   return entries

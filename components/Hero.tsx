@@ -34,11 +34,11 @@ export default function Hero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-            <p className="text-xl md:text-2xl lg:text-3xl text-white mb-8 leading-relaxed drop-shadow-xl text-center">
+            <h1 className="font-sans font-normal text-xl md:text-2xl lg:text-3xl text-white mb-8 leading-relaxed drop-shadow-xl text-center">
               <span className="font-bold">{t('welcome')}</span> {t('intro')}
               <span className="font-bold papagoi-text-gradient">{t('introBold')}</span>
               {t('introRest')}
-            </p>
+            </h1>
             <div className="flex flex-wrap justify-center gap-6">
               <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-white/30 hover:scale-105 hover:bg-white/30 transition-all duration-300">
                 <Star className="w-5 h-5 text-papagoi-yellow" />
