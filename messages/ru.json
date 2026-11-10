@@ -256,6 +256,7 @@
     "recipient": "Получатель:",
     "recipientValue": "Papagoi Keskus MTÜ",
     "iban": "IBAN:",
+    "referenceNumber": "Ссылочный номер:",
     "reference": "Назначение платежа:",
     "referenceValue": "Annetus {code}",
     "amountLabel": "Сумма:",

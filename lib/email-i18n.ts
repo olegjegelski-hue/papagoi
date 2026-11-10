@@ -585,6 +585,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       recipientValue: 'Papagoi Keskus MTÜ',
       iban: 'IBAN:',
       ibanValue: PAPAGOI_IBAN,
+      referenceNumber: 'Viitenumber:',
       reference: 'Selgitus:',
       referenceValue: (code: string) => `Annetus ${code}`,
       afterTransfer:
@@ -612,6 +613,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       recipientValue: 'Papagoi Keskus MTÜ',
       iban: 'IBAN:',
       ibanValue: PAPAGOI_IBAN,
+      referenceNumber: 'Reference number:',
       reference: 'Payment reference:',
       referenceValue: (code: string) => `Annetus ${code}`,
       afterTransfer:
@@ -640,6 +642,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       recipientValue: 'Papagoi Keskus MTÜ',
       iban: 'IBAN:',
       ibanValue: PAPAGOI_IBAN,
+      referenceNumber: 'Ссылочный номер:',
       reference: 'Назначение платежа:',
       referenceValue: (code: string) => `Annetus ${code}`,
       afterTransfer:
