@@ -11,6 +11,7 @@
     "test:gmb-access-token": "tsx --test lib/gmb-access-token.test.ts",
     "test:notion-reviews-query": "tsx --test lib/notion-reviews-query.test.ts",
     "test:donation": "tsx --test lib/donation.test.ts",
+    "test:gift-card-redeem": "tsx --test lib/gift-card-status.test.ts lib/gift-card-staff-auth.test.ts",
     "send-review-invites": "REVIEW_CLI=1 tsx scripts/send-review-invites.ts",
     "send-visit-sms-reminders": "VISIT_SMS_CLI=1 tsx scripts/send-visit-sms-reminders.ts",
     "send-test-sms": "TEST_SMS_CLI=1 tsx scripts/send-test-sms.ts",

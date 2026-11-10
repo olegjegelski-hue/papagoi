@@ -18,9 +18,11 @@ export interface GiftCardDetails {
   buyerEmail: string | null
   usedAt: string | null
   qrUrl: string | null
+  /** Notion Staatus (Tellitud / Aktiivne / Kasutatud / Tühistatud / Aegunud). */
+  status: string | null
 }
 
-type NotionGiftCardPropertyMap = Record<string, any>
+export type NotionGiftCardPropertyMap = Record<string, any>
 
 function getTitlePlain(p: any): string {
   return p?.title?.[0]?.plain_text ?? ''
@@ -88,7 +90,18 @@ function getProp(props: NotionGiftCardPropertyMap, name: string): any {
   return key ? props[key] : undefined
 }
 
-function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
+export function resolveGiftCardStatus(props: NotionGiftCardPropertyMap): string | null {
+  const statusProp = getProp(props, 'Staatus')
+  const name =
+    statusProp?.status?.name ||
+    statusProp?.select?.name ||
+    statusProp?.rich_text?.[0]?.plain_text ||
+    ''
+  const trimmed = typeof name === 'string' ? name.trim() : ''
+  return trimmed || null
+}
+
+export function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
   const fromAegub = readValidUntil(getProp(props, 'Aegub'))
   if (fromAegub) return fromAegub
 
@@ -122,7 +135,7 @@ function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
   return ''
 }
 
-function resolveUsedAt(props: NotionGiftCardPropertyMap): string | null {
+export function resolveUsedAt(props: NotionGiftCardPropertyMap): string | null {
   const used = readUsedAt(getProp(props, 'Kasutatud kuupäev'))
   if (!used) return null
 
@@ -131,9 +144,7 @@ function resolveUsedAt(props: NotionGiftCardPropertyMap): string | null {
     readValidUntil(getProp(props, 'Ostu kuupaev'))
 
   // Kui Ostu tühi ja Staatus aktiivne, on „Kasutatud“ tõenäoliselt vale ostukuupäev
-  const statusProp = getProp(props, 'Staatus')
-  const statusName =
-    statusProp?.select?.name || statusProp?.status?.name || statusProp?.rich_text?.[0]?.plain_text || ''
+  const statusName = resolveGiftCardStatus(props) || ''
   if (!purchase && /aktiivne/i.test(statusName)) {
     return null
   }
@@ -163,6 +174,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
   const buyerEmail = readEmail(props['Ostja email'])
   const usedAt = resolveUsedAt(props)
   const qrUrl = props['QR URL']?.url ?? null
+  const status = resolveGiftCardStatus(props)
 
   return {
     pageId: page.id,
@@ -173,6 +185,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
     buyerEmail,
     usedAt,
     qrUrl,
+    status,
   }
 }
 
