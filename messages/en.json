@@ -270,16 +270,8 @@
     }
   },
   "DonationForm": {
-    "successTitle": "Thank you for your donation! 💛",
-    "successBody": "We have emailed you a thank-you note and bank transfer instructions (recipient, IBAN, amount, payment reference). Please make the transfer and reply to the email — then we can confirm the payment. If you do not see the message, check your spam folder.",
-    "transferLead": "Please make a bank transfer:",
-    "recipient": "Recipient:",
-    "recipientValue": "Papagoi Keskus MTÜ",
-    "iban": "IBAN:",
-    "referenceNumber": "Reference number:",
-    "reference": "Payment reference:",
-    "referenceValue": "Annetus {code}",
-    "amountLabel": "Amount:",
+    "receivedTitle": "Thank you!",
+    "receivedBody": "We have received your request.",
     "questions": "Questions:",
     "purposeSelect": "Choose a purpose",
     "purpose": {
@@ -303,10 +295,11 @@
     "comment": "Comment (optional)",
     "commentPlaceholder": "Anything you would like to add",
     "publishNameLabel": "My name may be published among supporters",
-    "confirmLabel": "I understand that the donation is made by bank transfer and that it does not include a discount or a service in return.",
-    "privacyNote": "We use your name and email only to process the donation and send the thank-you message.",
-    "submit": "Donate {amount} €",
-    "submitting": "Sending…",
+    "confirmLabel": "I understand that the donation is paid via bank link and that it does not include a discount or a service in return.",
+    "privacyNote": "We use your name and email only to process the donation, confirm the payment and send the thank-you message.",
+    "montonioNotice": "Payment is made securely via Montonio bank link.",
+    "submit": "Donate by bank link ({amount} €)",
+    "submitting": "Redirecting to your bank…",
     "errorGeneric": "Could not send the donation",
     "errorNetwork": "Connection error. Please try again or contact us.",
     "companyHoneypot": "Company",
@@ -318,8 +311,26 @@
       "amountInvalid": "Amount must be between €10–€1000 and a multiple of €10",
       "purposeRequired": "Please choose a purpose",
       "rateLimited": "Too many requests. Please try again in a moment.",
-      "serverConfig": "Server configuration is missing",
+      "serverConfig": "Payment is not available at the moment. Please try later or contact us.",
       "unknown": "Could not send the donation. Please try again."
+    }
+  },
+  "DonationThankYou": {
+    "metaTitle": "Thank you for your donation",
+    "paidTitle": "Thank you! Donation {code} has been received.",
+    "paidBody": "We are grateful for your support.",
+    "pendingTitle": "Payment is being processed",
+    "pendingBody": "The payment is being processed. We will send confirmation to your email.",
+    "failedTitle": "Payment was not completed",
+    "failedBody": "The payment was not completed. You can try donating again.",
+    "amountLabel": "Amount:",
+    "purposeLabel": "Purpose:",
+    "backCta": "Back to the donation form",
+    "questions": "Questions:",
+    "purpose": {
+      "kingi": "Gift a visit",
+      "toit": "Animal food",
+      "uldine": "General"
     }
   },
   "TeenusedPage": {

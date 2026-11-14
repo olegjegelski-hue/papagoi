@@ -41,6 +41,8 @@ describe('buildLlmsTxt', () => {
       assert.equal(text.includes('ristiisa-programm'), false)
     }
     assert.equal(text.includes('/annetus'), false)
+    assert.ok(text.includes('Montonio'))
+    assert.ok(text.includes('pangalingiga'))
   })
 
   it('llms-full täiendab väljasõidu 250 € saidi hinnaga', () => {

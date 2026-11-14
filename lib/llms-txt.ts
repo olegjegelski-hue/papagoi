@@ -95,7 +95,7 @@ Sünnipäev keskuses: 2,5 tundi, ${BIRTHDAY_PRICE_EUR} €. VIP külastus: priva
 
 Kinkekaart: ${GIFT_CARD_UNIT_EUR} € = 1 külastus, summa 10 € sammuga. ${gift}
 
-Annetused (kingi külastus, loomade toit, üldine; 10–1000 €, 10 € samm): ${donate}
+Annetused pangalingiga Montonio kaudu (kingi külastus, loomade toit, üldine; 10–1000 €, 10 € samm): ${donate}
 
 Giidi juhendamisel saab papagoisid käest toita. Parkimine tasuta maja ees.
 
@@ -110,7 +110,7 @@ For families, kindergartens and schools (kindergartens/schools up to 30, adults 
 Birthday programme on site: 2.5 hours, €${BIRTHDAY_PRICE_EUR}. VIP visit: private, 1–20 guests, 45–60 min, €${vip.low}–€${vip.high}. Services: ${localeUrl(base, 'en', 'teenused')}.
 
 Gift card: €${GIFT_CARD_UNIT_EUR} = 1 visit. ${localeUrl(base, 'en', 'kinkekaart')}
-Donations: ${localeUrl(base, 'en', 'toetused')}#anneta
+Donations via Montonio bank link: ${localeUrl(base, 'en', 'toetused')}#anneta
 Contact: ${PHONE}, ${EMAIL}. Open Mon–Sun ${OPENS}–${CLOSES}, by appointment only.
 
 ## Русский
@@ -124,7 +124,7 @@ Papagoi Keskus (Центр попугаев) — первый в Эстонии 
 День рождения в центре: 2,5 часа, ${BIRTHDAY_PRICE_EUR} €. VIP-визит: частный, 1–20 человек, 45–60 мин, ${vip.low}–${vip.high} €. Услуги: ${localeUrl(base, 'ru', 'teenused')}.
 
 Подарочная карта: ${GIFT_CARD_UNIT_EUR} € = 1 визит. ${localeUrl(base, 'ru', 'kinkekaart')}
-Пожертвования: ${localeUrl(base, 'ru', 'toetused')}#anneta
+Пожертвования через банковскую ссылку Montonio: ${localeUrl(base, 'ru', 'toetused')}#anneta
 Контакт: ${PHONE}, ${EMAIL}. Пн–Вс ${OPENS}–${CLOSES}, только по записи.
 
 ## Lingid / Links / Ссылки
@@ -145,7 +145,7 @@ export function buildLlmsFullTxt(baseUrl: string): string {
 - Grupid: koolid, lasteaiad, ettevõtted, suured perekonnad; 10 € / inimene.
 - Ligipääs: ratastooliga võimalik, sissepääsul üks aste. Parkimine tasuta maja ees.
 - Tartust: mööda Võru tänavat Ülenurme suunas; keskus Tartu mnt 80 (Tartu–Võru maantee ääres, Soinastes), enne Ülenurmet. ~${DISTANCE_FROM_TARTU_KM} km / ~${DRIVE_TIME_FROM_TARTU_MIN} min. Buss: linnaliin nr ${BUS_LINE}, peatus ${BUS_STOP}.
-- Annetuse sihtotstarbed: kingi külastus, loomade toit, üldine. MTÜ ei ole TMIN nimekirjas; maksusoodustust ei lubata.
+- Annetuse sihtotstarbed: kingi külastus, loomade toit, üldine. Makse pangalingiga Montonio kaudu. MTÜ ei ole TMIN nimekirjas; maksusoodustust ei lubata.
 - VIP hinnatabel: ${vipTiersLine()} (vahemik ${vip.low}–${vip.high} €).
 - Kinkekaart lunastatakse keskuses; 10 € samm 10–1000 €.
 `

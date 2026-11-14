@@ -1,17 +1,86 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createDonation } from '@/lib/notion-donations'
-import { sendDonationEmail } from '@/lib/email'
+import {
+  createDonation,
+  markDonationCancelled,
+  saveDonationMontonioUuid,
+} from '@/lib/notion-donations'
 import { cleanText } from '@/lib/sanitize'
 import { parseVisitMailLocale } from '@/lib/visit-language'
 import { isAllowedOrigin } from '@/lib/origin'
 import { getClientIp, rateLimit } from '@/lib/rate-limit'
 import {
   DONATION_COMMENT_MAX,
+  DONATION_REFERENCE_NUMBER,
+  donationPaymentDescription,
   parseDonationAmount,
   parseDonationPurpose,
+  splitPersonName,
 } from '@/lib/donation'
+import {
+  createMontonioOrder,
+  hasMontonioConfig,
+  isSafeMontonioPaymentUrl,
+  MontonioConfigError,
+} from '@/lib/montonio'
+import { getSiteUrl } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
+
+async function createDonationMontonioOrder(input: {
+  code: string
+  amountEur: number
+  purpose: 'kingi' | 'toit' | 'uldine'
+  locale: 'et' | 'en' | 'ru'
+  donorName: string
+  donorEmail: string
+  includeReference: boolean
+}) {
+  const site = getSiteUrl()
+  const { firstName, lastName } = splitPersonName(input.donorName)
+  const description = donationPaymentDescription(input.code, input.purpose)
+  const methodOptions: {
+    preferredCountry: 'EE'
+    preferredLocale: 'et' | 'en' | 'ru'
+    paymentDescription: string
+    paymentReference?: string
+  } = {
+    preferredCountry: 'EE',
+    preferredLocale: input.locale,
+    paymentDescription: description,
+  }
+  if (input.includeReference) {
+    methodOptions.paymentReference = DONATION_REFERENCE_NUMBER[input.purpose]
+  }
+
+  return createMontonioOrder({
+    merchantReference: input.code,
+    returnUrl: `${site}/${input.locale}/toetused/aitah`,
+    notificationUrl: `${site}/api/montonio/notification`,
+    currency: 'EUR',
+    grandTotal: input.amountEur,
+    locale: input.locale,
+    billingAddress: {
+      firstName,
+      lastName,
+      email: input.donorEmail,
+      country: 'EE',
+    },
+    lineItems: [
+      {
+        name: description,
+        quantity: 1,
+        finalPrice: input.amountEur,
+      },
+    ],
+    payment: {
+      method: 'paymentInitiation',
+      methodDisplay: 'Pangalink',
+      amount: input.amountEur,
+      currency: 'EUR',
+      methodOptions,
+    },
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,6 +151,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, errorCode: 'serverConfig' }, { status: 500 })
     }
 
+    if (!hasMontonioConfig()) {
+      console.error('Missing MONTONIO_ACCESS_KEY or MONTONIO_SECRET_KEY')
+      return NextResponse.json({ ok: false, errorCode: 'serverConfig' }, { status: 500 })
+    }
+
     const result = await createDonation(NOTION_API_KEY, NOTION_DONATIONS_DATABASE_ID, {
       donorName: cleanedName,
       donorEmail: cleanedEmail,
@@ -101,19 +175,66 @@ export async function POST(request: NextRequest) {
       NOTION_DONATIONS_DATABASE_ID.replace(/-/g, '').slice(-8)
     )
 
-    await sendDonationEmail({
-      to: cleanedEmail,
-      donorName: cleanedName,
-      donorEmail: cleanedEmail,
-      amountEur: amountNum,
-      purpose,
-      code: result.code,
-      comment: cleanedComment,
-      publishName: publishName === true,
-      locale,
-    })
+    let paymentUrl: string
+    let uuid: string
+    try {
+      try {
+        const created = await createDonationMontonioOrder({
+          code: result.code,
+          amountEur: amountNum,
+          purpose,
+          locale,
+          donorName: cleanedName,
+          donorEmail: cleanedEmail,
+          includeReference: true,
+        })
+        paymentUrl = created.paymentUrl
+        uuid = created.uuid
+      } catch (firstError) {
+        const message = firstError instanceof Error ? firstError.message : ''
+        if (/paymentReference|reference number|viitenumber/i.test(message)) {
+          console.warn('[donation] Montonio lükkas paymentReference tagasi, proovin ilma')
+          const created = await createDonationMontonioOrder({
+            code: result.code,
+            amountEur: amountNum,
+            purpose,
+            locale,
+            donorName: cleanedName,
+            donorEmail: cleanedEmail,
+            includeReference: false,
+          })
+          paymentUrl = created.paymentUrl
+          uuid = created.uuid
+        } else {
+          throw firstError
+        }
+      }
+    } catch (montonioError) {
+      console.error('[donation] Montonio tellimus ebaõnnestus:', montonioError)
+      await markDonationCancelled(NOTION_API_KEY, result.pageId)
+      if (montonioError instanceof MontonioConfigError) {
+        return NextResponse.json({ ok: false, errorCode: 'serverConfig' }, { status: 500 })
+      }
+      return NextResponse.json({ ok: false, errorCode: 'unknown' }, { status: 500 })
+    }
 
-    return NextResponse.json({ ok: true, code: result.code, pageId: result.pageId })
+    const saved = await saveDonationMontonioUuid(NOTION_API_KEY, result.pageId, uuid)
+    if (!saved) {
+      console.error('[donation] Montonio UUID salvestamine ebaõnnestus', result.code, result.pageId)
+    }
+
+    if (!isSafeMontonioPaymentUrl(paymentUrl)) {
+      console.error('[donation] Montonio tagastas mitteturvalise paymentUrl')
+      await markDonationCancelled(NOTION_API_KEY, result.pageId)
+      return NextResponse.json({ ok: false, errorCode: 'unknown' }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      ok: true,
+      code: result.code,
+      pageId: result.pageId,
+      paymentUrl,
+    })
   } catch (error) {
     console.error('Donation error:', error)
     return NextResponse.json({ ok: false, errorCode: 'unknown' }, { status: 500 })
