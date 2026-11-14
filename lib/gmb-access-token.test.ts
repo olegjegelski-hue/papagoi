@@ -5,7 +5,9 @@ import {
   GMB_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
   getGmbAccessToken,
   logGmbAccessTokenInfo,
+  logGmbAuthCompareProbe,
   probeGmbReviewGet,
+  probeGmbReviewsList,
   resetGmbAccessTokenCache,
   shouldReuseCachedGmbAccessToken,
   type GmbAccessTokenCache,
@@ -49,13 +51,20 @@ function collectLog() {
 
 function assertLogsDoNotLeakSecrets(lines: string[]) {
   const blob = lines.join('\n')
-  const secrets = [ACCESS_TOKEN, REFRESH_TOKEN, CLIENT_SECRET, ACCESS_TOKEN.slice(0, 12)]
+  const secrets = [
+    ACCESS_TOKEN,
+    REFRESH_TOKEN,
+    CLIENT_SECRET,
+    ACCESS_TOKEN.slice(0, 12),
+    ACCESS_TOKEN.slice(0, 4),
+  ]
   for (const secret of secrets) {
-    assert.equal(blob.includes(secret), false, `log leaked secret fragment`)
+    assert.equal(blob.includes(secret), false, `log leaked secret fragment: ${JSON.stringify(secret)}`)
   }
   assert.equal(blob.includes('"access_token"'), false)
   assert.equal(blob.includes('refresh_token'), false)
   assert.equal(blob.includes('client_secret'), false)
+  assert.equal(/tokenPrefix|first4|accessTokenStart|tokenStart/i.test(blob), false)
 }
 
 describe('shouldReuseCachedGmbAccessToken', () => {
@@ -239,7 +248,7 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
     assert.equal(status, null)
   })
 
-  it('GET enne PUT-i logib ainult staatuse, mitte tokenit ega keha', async () => {
+  it('GET logib staatuse ja ID kuju, mitte tokenit, ID-d ega keha', async () => {
     const { lines, log } = collectLog()
     const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
@@ -261,11 +270,93 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
     })
     assert.equal(status, 200)
     const payload = JSON.parse(lines[0]) as Record<string, unknown>
-    assert.equal(payload.note, 'GMB auth debug GET before PUT')
+    assert.equal(payload.note, 'GMB auth compare GET')
     assert.equal(payload.httpStatus, 200)
+    assert.equal(payload.reviewIdLength, 5)
+    assert.equal(payload.hasSlash, false)
+    assert.equal(payload.hasPercent, false)
+    assert.equal(payload.hasSpace, false)
     assert.equal('comment' in payload, false)
+    assert.equal(lines[0].includes('rev-1'), false)
     assertLogsDoNotLeakSecrets(lines)
     assert.equal(lines[0].includes('secret-review-body'), false)
+  })
+
+  it('võrdlusprobe: tokeni pikkus, tokeninfo, list ja GET; saladusi ei lekita', async () => {
+    const { lines, log } = collectLog()
+    const listReviewId =
+      'AbFvOqnTfGqG-zbokUQxuZ6YQt8dK8wQmEIbRzvo0x2q9TsB25y4elc80WjhG6G4HiR9HaQHQYVYhg'
+    const fetchImpl = (async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('tokeninfo')) {
+        return jsonResponse({
+          scope: 'https://www.googleapis.com/auth/business.manage',
+          expires_in: '3500',
+          aud: CLIENT_ID,
+          azp: CLIENT_ID,
+        })
+      }
+      if (url.includes('/reviews?') && url.includes('pageSize=1')) {
+        return jsonResponse({
+          reviews: [{ reviewId: listReviewId, comment: 'do-not-log-review' }],
+        })
+      }
+      if (url.includes('/reviews/')) {
+        return jsonResponse({ comment: 'do-not-log-body' }, true, 200)
+      }
+      throw new Error(`unexpected fetch ${url}`)
+    }) as typeof fetch
+
+    await logGmbAuthCompareProbe({
+      accessToken: ACCESS_TOKEN,
+      accountId: 'acc',
+      locationId: 'loc',
+      reviewId: 'postable-id-with-slash-no',
+      fetchImpl,
+      env: SECRET_ENV,
+      log,
+    })
+
+    const parsed = lines.map((line) => JSON.parse(line) as Record<string, unknown>)
+    assert.equal(parsed[0].note, 'GMB auth compare token')
+    assert.equal(parsed[0].accessTokenLength, ACCESS_TOKEN.length)
+    assert.equal('accessToken' in parsed[0], false)
+    assert.equal(parsed[1].note, 'GMB tokeninfo')
+    assert.equal(parsed[1].httpStatus, 200)
+    assert.equal(parsed[2].note, 'GMB auth compare list')
+    assert.equal(parsed[2].httpStatus, 200)
+    assert.equal(parsed[3].note, 'GMB auth compare GET')
+    assert.equal(parsed[3].httpStatus, 200)
+    assert.equal(parsed[3].reviewIdLength, 'postable-id-with-slash-no'.length)
+    const blob = lines.join('\n')
+    assert.equal(blob.includes(listReviewId), false)
+    assert.equal(blob.includes('postable-id-with-slash-no'), false)
+    assert.equal(blob.includes('do-not-log'), false)
+    assertLogsDoNotLeakSecrets(lines)
+  })
+
+  it('ilma GMB_AUTH_DEBUG=1 ei tee list-probe päringut', async () => {
+    let calls = 0
+    const fetchImpl = (async () => {
+      calls++
+      return jsonResponse({})
+    }) as typeof fetch
+    const list = await probeGmbReviewsList({
+      accountId: 'acc',
+      locationId: 'loc',
+      accessToken: ACCESS_TOKEN,
+      fetchImpl,
+      env: { ...SECRET_ENV, GMB_AUTH_DEBUG: undefined },
+    })
+    await logGmbAuthCompareProbe({
+      accessToken: ACCESS_TOKEN,
+      accountId: 'acc',
+      locationId: 'loc',
+      fetchImpl,
+      env: { ...SECRET_ENV, GMB_AUTH_DEBUG: undefined },
+    })
+    assert.equal(calls, 0)
+    assert.equal(list.httpStatus, null)
   })
 })
 

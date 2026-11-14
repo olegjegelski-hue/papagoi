@@ -7,11 +7,7 @@ import 'dotenv/config'
  */
 
 import { formatInTimeZone } from 'date-fns-tz'
-import {
-  getGmbAccessToken,
-  logGmbAccessTokenInfo,
-  probeGmbReviewGet,
-} from '@/lib/gmb-access-token'
+import { getGmbAccessToken, logGmbAuthCompareProbe } from '@/lib/gmb-access-token'
 import { createTransporter } from '../lib/email'
 import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 import { gmbReviewReplyUrl, googleReviewIdFromNotionProperty } from '@/lib/gmb-review-id'
@@ -233,17 +229,11 @@ async function markPostError(apiKey: string, pageId: string, reason: string) {
 
 type PostAttempt = 'posted' | 'error' | 'skipped' | 'stopped'
 
-async function attemptPostReply(input: {
-  page: NotionPage
-  apiKey: string
-  accountId: string
-  locationId: string
-  accessToken: string
-  authDebugBeforePut?: (reviewId: string) => Promise<void>
-}): Promise<{ result: PostAttempt; stopReason?: string; rateLimited?: boolean }> {
-  const { page, apiKey, accountId, locationId, accessToken } = input
+function postGateForPage(page: NotionPage) {
   const props = page.properties
-  const reviewId = googleReviewIdFromNotionProperty(props['Google review ID']) || getRichTextPlainText(props['Google review ID'])
+  const reviewId =
+    googleReviewIdFromNotionProperty(props['Google review ID']) ||
+    getRichTextPlainText(props['Google review ID'])
   const replyText = getRichTextPlainText(props['Vastus'])
   const status = props['Staatus']?.select?.name || null
   const rating = typeof props['Hinne']?.number === 'number' ? props['Hinne'].number : null
@@ -255,17 +245,31 @@ async function attemptPostReply(input: {
     reviewId,
     rating,
   })
+  if (!gate.ok) return { ok: false as const, reason: gate.reason }
+  return { ok: true as const, reviewId: reviewId as string, replyText: replyText as string }
+}
 
+function postableGoogleReviewId(page: NotionPage): string | null {
+  const gate = postGateForPage(page)
+  return gate.ok ? gate.reviewId : null
+}
+
+async function attemptPostReply(input: {
+  page: NotionPage
+  apiKey: string
+  accountId: string
+  locationId: string
+  accessToken: string
+}): Promise<{ result: PostAttempt; stopReason?: string; rateLimited?: boolean }> {
+  const { page, apiKey, accountId, locationId, accessToken } = input
+  const gate = postGateForPage(page)
   if (!gate.ok) {
     console.log(`Skipping page ${page.id}: ${gate.reason}`)
     return { result: 'skipped' }
   }
+  const { reviewId, replyText } = gate
 
-  if (input.authDebugBeforePut) {
-    await input.authDebugBeforePut(reviewId as string)
-  }
-
-  const url = gmbReviewReplyUrl(accountId, locationId, reviewId as string)
+  const url = gmbReviewReplyUrl(accountId, locationId, reviewId)
 
   let gmbResponse: Response
   try {
@@ -388,23 +392,20 @@ export async function postRepliesToGoogle(
   const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
   const accessToken = await getGmbAccessToken()
 
-  let didAuthDebugBeforePut = false
-  const authDebugBeforePut = async (reviewId: string) => {
-    if (didAuthDebugBeforePut) return
-    didAuthDebugBeforePut = true
-    await logGmbAccessTokenInfo(accessToken)
-    await probeGmbReviewGet({
-      accountId,
-      locationId,
-      reviewId,
-      accessToken,
-    })
-  }
-
   const work: Array<{ page: NotionPage; kind: PostKind }> = [
     ...freshPages.map((page) => ({ page, kind: 'fresh' as const })),
     ...oldPages.map((page) => ({ page, kind: 'old' as const })),
   ]
+  const firstPostableId = work
+    .map((item) => postableGoogleReviewId(item.page))
+    .find((id): id is string => Boolean(id))
+
+  await logGmbAuthCompareProbe({
+    accessToken,
+    accountId,
+    locationId,
+    reviewId: firstPostableId ?? null,
+  })
 
   for (const item of work) {
     if (summary.stoppedEarly) {
@@ -423,7 +424,6 @@ export async function postRepliesToGoogle(
       accountId,
       locationId,
       accessToken,
-      authDebugBeforePut,
     })
 
     if (attempt.result === 'skipped') {

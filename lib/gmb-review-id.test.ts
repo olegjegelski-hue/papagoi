@@ -3,9 +3,13 @@ import { describe, it } from 'node:test'
 
 import {
   findExistingByGoogleReviewId,
+  gmbReviewReplyUrl,
+  gmbReviewResourceUrl,
+  gmbReviewsListUrl,
   googleReviewIdFromGmbReview,
   isSameGoogleReview,
   normalizeGoogleReviewId,
+  normalizedReviewIdShape,
 } from './gmb-review-id'
 
 /** Kaks päris arvustust samalt nimelt samal päeval (Google arvustused, 29.10.2026). */
@@ -70,5 +74,53 @@ describe('findExistingByGoogleReviewId', () => {
   it('ei kasuta nime ega kuupäeva, kui ID puudub kaardist', () => {
     const byId = new Map<string, { slot: string }>([[KADRI_13_03.reviewId, { slot: '13:03' }]])
     assert.equal(findExistingByGoogleReviewId(byId, KADRI_16_51.reviewId), undefined)
+  })
+})
+
+describe('GMB review URL-id', () => {
+  const accountId = '123456'
+  const locationId = '789012'
+  const shortId = KADRI_16_51.reviewId
+  const resourceName = `accounts/${accountId}/locations/${locationId}/reviews/${shortId}`
+
+  it('normaliseerib resource name ja URL-kodeeritud resource name samaks lühikeseks ID-ks', () => {
+    assert.equal(normalizeGoogleReviewId(resourceName), shortId)
+    assert.equal(normalizeGoogleReviewId(encodeURIComponent(resourceName)), shortId)
+  })
+
+  it('resource URL ei topeltkodeeri kaldkriipse (pole %2F teel)', () => {
+    const fromShort = gmbReviewResourceUrl(accountId, locationId, shortId)
+    const fromResource = gmbReviewResourceUrl(accountId, locationId, resourceName)
+    const fromEncoded = gmbReviewResourceUrl(accountId, locationId, encodeURIComponent(resourceName))
+    const expected = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/reviews/${encodeURIComponent(shortId)}`
+    assert.equal(fromShort, expected)
+    assert.equal(fromResource, expected)
+    assert.equal(fromEncoded, expected)
+    assert.equal(fromShort.includes('%2F'), false)
+    assert.equal(fromEncoded.includes('%25'), false)
+    assert.equal(gmbReviewReplyUrl(accountId, locationId, resourceName), `${expected}/reply`)
+  })
+
+  it('list URL jagab sama parentit ja pageSize=1 on query, mitte teel', () => {
+    const url = gmbReviewsListUrl(accountId, locationId, { pageSize: 1 })
+    assert.equal(
+      url.startsWith(
+        `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/reviews?`,
+      ),
+      true,
+    )
+    assert.match(url, /pageSize=1/)
+    assert.equal(url.includes('%2F'), false)
+  })
+
+  it('ID kuju logib pikkuse ja / % tühiku, ilma ID-ta', () => {
+    const shape = normalizedReviewIdShape(resourceName)
+    assert.equal(shape.length, shortId.length)
+    assert.equal(shape.hasSlash, false)
+    assert.equal(shape.hasPercent, false)
+    assert.equal(shape.hasSpace, false)
+    const encodedSlash = normalizedReviewIdShape('pre%2Ffix')
+    assert.equal(encodedSlash.hasSlash, true)
+    assert.equal(JSON.stringify(shape).includes(shortId), false)
   })
 })
