@@ -70,8 +70,8 @@ function asDateStartString(start: unknown): string {
 }
 
 /**
- * Google: 2026-11-01T10:00:00.123Z
- * Notion datetime: 2026-11-01T10:00:00.000+00:00
+ * Google: 2026-11-14T12:59:34.123Z
+ * Notion datetime (minuti täpsus): 2026-11-14T12:59:00.000+00:00
  * Notion date-only: 2026-11-01
  */
 function sameDateStart(a: unknown, b: unknown): boolean {
@@ -86,7 +86,7 @@ function sameDateStart(a: unknown, b: unknown): boolean {
   const ma = Date.parse(sa)
   const mb = Date.parse(sb)
   if (Number.isFinite(ma) && Number.isFinite(mb)) {
-    return Math.floor(ma / 1000) === Math.floor(mb / 1000)
+    return Math.floor(ma / 60000) === Math.floor(mb / 60000)
   }
   return sa.slice(0, 10) === sb.slice(0, 10)
 }
