@@ -580,8 +580,12 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       },
       amount: 'Summa:',
       code: 'Annetuse nr:',
-      impact:
-        'Annetus katab ühe rühma külastuse: juhendaja töö, lindude ja merisigade toidu ning ruumi ettevalmistuse. Külastuse hind on 10 € inimese kohta.',
+      impact: {
+        kingi:
+          'Teie annetus läheb külastuse kinkimiseks lapsele või grupile, kellel muidu see võimalus puuduks. Iga 10 € = üks külastus.',
+        toit: 'Teie annetus läheb papagoide ja merisigade toiduks.',
+        uldine: 'Teie annetus toetab keskuse igapäevast tööd ja lindude heaolu.',
+      },
       questions: 'Kui teil on küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.',
       regards: 'Lugupidamisega',
       centre: 'Papagoi Keskus',
@@ -601,8 +605,12 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       },
       amount: 'Amount:',
       code: 'Donation no.:',
-      impact:
-        'A donation covers one group visit: the guide’s work, food for the birds and guinea pigs, and preparing the rooms. A visit costs €10 per person.',
+      impact: {
+        kingi:
+          'Your donation goes towards gifting a visit to a child or group who otherwise wouldn’t have the chance. Every €10 = one visit.',
+        toit: 'Your donation goes towards food for the parrots and guinea pigs.',
+        uldine: 'Your donation supports the centre’s daily work and the birds’ wellbeing.',
+      },
       questions: 'If you have any questions, please contact us: +372 512 7938 or keskus@papagoi.ee.',
       regards: 'Kind regards',
       centre: 'Papagoi Centre',
@@ -622,8 +630,12 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       },
       amount: 'Сумма:',
       code: 'Номер пожертвования:',
-      impact:
-        'Пожертвование покрывает один групповой визит: работу гида, корм для птиц и морских свинок и подготовку зала. Визит стоит 10 € с человека.',
+      impact: {
+        kingi:
+          'Ваше пожертвование пойдёт на подарочный визит для ребёнка или группы, у которых иначе не было бы такой возможности. Каждые 10 € = один визит.',
+        toit: 'Ваше пожертвование пойдёт на корм для попугаев и морских свинок.',
+        uldine: 'Ваше пожертвование поддерживает ежедневную работу центра и благополучие птиц.',
+      },
       questions:
         'Если у вас есть вопросы, свяжитесь с нами: +372 512 7938 или keskus@papagoi.ee.',
       regards: 'С уважением',

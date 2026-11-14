@@ -52,7 +52,22 @@ describe('getDonationEmailCopy', () => {
       assert.equal('transferLead' in copy, false)
       assert.equal('afterTransfer' in copy, false)
       assert.match(copy.thanks, /laekunud|received|получен/i)
-      assert.ok(copy.impact.length > 20)
+      assert.equal(typeof copy.impact.kingi, 'string')
+      assert.equal(typeof copy.impact.toit, 'string')
+      assert.equal(typeof copy.impact.uldine, 'string')
+      assert.equal(copy.impact.kingi.includes('rühma külastuse'), false)
+      assert.equal(copy.impact.toit.includes('rühma külastuse'), false)
+      assert.equal(copy.impact.uldine.includes('rühma külastuse'), false)
     }
+    const et = getDonationEmailCopy('et')
+    assert.equal(
+      et.impact.kingi,
+      'Teie annetus läheb külastuse kinkimiseks lapsele või grupile, kellel muidu see võimalus puuduks. Iga 10 € = üks külastus.'
+    )
+    assert.equal(et.impact.toit, 'Teie annetus läheb papagoide ja merisigade toiduks.')
+    assert.equal(
+      et.impact.uldine,
+      'Teie annetus toetab keskuse igapäevast tööd ja lindude heaolu.'
+    )
   })
 })

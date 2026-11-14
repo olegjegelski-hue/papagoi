@@ -687,6 +687,7 @@ export async function sendDonationPaidEmails(data: {
   const locale = data.locale ?? 'et'
   const t = getDonationEmailCopy(locale)
   const purposeLabel = t.purposes[data.purpose]
+  const impact = t.impact[data.purpose]
   const referenceNumber = DONATION_REFERENCE_NUMBER[data.purpose]
   const safeName = escapeHtml(data.donorName)
   const safeEmail = escapeHtml(data.donorEmail)
@@ -712,7 +713,7 @@ export async function sendDonationPaidEmails(data: {
         <p style="margin: 10px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
       </div>
       <p style="font-size: 15px; line-height: 1.6;">
-        ${t.impact}
+        ${impact}
       </p>
       <p style="font-size: 14px; color: #4b5563;">
         ${t.questions.replace(
@@ -741,7 +742,7 @@ ${t.code} ${data.code}
 ${t.purpose} ${purposeLabel}
 ${t.amount} ${data.amountEur} €
 
-${t.impact}
+${impact}
 
 ${t.questions}
 
