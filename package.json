@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test:gmb-review-id": "tsx --test lib/gmb-review-id.test.ts",
     "test:gmb-access-token": "tsx --test lib/gmb-access-token.test.ts",
+    "test:gmb-review-sync": "tsx --test lib/gmb-review-sync.test.ts",
     "test:notion-reviews-query": "tsx --test lib/notion-reviews-query.test.ts",
     "test:donation": "tsx --test lib/donation.test.ts lib/montonio-payment.test.ts lib/donation-payment.test.ts",
     "test:gift-card-payment": "tsx --test lib/gift-card.test.ts lib/gift-card-payment.test.ts lib/notion-gift-cards.test.ts",

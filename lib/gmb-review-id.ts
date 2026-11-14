@@ -3,13 +3,42 @@
  * (`accounts/.../locations/.../reviews/{id}`). Places-jäänukid on numbrilised.
  */
 
+export const GMB_API_V4_BASE = 'https://mybusiness.googleapis.com/v4'
+
+function decodeOnceIfEncodedResource(raw: string): string {
+  if (!raw.includes('%')) return raw
+  try {
+    const decoded = decodeURIComponent(raw)
+    if (decoded !== raw && decoded.includes('/')) return decoded.trim()
+  } catch {
+    // vigane percent-encoding — jäta toorelt
+  }
+  return raw
+}
+
 export function normalizeGoogleReviewId(raw: string | null | undefined): string {
-  const s = String(raw || '').trim()
+  const s = decodeOnceIfEncodedResource(String(raw || '').trim())
   if (!s) return ''
   const parts = s.split('/')
   const idx = parts.lastIndexOf('reviews')
   if (idx !== -1 && parts[idx + 1]) return parts[idx + 1].trim()
   return s
+}
+
+/** Logimiseks: ID kuju ilma ID-d ennast näitamata. */
+export function normalizedReviewIdShape(raw: string | null | undefined): {
+  length: number
+  hasSlash: boolean
+  hasPercent: boolean
+  hasSpace: boolean
+} {
+  const id = normalizeGoogleReviewId(raw)
+  return {
+    length: id.length,
+    hasSlash: id.includes('/'),
+    hasPercent: id.includes('%'),
+    hasSpace: /\s/.test(id),
+  }
 }
 
 export function googleReviewIdFromGmbReview(review: {
@@ -67,13 +96,30 @@ export function findExistingByGoogleReviewId<T>(
   return byId.get(id)
 }
 
+/** Sama parent, mida töötav list-GET kasutab (account/location ilma encodeURIComponentita). */
+export function gmbLocationReviewsParent(accountId: string, locationId: string): string {
+  return `accounts/${String(accountId || '').trim()}/locations/${String(locationId || '').trim()}`
+}
+
+export function gmbReviewsListUrl(
+  accountId: string,
+  locationId: string,
+  query?: { pageSize?: number; pageToken?: string; orderBy?: string },
+): string {
+  const url = new URL(`${GMB_API_V4_BASE}/${gmbLocationReviewsParent(accountId, locationId)}/reviews`)
+  if (query?.pageSize != null) url.searchParams.set('pageSize', String(query.pageSize))
+  if (query?.orderBy) url.searchParams.set('orderBy', query.orderBy)
+  if (query?.pageToken) url.searchParams.set('pageToken', query.pageToken)
+  return url.toString()
+}
+
 export function gmbReviewResourceUrl(
   accountId: string,
   locationId: string,
   reviewId: string,
 ): string {
   const id = normalizeGoogleReviewId(reviewId)
-  return `https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews/${encodeURIComponent(id)}`
+  return `${GMB_API_V4_BASE}/${gmbLocationReviewsParent(accountId, locationId)}/reviews/${encodeURIComponent(id)}`
 }
 
 export function gmbReviewReplyUrl(accountId: string, locationId: string, reviewId: string): string {

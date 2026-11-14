@@ -3,7 +3,12 @@
  * Ära logi access tokenit, refresh tokenit ega client secretit — ka mitte kärbitult.
  */
 
-import { gmbReviewResourceUrl } from '@/lib/gmb-review-id'
+import {
+  gmbReviewResourceUrl,
+  gmbReviewsListUrl,
+  googleReviewIdFromGmbReview,
+  normalizedReviewIdShape,
+} from '@/lib/gmb-review-id'
 
 type FetchLike = typeof fetch
 
@@ -139,7 +144,11 @@ export async function getGmbAccessToken(opts?: {
   return cache.current.accessToken
 }
 
-/** Enne PUT-i: tokeninfo, logib ainult scope / expires_in / aud / azp. Tokenit ei logita. */
+function authHeaders(accessToken: string): HeadersInit {
+  return { Authorization: `Bearer ${accessToken}` }
+}
+
+/** Tokeninfo: logib ainult scope / expires_in / aud / azp. Tokenit ei logita. */
 export async function logGmbAccessTokenInfo(
   accessToken: string,
   opts?: {
@@ -190,7 +199,45 @@ export async function logGmbAccessTokenInfo(
   }
 }
 
-/** Enne esimest PUT-i: GET samale arvustusele; logib ainult HTTP staatuse. */
+export async function probeGmbReviewsList(input: {
+  accountId: string
+  locationId: string
+  accessToken: string
+  fetchImpl?: FetchLike
+  env?: EnvLike
+  log?: Logger
+}): Promise<{ httpStatus: number | null; firstReviewId: string | null }> {
+  const env = input.env ?? process.env
+  if (!isGmbAuthDebugEnabled(env)) return { httpStatus: null, firstReviewId: null }
+
+  const log = input.log ?? console
+  const fetchImpl = input.fetchImpl ?? fetch
+  const url = gmbReviewsListUrl(input.accountId, input.locationId, { pageSize: 1 })
+
+  try {
+    const response = await fetchImpl(url, { headers: authHeaders(input.accessToken) })
+    let firstReviewId: string | null = null
+    try {
+      const data = (await response.json()) as {
+        reviews?: Array<{ reviewId?: string | null; name?: string | null }>
+      }
+      const first = Array.isArray(data.reviews) ? data.reviews[0] : null
+      firstReviewId = first ? googleReviewIdFromGmbReview(first) || null : null
+    } catch {
+      // keha pole JSON — staatus ikka logida
+    }
+    logAuthDebug(log, {
+      note: 'GMB auth compare list',
+      httpStatus: response.status,
+    })
+    return { httpStatus: response.status, firstReviewId }
+  } catch {
+    log.warn(JSON.stringify({ note: 'GMB auth compare list failed' }))
+    return { httpStatus: null, firstReviewId: null }
+  }
+}
+
+/** Üksik GET; logib HTTP staatuse ja ID kuju (pikkus, / % tühik), mitte ID-d ennast. */
 export async function probeGmbReviewGet(input: {
   accountId: string
   locationId: string
@@ -206,10 +253,11 @@ export async function probeGmbReviewGet(input: {
   const log = input.log ?? console
   const fetchImpl = input.fetchImpl ?? fetch
   const url = gmbReviewResourceUrl(input.accountId, input.locationId, input.reviewId)
+  const shape = normalizedReviewIdShape(input.reviewId)
 
   try {
     const response = await fetchImpl(url, {
-      headers: { Authorization: `Bearer ${input.accessToken}` },
+      headers: authHeaders(input.accessToken),
     })
     try {
       await response.text()
@@ -217,12 +265,66 @@ export async function probeGmbReviewGet(input: {
       // keha pole vaja — tokenit/sisu ei logita
     }
     logAuthDebug(log, {
-      note: 'GMB auth debug GET before PUT',
+      note: 'GMB auth compare GET',
       httpStatus: response.status,
+      reviewIdLength: shape.length,
+      hasSlash: shape.hasSlash,
+      hasPercent: shape.hasPercent,
+      hasSpace: shape.hasSpace,
     })
     return response.status
   } catch {
-    log.warn(JSON.stringify({ note: 'GMB auth debug GET before PUT failed' }))
+    log.warn(JSON.stringify({ note: 'GMB auth compare GET failed' }))
     return null
   }
+}
+
+/**
+ * Sünk ja postitamine kasutavad sama mõõtmist kohe pärast getGmbAccessToken().
+ * Logib tokeni pikkuse (mitte sisu), tokeninfo, list GET ja ühe arvustuse GET.
+ */
+export async function logGmbAuthCompareProbe(input: {
+  accessToken: string
+  accountId: string
+  locationId: string
+  /** Postitamises esimene postitatav ID; sünkis jäta tühjaks — võetakse listist. */
+  reviewId?: string | null
+  fetchImpl?: FetchLike
+  env?: EnvLike
+  log?: Logger
+}): Promise<void> {
+  const env = input.env ?? process.env
+  if (!isGmbAuthDebugEnabled(env)) return
+
+  const log = input.log ?? console
+  const fetchImpl = input.fetchImpl ?? fetch
+  const opts = { fetchImpl, env, log }
+
+  logAuthDebug(log, {
+    note: 'GMB auth compare token',
+    accessTokenLength: input.accessToken.length,
+  })
+
+  await logGmbAccessTokenInfo(input.accessToken, opts)
+
+  const list = await probeGmbReviewsList({
+    accountId: input.accountId,
+    locationId: input.locationId,
+    accessToken: input.accessToken,
+    ...opts,
+  })
+
+  const reviewId = (input.reviewId && input.reviewId.trim()) || list.firstReviewId
+  if (!reviewId) {
+    logAuthDebug(log, { note: 'GMB auth compare GET skipped', reason: 'no-review-id' })
+    return
+  }
+
+  await probeGmbReviewGet({
+    accountId: input.accountId,
+    locationId: input.locationId,
+    reviewId,
+    accessToken: input.accessToken,
+    ...opts,
+  })
 }
