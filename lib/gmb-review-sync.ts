@@ -1,6 +1,8 @@
 /**
  * GMB → Notion sünk: millal rida PATCH-ida.
- * „Viimati sünkroniseeritud“ üksi ei ole muutus — muidu 793 rida timeoutib.
+ * „Viimati sünkroniseeritud“ üksi ei ole muutus — muidu ~800 rida timeoutib.
+ * Kuupäevad/rich-text peavad klappima Notioni GET-kujuga, muidu iga käivitus
+ * loeb kõik read muutunuks.
  */
 
 import { generateReplyType } from '@/lib/google-review-replies'
@@ -9,6 +11,15 @@ import { googleReviewIdFromGmbReview, richTextPlainFromProp } from '@/lib/gmb-re
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
 
 export const GMB_REVIEW_SYNC_TIMESTAMP_PROP = 'Viimati sünkroniseeritud'
+export const GMB_REVIEW_SYNC_PATCH_LIMIT = 150
+export const GMB_REVIEW_SYNC_PATCH_DIFF_LOG_LIMIT = 5
+
+const PATCH_PRIORITY_FIELDS = new Set([
+  'Staatus',
+  'Vastus postitatud?',
+  'Vastuse postitamise kuupäev',
+  'Hinne',
+])
 
 export type GoogleReviewForSync = {
   reviewId?: string | null
@@ -22,6 +33,11 @@ export type GoogleReviewForSync = {
     comment?: string | null
     updateTime?: string | null
   } | null
+}
+
+export type NotionReviewFieldDiff = {
+  name: string
+  type: string
 }
 
 export function starRatingToNumber(starRating: string | null | undefined): number | null {
@@ -44,26 +60,41 @@ export function starRatingToNumber(starRating: string | null | undefined): numbe
   }
 }
 
-function dateStartMs(start: unknown): number | null {
-  if (typeof start !== 'string' || !start.trim()) return null
-  const ms = Date.parse(start)
-  return Number.isFinite(ms) ? ms : null
+function isDateOnlyStart(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)
 }
 
+function asDateStartString(start: unknown): string {
+  if (typeof start !== 'string') return ''
+  return start.trim()
+}
+
+/**
+ * Google: 2026-11-01T10:00:00.123Z
+ * Notion datetime: 2026-11-01T10:00:00.000+00:00
+ * Notion date-only: 2026-11-01
+ */
 function sameDateStart(a: unknown, b: unknown): boolean {
   if (a === b) return true
-  const ma = dateStartMs(a)
-  const mb = dateStartMs(b)
-  if (ma != null && mb != null) return ma === mb
-  const sa = typeof a === 'string' ? a.slice(0, 10) : ''
-  const sb = typeof b === 'string' ? b.slice(0, 10) : ''
-  return Boolean(sa) && sa === sb
+  const sa = asDateStartString(a)
+  const sb = asDateStartString(b)
+  if (!sa && !sb) return true
+  if (!sa || !sb) return false
+  if (isDateOnlyStart(sa) || isDateOnlyStart(sb)) {
+    return sa.slice(0, 10) === sb.slice(0, 10)
+  }
+  const ma = Date.parse(sa)
+  const mb = Date.parse(sb)
+  if (Number.isFinite(ma) && Number.isFinite(mb)) {
+    return Math.floor(ma / 1000) === Math.floor(mb / 1000)
+  }
+  return sa.slice(0, 10) === sb.slice(0, 10)
 }
 
 function selectName(prop: unknown): string {
   if (!prop || typeof prop !== 'object') return ''
-  const name = (prop as { select?: { name?: unknown } }).select?.name
-  return typeof name === 'string' ? name : ''
+  const name = (prop as { select?: { name?: unknown } | null }).select?.name
+  return typeof name === 'string' ? name.trim() : ''
 }
 
 function numberValue(prop: unknown): number | null {
@@ -80,19 +111,42 @@ function checkboxValue(prop: unknown): boolean {
 function urlValue(prop: unknown): string {
   if (!prop || typeof prop !== 'object') return ''
   const url = (prop as { url?: unknown }).url
-  return typeof url === 'string' ? url : ''
+  return typeof url === 'string' ? url.trim() : ''
 }
 
 function dateStartValue(prop: unknown): unknown {
   if (!prop || typeof prop !== 'object') return null
-  return (prop as { date?: { start?: unknown } }).date?.start ?? null
+  const date = (prop as { date?: { start?: unknown } | null }).date
+  if (!date || typeof date !== 'object') return null
+  return date.start ?? null
+}
+
+function comparablePlainText(prop: unknown): string {
+  return richTextPlainFromProp(prop)
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/\u00a0/g, ' ')
+    .trim()
+}
+
+function notionWriteFieldType(nextProp: unknown): string {
+  if (!nextProp || typeof nextProp !== 'object') return 'unknown'
+  const next = nextProp as Record<string, unknown>
+  if ('title' in next) return 'title'
+  if ('rich_text' in next) return 'rich_text'
+  if ('number' in next) return 'number'
+  if ('date' in next) return 'date'
+  if ('url' in next) return 'url'
+  if ('select' in next) return 'select'
+  if ('checkbox' in next) return 'checkbox'
+  return 'unknown'
 }
 
 function sameNotionReviewField(existingProp: unknown, nextProp: unknown): boolean {
   if (!nextProp || typeof nextProp !== 'object') return true
   const next = nextProp as Record<string, unknown>
   if ('title' in next || 'rich_text' in next) {
-    return richTextPlainFromProp(existingProp) === richTextPlainFromProp(nextProp)
+    return comparablePlainText(existingProp) === comparablePlainText(nextProp)
   }
   if ('number' in next) {
     return numberValue(existingProp) === numberValue(nextProp)
@@ -112,17 +166,27 @@ function sameNotionReviewField(existingProp: unknown, nextProp: unknown): boolea
   return true
 }
 
+/** Erinenud väljad: ainult nimi + tüüp, mitte väärtused ega tekst. */
+export function notionReviewSyncFieldDiffs(
+  existingProperties: Record<string, unknown> | null | undefined,
+  nextProperties: Record<string, unknown>,
+): NotionReviewFieldDiff[] {
+  const diffs: NotionReviewFieldDiff[] = []
+  for (const [key, nextProp] of Object.entries(nextProperties)) {
+    if (key === GMB_REVIEW_SYNC_TIMESTAMP_PROP) continue
+    if (sameNotionReviewField(existingProperties?.[key], nextProp)) continue
+    diffs.push({ name: key, type: notionWriteFieldType(nextProp) })
+  }
+  return diffs
+}
+
 /** True kui mõni sisuväli erineb. Ajatempel ei loe. */
 export function notionReviewSyncNeedsPatch(
   existingProperties: Record<string, unknown> | null | undefined,
   nextProperties: Record<string, unknown>,
 ): boolean {
   if (!existingProperties) return true
-  for (const [key, nextProp] of Object.entries(nextProperties)) {
-    if (key === GMB_REVIEW_SYNC_TIMESTAMP_PROP) continue
-    if (!sameNotionReviewField(existingProperties[key], nextProp)) return true
-  }
-  return false
+  return notionReviewSyncFieldDiffs(existingProperties, nextProperties).length > 0
 }
 
 export function buildNotionPropertiesFromReview(
@@ -229,6 +293,31 @@ export type ReviewSyncPlan = {
   skippedNoId: number
 }
 
+function isPriorityPatch(item: ReviewSyncPlanItem): boolean {
+  const diffs = notionReviewSyncFieldDiffs(item.existing?.properties, item.properties)
+  return diffs.some((diff) => PATCH_PRIORITY_FIELDS.has(diff.name))
+}
+
+/** Staatus / vastus / hinne ees, ülejäänud stabiilses järjekorras. */
+export function sortReviewSyncPatches(patches: ReviewSyncPlanItem[]): ReviewSyncPlanItem[] {
+  return patches
+    .map((item, index) => ({ item, index, rank: isPriorityPatch(item) ? 0 : 1 }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((entry) => entry.item)
+}
+
+export function applyReviewSyncPatchLimit(
+  patches: ReviewSyncPlanItem[],
+  limit = GMB_REVIEW_SYNC_PATCH_LIMIT,
+): { patches: ReviewSyncPlanItem[]; deferredPatches: number } {
+  const safeLimit =
+    Number.isFinite(limit) && limit >= 0 ? Math.floor(limit) : GMB_REVIEW_SYNC_PATCH_LIMIT
+  return {
+    patches: patches.slice(0, safeLimit),
+    deferredPatches: Math.max(0, patches.length - safeLimit),
+  }
+}
+
 export function planReviewSyncActions(
   reviews: GoogleReviewForSync[],
   existingByReviewId: Map<string, { id: string; properties: Record<string, any> }>,
@@ -263,5 +352,10 @@ export function planReviewSyncActions(
     }
   }
 
-  return { creates, patches, skippedUnchanged, skippedNoId }
+  return {
+    creates,
+    patches: sortReviewSyncPatches(patches),
+    skippedUnchanged,
+    skippedNoId,
+  }
 }
