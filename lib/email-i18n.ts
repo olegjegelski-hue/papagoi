@@ -72,18 +72,62 @@ export function groupTypeToNotionSelect(groupType?: string | null): string | und
   return bookingGroupTypeLabel('et', n === VIP_GROUP_TYPE ? VIP_GROUP_TYPE : n)
 }
 
-const REVIEW_DONATION_GROUP_TYPES = new Set(['Perevisit', 'Ettevõte', 'Muu', 'VIP külastus'])
+export type CanonicalReviewGroupType =
+  | 'Perevisit'
+  | 'Kool/Lasteaed'
+  | 'Ettevõte'
+  | 'Muu'
+  | 'VIP külastus'
+
+export type ReviewFundingVariant = 'parent' | 'school'
+export type ReviewDonateVariant = 'default' | 'company'
+export type ReviewInviteBoxKind = 'parent' | 'school' | 'company' | 'plain'
+
+function canonicalReviewGroupType(groupType?: string | null): CanonicalReviewGroupType | null {
+  if (!groupType?.trim()) return null
+  const raw = groupType.trim()
+  if (raw === 'Kool/Lasteaed') return 'Kool/Lasteaed'
+  if (raw === 'Perevisit') return 'Perevisit'
+  if (raw === 'Ettevõte') return 'Ettevõte'
+  if (raw === 'Muu') return 'Muu'
+  if (raw === 'VIP külastus') return 'VIP külastus'
+  if (isVipGroupType(raw)) return 'VIP külastus'
+  const n = raw.toLowerCase().replace(/_/g, '-').replace(/\s+/g, '')
+  if (n === 'kool') return 'Kool/Lasteaed'
+  if (n === 'perevisit') return 'Perevisit'
+  if (n === 'ettevote') return 'Ettevõte'
+  if (n === 'muu') return 'Muu'
+  if (n === VIP_GROUP_TYPE) return 'VIP külastus'
+  return null
+}
 
 /** Annetuse rida arvustuskirjas: Perevisit / Ettevõte / Muu / VIP. Kool/Lasteaed ja tühi → ei. */
 export function shouldShowReviewDonationLine(groupType?: string | null): boolean {
-  if (!groupType?.trim()) return false
-  const raw = groupType.trim()
-  if (raw === 'Kool/Lasteaed') return false
-  if (REVIEW_DONATION_GROUP_TYPES.has(raw)) return true
-  if (isVipGroupType(raw)) return true
-  const n = raw.toLowerCase().replace(/_/g, '-').replace(/\s+/g, '')
-  if (n === 'kool') return false
-  return n === 'perevisit' || n === 'ettevote' || n === 'muu' || n === VIP_GROUP_TYPE
+  return reviewDonateVariant(groupType) !== null
+}
+
+/** Annetuse teksti variant: tavaline (Perevisit/Muu/VIP) või ettevõtte (C). */
+export function reviewDonateVariant(groupType?: string | null): ReviewDonateVariant | null {
+  const g = canonicalReviewGroupType(groupType)
+  if (g === 'Ettevõte') return 'company'
+  if (g === 'Perevisit' || g === 'Muu' || g === 'VIP külastus') return 'default'
+  return null
+}
+
+/** Toetuste rida arvustuskirjas: A lapsevanemale, B õpetajale, muul juhul puudub. */
+export function reviewFundingVariant(groupType?: string | null): ReviewFundingVariant | null {
+  const g = canonicalReviewGroupType(groupType)
+  if (g === 'Perevisit' || g === 'Muu' || g === 'VIP külastus') return 'parent'
+  if (g === 'Kool/Lasteaed') return 'school'
+  return null
+}
+
+export function reviewInviteBoxKind(groupType?: string | null): ReviewInviteBoxKind {
+  const funding = reviewFundingVariant(groupType)
+  if (funding === 'parent') return 'parent'
+  if (funding === 'school') return 'school'
+  if (reviewDonateVariant(groupType) === 'company') return 'company'
+  return 'plain'
 }
 
 export function visitLanguageLabelForEmail(locale: VisitMailLocale, code: VisitMailLocale): string {
@@ -674,8 +718,21 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
         'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
       donateText:
         'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
+      donateCompanyHtml:
+        'Või <strong>kinkige külastus mõnele lasteaiarühmale või erivajadustega laste grupile</strong>, kellel muidu see võimalus puuduks.',
+      donateCompanyText:
+        'Või kinkige külastus mõnele lasteaiarühmale või erivajadustega laste grupile, kellel muidu see võimalus puuduks.',
+      fundingParentHtml:
+        '<strong>Tuleks teie lapse klassiga?</strong> 1.–9. klassi külastuse saab kool tasuda Kultuuriranitsast. Andke julgelt õpetajale teada – <a href="https://papagoi.ee/et/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">vaata lähemalt</a>.',
+      fundingParentText:
+        'Tuleks teie lapse klassiga? 1.–9. klassi külastuse saab kool tasuda Kultuuriranitsast. Andke julgelt õpetajale teada – vaata lähemalt.',
+      fundingSchoolHtml:
+        '<strong>Järgmisel korral:</strong> 1.–9. klassi külastuse saab tasuda Kultuuriranitsast, lasteaia või väiksema rühma külastust võib toetada ka kohalik omavalitsus. <a href="https://papagoi.ee/et/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">Kuidas see käib</a>',
+      fundingSchoolText:
+        'Järgmisel korral: 1.–9. klassi külastuse saab tasuda Kultuuriranitsast, lasteaia või väiksema rühma külastust võib toetada ka kohalik omavalitsus. Kuidas see käib',
       giftHref: 'https://papagoi.ee/et/kinkekaart',
       donateHref: 'https://papagoi.ee/et/toetused#anneta',
+      fundingHref: 'https://papagoi.ee/et/toetused',
       feedback: 'Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.',
       signOff: 'Papagoid tänavad Teid.',
       centre: 'Papagoi Keskus',
@@ -706,8 +763,21 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
         'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
       donateText:
         'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
+      donateCompanyHtml:
+        'Or <strong>gift a visit to a kindergarten group or a group of children with special needs</strong> who otherwise wouldn’t have the chance.',
+      donateCompanyText:
+        'Or gift a visit to a kindergarten group or a group of children with special needs who otherwise wouldn’t have the chance.',
+      fundingParentHtml:
+        '<strong>Coming back with your child’s class?</strong> Schools can pay for visits of grades 1–9 from the Culture Backpack (Kultuuriranits). Feel free to let the teacher know – <a href="https://papagoi.ee/en/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">read more</a>.',
+      fundingParentText:
+        'Coming back with your child’s class? Schools can pay for visits of grades 1–9 from the Culture Backpack (Kultuuriranits). Feel free to let the teacher know – read more.',
+      fundingSchoolHtml:
+        '<strong>Next time:</strong> visits for grades 1–9 can be paid from the Culture Backpack, and the local municipality may also support a kindergarten or smaller group visit. <a href="https://papagoi.ee/en/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">How it works</a>',
+      fundingSchoolText:
+        'Next time: visits for grades 1–9 can be paid from the Culture Backpack, and the local municipality may also support a kindergarten or smaller group visit. How it works',
       giftHref: 'https://papagoi.ee/en/kinkekaart',
       donateHref: 'https://papagoi.ee/en/toetused#anneta',
+      fundingHref: 'https://papagoi.ee/en/toetused',
       feedback: 'If you have feedback or questions, just reply to this email.',
       signOff: 'The parrots thank you.',
       centre: 'Papagoi Centre',
@@ -738,8 +808,21 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
         'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
       donateText:
         'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
+      donateCompanyHtml:
+        'Или <strong>подарите визит группе детского сада или группе детей с особыми потребностями</strong>, у которых иначе не было бы такой возможности.',
+      donateCompanyText:
+        'Или подарите визит группе детского сада или группе детей с особыми потребностями, у которых иначе не было бы такой возможности.',
+      fundingParentHtml:
+        '<strong>Придёте с классом вашего ребёнка?</strong> Визит 1–9 классов школа может оплатить из «Культурного рюкзака» (Kultuuriranits). Смело расскажите об этом учителю – <a href="https://papagoi.ee/ru/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">подробнее</a>.',
+      fundingParentText:
+        'Придёте с классом вашего ребёнка? Визит 1–9 классов школа может оплатить из «Культурного рюкзака» (Kultuuriranits). Смело расскажите об этом учителю – подробнее.',
+      fundingSchoolHtml:
+        '<strong>В следующий раз:</strong> визит 1–9 классов можно оплатить из «Культурного рюкзака», а визит детского сада или небольшой группы может поддержать и местное самоуправление. <a href="https://papagoi.ee/ru/toetused" style="color: #ea580c; font-weight: 600; text-decoration: underline;">Как это работает</a>',
+      fundingSchoolText:
+        'В следующий раз: визит 1–9 классов можно оплатить из «Культурного рюкзака», а визит детского сада или небольшой группы может поддержать и местное самоуправление. Как это работает',
       giftHref: 'https://papagoi.ee/ru/kinkekaart',
       donateHref: 'https://papagoi.ee/ru/toetused#anneta',
+      fundingHref: 'https://papagoi.ee/ru/toetused',
       feedback: 'Если у вас есть отзывы или вопросы, просто ответьте на это письмо.',
       signOff: 'Попугаи благодарят вас.',
       centre: 'Papagoi Keskus',

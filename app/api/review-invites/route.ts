@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { sendReviewInviteEmail } from '@/lib/email'
-import { shouldShowReviewDonationLine } from '@/lib/email-i18n'
+import {
+  reviewDonateVariant,
+  reviewFundingVariant,
+  shouldShowReviewDonationLine,
+} from '@/lib/email-i18n'
 import { parseVisitMailLocale } from '@/lib/visit-language'
 import { runReviewInvitesFromEnv } from '../../../scripts/send-review-invites'
 
@@ -47,6 +51,8 @@ export async function GET(request: Request) {
         locale: built.locale,
         groupType: groupType || null,
         donationLine: shouldShowReviewDonationLine(groupType),
+        donateVariant: reviewDonateVariant(groupType),
+        fundingVariant: reviewFundingVariant(groupType),
         message: 'Naidiskiri saadetud keskus@papagoi.ee.',
       })
     }
