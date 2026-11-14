@@ -79,7 +79,12 @@ export function resolveGiftCardPublicKind(
   if (status === 'tühistatud' || status === 'tyhistatud' || status === 'cancelled') {
     return 'cancelled'
   }
-  if (status === 'tellitud' || status === 'pending') {
+  if (
+    status === 'tellitud' ||
+    status === 'pending' ||
+    status === 'ootab makset' ||
+    status === 'awaiting payment'
+  ) {
     return 'pending'
   }
   if (status === 'kasutatud' || status === 'used') {

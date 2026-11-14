@@ -23,6 +23,8 @@ function card(partial: Partial<GiftCardDetails>): GiftCardDetails {
     usedAt: null,
     qrUrl: null,
     status: 'Aktiivne',
+    montonioUuid: null,
+    cashflowPageId: null,
     ...partial,
   }
 }
@@ -69,6 +71,7 @@ describe('resolveGiftCardPublicKind', () => {
 
   it('ootab makset / tühistatud / ei leitud', () => {
     assert.equal(resolveGiftCardPublicKind(card({ status: 'Tellitud' }), noonTallinn), 'pending')
+    assert.equal(resolveGiftCardPublicKind(card({ status: 'Ootab makset' }), noonTallinn), 'pending')
     assert.equal(resolveGiftCardPublicKind(card({ status: 'Tühistatud' }), noonTallinn), 'cancelled')
     assert.equal(resolveGiftCardPublicKind(null, noonTallinn), 'not_found')
   })

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getGiftCardDetailsByCode, setGiftCardQrUrl } from '@/lib/notion-gift-card-lookup'
-import { renderGiftCardToPngPdf } from '@/lib/gift-card-render'
-import { sendGiftCardIssuedEmail } from '@/lib/email'
+import { getGiftCardDetailsByCode } from '@/lib/notion-gift-card-lookup'
+import { issueGiftCard } from '@/lib/gift-card-issue'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 export async function POST(request: Request) {
   try {
@@ -27,49 +27,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Server misconfiguration' }, { status: 500 })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee'
-    const qrUrl = `${baseUrl}/kinkekaart/lunasta?code=${encodeURIComponent(code)}`
-
     const details = await getGiftCardDetailsByCode(NOTION_API_KEY, NOTION_GIFT_CARDS_DATABASE_ID, code)
     if (!details) {
       return NextResponse.json({ ok: false, error: 'Gift card not found' }, { status: 404 })
     }
 
-    if (!details.buyerEmail) {
-      return NextResponse.json({ ok: false, error: 'Gift card has no buyer email in Notion' }, { status: 400 })
-    }
-
-    // Kui QR URL on juba seadistatud, loeme seda “väljastatuks” (idempotency marker).
-    if (!force && details.qrUrl && details.qrUrl === qrUrl) {
-      return NextResponse.json({ ok: true, alreadyIssued: true, pageId: details.pageId })
-    }
-
-    const { pngBuffer, pdfBuffer } = await renderGiftCardToPngPdf({
-      code: details.code,
-      amountEur: details.amountEur,
-      validUntil: details.validUntil,
-      qrUrl,
+    const result = await issueGiftCard({
+      notionApiKey: NOTION_API_KEY,
+      details,
+      force,
     })
 
-    await sendGiftCardIssuedEmail({
-      to: details.buyerEmail || '',
-      buyerName: details.buyerName,
-      amountEur: details.amountEur,
-      code: details.code,
-      validUntil: details.validUntil,
-      pngBuffer,
-      pdfBuffer,
-      qrUrl,
+    return NextResponse.json({
+      ok: true,
+      alreadyIssued: result.alreadyIssued,
+      pageId: result.pageId,
     })
-
-    // Märgime Notionis, et kaardi väljastus on tehtud (ja QR-i väärtus on valmis).
-    await setGiftCardQrUrl(NOTION_API_KEY, details.pageId, qrUrl)
-
-    return NextResponse.json({ ok: true, pageId: details.pageId })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[gift-card-issue] error:', error)
     return NextResponse.json({ ok: false, error: message }, { status: 500 })
   }
 }
-

@@ -673,6 +673,61 @@ Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
   })
 }
 
+export async function sendGiftCardSoldAdminEmail(data: {
+  code: string
+  amountEur: number
+  buyerName: string | null
+  buyerEmail: string | null
+  bankName?: string
+  cashflowFailed?: boolean
+}) {
+  const transporter = createTransporter()
+  const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
+  const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
+  const buyerName = (data.buyerName || '').trim() || '—'
+  const buyerEmail = (data.buyerEmail || '').trim() || '—'
+  const bankName = (data.bankName || '').trim() || '—'
+  const cashflowNote = data.cashflowFailed
+    ? 'Rahavoo kanne ebaõnnestus, lisa käsitsi'
+    : 'Rahavoo kanne loodud'
+  const subject = `🎁 Kinkekaart müüdud: ${data.code} — ${data.amountEur} €`
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
+        Kinkekaart müüdud
+      </h2>
+      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+        <p style="margin: 6px 0;"><strong>Kood:</strong> ${escapeHtml(data.code)}</p>
+        <p style="margin: 6px 0;"><strong>Summa:</strong> ${data.amountEur} €</p>
+        <p style="margin: 6px 0;"><strong>Ostja:</strong> ${escapeHtml(buyerName)}</p>
+        <p style="margin: 6px 0;"><strong>E-post:</strong> ${escapeHtml(buyerEmail)}</p>
+        <p style="margin: 6px 0;"><strong>Pank:</strong> ${escapeHtml(bankName)}</p>
+        <p style="margin: 6px 0;"><strong>Rahavoog:</strong> ${escapeHtml(cashflowNote)}</p>
+      </div>
+    </div>
+  `
+
+  const text = `
+Kinkekaart müüdud
+
+Kood: ${data.code}
+Summa: ${data.amountEur} €
+Ostja: ${buyerName}
+E-post: ${buyerEmail}
+Pank: ${bankName}
+Rahavoog: ${cashflowNote}
+  `.trim()
+
+  await transporter.sendMail({
+    from: `"Papagoi Keskus" <${fromAddress}>`,
+    to: centerEmail,
+    subject,
+    html,
+    text,
+  })
+}
+
 export async function sendDonationPaidEmails(data: {
   to: string
   donorName: string

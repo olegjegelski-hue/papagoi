@@ -93,7 +93,7 @@ Sobib peredele, lasteaedadele ja koolidele (lasteaiad/koolid kuni 30, täiskasva
 
 Sünnipäev keskuses: 2,5 tundi, ${BIRTHDAY_PRICE_EUR} €. VIP külastus: privaatne, 1–20 inimest, 45–60 min, ${vip.low}–${vip.high} € (${vipTiersLine()}). Tööpäeviti 10:00–18:00; nädalavahetusel ja riigipühadel 10:00, 11:00 või 18:00. Teenused: ${services}.
 
-Kinkekaart: ${GIFT_CARD_UNIT_EUR} € = 1 külastus, summa 10 € sammuga. ${gift}
+Kinkekaart pangalingiga Montonio kaudu: ${GIFT_CARD_UNIT_EUR} € = 1 külastus, summa 10 € sammuga. ${gift}
 
 Annetused pangalingiga Montonio kaudu (kingi külastus, loomade toit, üldine; 10–1000 €, 10 € samm): ${donate}
 
@@ -109,7 +109,7 @@ For families, kindergartens and schools (kindergartens/schools up to 30, adults 
 
 Birthday programme on site: 2.5 hours, €${BIRTHDAY_PRICE_EUR}. VIP visit: private, 1–20 guests, 45–60 min, €${vip.low}–€${vip.high}. Services: ${localeUrl(base, 'en', 'teenused')}.
 
-Gift card: €${GIFT_CARD_UNIT_EUR} = 1 visit. ${localeUrl(base, 'en', 'kinkekaart')}
+Gift card via Montonio bank link: €${GIFT_CARD_UNIT_EUR} = 1 visit. ${localeUrl(base, 'en', 'kinkekaart')}
 Donations via Montonio bank link: ${localeUrl(base, 'en', 'toetused')}#anneta
 Contact: ${PHONE}, ${EMAIL}. Open Mon–Sun ${OPENS}–${CLOSES}, by appointment only.
 
@@ -123,7 +123,7 @@ Papagoi Keskus (Центр попугаев) — первый в Эстонии 
 
 День рождения в центре: 2,5 часа, ${BIRTHDAY_PRICE_EUR} €. VIP-визит: частный, 1–20 человек, 45–60 мин, ${vip.low}–${vip.high} €. Услуги: ${localeUrl(base, 'ru', 'teenused')}.
 
-Подарочная карта: ${GIFT_CARD_UNIT_EUR} € = 1 визит. ${localeUrl(base, 'ru', 'kinkekaart')}
+Подарочная карта через банковскую ссылку Montonio: ${GIFT_CARD_UNIT_EUR} € = 1 визит. ${localeUrl(base, 'ru', 'kinkekaart')}
 Пожертвования через банковскую ссылку Montonio: ${localeUrl(base, 'ru', 'toetused')}#anneta
 Контакт: ${PHONE}, ${EMAIL}. Пн–Вс ${OPENS}–${CLOSES}, только по записи.
 
