@@ -1,7 +1,15 @@
 import 'dotenv/config'
 import { formatInTimeZone } from 'date-fns-tz'
 import { buildReviewInviteEmail, createTransporter, sendReviewInviteEmail } from '../lib/email'
-import { shouldShowReviewDonationLine } from '../lib/email-i18n'
+import {
+  reviewDonateVariant,
+  reviewFundingVariant,
+  reviewInviteBoxKind,
+  shouldShowReviewDonationLine,
+  type ReviewDonateVariant,
+  type ReviewFundingVariant,
+  type ReviewInviteBoxKind,
+} from '../lib/email-i18n'
 import { extractGroupTypeFromNotionVisitorProps } from '../lib/notion-booking'
 import { escapeHtml } from '../lib/sanitize'
 import {
@@ -295,10 +303,13 @@ type ReviewInviteRecipientRow = {
   locale: VisitMailLocale
   groupType: string | null
   showDonation: boolean
+  fundingVariant: ReviewFundingVariant | null
+  donateVariant: ReviewDonateVariant | null
   failed?: boolean
 }
 
 const VARIANT_LOCALE_ORDER: VisitMailLocale[] = ['et', 'en', 'ru']
+const VARIANT_KIND_ORDER: ReviewInviteBoxKind[] = ['parent', 'company', 'school', 'plain']
 
 function localeCodeUpper(locale: VisitMailLocale) {
   return locale.toUpperCase()
@@ -307,46 +318,62 @@ function localeCodeUpper(locale: VisitMailLocale) {
 function recipientLine(row: ReviewInviteRecipientRow) {
   const name = row.name?.trim() || '—'
   const groupType = row.groupType?.trim() || '—'
-  const donation = row.showDonation ? 'jah' : 'ei'
+  const donation =
+    row.donateVariant === 'company' ? 'ettevõte' : row.showDonation ? 'jah' : 'ei'
+  const funding =
+    row.fundingVariant === 'parent'
+      ? 'lapsevanem'
+      : row.fundingVariant === 'school'
+        ? 'õpetaja'
+        : 'ei'
   const failed = row.failed ? ' · ebaõnnestus' : ''
-  return `${name} · ${row.email} · ${localeCodeUpper(row.locale)} · ${groupType} · annetuse rida: ${donation}${failed}`
+  return `${name} · ${row.email} · ${localeCodeUpper(row.locale)} · ${groupType} · annetuse rida: ${donation} · toetuste rida: ${funding}${failed}`
 }
 
-function variantKey(locale: VisitMailLocale, showDonation: boolean) {
-  return `${locale}:${showDonation ? '1' : '0'}`
+function variantKey(locale: VisitMailLocale, kind: ReviewInviteBoxKind) {
+  return `${locale}:${kind}`
 }
 
-function variantHeading(locale: VisitMailLocale, showDonation: boolean, count: number) {
-  return `${localeCodeUpper(locale)} · ${showDonation ? 'annetuse reaga' : 'ilma annetuseta'} · ${count} kirja`
+function variantHeading(locale: VisitMailLocale, kind: ReviewInviteBoxKind, count: number) {
+  const kindLabel =
+    kind === 'parent'
+      ? 'annetuse reaga · toetuste rida lapsevanemale'
+      : kind === 'school'
+        ? 'ilma annetuseta · toetuste rida õpetajale'
+        : kind === 'company'
+          ? 'ettevõtte annetuse reaga'
+          : 'ilma annetuseta'
+  return `${localeCodeUpper(locale)} · ${kindLabel} · ${count} kirja`
 }
 
 function collectReviewInviteVariants(recipients: ReviewInviteRecipientRow[]) {
   type Variant = {
     locale: VisitMailLocale
-    showDonation: boolean
+    kind: ReviewInviteBoxKind
     count: number
     groupType: string | null
   }
   const map = new Map<string, Variant>()
   for (const row of recipients) {
     if (row.failed) continue
-    const key = variantKey(row.locale, row.showDonation)
+    const kind = reviewInviteBoxKind(row.groupType)
+    const key = variantKey(row.locale, kind)
     const existing = map.get(key)
     if (existing) {
       existing.count += 1
     } else {
       map.set(key, {
         locale: row.locale,
-        showDonation: row.showDonation,
+        kind,
         count: 1,
         groupType: row.groupType,
       })
     }
   }
   return VARIANT_LOCALE_ORDER.flatMap((locale) =>
-    [true, false]
-      .map((showDonation) => map.get(variantKey(locale, showDonation)))
-      .filter((v): v is Variant => Boolean(v))
+    VARIANT_KIND_ORDER.map((kind) => map.get(variantKey(locale, kind))).filter(
+      (v): v is Variant => Boolean(v)
+    )
   )
 }
 
@@ -393,7 +420,7 @@ export function buildReviewCronSummaryContent(params: {
   const variants = includeLetters ? collectReviewInviteVariants(recipients) : []
 
   const letterSamples = variants.map((variant) => ({
-    heading: variantHeading(variant.locale, variant.showDonation, variant.count),
+    heading: variantHeading(variant.locale, variant.kind, variant.count),
     built: buildReviewInviteEmail({
       name: null,
       locale: variant.locale,
@@ -546,6 +573,8 @@ export async function runReviewInvitesFromEnv() {
   for (const [email, visitors] of uniqueByEmail.entries()) {
     const first = visitors[0]
     const showDonation = shouldShowReviewDonationLine(first.groupType)
+    const fundingVariant = reviewFundingVariant(first.groupType)
+    const donateVariant = reviewDonateVariant(first.groupType)
     if (dryRun) {
       recipients.push({
         name: first.name,
@@ -553,6 +582,8 @@ export async function runReviewInvitesFromEnv() {
         locale: first.locale,
         groupType: first.groupType,
         showDonation,
+        fundingVariant,
+        donateVariant,
       })
       console.log(
         `[DRY RUN] Would send review email to ${email} (name: ${first.name || '—'}, locale: ${
@@ -573,6 +604,8 @@ export async function runReviewInvitesFromEnv() {
         locale: first.locale,
         groupType: first.groupType,
         showDonation,
+        fundingVariant,
+        donateVariant,
       })
       console.log(`Review email sent to ${email}`)
     } catch (error) {
@@ -583,6 +616,8 @@ export async function runReviewInvitesFromEnv() {
         locale: first.locale,
         groupType: first.groupType,
         showDonation,
+        fundingVariant,
+        donateVariant,
         failed: true,
       })
       console.error(`Failed to send review email to ${email}:`, error)

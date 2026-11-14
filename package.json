@@ -11,6 +11,7 @@
     "test:gmb-access-token": "tsx --test lib/gmb-access-token.test.ts",
     "test:notion-reviews-query": "tsx --test lib/notion-reviews-query.test.ts",
     "test:donation": "tsx --test lib/donation.test.ts lib/montonio-payment.test.ts lib/donation-payment.test.ts",
+    "test:review-invite": "tsx --test lib/review-invite-email.test.ts",
     "test:blog-seo": "tsx --test lib/blog-seo.test.ts",
     "test:gift-card-redeem": "tsx --test lib/gift-card-status.test.ts lib/gift-card-staff-auth.test.ts",
     "test:seo-json-ld": "tsx --test lib/json-ld.test.ts lib/notion-aggregate-rating.test.ts lib/llms-txt.test.ts",

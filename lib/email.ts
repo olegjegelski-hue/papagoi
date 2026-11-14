@@ -18,8 +18,12 @@ import {
   getReviewInviteEmailCopy,
   getVipBookingEmailCopy,
   getVipConfirmationEmailCopy,
+  reviewDonateVariant,
+  reviewFundingVariant,
   shouldShowReviewDonationLine,
   visitLanguageLabelForEmail,
+  type ReviewDonateVariant,
+  type ReviewFundingVariant,
 } from '@/lib/email-i18n'
 import { isVipGroupType } from '@/lib/vip-visit'
 
@@ -807,7 +811,15 @@ export function buildReviewInviteEmail(params: {
   locale?: VisitMailLocale
   groupType?: string | null
   reviewLink?: string
-}): { subject: string; html: string; text: string; locale: VisitMailLocale; showDonation: boolean } {
+}): {
+  subject: string
+  html: string
+  text: string
+  locale: VisitMailLocale
+  showDonation: boolean
+  fundingVariant: ReviewFundingVariant | null
+  donateVariant: ReviewDonateVariant | null
+} {
   const locale = params.locale ?? 'et'
   const copy = getReviewInviteEmailCopy(locale)
   const reviewLink =
@@ -816,15 +828,36 @@ export function buildReviewInviteEmail(params: {
     'https://g.page/r/CXfsGh_UtN6-EBM/review'
   const greetingName = params.name?.trim() || copy.greetingFallback
   const safeName = escapeHtml(greetingName)
+  const donateVariant = reviewDonateVariant(params.groupType)
+  const fundingVariant = reviewFundingVariant(params.groupType)
   const showDonation = shouldShowReviewDonationLine(params.groupType)
+  const donateHtmlCopy = donateVariant === 'company' ? copy.donateCompanyHtml : copy.donateHtml
+  const donateTextCopy = donateVariant === 'company' ? copy.donateCompanyText : copy.donateText
+  const fundingHtmlCopy =
+    fundingVariant === 'parent'
+      ? copy.fundingParentHtml
+      : fundingVariant === 'school'
+        ? copy.fundingSchoolHtml
+        : ''
+  const fundingTextCopy =
+    fundingVariant === 'parent'
+      ? copy.fundingParentText
+      : fundingVariant === 'school'
+        ? copy.fundingSchoolText
+        : ''
 
   const donationHtml = showDonation
     ? `<br/><br/>
-        ${copy.donateHtml}
+        ${donateHtmlCopy}
         <br/>
         <a href="${copy.donateHref}" style="color: #ea580c; font-weight: 600; text-decoration: underline;">
           ${copy.donateHref}
         </a>`
+    : ''
+
+  const fundingHtml = fundingVariant
+    ? `<br/><br/>
+        ${fundingHtmlCopy}`
     : ''
 
   const html = `
@@ -856,8 +889,7 @@ export function buildReviewInviteEmail(params: {
         <br/>
         <a href="${copy.giftHref}" style="color: #ea580c; font-weight: 600; text-decoration: underline;">
           ${copy.giftHref}
-        </a>
-        ${donationHtml}
+        </a>${donationHtml}${fundingHtml}
       </p>
       <p style="margin-top: 16px; font-size: 14px; color: #4b5563;">
         ${copy.feedback}
@@ -873,7 +905,10 @@ export function buildReviewInviteEmail(params: {
   `
 
   const donationText = showDonation
-    ? `\n${copy.donateText}\n${copy.donateHref}\n`
+    ? `\n${donateTextCopy}\n${copy.donateHref}\n`
+    : ''
+  const fundingText = fundingVariant
+    ? `\n${fundingTextCopy}\n${copy.fundingHref}\n`
     : ''
 
   const text = `
@@ -891,7 +926,7 @@ ${copy.photosText}
 ${copy.boxTitle}
 ${copy.giftText}
 ${copy.giftHref}
-${donationText}
+${donationText}${fundingText}
 ${copy.feedback}
 
 ${copy.signOff}
@@ -902,7 +937,15 @@ https://papagoi.ee/
 keskus@papagoi.ee
   `.trim()
 
-  return { subject: copy.subject, html, text, locale, showDonation }
+  return {
+    subject: copy.subject,
+    html,
+    text,
+    locale,
+    showDonation,
+    fundingVariant,
+    donateVariant,
+  }
 }
 
 export async function sendReviewInviteEmail(params: {
