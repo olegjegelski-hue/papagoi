@@ -659,9 +659,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'Kinkekaardiga sõbrale, tuttavale või pereliikmele — kingisaaja valib ise sobiva aja.',
       donateHtml:
-        'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+        'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
       donateText:
-        'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+        'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
       giftHref: 'https://papagoi.ee/et/kinkekaart',
       donateHref: 'https://papagoi.ee/et/toetused#anneta',
       feedback: 'Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.',
@@ -691,9 +691,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'With a gift card for a friend, acquaintance or family member — they choose the time themselves.',
       donateHtml:
-        'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+        'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
       donateText:
-        'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+        'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
       giftHref: 'https://papagoi.ee/en/kinkekaart',
       donateHref: 'https://papagoi.ee/en/toetused#anneta',
       feedback: 'If you have feedback or questions, just reply to this email.',
@@ -723,9 +723,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'Подарочной картой другу, знакомому или члену семьи — получатель сам выберет удобное время.',
       donateHtml:
-        'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+        'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
       donateText:
-        'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+        'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
       giftHref: 'https://papagoi.ee/ru/kinkekaart',
       donateHref: 'https://papagoi.ee/ru/toetused#anneta',
       feedback: 'Если у вас есть отзывы или вопросы, просто ответьте на это письмо.',
