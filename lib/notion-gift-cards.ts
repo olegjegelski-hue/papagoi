@@ -60,6 +60,25 @@ export interface CreateGiftCardOrderPayload {
   amountEur: number
 }
 
+function richTextContent(content: string) {
+  return { rich_text: [{ type: 'text' as const, text: { content } }] }
+}
+
+/**
+ * Notion lükkab tühja stringi `phone_number` / `email` väljal 400-ga tagasi.
+ * Tühi või ainult tühikutest väärtus → väli jäetakse välja (null).
+ */
+export function notionOptionalContactProperty(
+  kind: 'phone_number' | 'email',
+  propType: string | undefined,
+  raw: string | null | undefined
+): Record<string, unknown> | null {
+  const value = (raw ?? '').trim()
+  if (!value) return null
+  if (propType === kind) return { [kind]: value }
+  return richTextContent(value)
+}
+
 export interface CreateGiftCardOrderResult {
   success: true
   code: string
@@ -158,18 +177,20 @@ export async function createGiftCardOrder(
       pageProps[ostjaNimiKey] = { rich_text: [{ type: 'text', text: { content: payload.buyerName || '—' } }] }
   }
   if (ostjaTelefonKey) {
-    const p = properties[ostjaTelefonKey]
-    if (p?.type === 'phone_number')
-      pageProps[ostjaTelefonKey] = { phone_number: payload.buyerPhone || '' }
-    else
-      pageProps[ostjaTelefonKey] = { rich_text: [{ type: 'text', text: { content: payload.buyerPhone || '' } }] }
+    const phoneProp = notionOptionalContactProperty(
+      'phone_number',
+      properties[ostjaTelefonKey]?.type,
+      payload.buyerPhone
+    )
+    if (phoneProp) pageProps[ostjaTelefonKey] = phoneProp
   }
   if (ostjaEmailKey) {
-    const p = properties[ostjaEmailKey]
-    if (p?.type === 'email')
-      pageProps[ostjaEmailKey] = { email: payload.buyerEmail || '' }
-    else
-      pageProps[ostjaEmailKey] = { rich_text: [{ type: 'text', text: { content: payload.buyerEmail || '' } }] }
+    const emailProp = notionOptionalContactProperty(
+      'email',
+      properties[ostjaEmailKey]?.type,
+      payload.buyerEmail
+    )
+    if (emailProp) pageProps[ostjaEmailKey] = emailProp
   }
   if (vaartusKey) pageProps[vaartusKey] = { number: payload.amountEur }
   if (koodKey) {
