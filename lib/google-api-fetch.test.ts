@@ -5,10 +5,13 @@ import { fetchAllGoogleReviewsFromGMB } from '../scripts/sync-google-reviews-to-
 import {
   errorLooksLikeGmbUnauthorized,
   GMB_TOKEN_INVALID_LOG,
+  GOOGLE_API_MAX_RETRIES,
   GOOGLE_API_NO_STORE,
+  GOOGLE_API_RETRY_BASE_DELAY_MS,
   googleApiFetch,
   googleApiRequestInit,
   isGmbUnauthorizedStatus,
+  isGoogleApiRetryableStatus,
   logGmbTokenInvalid,
 } from './google-api-fetch'
 
@@ -47,19 +50,20 @@ function assertLogsDoNotLeakSecrets(lines: string[]) {
 }
 
 describe('googleApiRequestInit', () => {
-  it('lisab alati cache: no-store ja next.revalidate 0', () => {
+  it('lisab alati cache: no-store ja ei sea next.revalidate', () => {
     const init = googleApiRequestInit({
       method: 'GET',
       headers: { Authorization: `Bearer ${ACCESS_TOKEN}` },
     })
     assert.equal(init.cache, GOOGLE_API_NO_STORE)
     assert.equal(init.cache, 'no-store')
-    assert.equal(init.next?.revalidate, 0)
+    assert.equal('next' in init, false)
+    assert.equal((init as { next?: { revalidate?: number } }).next, undefined)
     assert.equal(init.method, 'GET')
     assert.equal(new Headers(init.headers).get('Authorization'), `Bearer ${ACCESS_TOKEN}`)
   })
 
-  it('kirjutab kutsuja cache ja revalidate üle', () => {
+  it('kirjutab kutsuja cache üle ja eemaldab next', () => {
     const init = googleApiRequestInit({
       cache: 'force-cache',
       next: { revalidate: 3600 },
@@ -67,7 +71,8 @@ describe('googleApiRequestInit', () => {
       body: 'grant_type=refresh_token',
     })
     assert.equal(init.cache, 'no-store')
-    assert.equal(init.next?.revalidate, 0)
+    assert.equal('next' in init, false)
+    assert.equal((init as { next?: { revalidate?: number } }).next, undefined)
     assert.equal(init.method, 'POST')
     assert.equal(init.body, 'grant_type=refresh_token')
   })
@@ -92,9 +97,123 @@ describe('googleApiFetch', () => {
     )
 
     assert.equal(seen?.cache, 'no-store')
-    assert.equal((seen as { next?: { revalidate?: number } })?.next?.revalidate, 0)
+    assert.equal((seen as { next?: { revalidate?: number } })?.next, undefined)
     assert.equal(new Headers(seen?.headers).get('Authorization'), `Bearer ${ACCESS_TOKEN}`)
     assert.equal(seen?.method, 'GET')
+  })
+
+  it('503 korral kordab ja 200 õnnestub; logis pole URL-i', async () => {
+    const { lines, log } = collectLog()
+    let calls = 0
+    const delays: number[] = []
+    const fetchImpl = (async () => {
+      calls += 1
+      if (calls === 1) return jsonResponse({ error: { status: 'UNAVAILABLE' } }, false, 503)
+      return jsonResponse({ ok: true }, true, 200)
+    }) as typeof fetch
+
+    const response = await googleApiFetch(
+      'https://mybusiness.googleapis.com/v4/accounts/a/locations/l/reviews',
+      { headers: { Authorization: `Bearer ${ACCESS_TOKEN}` } },
+      fetchImpl,
+      {
+        log,
+        sleep: async (ms) => {
+          delays.push(ms)
+        },
+      },
+    )
+
+    assert.equal(response.status, 200)
+    assert.equal(calls, 2)
+    assert.deepEqual(delays, [GOOGLE_API_RETRY_BASE_DELAY_MS])
+    assert.equal(lines.length, 1)
+    const payload = JSON.parse(lines[0]) as Record<string, unknown>
+    assert.equal(payload.note, 'Google API retry')
+    assert.equal(payload.httpStatus, 503)
+    assert.equal(payload.attempt, 1)
+    assert.equal('url' in payload, false)
+    assert.equal(JSON.stringify(payload).includes('://'), false)
+    assert.equal(JSON.stringify(payload).includes('googleapis'), false)
+    assertLogsDoNotLeakSecrets(lines)
+  })
+
+  it('401 ei korda', async () => {
+    const { lines, log } = collectLog()
+    let calls = 0
+    const fetchImpl = (async () => {
+      calls += 1
+      return jsonResponse({ error: { status: 'UNAUTHENTICATED' } }, false, 401)
+    }) as typeof fetch
+
+    const response = await googleApiFetch(
+      'https://mybusiness.googleapis.com/v4/accounts/a/locations/l/reviews',
+      { headers: { Authorization: `Bearer ${ACCESS_TOKEN}` } },
+      fetchImpl,
+      {
+        log,
+        sleep: async () => {
+          assert.fail('401 ei tohi oodata ega korrata')
+        },
+      },
+    )
+
+    assert.equal(response.status, 401)
+    assert.equal(calls, 1)
+    assert.equal(lines.length, 0)
+    assertLogsDoNotLeakSecrets(lines)
+  })
+
+  it('kordusi ei ületa 3', async () => {
+    const { lines, log } = collectLog()
+    let calls = 0
+    const delays: number[] = []
+    const fetchImpl = (async () => {
+      calls += 1
+      return jsonResponse({ error: { status: 'UNAVAILABLE' } }, false, 503)
+    }) as typeof fetch
+
+    const response = await googleApiFetch(
+      'https://mybusiness.googleapis.com/v4/accounts/a/locations/l/reviews',
+      { headers: { Authorization: `Bearer ${ACCESS_TOKEN}` } },
+      fetchImpl,
+      {
+        log,
+        sleep: async (ms) => {
+          delays.push(ms)
+        },
+      },
+    )
+
+    assert.equal(response.status, 503)
+    assert.equal(GOOGLE_API_MAX_RETRIES, 3)
+    assert.equal(calls, 1 + GOOGLE_API_MAX_RETRIES)
+    assert.deepEqual(delays, [
+      GOOGLE_API_RETRY_BASE_DELAY_MS,
+      GOOGLE_API_RETRY_BASE_DELAY_MS * 2,
+      GOOGLE_API_RETRY_BASE_DELAY_MS * 4,
+    ])
+    const retries = lines.map((line) => JSON.parse(line) as Record<string, unknown>)
+    assert.equal(retries.length, GOOGLE_API_MAX_RETRIES)
+    assert.deepEqual(
+      retries.map((row) => row.attempt),
+      [1, 2, 3],
+    )
+    assert.equal(
+      retries.every((row) => row.note === 'Google API retry' && row.httpStatus === 503 && !('url' in row)),
+      true,
+    )
+    assertLogsDoNotLeakSecrets(lines)
+  })
+
+  it('kordab 429/500/502/504, mitte 403', () => {
+    assert.equal(isGoogleApiRetryableStatus(429), true)
+    assert.equal(isGoogleApiRetryableStatus(500), true)
+    assert.equal(isGoogleApiRetryableStatus(502), true)
+    assert.equal(isGoogleApiRetryableStatus(504), true)
+    assert.equal(isGoogleApiRetryableStatus(403), false)
+    assert.equal(isGoogleApiRetryableStatus(401), false)
+    assert.equal(isGoogleApiRetryableStatus(200), false)
   })
 })
 

@@ -151,7 +151,7 @@ function authHeaders(accessToken: string): HeadersInit {
   return { Authorization: `Bearer ${accessToken}` }
 }
 
-/** Tokeninfo: logib ainult scope / expires_in / aud / azp. Tokenit ei logita. */
+/** Tokeninfo: POST kehas, mitte query's. Logib ainult scope / expires_in / aud / azp. Tokenit ei logita. */
 export async function logGmbAccessTokenInfo(
   accessToken: string,
   opts?: {
@@ -165,10 +165,20 @@ export async function logGmbAccessTokenInfo(
 
   const log = opts?.log ?? console
   const fetchImpl = opts?.fetchImpl ?? fetch
-  const url = `${GOOGLE_TOKENINFO_ENDPOINT}?access_token=${encodeURIComponent(accessToken)}`
+  const body = new URLSearchParams({ access_token: accessToken })
 
   try {
-    const response = await googleApiFetch(url, {}, fetchImpl)
+    const response = await googleApiFetch(
+      GOOGLE_TOKENINFO_ENDPOINT,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
+      },
+      fetchImpl,
+    )
     let scope: string | null = null
     let expiresIn: number | string | null = null
     let aud: string | null = null
