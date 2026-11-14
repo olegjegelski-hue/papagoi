@@ -101,10 +101,12 @@ describe('shouldReuseCachedGmbAccessToken', () => {
 describe('getGmbAccessToken TTL', { concurrency: false }, () => {
   it('kehtiva vahemälu korral ei küsi uut tokenit', async () => {
     let tokenCalls = 0
+    const cachesSeen: Array<RequestCache | undefined> = []
     const cache: { current: GmbAccessTokenCache } = { current: null }
     const issuedAt = 1_700_000_000_000
-    const fetchImpl = (async (input: RequestInfo | URL) => {
+    const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
+      cachesSeen.push(init?.cache)
       if (url.includes('/token') && !url.includes('tokeninfo')) {
         tokenCalls++
         return jsonResponse({ access_token: ACCESS_TOKEN, expires_in: 3600 })
@@ -127,6 +129,7 @@ describe('getGmbAccessToken TTL', { concurrency: false }, () => {
     assert.equal(first, ACCESS_TOKEN)
     assert.equal(second, ACCESS_TOKEN)
     assert.equal(tokenCalls, 1)
+    assert.equal(cachesSeen[0], 'no-store')
   })
 
   it('aegunud vahemälu korral küsib uue tokeni', async () => {
@@ -194,9 +197,10 @@ describe('getGmbAccessToken TTL', { concurrency: false }, () => {
 describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
   it('tokeninfo logib ainult scope, expires_in, aud, azp', async () => {
     const { lines, log } = collectLog()
-    const fetchImpl = (async (input: RequestInfo | URL) => {
+    const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
       assert.equal(url.includes(ACCESS_TOKEN), true)
+      assert.equal(init?.cache, 'no-store')
       return jsonResponse({
         scope: 'https://www.googleapis.com/auth/business.manage',
         expires_in: '3500',
@@ -254,6 +258,7 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
       const url = String(input)
       assert.equal(url.includes('/reply'), false)
       assert.match(url, /\/reviews\/rev-1$/)
+      assert.equal(init?.cache, 'no-store')
       const auth = new Headers(init?.headers).get('Authorization')
       assert.equal(auth, `Bearer ${ACCESS_TOKEN}`)
       return jsonResponse({ comment: 'secret-review-body', name: 'accounts/x' }, true, 200)
@@ -286,8 +291,9 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
     const { lines, log } = collectLog()
     const listReviewId =
       'AbFvOqnTfGqG-zbokUQxuZ6YQt8dK8wQmEIbRzvo0x2q9TsB25y4elc80WjhG6G4HiR9HaQHQYVYhg'
-    const fetchImpl = (async (input: RequestInfo | URL) => {
+    const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
+      assert.equal(init?.cache, 'no-store')
       if (url.includes('tokeninfo')) {
         return jsonResponse({
           scope: 'https://www.googleapis.com/auth/business.manage',

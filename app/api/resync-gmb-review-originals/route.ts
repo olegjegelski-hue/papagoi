@@ -8,6 +8,7 @@ import { resyncGmbReviewOriginalText } from '@/scripts/resync-gmb-review-origina
  * Konkreetne rida: ?reviewId=ID või ?reviewIds=id1,id2,id3
  */
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 export const maxDuration = 300
 
 function collectCsvParams(url: URL, names: string[]): string[] {

@@ -10,6 +10,12 @@ import {
 } from '@/lib/gmb-review-id'
 import { GMB_STATUS } from '@/lib/gmb-review-workflow'
 import { getGmbAccessToken, logGmbAuthCompareProbe } from '@/lib/gmb-access-token'
+import {
+  googleApiFetch,
+  isGmbUnauthorizedStatus,
+  logGmbTokenInvalid,
+  type FetchLike,
+} from '@/lib/google-api-fetch'
 import { planReviewSyncActions, type GoogleReviewForSync } from '@/lib/gmb-review-sync'
 import {
   googleReviewIdEqualsFilter,
@@ -62,17 +68,33 @@ export type GmbReviewApiRecord = GoogleReview & {
   originalText?: string | null
 }
 
+type SyncLogger = Pick<Console, 'log' | 'warn' | 'error'>
+
+export type FetchAllGoogleReviewsFromGMBOptions = {
+  fetchImpl?: FetchLike
+  accessToken?: string
+  accountId?: string
+  locationId?: string
+  log?: SyncLogger
+  skipAuthProbe?: boolean
+}
+
 export async function fetchGmbReviewById(
   reviewId: string,
   accessToken?: string,
+  fetchImpl: FetchLike = fetch,
 ): Promise<GmbReviewApiRecord | null> {
   const accountId = assertEnv('GOOGLE_MY_BUSINESS_ACCOUNT_ID')
   const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
-  const token = accessToken || (await getGmbAccessToken())
+  const token = accessToken || (await getGmbAccessToken({ fetchImpl }))
   const url = gmbReviewResourceUrl(accountId, locationId, reviewId)
-  const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  const response = await googleApiFetch(
+    url,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+    fetchImpl,
+  )
   if (response.status === 404) return null
   if (!response.ok) {
     const text = await response.text()
@@ -81,28 +103,61 @@ export async function fetchGmbReviewById(
   return (await response.json()) as GmbReviewApiRecord
 }
 
-async function fetchAllGoogleReviewsFromGMB(): Promise<GoogleReview[]> {
-  const accountId = assertEnv('GOOGLE_MY_BUSINESS_ACCOUNT_ID')
-  const locationId = assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
-  const accessToken = await getGmbAccessToken()
-  await logGmbAuthCompareProbe({ accessToken, accountId, locationId })
+export async function fetchAllGoogleReviewsFromGMB(
+  opts: FetchAllGoogleReviewsFromGMBOptions = {},
+): Promise<GoogleReview[]> {
+  const log = opts.log ?? console
+  const fetchImpl = opts.fetchImpl ?? fetch
+  const accountId = opts.accountId ?? assertEnv('GOOGLE_MY_BUSINESS_ACCOUNT_ID')
+  const locationId = opts.locationId ?? assertEnv('GOOGLE_MY_BUSINESS_LOCATION_ID')
+  const accessToken = opts.accessToken || (await getGmbAccessToken({ fetchImpl, log }))
+  if (!opts.skipAuthProbe) {
+    await logGmbAuthCompareProbe({
+      accessToken,
+      accountId,
+      locationId,
+      fetchImpl,
+      log,
+    })
+  }
 
   const pageSize = 50
   const all: GoogleReview[] = []
   let pageToken: string | undefined
+  let page = 0
+  const startedAtMs = Date.now()
 
   do {
+    page += 1
     const url = gmbReviewsListUrl(accountId, locationId, {
       pageSize,
       orderBy: 'updateTime desc',
       pageToken,
     })
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+    const response = await googleApiFetch(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    })
+      fetchImpl,
+    )
+
+    log.log(
+      JSON.stringify({
+        note: 'GMB reviews list page',
+        page,
+        httpStatus: response.status,
+      }),
+    )
+
+    if (isGmbUnauthorizedStatus(response.status)) {
+      logGmbTokenInvalid(log)
+      const text = await response.text()
+      throw new Error(`Failed to fetch Google reviews from GMB API: ${response.status} - ${text}`)
+    }
 
     if (!response.ok) {
       const text = await response.text()
@@ -121,6 +176,15 @@ async function fetchAllGoogleReviewsFromGMB(): Promise<GoogleReview[]> {
     pageToken = data.nextPageToken || undefined
   } while (pageToken)
 
+  log.log(
+    JSON.stringify({
+      note: 'GMB reviews list done',
+      pages: page,
+      reviews: all.length,
+      elapsedMs: Date.now() - startedAtMs,
+    }),
+  )
+
   return all
 }
 
@@ -134,7 +198,7 @@ async function fetchAllGoogleReviewsViaPlaces(): Promise<GoogleReview[]> {
   url.searchParams.set('fields', 'reviews,rating,user_ratings_total,url')
   url.searchParams.set('key', apiKey)
 
-  const response = await fetch(url.toString())
+  const response = await googleApiFetch(url.toString())
   if (!response.ok) {
     const text = await response.text()
     throw new Error(`Failed to fetch Google Places details: ${response.status} - ${text}`)
@@ -324,6 +388,7 @@ export async function upsertReviewsIntoNotion(
   for (const item of plan.creates) {
     const response = await fetchImpl('https://api.notion.com/v1/pages', {
       method: 'POST',
+      cache: 'no-store',
       headers: notionWriteHeaders(NOTION_API_KEY),
       body: JSON.stringify({
         parent: { database_id: databaseId },
@@ -355,6 +420,7 @@ export async function upsertReviewsIntoNotion(
     const pageId = existing.id.replace(/-/g, '')
     const response = await fetchImpl(`https://api.notion.com/v1/pages/${pageId}`, {
       method: 'PATCH',
+      cache: 'no-store',
       headers: notionWriteHeaders(NOTION_API_KEY),
       body: JSON.stringify({
         properties: item.properties,

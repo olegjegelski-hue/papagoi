@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import http from 'node:http'
 import dotenv from 'dotenv'
+import { googleApiFetch } from '@/lib/google-api-fetch'
 
 dotenv.config()
 
@@ -36,7 +37,7 @@ async function exchangeCode(opts: {
   clientId: string
   clientSecret: string
 }): Promise<{ refresh_token?: string; error?: string; error_description?: string }> {
-  const tokenRes = await fetch(TOKEN_ENDPOINT, {
+  const tokenRes = await googleApiFetch(TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({

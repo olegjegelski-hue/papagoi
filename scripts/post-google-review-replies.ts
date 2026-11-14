@@ -8,6 +8,7 @@ import 'dotenv/config'
 
 import { formatInTimeZone } from 'date-fns-tz'
 import { getGmbAccessToken, logGmbAuthCompareProbe } from '@/lib/gmb-access-token'
+import { googleApiFetch } from '@/lib/google-api-fetch'
 import { createTransporter } from '../lib/email'
 import { GMB_STATUS, isGmbReplyReadyToPost } from '@/lib/gmb-review-workflow'
 import { gmbReviewReplyUrl, googleReviewIdFromNotionProperty } from '@/lib/gmb-review-id'
@@ -210,6 +211,7 @@ async function markPostError(apiKey: string, pageId: string, reason: string) {
   console.error(`Marking Notion page ${pageId} as ${GMB_STATUS.error}: ${reason}`)
   const response = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
     method: 'PATCH',
+    cache: 'no-store',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Notion-Version': '2022-06-28',
@@ -273,7 +275,7 @@ async function attemptPostReply(input: {
 
   let gmbResponse: Response
   try {
-    gmbResponse = await fetch(url, {
+    gmbResponse = await googleApiFetch(url, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -308,6 +310,7 @@ async function attemptPostReply(input: {
   const nowIso = new Date().toISOString()
   const notionResponse = await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
     method: 'PATCH',
+    cache: 'no-store',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Notion-Version': '2022-06-28',

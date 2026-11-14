@@ -8,6 +8,7 @@ import { postRepliesToGoogle } from '@/scripts/post-google-review-replies'
  * Query: ?totalLimit= &oldLimit= (üle max ei lähe).
  */
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 export const maxDuration = 300
 
 function parsePositiveIntParam(url: URL, names: string[]): number | undefined {
