@@ -16,7 +16,14 @@ import {
   logGmbTokenInvalid,
   type FetchLike,
 } from '@/lib/google-api-fetch'
-import { planReviewSyncActions, type GoogleReviewForSync } from '@/lib/gmb-review-sync'
+import {
+  applyReviewSyncPatchLimit,
+  GMB_REVIEW_SYNC_PATCH_DIFF_LOG_LIMIT,
+  GMB_REVIEW_SYNC_PATCH_LIMIT,
+  notionReviewSyncFieldDiffs,
+  planReviewSyncActions,
+  type GoogleReviewForSync,
+} from '@/lib/gmb-review-sync'
 import {
   googleReviewIdEqualsFilter,
   queryNotionReviewPages,
@@ -311,6 +318,7 @@ export type UpsertReviewsIntoNotionOptions = {
   dataSourceIds?: string[]
   skipLiveLookup?: boolean
   nowIso?: string
+  patchLimit?: number
 }
 
 function notionWriteHeaders(apiKey: string): Record<string, string> {
@@ -381,6 +389,34 @@ export async function upsertReviewsIntoNotion(
   }
 
   const plan = planReviewSyncActions(reviews, existingByReviewId, reviewUrl, options.nowIso)
+  console.log(
+    JSON.stringify({
+      note: 'reviewSyncPlan',
+      creates: plan.creates.length,
+      patches: plan.patches.length,
+      skippedUnchanged: plan.skippedUnchanged,
+      skippedNoId: plan.skippedNoId,
+    }),
+  )
+
+  const { patches: patchesToApply, deferredPatches } = applyReviewSyncPatchLimit(
+    plan.patches,
+    options.patchLimit ?? GMB_REVIEW_SYNC_PATCH_LIMIT,
+  )
+
+  for (const item of patchesToApply.slice(0, GMB_REVIEW_SYNC_PATCH_DIFF_LOG_LIMIT)) {
+    const diffs = notionReviewSyncFieldDiffs(item.existing?.properties, item.properties)
+    console.log(
+      JSON.stringify({
+        note: 'patchFieldDiff',
+        fields: diffs.map((diff) => `${diff.name}: ${diff.type}`),
+      }),
+    )
+  }
+
+  if (deferredPatches > 0) {
+    console.log(`${deferredPatches} patchi jäi järgmisele korrale`)
+  }
 
   let created = 0
   let updated = 0
@@ -414,7 +450,7 @@ export async function upsertReviewsIntoNotion(
     created++
   }
 
-  for (const item of plan.patches) {
+  for (const item of patchesToApply) {
     const existing = item.existing
     if (!existing) continue
     const pageId = existing.id.replace(/-/g, '')
@@ -442,7 +478,7 @@ export async function upsertReviewsIntoNotion(
   }
 
   console.log(
-    `Sync complete. Created: ${created}, Updated: ${updated}, Unchanged skipped: ${plan.skippedUnchanged}, Skipped no ID: ${plan.skippedNoId}, Live ID hits: ${liveLookupHits}, Total from Google: ${reviews.length}`,
+    `Sync complete. Created: ${created}, Updated: ${updated}, Unchanged skipped: ${plan.skippedUnchanged}, Skipped no ID: ${plan.skippedNoId}, Live ID hits: ${liveLookupHits}, Total from Google: ${reviews.length}, Deferred patches: ${deferredPatches}`,
   )
 
   return {
@@ -452,6 +488,7 @@ export async function upsertReviewsIntoNotion(
     skippedNoId: plan.skippedNoId,
     liveLookupHits,
     totalFromGoogle: reviews.length,
+    deferredPatches,
   }
 }
 
