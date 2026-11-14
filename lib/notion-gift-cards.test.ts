@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { notionOptionalContactProperty } from './notion-gift-cards'
+import { giftCardKeelSelect, notionOptionalContactProperty } from './notion-gift-cards'
+import { resolveGiftCardLocale } from './notion-gift-card-lookup'
 
 describe('notionOptionalContactProperty', () => {
   it('jätab tühja telefoni välja (phone_number ja rich_text)', () => {
@@ -26,5 +27,24 @@ describe('notionOptionalContactProperty', () => {
     assert.deepEqual(notionOptionalContactProperty('email', 'email', 'keskus@papagoi.ee'), {
       email: 'keskus@papagoi.ee',
     })
+  })
+})
+
+describe('giftCardKeelSelect', () => {
+  it('kirjutab Keel Est/Eng/Rus vormi locale järgi', () => {
+    assert.deepEqual(giftCardKeelSelect('et'), { select: { name: 'Est' } })
+    assert.deepEqual(giftCardKeelSelect('en'), { select: { name: 'Eng' } })
+    assert.deepEqual(giftCardKeelSelect('ru'), { select: { name: 'Rus' } })
+  })
+})
+
+describe('resolveGiftCardLocale', () => {
+  it('tühi Keel → et; Est/Eng/Rus → et/en/ru', () => {
+    assert.equal(resolveGiftCardLocale({}), 'et')
+    assert.equal(resolveGiftCardLocale({ Keel: { type: 'select', select: { name: null } } }), 'et')
+    assert.equal(resolveGiftCardLocale({ Keel: { type: 'select', select: { name: '' } } }), 'et')
+    assert.equal(resolveGiftCardLocale({ Keel: { type: 'select', select: { name: 'Est' } } }), 'et')
+    assert.equal(resolveGiftCardLocale({ Keel: { type: 'select', select: { name: 'Eng' } } }), 'en')
+    assert.equal(resolveGiftCardLocale({ Keel: { type: 'select', select: { name: 'Rus' } } }), 'ru')
   })
 })

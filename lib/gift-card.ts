@@ -1,4 +1,5 @@
 import { isCancelledMontonioStatus, isPaidMontonioStatus } from '@/lib/montonio-payment'
+import type { VisitMailLocale } from '@/lib/visit-language'
 
 export const GIFT_CARD_STATUS = {
   awaitingPayment: 'Ootab makset',
@@ -36,14 +37,42 @@ export function giftCardCashflowTitle(buyerName: string, code: string): string {
   return `Kinkekaardi müük — ${name} (${code})`
 }
 
-export function giftCardRedeemUrl(code: string): string {
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
-  return `${baseUrl}/kinkekaart/lunasta?code=${encodeURIComponent(code)}`
+function giftCardSiteBaseUrl(): string {
+  return (process.env.NEXT_PUBLIC_BASE_URL || 'https://papagoi.ee').replace(/\/$/, '')
+}
+
+/** Suhteline tee i18n-navigatsioonile (next-intl lisab keele ise). */
+export function giftCardRedeemPath(code?: string): string {
+  const path = '/kinkekaart/lunasta'
+  return code ? `${path}?code=${encodeURIComponent(code)}` : path
+}
+
+/**
+ * Lunastus-URL. QR-kood ja Notioni „QR URL“ kasutavad alati `et`
+ * (kaart jääb eesti keelde). Kiri ostjale kasutab ostja keelt.
+ */
+export function giftCardRedeemUrl(
+  code: string,
+  locale: VisitMailLocale = 'et',
+  baseUrl: string = giftCardSiteBaseUrl()
+): string {
+  return `${baseUrl.replace(/\/$/, '')}/${locale}${giftCardRedeemPath(code)}`
+}
+
+/** Vanade kaartide QR URL ilma keeleprefiksita (enne i18n-i). */
+export function legacyGiftCardRedeemUrl(
+  code: string,
+  baseUrl: string = giftCardSiteBaseUrl()
+): string {
+  return `${baseUrl.replace(/\/$/, '')}${giftCardRedeemPath(code)}`
 }
 
 export function isGiftCardAlreadyIssued(details: { code: string; qrUrl: string | null }): boolean {
-  const qrUrl = giftCardRedeemUrl(details.code)
-  return Boolean(details.qrUrl && details.qrUrl === qrUrl)
+  if (!details.qrUrl) return false
+  return (
+    details.qrUrl === giftCardRedeemUrl(details.code, 'et') ||
+    details.qrUrl === legacyGiftCardRedeemUrl(details.code)
+  )
 }
 
 export function isGiftCardAwaitingPayment(status: string | null | undefined): boolean {

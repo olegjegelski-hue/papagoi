@@ -4,6 +4,7 @@
  */
 
 import { randomBytes } from 'crypto'
+import { visitMailLocaleToNotionSelectLabel, type VisitMailLocale } from '@/lib/visit-language'
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
@@ -58,6 +59,12 @@ export interface CreateGiftCardOrderPayload {
   buyerEmail: string
   buyerPhone: string
   amountEur: number
+  locale: VisitMailLocale
+}
+
+/** Notioni „Keel“ select: Est / Eng / Rus (sama mis annetused ja külastajad). */
+export function giftCardKeelSelect(locale: VisitMailLocale) {
+  return { select: { name: visitMailLocaleToNotionSelectLabel(locale) } }
 }
 
 function richTextContent(content: string) {
@@ -142,6 +149,7 @@ export async function createGiftCardOrder(
     Object.keys(properties).find((k) => properties[k]?.type === 'status') ||
     null
   const makseviisKey = findProp(properties, ['Makseviis', 'Makseviis'], 'select')
+  const keelKey = findProp(properties, ['Keel', 'Language'], 'select')
 
   // Notion nõuab select/status puhul täpset valikut – kasutame nime või id (id on stabiilsem)
   function resolveStatusOption(
@@ -224,6 +232,9 @@ export async function createGiftCardOrder(
         makseviisOption.name
       )
     }
+  }
+  if (keelKey) {
+    pageProps[keelKey] = giftCardKeelSelect(payload.locale)
   }
 
   const createRes = await fetchNotion('https://api.notion.com/v1/pages', {

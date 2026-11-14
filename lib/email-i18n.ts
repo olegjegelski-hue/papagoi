@@ -32,6 +32,26 @@ export function formatVisitDateLongFromDate(d: Date, locale: VisitMailLocale): s
 }
 
 /** Lühike kuupäev + kellaaeg teema reale */
+/** Lühike kuupäev meilis (kehtiv kuni jms), keele järgi. */
+export function formatMailDate(dateValue: string, locale: VisitMailLocale): string {
+  const raw = (dateValue || '').trim()
+  if (!raw) return ''
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  const slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  const ee = raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/)
+  let isoDate = ''
+  if (iso) isoDate = `${iso[1]}-${iso[2]}-${iso[3]}`
+  else if (slash) isoDate = `${slash[3]}-${slash[2].padStart(2, '0')}-${slash[1].padStart(2, '0')}`
+  else if (ee) isoDate = `${ee[3]}-${ee[2].padStart(2, '0')}-${ee[1].padStart(2, '0')}`
+  if (!isoDate) return raw
+  return new Date(`${isoDate}T12:00:00+02:00`).toLocaleDateString(localeTag(locale), {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Europe/Tallinn',
+  })
+}
+
 export function formatVisitDateForSubject(
   dateValue: string,
   timeSlot: string | undefined,
@@ -599,6 +619,67 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
       regards: 'С уважением',
       centre: 'Центр Papagoi',
       tel: 'Тел. +372 51 27 938',
+    },
+  }
+  return c[locale]
+}
+
+export function getGiftCardIssuedEmailCopy(locale: VisitMailLocale) {
+  const c = {
+    et: {
+      subject: (amountEur: number) => `Papagoi Keskuse kinkekaart (${amountEur} €) – valmis`,
+      title: 'Kinkekaart on valmis',
+      greeting: (name: string) => `Tere, <strong>${name}</strong>!`,
+      greetingFallback: 'Tere!',
+      greetingText: (name: string) => `Tere, ${name}!`,
+      greetingFallbackText: 'Tere!',
+      value: 'Väärtus:',
+      validUntil: 'Kehtiv kuni:',
+      code: 'Kood:',
+      attachmentsHtml:
+        'Manused: <strong>PNG</strong> ja <strong>PDF</strong> formaadis kinkekaart. Saate QR-koodi skännida ja valida endale sobiva aja.',
+      attachmentsText: 'Manused: PNG ja PDF',
+      redeemLink: 'Lunastamise link:',
+      questions: 'Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.',
+      centre: 'Papagoi Keskus',
+      address: 'Tartu mnt 80, Soinaste',
+    },
+    en: {
+      subject: (amountEur: number) => `Papagoi Centre gift card (${amountEur} €) – ready`,
+      title: 'Your gift card is ready',
+      greeting: (name: string) => `Hello, <strong>${name}</strong>!`,
+      greetingFallback: 'Hello!',
+      greetingText: (name: string) => `Hello, ${name}!`,
+      greetingFallbackText: 'Hello!',
+      value: 'Value:',
+      validUntil: 'Valid until:',
+      code: 'Code:',
+      attachmentsHtml:
+        'Attachments: a gift card in <strong>PNG</strong> and <strong>PDF</strong> format. You can scan the QR code and choose a time that suits you.',
+      attachmentsText: 'Attachments: PNG and PDF',
+      redeemLink: 'Redemption link:',
+      questions: 'If you have any questions, please contact us: +372 512 7938 or keskus@papagoi.ee.',
+      centre: 'Papagoi Centre',
+      address: 'Tartu mnt 80, Soinaste',
+    },
+    ru: {
+      subject: (amountEur: number) => `Подарочная карта центра Papagoi (${amountEur} €) — готова`,
+      title: 'Подарочная карта готова',
+      greeting: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
+      greetingFallback: 'Здравствуйте!',
+      greetingText: (name: string) => `Здравствуйте, ${name}!`,
+      greetingFallbackText: 'Здравствуйте!',
+      value: 'Сумма:',
+      validUntil: 'Действительна до:',
+      code: 'Код:',
+      attachmentsHtml:
+        'Вложения: подарочная карта в форматах <strong>PNG</strong> и <strong>PDF</strong>. Вы можете отсканировать QR-код и выбрать удобное время.',
+      attachmentsText: 'Вложения: PNG и PDF',
+      redeemLink: 'Ссылка для погашения:',
+      questions:
+        'Если у вас есть вопросы, свяжитесь с нами: +372 512 7938 или keskus@papagoi.ee.',
+      centre: 'Центр Papagoi',
+      address: 'Tartu mnt 80, Soinaste',
     },
   }
   return c[locale]

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { giftCardRedeemUrl } from '@/lib/gift-card'
 import {
   getFirstGiftCardFromDatabase,
   getGiftCardDetailsByCode,
@@ -31,7 +32,7 @@ export async function buildGiftCardFileResponse(opts: {
     )
   }
 
-  const qrUrl = `${baseUrl.replace(/\/$/, '')}/kinkekaart/lunasta?code=${encodeURIComponent(details.code)}`
+  const qrUrl = giftCardRedeemUrl(details.code, 'et', baseUrl)
 
   const { pngBuffer, pdfBuffer } = await renderGiftCardToPngPdf({
     code: details.code,

@@ -20,7 +20,7 @@ export async function issueGiftCard(input: {
   details: GiftCardDetails
   force?: boolean
 }): Promise<IssueGiftCardResult> {
-  const qrUrl = giftCardRedeemUrl(input.details.code)
+  const qrUrl = giftCardRedeemUrl(input.details.code, 'et')
 
   if (!input.details.buyerEmail) {
     throw new Error('Gift card has no buyer email in Notion')
@@ -45,7 +45,7 @@ export async function issueGiftCard(input: {
     validUntil: input.details.validUntil,
     pngBuffer,
     pdfBuffer,
-    qrUrl,
+    locale: input.details.locale,
   })
 
   await setGiftCardQrUrl(input.notionApiKey, input.details.pageId, qrUrl)
