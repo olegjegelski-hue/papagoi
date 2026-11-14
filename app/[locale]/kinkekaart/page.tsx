@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isEn = locale === 'en'
   const title = isRu ? 'Подарочная карта - Центр попугаев в Тарту | Подарить визит' : isEn ? 'Gift card - Parrot Centre Tartu | Give a visit' : 'Kinkekaart - Papagoi Keskus Tartus | Kingi külastus'
   const description = isRu
-    ? 'Купите цифровую подарочную карту Центра попугаев. 10 € = 1 визит. Сумма шагами по 10 €. Идеально на день рождения или юбилей. Быстрый заказ и подтверждение по эл. почте.'
+    ? 'Купите цифровую подарочную карту Центра попугаев. 10 € = 1 визит. Оплата через банковскую ссылку Montonio; карта сразу придёт на e-mail.'
     : isEn
-      ? 'Buy a digital gift card for the Parrot Centre. €10 = 1 visit. Choose amount in €10 steps. Ideal for birthdays or anniversaries. Quick order and confirmation by email.'
-      : 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Vali summa 10 € sammuga. Ideaalne kingitus sünnipäevaks või juubeliks. Kiire tellimine ja kinnitus e-kirjaga.'
+      ? 'Buy a digital gift card for the Parrot Centre. €10 = 1 visit. Pay by Montonio bank link; the card is emailed immediately.'
+      : 'Osta Papagoi Keskuse digitaalne kinkekaart. 10 € = 1 külastus. Maksa Montonio pangalingiga; kaart tuleb kohe e-postile.'
   const keywords = isRu
     ? 'подарочная карта Центр попугаев, подарить визит, карта центр попугаев Тарту, цифровая подарочная карта'
     : isEn

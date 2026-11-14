@@ -5,7 +5,7 @@ import { VIP_GROUP_TYPE, isVipGroupType } from '@/lib/vip-visit'
 
 export type { VisitMailLocale }
 
-/** MTÜ arveldusarve — kinkekaart kasutab (annetus käib Montonio pangalingiga). */
+/** MTÜ arveldusarve — toetuste läbipaistvusplokk jm. Kinkekaart ja annetus käivad Montonio pangalingiga. */
 export const PAPAGOI_IBAN = 'EE432200221095075670'
 
 const localeTag = (l: VisitMailLocale) => (l === 'en' ? 'en-GB' : l === 'ru' ? 'ru-RU' : 'et-EE')

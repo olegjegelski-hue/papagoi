@@ -4,7 +4,6 @@
  */
 
 import { randomBytes } from 'crypto'
-import { formatInTimeZone } from 'date-fns-tz'
 
 function normalizeKey(value: string) {
   return value.toLowerCase().replace(/ä/g, 'a').replace(/\s+/g, '')
@@ -74,7 +73,6 @@ export async function createGiftCardOrder(
 ): Promise<CreateGiftCardOrderResult> {
   const dbId = databaseId.replace(/-/g, '')
   const code = generateGiftCardCode()
-  const orderDate = formatInTimeZone(new Date(), 'Europe/Tallinn', 'yyyy-MM-dd')
 
   const dbRes = await fetchNotion(`https://api.notion.com/v1/databases/${dbId}`, {
     method: 'GET',
@@ -109,10 +107,6 @@ export async function createGiftCardOrder(
     findProp(properties, ['Ostja email', 'Ostja e-post', 'Email', 'E-post'], 'email') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'email') ||
     null
-  const ostuKuupaevKey =
-    findProp(properties, ['Ostu kuupäev', 'Ostu kuupaev', 'Kuupäev', 'Date'], 'date') ||
-    Object.keys(properties).find((k) => properties[k]?.type === 'date') ||
-    null
   const vaartusKey =
     findProp(properties, ['Väärtus', 'Vaartus', 'Summa', 'Amount'], 'number') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'number') ||
@@ -128,21 +122,31 @@ export async function createGiftCardOrder(
     Object.keys(properties).find((k) => properties[k]?.type === 'select') ||
     Object.keys(properties).find((k) => properties[k]?.type === 'status') ||
     null
+  const makseviisKey = findProp(properties, ['Makseviis', 'Makseviis'], 'select')
 
   // Notion nõuab select/status puhul täpset valikut – kasutame nime või id (id on stabiilsem)
-  function resolveTellitudOption(prop: {
-    select?: { options?: Array<{ id?: string; name?: string }> }
-    status?: { options?: Array<{ id?: string; name?: string }> }
-  }): { name: string; id?: string } {
+  function resolveStatusOption(
+    prop: {
+      select?: { options?: Array<{ id?: string; name?: string }> }
+      status?: { options?: Array<{ id?: string; name?: string }> }
+    },
+    matcher: RegExp,
+    fallback: string
+  ): { name: string; id?: string } {
     const options = prop?.select?.options || prop?.status?.options || []
-    const match = options.find((o) => /tellitud/i.test((o.name || '').trim()))
+    const match = options.find((o) => matcher.test((o.name || '').trim()))
     if (match) {
-      return { name: (match.name || 'Tellitud').trim(), id: match.id }
+      return { name: (match.name || fallback).trim(), id: match.id }
     }
-    return { name: 'Tellitud' }
+    return { name: fallback }
   }
 
-  const staatusOption = staatusKey ? resolveTellitudOption(properties[staatusKey]) : { name: 'Tellitud' }
+  const staatusOption = staatusKey
+    ? resolveStatusOption(properties[staatusKey], /ootab\s*makset/i, 'Ootab makset')
+    : { name: 'Ootab makset' }
+  const makseviisOption = makseviisKey
+    ? resolveStatusOption(properties[makseviisKey], /pangalink|montonio/i, 'Pangalink (Montonio)')
+    : { name: 'Pangalink (Montonio)' }
 
   const pageProps: Record<string, unknown> = {}
 
@@ -167,7 +171,6 @@ export async function createGiftCardOrder(
     else
       pageProps[ostjaEmailKey] = { rich_text: [{ type: 'text', text: { content: payload.buyerEmail || '' } }] }
   }
-  if (ostuKuupaevKey) pageProps[ostuKuupaevKey] = { date: { start: orderDate } }
   if (vaartusKey) pageProps[vaartusKey] = { number: payload.amountEur }
   if (koodKey) {
     const p = properties[koodKey]
@@ -184,6 +187,21 @@ export async function createGiftCardOrder(
     pageProps[staatusKey] = value
     if (process.env.NODE_ENV !== 'production') {
       console.log('[notion-gift-cards] Staatus:', staatusKey, p?.type, staatusOption.id ? 'id' : 'name', staatusOption.name)
+    }
+  }
+  if (makseviisKey) {
+    const p = properties[makseviisKey]
+    pageProps[makseviisKey] = makseviisOption.id
+      ? { select: { id: makseviisOption.id } }
+      : { select: { name: makseviisOption.name } }
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        '[notion-gift-cards] Makseviis:',
+        makseviisKey,
+        p?.type,
+        makseviisOption.id ? 'id' : 'name',
+        makseviisOption.name
+      )
     }
   }
 

@@ -4,9 +4,19 @@ import {
   donationPaymentHttpStatus,
   processDonationMontonioPayment,
 } from '@/lib/donation-payment'
-import { extractMontonioOrderToken } from '@/lib/montonio-payment'
+import {
+  GiftCardPaymentError,
+  giftCardPaymentHttpStatus,
+  isGiftCardMerchantReference,
+  processGiftCardMontonioPayment,
+} from '@/lib/gift-card-payment'
+import {
+  decodeMontonioOrderToken,
+  extractMontonioOrderToken,
+} from '@/lib/montonio-payment'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown> = {}
@@ -29,7 +39,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing orderToken' }, { status: 400 })
   }
 
+  let merchantReference = ''
   try {
+    const decoded = decodeMontonioOrderToken(token)
+    merchantReference = typeof decoded.merchantReference === 'string' ? decoded.merchantReference : ''
+  } catch {
+    merchantReference = ''
+  }
+
+  const isGiftCard = isGiftCardMerchantReference(merchantReference)
+
+  try {
+    if (isGiftCard) {
+      const result = await processGiftCardMontonioPayment({
+        token,
+        requestHeaders: request.headers,
+      })
+      return NextResponse.json({
+        success: true,
+        paid: result.paid,
+        paymentStatus: result.paymentStatus,
+        merchantReference: result.merchantReference,
+        kind: 'gift-card',
+      })
+    }
+
     const result = await processDonationMontonioPayment({
       token,
       requestHeaders: request.headers,
@@ -39,17 +73,21 @@ export async function POST(request: NextRequest) {
       paid: result.paid,
       paymentStatus: result.paymentStatus,
       merchantReference: result.merchantReference,
+      kind: 'donation',
     })
   } catch (error) {
-    const status = donationPaymentHttpStatus(error)
-    const code = error instanceof DonationPaymentError ? error.code : 'unknown'
+    const status = isGiftCard ? giftCardPaymentHttpStatus(error) : donationPaymentHttpStatus(error)
+    const code =
+      error instanceof GiftCardPaymentError || error instanceof DonationPaymentError
+        ? error.code
+        : 'unknown'
     if (code === 'amount_mismatch') {
       return NextResponse.json({
         success: false,
         reason: 'amount_mismatch',
       })
     }
-    console.error('[montonio/notification]', code, error instanceof Error ? error.message : error)
+    console.error('[montonio/notification]', isGiftCard ? 'gift-card' : 'donation', code, error instanceof Error ? error.message : error)
     return NextResponse.json(
       { error: 'Failed to process notification' },
       { status }

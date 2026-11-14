@@ -9,6 +9,14 @@ const STEP = 10
 const MIN = 10
 const MAX = 1000
 
+function isHttpsPaymentUrl(url: string): boolean {
+  try {
+    return new URL(url).protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 function roundToStep(value: number): number {
   const rounded = Math.round(value / STEP) * STEP
   return Math.min(MAX, Math.max(MIN, rounded))
@@ -19,7 +27,6 @@ export default function GiftCardForm() {
   const t = useTranslations('GiftCardForm')
   const [amount, setAmount] = useState<number>(10)
   const [submitted, setSubmitted] = useState(false)
-  const [orderCode, setOrderCode] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -32,6 +39,7 @@ export default function GiftCardForm() {
     e.preventDefault()
     setError('')
     setLoading(true)
+    let redirected = false
     try {
       const res = await fetch('/api/gift-card-order', {
         method: 'POST',
@@ -66,13 +74,18 @@ export default function GiftCardForm() {
         )
         return
       }
-      trackGiftCardSubmit({ value: amount })
-      setOrderCode(typeof data?.code === 'string' ? data.code : '')
+      const paymentUrl = typeof data?.paymentUrl === 'string' ? data.paymentUrl : ''
+      if (paymentUrl && isHttpsPaymentUrl(paymentUrl)) {
+        trackGiftCardSubmit({ value: amount })
+        redirected = true
+        window.location.assign(paymentUrl)
+        return
+      }
       setSubmitted(true)
     } catch {
       setError(t('errorNetwork'))
     } finally {
-      setLoading(false)
+      if (!redirected) setLoading(false)
     }
   }
 
@@ -93,26 +106,7 @@ export default function GiftCardForm() {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
         <p className="text-xl font-semibold text-green-800 mb-2">{t('successTitle')}</p>
-        <p className="text-deep-anthracite/80 text-left sm:text-center">{t('successBody')}</p>
-
-        <div className="mt-6 rounded-xl border border-papagoi-green/20 bg-white px-4 py-4 text-left text-sm text-deep-anthracite">
-          <p className="font-semibold mb-2">{t('transferLead')}</p>
-          <p className="mb-1">
-            <strong>{t('recipient')}</strong> {t('recipientValue')}
-          </p>
-          <p className="mb-1">
-            <strong>{t('iban')}</strong> {t('ibanValue')}
-          </p>
-          <p className="mb-1">
-            <strong>{t('amountLabel')}</strong> {amount} €
-          </p>
-          {orderCode ? (
-            <p>
-              <strong>{t('reference')}</strong> {t('referenceValue', { code: orderCode })}
-            </p>
-          ) : null}
-        </div>
-
+        <p className="text-deep-anthracite/80">{t('successBody')}</p>
         <p className="text-sm text-deep-anthracite/60 mt-4">
           {t('questions')}{' '}
           <a href="tel:+3725127938" className="text-papagoi-green hover:underline">
@@ -247,6 +241,8 @@ export default function GiftCardForm() {
           {t('confirmLabel')}
         </label>
       </div>
+
+      <p className="text-sm text-deep-anthracite/70 text-center">{t('montonioNotice')}</p>
 
       <div className="flex justify-center">
         <button

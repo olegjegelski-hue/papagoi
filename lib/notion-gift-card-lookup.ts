@@ -18,8 +18,10 @@ export interface GiftCardDetails {
   buyerEmail: string | null
   usedAt: string | null
   qrUrl: string | null
-  /** Notion Staatus (Tellitud / Aktiivne / Kasutatud / Tühistatud / Aegunud). */
+  /** Notion Staatus (Ootab makset / Tellitud / Aktiivne / Kasutatud / Tühistatud / Aegunud). */
   status: string | null
+  montonioUuid: string | null
+  cashflowPageId: string | null
 }
 
 export type NotionGiftCardPropertyMap = Record<string, any>
@@ -70,6 +72,16 @@ function readEmail(p: any): string | null {
   if (p.type === 'rich_text') return getRichTextPlain(p) || null
   if (p.type === 'title') return getTitlePlain(p) || null
   return null
+}
+
+function readRelationFirstId(p: any): string | null {
+  const rel = p?.relation
+  if (!Array.isArray(rel) || !rel[0]?.id) return null
+  return typeof rel[0].id === 'string' ? rel[0].id : null
+}
+
+function richTextProp(content: string) {
+  return { rich_text: [{ type: 'text' as const, text: { content: content.slice(0, 2000) } }] }
 }
 
 function normalizePropKey(value: string) {
@@ -175,6 +187,8 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
   const usedAt = resolveUsedAt(props)
   const qrUrl = props['QR URL']?.url ?? null
   const status = resolveGiftCardStatus(props)
+  const montonioUuid = getRichTextPlain(getProp(props, 'Montonio UUID')) || null
+  const cashflowPageId = readRelationFirstId(getProp(props, '💶 Rahavoog'))
 
   return {
     pageId: page.id,
@@ -186,6 +200,8 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
     usedAt,
     qrUrl,
     status,
+    montonioUuid,
+    cashflowPageId,
   }
 }
 
@@ -299,24 +315,138 @@ export async function setGiftCardQrUrl(
   pageId: string,
   qrUrl: string
 ): Promise<void> {
-  const patchUrl = `https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`
-  const res = await fetchNotion(patchUrl, {
+  const ok = await updateGiftCardProperties(notionApiKey, pageId, {
+    'QR URL': { url: qrUrl },
+  })
+  if (!ok) {
+    throw new Error('Notion gift card QR update failed')
+  }
+}
+
+function notionHeaders(apiKey: string) {
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  }
+}
+
+export async function updateGiftCardProperties(
+  notionApiKey: string,
+  pageId: string,
+  properties: Record<string, unknown>
+): Promise<boolean> {
+  const res = await fetchNotion(`https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`, {
     method: 'PATCH',
+    headers: notionHeaders(notionApiKey),
+    body: JSON.stringify({ properties }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    console.error('[notion-gift-card-lookup] PATCH ebaõnnestus:', res.status, text.slice(0, 300))
+    return false
+  }
+  return true
+}
+
+export async function saveGiftCardMontonioUuid(
+  notionApiKey: string,
+  pageId: string,
+  uuid: string
+): Promise<boolean> {
+  return updateGiftCardProperties(notionApiKey, pageId, {
+    'Montonio UUID': richTextProp(uuid),
+  })
+}
+
+export async function markGiftCardCancelled(
+  notionApiKey: string,
+  pageId: string
+): Promise<boolean> {
+  return updateGiftCardProperties(notionApiKey, pageId, cancelledGiftCardProperties())
+}
+
+export function paidGiftCardProperties(input: {
+  bank?: string
+  paidDate: string
+}): Record<string, unknown> {
+  const properties: Record<string, unknown> = {
+    Staatus: { status: { name: 'Aktiivne' } },
+    'Ostu kuupäev': { date: { start: input.paidDate } },
+  }
+  if (input.bank) {
+    properties.Pank = richTextProp(input.bank)
+  }
+  return properties
+}
+
+export function cancelledGiftCardProperties(): Record<string, unknown> {
+  return {
+    Staatus: { status: { name: 'Tühistatud' } },
+  }
+}
+
+async function retrieveGiftCardPage(notionApiKey: string, pageId: string): Promise<any> {
+  const res = await fetchNotion(`https://api.notion.com/v1/pages/${pageId.replace(/-/g, '')}`, {
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${notionApiKey}`,
       'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      properties: {
-        'QR URL': { url: qrUrl },
-      },
-    }),
   })
-
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(`Notion gift card QR update failed: ${res.status} ${text.slice(0, 200)}`)
+    throw new Error(`Notion kinkekaardi leht: ${res.status} ${text.slice(0, 200)}`)
   }
+  return res.json()
+}
+
+export async function getGiftCardByPageId(
+  notionApiKey: string,
+  pageId: string
+): Promise<GiftCardDetails> {
+  const page = await retrieveGiftCardPage(notionApiKey, pageId)
+  return mapNotionPageToGiftCardDetails(page, '')
+}
+
+async function queryGiftCards(
+  notionApiKey: string,
+  databaseId: string,
+  filter: Record<string, unknown>
+): Promise<any | null> {
+  const dbId = databaseId.replace(/-/g, '')
+  const res = await fetchNotion(`https://api.notion.com/v1/databases/${dbId}/query`, {
+    method: 'POST',
+    headers: notionHeaders(notionApiKey),
+    body: JSON.stringify({ filter, page_size: 1 }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Notion kinkekaartide päring: ${res.status} ${text.slice(0, 200)}`)
+  }
+  const data = (await res.json()) as { results?: any[] }
+  return data.results?.[0] ?? null
+}
+
+export async function findGiftCardByMontonio(
+  notionApiKey: string,
+  databaseId: string,
+  input: { uuid?: string; merchantReference?: string }
+): Promise<GiftCardDetails | null> {
+  const uuid = input.uuid?.trim()
+  if (uuid) {
+    const page = await queryGiftCards(notionApiKey, databaseId, {
+      property: 'Montonio UUID',
+      rich_text: { equals: uuid },
+    })
+    if (page) return mapNotionPageToGiftCardDetails(page, '')
+  }
+
+  const code = (input.merchantReference || '').trim()
+  if (code) {
+    return getGiftCardDetailsByCode(notionApiKey, databaseId, code)
+  }
+
+  return null
 }
 
