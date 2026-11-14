@@ -158,6 +158,58 @@ describe('notionReviewSyncNeedsPatch', () => {
     assert.equal(notionReviewSyncNeedsPatch(existing, next), false)
   })
 
+  it('samas minuts (Google sekundid/ms vs Notion :00) ei ole muutus', () => {
+    const timed: GoogleReviewForSync = {
+      ...review,
+      createTime: '2026-11-14T12:59:34.123Z',
+      reviewReply: { comment: 'Aitäh külastamast!', updateTime: '2026-11-14T12:59:34.123Z' },
+    }
+    const next = buildNotionPropertiesFromReview(timed, null, REVIEW_URL, NOW_ISO)
+    const existing = asNotionRetrievedProperties(existingFromNext(next), {
+      'Arvustuse kuupäev': '2026-11-14T12:59:00.000+00:00',
+      'Vastuse postitamise kuupäev': '2026-11-14T12:59:00.000+00:00',
+      [GMB_REVIEW_SYNC_TIMESTAMP_PROP]: '2026-01-01T00:00:00.000+00:00',
+    })
+    assert.equal(notionReviewSyncNeedsPatch(existing, next), false)
+    assert.equal(notionReviewSyncFieldDiffs(existing, next).length, 0)
+  })
+
+  it('erinev minut on muutus', () => {
+    const timed: GoogleReviewForSync = {
+      ...review,
+      createTime: '2026-11-14T12:59:34.123Z',
+      reviewReply: { comment: 'Aitäh külastamast!', updateTime: '2026-11-14T12:59:34.123Z' },
+    }
+    const next = buildNotionPropertiesFromReview(timed, null, REVIEW_URL, NOW_ISO)
+    const existing = asNotionRetrievedProperties(existingFromNext(next), {
+      'Arvustuse kuupäev': '2026-11-14T13:00:00.000+00:00',
+      'Vastuse postitamise kuupäev': '2026-11-14T12:58:00.000+00:00',
+      [GMB_REVIEW_SYNC_TIMESTAMP_PROP]: '2026-01-01T00:00:00.000+00:00',
+    })
+    assert.equal(notionReviewSyncNeedsPatch(existing, next), true)
+    const diffs = notionReviewSyncFieldDiffs(existing, next)
+    assert.ok(diffs.some((d) => d.name === 'Arvustuse kuupäev' && d.type === 'date'))
+    assert.ok(diffs.some((d) => d.name === 'Vastuse postitamise kuupäev' && d.type === 'date'))
+  })
+
+  it('Notioni kuupäev null vs Google väärtus on muutus', () => {
+    const timed: GoogleReviewForSync = {
+      ...review,
+      createTime: '2026-11-14T12:59:34.123Z',
+      reviewReply: { comment: 'Aitäh külastamast!', updateTime: '2026-11-14T12:59:34.123Z' },
+    }
+    const next = buildNotionPropertiesFromReview(timed, null, REVIEW_URL, NOW_ISO)
+    const existing = asNotionRetrievedProperties(existingFromNext(next), {
+      'Arvustuse kuupäev': null,
+      'Vastuse postitamise kuupäev': null,
+      [GMB_REVIEW_SYNC_TIMESTAMP_PROP]: '2026-01-01T00:00:00.000+00:00',
+    })
+    assert.equal(notionReviewSyncNeedsPatch(existing, next), true)
+    const diffs = notionReviewSyncFieldDiffs(existing, next)
+    assert.ok(diffs.some((d) => d.name === 'Arvustuse kuupäev' && d.type === 'date'))
+    assert.ok(diffs.some((d) => d.name === 'Vastuse postitamise kuupäev' && d.type === 'date'))
+  })
+
   it('pikk tekst tükkideks jagatuna ei ole muutus', () => {
     const longComment = `${'Tere papagoid! '.repeat(140)}Lõpp.`
     const longReview: GoogleReviewForSync = { ...review, comment: longComment }
