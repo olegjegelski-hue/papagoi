@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
       buyerEmail: cleanedEmail,
       buyerPhone: cleanedPhone,
       amountEur: amountNum,
+      locale,
     })
 
     console.log(

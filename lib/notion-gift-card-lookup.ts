@@ -1,3 +1,5 @@
+import { parseVisitMailLocale, type VisitMailLocale } from '@/lib/visit-language'
+
 async function fetchNotion(url: string, options: RequestInit) {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), 15000)
@@ -22,6 +24,8 @@ export interface GiftCardDetails {
   status: string | null
   montonioUuid: string | null
   cashflowPageId: string | null
+  /** Ostja keel (Keel); tühi → et. */
+  locale: VisitMailLocale
 }
 
 export type NotionGiftCardPropertyMap = Record<string, any>
@@ -147,6 +151,12 @@ export function resolveValidUntil(props: NotionGiftCardPropertyMap): string {
   return ''
 }
 
+export function resolveGiftCardLocale(props: NotionGiftCardPropertyMap): VisitMailLocale {
+  const keel = getProp(props, 'Keel')
+  const raw = keel?.select?.name ?? keel?.rich_text?.[0]?.plain_text ?? null
+  return parseVisitMailLocale(raw)
+}
+
 export function resolveUsedAt(props: NotionGiftCardPropertyMap): string | null {
   const used = readUsedAt(getProp(props, 'Kasutatud kuupäev'))
   if (!used) return null
@@ -189,6 +199,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
   const status = resolveGiftCardStatus(props)
   const montonioUuid = getRichTextPlain(getProp(props, 'Montonio UUID')) || null
   const cashflowPageId = readRelationFirstId(getProp(props, '💶 Rahavoog'))
+  const locale = resolveGiftCardLocale(props)
 
   return {
     pageId: page.id,
@@ -202,6 +213,7 @@ function mapNotionPageToGiftCardDetails(page: any, codeFallback: string): GiftCa
     status,
     montonioUuid,
     cashflowPageId,
+    locale,
   }
 }
 

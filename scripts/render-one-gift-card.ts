@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { giftCardRedeemUrl } from '../lib/gift-card'
 import { getGiftCardDetailsByCode } from '../lib/notion-gift-card-lookup'
 import { renderGiftCardToPngPdf } from '../lib/gift-card-render'
 
@@ -21,7 +22,7 @@ async function main() {
     code: d.code,
     amountEur: d.amountEur,
     validUntil: d.validUntil,
-    qrUrl: `https://papagoi.ee/kinkekaart/lunasta?code=${encodeURIComponent(d.code)}`,
+    qrUrl: giftCardRedeemUrl(d.code, 'et'),
   })
 
   mkdirSync('output/kinkekaardid', { recursive: true })

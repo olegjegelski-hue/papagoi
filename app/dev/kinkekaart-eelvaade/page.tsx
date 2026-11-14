@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { giftCardRedeemUrl } from '@/lib/gift-card'
 import {
   getFirstGiftCardFromDatabase,
   getGiftCardDetailsByCode,
@@ -56,7 +57,7 @@ export default async function KinkekaartEelvaadePage({
     )
   }
 
-  const qrUrl = `${baseUrl}/kinkekaart/lunasta?code=${encodeURIComponent(details.code)}`
+  const qrUrl = giftCardRedeemUrl(details.code, 'et', baseUrl)
   const { pngBuffer } = await renderGiftCardToPngPdf({
     code: details.code,
     amountEur: details.amountEur,

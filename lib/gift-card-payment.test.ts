@@ -58,7 +58,7 @@ describe('nextGiftCardStatus', () => {
 })
 
 describe('isGiftCardAlreadyIssued', () => {
-  it('loeb QR URL-i idempotentsuse markeriks', () => {
+  it('loeb QR URL-i idempotentsuse markeriks (vana ja /et/ kuju)', () => {
     const prev = process.env.NEXT_PUBLIC_BASE_URL
     process.env.NEXT_PUBLIC_BASE_URL = 'https://papagoi.ee'
     try {
@@ -66,6 +66,13 @@ describe('isGiftCardAlreadyIssued', () => {
         isGiftCardAlreadyIssued({
           code: 'PK-WN4K4VXV',
           qrUrl: 'https://papagoi.ee/kinkekaart/lunasta?code=PK-WN4K4VXV',
+        }),
+        true
+      )
+      assert.equal(
+        isGiftCardAlreadyIssued({
+          code: 'PK-WN4K4VXV',
+          qrUrl: 'https://papagoi.ee/et/kinkekaart/lunasta?code=PK-WN4K4VXV',
         }),
         true
       )

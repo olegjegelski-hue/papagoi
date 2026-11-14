@@ -1,9 +1,9 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
-import { useRouter } from '@/i18n/navigation'
+import { useRouter, Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
+import { giftCardRedeemPath } from '@/lib/gift-card'
 
 type Props = {
   enabled: boolean
@@ -75,7 +75,7 @@ export default function GiftCardStaffLogin({ enabled, loggedIn }: Props) {
                   e.preventDefault()
                   const trimmed = code.trim()
                   if (!trimmed) return
-                  router.push(`/kinkekaart/lunasta?code=${encodeURIComponent(trimmed)}`)
+                  router.push(giftCardRedeemPath(trimmed))
                 }}
               >
                 <label htmlFor="staff-code" className="block text-sm font-medium text-deep-anthracite">
@@ -93,7 +93,7 @@ export default function GiftCardStaffLogin({ enabled, loggedIn }: Props) {
                   {t('openCode')}
                 </button>
               </form>
-              <Link href="/kinkekaart/lunasta" className="block text-center font-semibold text-papagoi-green">
+              <Link href={giftCardRedeemPath()} className="block text-center font-semibold text-papagoi-green">
                 {t('goRedeem')}
               </Link>
               <button

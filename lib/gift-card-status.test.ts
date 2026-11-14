@@ -25,6 +25,7 @@ function card(partial: Partial<GiftCardDetails>): GiftCardDetails {
     status: 'Aktiivne',
     montonioUuid: null,
     cashflowPageId: null,
+    locale: 'et',
     ...partial,
   }
 }

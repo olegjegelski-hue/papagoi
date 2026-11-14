@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { giftCardRedeemUrl } from '@/lib/gift-card'
 import { renderGiftCardToPngPdf } from '@/lib/gift-card-render'
 
 export const dynamic = 'force-dynamic'
@@ -14,7 +15,7 @@ export async function GET() {
     code: 'DEMO-123',
     amountEur: 50,
     validUntil: '2027-12-31',
-    qrUrl: `${baseUrl.replace(/\/$/, '')}/kinkekaart/lunasta?code=DEMO-123`,
+    qrUrl: giftCardRedeemUrl('DEMO-123', 'et', baseUrl),
   })
 
   return new NextResponse(pngBuffer, {

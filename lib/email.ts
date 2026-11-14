@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
 import { DONATION_PURPOSE_NOTION, DONATION_REFERENCE_NUMBER, type DonationPurpose } from '@/lib/donation'
 import { escapeHtml } from '@/lib/sanitize'
+import { giftCardRedeemUrl } from '@/lib/gift-card'
 import { visitMailLocaleToNotionSelectLabel, type VisitMailLocale } from '@/lib/visit-language'
 import {
   bookingGroupTypeLabel,
@@ -14,6 +15,8 @@ import {
   getConfirmationEmailCopy,
   donationAdminSubject,
   getDonationEmailCopy,
+  formatMailDate,
+  getGiftCardIssuedEmailCopy,
   getGiftCardOrderEmailCopy,
   getReviewInviteEmailCopy,
   getVipBookingEmailCopy,
@@ -596,6 +599,80 @@ https://papagoi.ee/
   })
 }
 
+export function buildGiftCardIssuedEmail(data: {
+  buyerName: string | null
+  amountEur: number
+  code: string
+  validUntil: string
+  locale?: VisitMailLocale
+}): {
+  subject: string
+  html: string
+  text: string
+  locale: VisitMailLocale
+  redeemUrl: string
+} {
+  const locale = data.locale ?? 'et'
+  const t = getGiftCardIssuedEmailCopy(locale)
+  const redeemUrl = giftCardRedeemUrl(data.code, locale)
+  const validUntilLabel = formatMailDate(data.validUntil, locale) || data.validUntil
+  const name = (data.buyerName || '').trim()
+  const safeName = name ? escapeHtml(name) : ''
+  const greetingHtml = name ? t.greeting(safeName) : t.greetingFallback
+  const greetingText = name ? t.greetingText(name) : t.greetingFallbackText
+  const questionsHtml = t.questions
+    .replace('+372 512 7938', '<a href="tel:+3725127938">+372 512 7938</a>')
+    .replace('keskus@papagoi.ee', '<a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>')
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px; margin-top: 0;">
+        ${t.title}
+      </h2>
+      <p style="font-size: 16px; line-height: 1.6;">${greetingHtml}</p>
+
+      <div style="background-color: #f0fdf4; padding: 18px 20px; border-radius: 10px; margin: 18px 0; border: 2px solid #43A047;">
+        <p style="margin: 8px 0;"><strong>${t.value}</strong> ${data.amountEur} €</p>
+        <p style="margin: 8px 0;"><strong>${t.validUntil}</strong> ${escapeHtml(validUntilLabel)}</p>
+        <p style="margin: 8px 0;"><strong>${t.code}</strong> ${escapeHtml(data.code)}</p>
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.6; margin: 14px 0;">
+        ${t.attachmentsHtml}
+      </p>
+
+      <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+        ${t.redeemLink} <a href="${redeemUrl}">${redeemUrl}</a>
+      </p>
+
+      <p style="font-size: 14px; color: #4b5563; margin-top: 18px;">
+        ${questionsHtml}
+      </p>
+
+      <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;"><strong>${t.centre}</strong></p>
+        <p style="margin: 5px 0;">${t.address}</p>
+      </div>
+    </div>
+  `
+
+  const text = `
+${greetingText}
+
+${t.title}.
+${t.value} ${data.amountEur} €
+${t.validUntil} ${validUntilLabel}
+${t.code} ${data.code}
+
+${t.redeemLink} ${redeemUrl}
+${t.attachmentsText}
+
+${t.questions}
+`.trim()
+
+  return { subject: t.subject(data.amountEur), html, text, locale, redeemUrl }
+}
+
 export async function sendGiftCardIssuedEmail(data: {
   to: string
   buyerName: string | null
@@ -604,68 +681,20 @@ export async function sendGiftCardIssuedEmail(data: {
   validUntil: string
   pngBuffer: Buffer
   pdfBuffer: Buffer
-  qrUrl: string
+  locale?: VisitMailLocale
 }) {
   const transporter = createTransporter()
   const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
   const centerEmail = process.env.CENTER_EMAIL || 'keskus@papagoi.ee'
-
-  const buyerNameLine = data.buyerName ? `Tere, <strong>${data.buyerName}</strong>!` : 'Tere!'
-  const subject = `Papagoi Keskuse kinkekaart (${data.amountEur} €) – valmis`
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
-      <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px; margin-top: 0;">
-        Kinkekaart on valmis
-      </h2>
-      <p style="font-size: 16px; line-height: 1.6;">${buyerNameLine}</p>
-
-      <div style="background-color: #f0fdf4; padding: 18px 20px; border-radius: 10px; margin: 18px 0; border: 2px solid #43A047;">
-        <p style="margin: 8px 0;"><strong>Väärtus:</strong> ${data.amountEur} €</p>
-        <p style="margin: 8px 0;"><strong>Kehtiv kuni:</strong> ${data.validUntil}</p>
-        <p style="margin: 8px 0;"><strong>Kood:</strong> ${data.code}</p>
-      </div>
-
-      <p style="font-size: 15px; line-height: 1.6; margin: 14px 0;">
-        Manused: <strong>PNG</strong> ja <strong>PDF</strong> formaadis kinkekaart. Saate QR-koodi skännida ja valida endale sobiva aja.
-      </p>
-
-      <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
-        Lunastamise link: <a href="${data.qrUrl}">${data.qrUrl}</a>
-      </p>
-
-      <p style="font-size: 14px; color: #4b5563; margin-top: 18px;">
-        Kui tekib küsimusi, võtke ühendust: <a href="tel:+3725127938">+372 512 7938</a> või <a href="mailto:keskus@papagoi.ee">keskus@papagoi.ee</a>.
-      </p>
-
-      <div style="margin-top: 26px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 5px 0;"><strong>Papagoi Keskus</strong></p>
-        <p style="margin: 5px 0;">Tartu mnt 80, Soinaste</p>
-      </div>
-    </div>
-  `
-
-  const text = `
-${data.buyerName ? `Tere, ${data.buyerName}!` : 'Tere!'}
-
-Kinkekaart on valmis.
-Väärtus: ${data.amountEur} €
-Kehtiv kuni: ${data.validUntil}
-Kood: ${data.code}
-
-Lunastamise link: ${data.qrUrl}
-Manused: PNG ja PDF
-
-Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
-`.trim()
+  const built = buildGiftCardIssuedEmail(data)
 
   await transporter.sendMail({
     from: `"Papagoi Keskus" <${fromAddress}>`,
     to: data.to,
     cc: centerEmail,
-    subject,
-    html,
-    text,
+    subject: built.subject,
+    html: built.html,
+    text: built.text,
     attachments: [
       { filename: `kinkekaart-${data.code}.png`, content: data.pngBuffer, contentType: 'image/png' },
       { filename: `kinkekaart-${data.code}.pdf`, content: data.pdfBuffer, contentType: 'application/pdf' },
