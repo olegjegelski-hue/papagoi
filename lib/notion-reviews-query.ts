@@ -166,6 +166,7 @@ export async function resolveReviewDataSourceIds(input: {
   try {
     const response = await fetchImpl(`https://api.notion.com/v1/databases/${input.databaseId}`, {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         Authorization: `Bearer ${input.apiKey}`,
         'Notion-Version': NOTION_VERSION_DATA_SOURCES,
@@ -215,6 +216,7 @@ async function queryNotionCollection(input: {
 
     const response = await input.fetchImpl(input.url, {
       method: 'POST',
+      cache: 'no-store',
       headers: {
         Authorization: `Bearer ${input.apiKey}`,
         'Notion-Version': input.version,

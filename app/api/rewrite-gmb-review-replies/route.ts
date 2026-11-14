@@ -14,6 +14,7 @@ import {
  * Igapäevane terminal: ?compact=1 või ?format=compact (ilma samples[]).
  */
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 export const maxDuration = 300
 
 function collectCsvParams(url: URL, names: string[]): string[] {

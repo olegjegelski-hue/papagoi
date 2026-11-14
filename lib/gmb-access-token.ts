@@ -9,8 +9,7 @@ import {
   googleReviewIdFromGmbReview,
   normalizedReviewIdShape,
 } from '@/lib/gmb-review-id'
-
-type FetchLike = typeof fetch
+import { googleApiFetch, type FetchLike } from '@/lib/google-api-fetch'
 
 type Logger = Pick<Console, 'log' | 'warn' | 'error'>
 
@@ -104,13 +103,17 @@ export async function getGmbAccessToken(opts?: {
     grant_type: 'refresh_token',
   })
 
-  const response = await fetchImpl(GOOGLE_TOKEN_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+  const response = await googleApiFetch(
+    GOOGLE_TOKEN_ENDPOINT,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body.toString(),
     },
-    body: body.toString(),
-  })
+    fetchImpl,
+  )
 
   if (!response.ok) {
     const text = await response.text()
@@ -165,7 +168,7 @@ export async function logGmbAccessTokenInfo(
   const url = `${GOOGLE_TOKENINFO_ENDPOINT}?access_token=${encodeURIComponent(accessToken)}`
 
   try {
-    const response = await fetchImpl(url)
+    const response = await googleApiFetch(url, {}, fetchImpl)
     let scope: string | null = null
     let expiresIn: number | string | null = null
     let aud: string | null = null
@@ -215,7 +218,11 @@ export async function probeGmbReviewsList(input: {
   const url = gmbReviewsListUrl(input.accountId, input.locationId, { pageSize: 1 })
 
   try {
-    const response = await fetchImpl(url, { headers: authHeaders(input.accessToken) })
+    const response = await googleApiFetch(
+      url,
+      { headers: authHeaders(input.accessToken) },
+      fetchImpl,
+    )
     let firstReviewId: string | null = null
     try {
       const data = (await response.json()) as {
@@ -256,9 +263,13 @@ export async function probeGmbReviewGet(input: {
   const shape = normalizedReviewIdShape(input.reviewId)
 
   try {
-    const response = await fetchImpl(url, {
-      headers: authHeaders(input.accessToken),
-    })
+    const response = await googleApiFetch(
+      url,
+      {
+        headers: authHeaders(input.accessToken),
+      },
+      fetchImpl,
+    )
     try {
       await response.text()
     } catch {
