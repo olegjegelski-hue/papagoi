@@ -5,7 +5,7 @@ import { VIP_GROUP_TYPE, isVipGroupType } from '@/lib/vip-visit'
 
 export type { VisitMailLocale }
 
-/** MTÜ arveldusarve — kinkekaart ja annetus kasutavad sama IBAN-it. */
+/** MTÜ arveldusarve — kinkekaart kasutab (annetus käib Montonio pangalingiga). */
 export const PAPAGOI_IBAN = 'EE432200221095075670'
 
 const localeTag = (l: VisitMailLocale) => (l === 'en' ? 'en-GB' : l === 'ru' ? 'ru-RU' : 'et-EE')
@@ -561,7 +561,7 @@ export function getGiftCardOrderEmailCopy(locale: VisitMailLocale) {
 }
 
 export function donationAdminSubject(code: string, amountEur: number, purpose: DonationPurpose) {
-  return `💛 Annetus ${code} — ${amountEur} € — ${DONATION_PURPOSE_NOTION[purpose]}`
+  return `💛 Annetus laekus: ${code} — ${amountEur} € — ${DONATION_PURPOSE_NOTION[purpose]}`
 }
 
 export function getDonationEmailCopy(locale: VisitMailLocale) {
@@ -571,7 +571,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       title: 'Aitäh annetuse eest',
       greeting: (name: string) => `Tere, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Tere, ${name}!`,
-      thanks: 'Täname teid annetuse eest.',
+      thanks: 'Täname teid annetuse eest. Makse on laekunud.',
       purpose: 'Sihtotstarve:',
       purposes: {
         kingi: 'Kingi külastus',
@@ -579,17 +579,14 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
         uldine: 'Üldine',
       },
       amount: 'Summa:',
+      code: 'Annetuse nr:',
+      impact: {
+        kingi:
+          'Teie annetus läheb külastuse kinkimiseks lapsele või grupile, kellel muidu see võimalus puuduks. Iga 10 € = üks külastus.',
+        toit: 'Teie annetus läheb papagoide ja merisigade toiduks.',
+        uldine: 'Teie annetus toetab keskuse igapäevast tööd ja lindude heaolu.',
+      },
       questions: 'Kui teil on küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee.',
-      transferLead: 'Palume teha ülekanne:',
-      recipient: 'Saaja:',
-      recipientValue: 'Papagoi Keskus MTÜ',
-      iban: 'IBAN:',
-      ibanValue: PAPAGOI_IBAN,
-      referenceNumber: 'Viitenumber:',
-      reference: 'Selgitus:',
-      referenceValue: (code: string) => `Annetus ${code}`,
-      afterTransfer:
-        'Pärast ülekannet vasta palun sellele kirjale, et saaksime laekumise kinnitada.',
       regards: 'Lugupidamisega',
       centre: 'Papagoi Keskus',
       tel: 'Tel +372 51 27 938',
@@ -599,7 +596,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       title: 'Thank you for your donation',
       greeting: (name: string) => `Hello, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Hello, ${name}!`,
-      thanks: 'Thank you for supporting Papagoi Centre.',
+      thanks: 'Thank you for supporting Papagoi Centre. Your payment has been received.',
       purpose: 'Purpose:',
       purposes: {
         kingi: 'Gift a visit',
@@ -607,17 +604,14 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
         uldine: 'General',
       },
       amount: 'Amount:',
+      code: 'Donation no.:',
+      impact: {
+        kingi:
+          'Your donation goes towards gifting a visit to a child or group who otherwise wouldn’t have the chance. Every €10 = one visit.',
+        toit: 'Your donation goes towards food for the parrots and guinea pigs.',
+        uldine: 'Your donation supports the centre’s daily work and the birds’ wellbeing.',
+      },
       questions: 'If you have any questions, please contact us: +372 512 7938 or keskus@papagoi.ee.',
-      transferLead: 'Please make a bank transfer:',
-      recipient: 'Recipient:',
-      recipientValue: 'Papagoi Keskus MTÜ',
-      iban: 'IBAN:',
-      ibanValue: PAPAGOI_IBAN,
-      referenceNumber: 'Reference number:',
-      reference: 'Payment reference:',
-      referenceValue: (code: string) => `Annetus ${code}`,
-      afterTransfer:
-        'After you have made the transfer, please reply to this email so we can confirm the payment.',
       regards: 'Kind regards',
       centre: 'Papagoi Centre',
       tel: 'Tel +372 51 27 938',
@@ -627,7 +621,7 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
       title: 'Спасибо за пожертвование',
       greeting: (name: string) => `Здравствуйте, <strong>${name}</strong>!`,
       greetingText: (name: string) => `Здравствуйте, ${name}!`,
-      thanks: 'Благодарим вас за поддержку центра Papagoi.',
+      thanks: 'Благодарим вас за поддержку центра Papagoi. Платёж получен.',
       purpose: 'Назначение:',
       purposes: {
         kingi: 'Подарить визит',
@@ -635,18 +629,15 @@ export function getDonationEmailCopy(locale: VisitMailLocale) {
         uldine: 'Общее',
       },
       amount: 'Сумма:',
+      code: 'Номер пожертвования:',
+      impact: {
+        kingi:
+          'Ваше пожертвование пойдёт на подарочный визит для ребёнка или группы, у которых иначе не было бы такой возможности. Каждые 10 € = один визит.',
+        toit: 'Ваше пожертвование пойдёт на корм для попугаев и морских свинок.',
+        uldine: 'Ваше пожертвование поддерживает ежедневную работу центра и благополучие птиц.',
+      },
       questions:
         'Если у вас есть вопросы, свяжитесь с нами: +372 512 7938 или keskus@papagoi.ee.',
-      transferLead: 'Просим сделать перевод:',
-      recipient: 'Получатель:',
-      recipientValue: 'Papagoi Keskus MTÜ',
-      iban: 'IBAN:',
-      ibanValue: PAPAGOI_IBAN,
-      referenceNumber: 'Ссылочный номер:',
-      reference: 'Назначение платежа:',
-      referenceValue: (code: string) => `Annetus ${code}`,
-      afterTransfer:
-        'После перевода ответьте, пожалуйста, на это письмо, чтобы мы могли подтвердить поступление.',
       regards: 'С уважением',
       centre: 'Центр Papagoi',
       tel: 'Тел. +372 51 27 938',
@@ -680,9 +671,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'Kinkekaardiga sõbrale, tuttavale või pereliikmele — kingisaaja valib ise sobiva aja.',
       donateHtml:
-        'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+        'Või <strong>annetusega</strong>, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
       donateText:
-        'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu.',
+        'Või annetusega, mis aitab külla tulla lapsel või grupil, kellel muidu see võimalus puuduks. Toetada saab ka lindude toitu. Annetada saab mugavalt pangalingiga.',
       giftHref: 'https://papagoi.ee/et/kinkekaart',
       donateHref: 'https://papagoi.ee/et/toetused#anneta',
       feedback: 'Kui teil on tagasisidet või küsimusi, vastake julgelt sellele kirjale.',
@@ -712,9 +703,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'With a gift card for a friend, acquaintance or family member — they choose the time themselves.',
       donateHtml:
-        'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+        'Or with a <strong>donation</strong> that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
       donateText:
-        'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food.',
+        'Or with a donation that helps a child or group visit who otherwise wouldn’t have the chance. You can also support the birds’ food. You can donate easily via bank link.',
       giftHref: 'https://papagoi.ee/en/kinkekaart',
       donateHref: 'https://papagoi.ee/en/toetused#anneta',
       feedback: 'If you have feedback or questions, just reply to this email.',
@@ -744,9 +735,9 @@ export function getReviewInviteEmailCopy(locale: VisitMailLocale) {
       giftText:
         'Подарочной картой другу, знакомому или члену семьи — получатель сам выберет удобное время.',
       donateHtml:
-        'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+        'Или <strong>пожертвованием</strong>, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
       donateText:
-        'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц.',
+        'Или пожертвованием, которое поможет прийти к нам ребёнку или группе, у которых иначе не было бы такой возможности. Можно поддержать и корм для птиц. Пожертвовать можно удобно через банковскую ссылку.',
       giftHref: 'https://papagoi.ee/ru/kinkekaart',
       donateHref: 'https://papagoi.ee/ru/toetused#anneta',
       feedback: 'Если у вас есть отзывы или вопросы, просто ответьте на это письмо.',

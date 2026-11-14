@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Heart, ChevronUp, ChevronDown } from 'lucide-react'
 import { trackDonationSubmit } from '@/lib/meta-pixel'
-import { PAPAGOI_IBAN } from '@/lib/email-i18n'
 import {
   DONATION_AMOUNT_MAX,
   DONATION_AMOUNT_MIN,
@@ -12,11 +11,18 @@ import {
   DONATION_COMMENT_MAX,
   DONATION_PURPOSES,
   DONATION_QUICK_AMOUNTS,
-  DONATION_REFERENCE_NUMBER,
   parseDonationPurpose,
   roundDonationAmount,
   type DonationPurpose,
 } from '@/lib/donation'
+
+function isHttpsPaymentUrl(url: string): boolean {
+  try {
+    return new URL(url).protocol === 'https:'
+  } catch {
+    return false
+  }
+}
 
 const PURPOSE_EMOJI: Record<DonationPurpose, string> = {
   kingi: '💛',
@@ -36,7 +42,6 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
   }, [initialPurpose])
   const [amount, setAmount] = useState<number>(10)
   const [submitted, setSubmitted] = useState(false)
-  const [orderCode, setOrderCode] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [comment, setComment] = useState('')
@@ -54,6 +59,7 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
       return
     }
     setLoading(true)
+    let redirected = false
     try {
       const res = await fetch('/api/donation', {
         method: 'POST',
@@ -91,13 +97,18 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
         )
         return
       }
-      trackDonationSubmit({ value: amount })
-      setOrderCode(typeof data?.code === 'string' ? data.code : '')
+      const paymentUrl = typeof data?.paymentUrl === 'string' ? data.paymentUrl : ''
+      if (paymentUrl && isHttpsPaymentUrl(paymentUrl)) {
+        trackDonationSubmit({ value: amount })
+        redirected = true
+        window.location.assign(paymentUrl)
+        return
+      }
       setSubmitted(true)
     } catch {
       setError(t('errorNetwork'))
     } finally {
-      setLoading(false)
+      if (!redirected) setLoading(false)
     }
   }
 
@@ -117,38 +128,8 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
   if (submitted) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
-        <p className="text-xl font-semibold text-green-800 mb-2">{t('successTitle')}</p>
-        <p className="text-deep-anthracite/80 text-left sm:text-center">{t('successBody')}</p>
-
-        <div className="mt-6 rounded-xl border border-papagoi-green/20 bg-white px-4 py-4 text-left text-sm text-deep-anthracite">
-          <p className="font-semibold mb-2">{t('transferLead')}</p>
-          <p className="mb-1">
-            <strong>{t('recipient')}</strong> {t('recipientValue')}
-          </p>
-          <p className="mb-1">
-            <strong>{t('iban')}</strong> {PAPAGOI_IBAN}
-          </p>
-          <p className="mb-1">
-            <strong>{t('amountLabel')}</strong> {amount} €
-          </p>
-          {purpose ? (
-            <p className="mb-1">
-              <strong>{t('referenceNumber')}</strong> {DONATION_REFERENCE_NUMBER[purpose]}
-            </p>
-          ) : null}
-          {orderCode ? (
-            <p>
-              <strong>{t('reference')}</strong> {t('referenceValue', { code: orderCode })}
-            </p>
-          ) : null}
-        </div>
-
-        <p className="text-sm text-deep-anthracite/60 mt-4">
-          {t('questions')}{' '}
-          <a href="tel:+3725127938" className="text-papagoi-green hover:underline">
-            +372 512 7938
-          </a>
-        </p>
+        <p className="text-xl font-semibold text-green-800 mb-2">{t('receivedTitle')}</p>
+        <p className="text-deep-anthracite/80">{t('receivedBody')}</p>
       </div>
     )
   }
@@ -335,6 +316,8 @@ export default function DonationForm({ initialPurpose }: { initialPurpose?: stri
           {t('confirmLabel')}
         </label>
       </div>
+
+      <p className="text-sm text-deep-anthracite/70 text-center">{t('montonioNotice')}</p>
 
       <div className="flex justify-center">
         <button

@@ -13,6 +13,52 @@ export const DONATION_PURPOSE_NOTION: Record<DonationPurpose, 'Kingi külastus' 
   uldine: 'Üldine',
 }
 
+export const DONATION_STATUS = {
+  awaitingPayment: 'Ootab makset',
+  awaitingTransfer: 'Ootab ülekannet',
+  paid: 'Laekunud',
+  cancelled: 'Tühistatud',
+} as const
+
+export type DonationStatus = (typeof DONATION_STATUS)[keyof typeof DONATION_STATUS]
+
+export const DONATION_PAYMENT_METHOD = {
+  montonio: 'Pangalink (Montonio)',
+  transfer: 'Ülekanne',
+} as const
+
+export function purposeFromNotionLabel(raw: string | null | undefined): DonationPurpose | null {
+  const s = (raw ?? '').trim()
+  if (s === DONATION_PURPOSE_NOTION.kingi) return 'kingi'
+  if (s === DONATION_PURPOSE_NOTION.toit) return 'toit'
+  if (s === DONATION_PURPOSE_NOTION.uldine) return 'uldine'
+  return parseDonationPurpose(s)
+}
+
+export function donationPaymentDescription(code: string, purpose: DonationPurpose): string {
+  return `Annetus ${code} – ${DONATION_PURPOSE_NOTION[purpose]}`
+}
+
+export function parseDonationCodeFromMerchantReference(ref: string): string | null {
+  const m = ref.trim().match(/^(ANN-\d+)/i)
+  if (!m) return null
+  return `ANN-${m[1].slice(4)}`
+}
+
+export function parseDonationNumberFromCode(code: string): number | null {
+  const m = code.trim().match(/^ANN-(\d+)$/i)
+  if (!m) return null
+  const n = Number(m[1])
+  return Number.isInteger(n) ? n : null
+}
+
+export function splitPersonName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+  const firstName = parts[0] || fullName.trim() || '—'
+  const lastName = parts.slice(1).join(' ') || firstName
+  return { firstName, lastName }
+}
+
 /** Püsivad Eesti viitenumbrid (7-3-1) sihtotstarbe kaupa — üks konto, erineb ainult viide. */
 export const DONATION_REFERENCE_NUMBER: Record<DonationPurpose, string> = {
   kingi: '1012',

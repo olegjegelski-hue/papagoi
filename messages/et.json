@@ -270,16 +270,8 @@
     }
   },
   "DonationForm": {
-    "successTitle": "Aitäh annetuse eest! 💛",
-    "successBody": "Saatsime teie e-postile tänukirja ja ülekande juhised (saaja, IBAN, summa, selgitus). Palun tehke ülekanne ja vastake kirjale — siis saame laekumise kinnitada. Kui kirja kohe ei näe, vaadake ka rämpsposti.",
-    "transferLead": "Palume teha ülekanne:",
-    "recipient": "Saaja:",
-    "recipientValue": "Papagoi Keskus MTÜ",
-    "iban": "IBAN:",
-    "referenceNumber": "Viitenumber:",
-    "reference": "Selgitus:",
-    "referenceValue": "Annetus {code}",
-    "amountLabel": "Summa:",
+    "receivedTitle": "Aitäh!",
+    "receivedBody": "Oleme päringu kätte saanud.",
     "questions": "Küsimuste korral:",
     "purposeSelect": "Vali sihtotstarve",
     "purpose": {
@@ -303,10 +295,11 @@
     "comment": "Kommentaar (valikuline)",
     "commentPlaceholder": "Kui soovite midagi lisada",
     "publishNameLabel": "Minu nime võib avaldada toetajate seas",
-    "confirmLabel": "Saan aru, et annetus tehakse pangaülekandega ja selle eest ei saa vastu soodustust ega teenust.",
-    "privacyNote": "Nime ja e-posti kasutame ainult annetuse töötlemiseks ja tänukirja saatmiseks.",
-    "submit": "Anneta {amount} €",
-    "submitting": "Saadan…",
+    "confirmLabel": "Saan aru, et annetus tasutakse pangalingiga ja selle eest ei saa vastu soodustust ega teenust.",
+    "privacyNote": "Nime ja e-posti kasutame ainult annetuse töötlemiseks, makse kinnitamiseks ja tänukirja saatmiseks.",
+    "montonioNotice": "Makse toimub turvaliselt Montonio pangalingi kaudu.",
+    "submit": "Anneta pangalingiga ({amount} €)",
+    "submitting": "Suunan panka…",
     "errorGeneric": "Annetuse saatmine ebaõnnestus",
     "errorNetwork": "Ühendusviga. Proovi uuesti või võta ühendust.",
     "companyHoneypot": "Ettevõte",
@@ -318,8 +311,26 @@
       "amountInvalid": "Summa peab olema vahemikus 10–1000 € ja 10 € kordne",
       "purposeRequired": "Palun vali sihtotstarve",
       "rateLimited": "Päringuid on liiga palju. Palun proovi mõne hetke pärast uuesti.",
-      "serverConfig": "Serveri seadistus puudub",
+      "serverConfig": "Makse hetkel ei ole saadaval. Palun proovi hiljem või võta ühendust.",
       "unknown": "Annetuse saatmine ebaõnnestus. Proovi uuesti."
+    }
+  },
+  "DonationThankYou": {
+    "metaTitle": "Aitäh annetuse eest",
+    "paidTitle": "Aitäh! Annetus {code} laekus.",
+    "paidBody": "Täname teid toetuse eest.",
+    "pendingTitle": "Makse on töötlemisel",
+    "pendingBody": "Makse on töötlemisel, saadame kinnituse e-postile.",
+    "failedTitle": "Makse jäi pooleli",
+    "failedBody": "Makse jäi pooleli. Võid proovida uuesti annetada.",
+    "amountLabel": "Summa:",
+    "purposeLabel": "Sihtotstarve:",
+    "backCta": "Tagasi annetuse juurde",
+    "questions": "Küsimuste korral:",
+    "purpose": {
+      "kingi": "Kingi külastus",
+      "toit": "Loomade toit",
+      "uldine": "Üldine"
     }
   },
   "TeenusedPage": {

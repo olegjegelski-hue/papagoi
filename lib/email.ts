@@ -669,7 +669,7 @@ Kui tekib küsimusi, võtke ühendust: +372 512 7938 või keskus@papagoi.ee
   })
 }
 
-export async function sendDonationEmail(data: {
+export async function sendDonationPaidEmails(data: {
   to: string
   donorName: string
   donorEmail: string
@@ -679,6 +679,7 @@ export async function sendDonationEmail(data: {
   comment?: string
   publishName: boolean
   locale?: VisitMailLocale
+  bankName?: string
 }) {
   const transporter = createTransporter()
   const fromAddress = process.env.SMTP_USER || 'keskus@papagoi.ee'
@@ -686,7 +687,7 @@ export async function sendDonationEmail(data: {
   const locale = data.locale ?? 'et'
   const t = getDonationEmailCopy(locale)
   const purposeLabel = t.purposes[data.purpose]
-  const refLine = t.referenceValue(data.code)
+  const impact = t.impact[data.purpose]
   const referenceNumber = DONATION_REFERENCE_NUMBER[data.purpose]
   const safeName = escapeHtml(data.donorName)
   const safeEmail = escapeHtml(data.donorEmail)
@@ -695,6 +696,7 @@ export async function sendDonationEmail(data: {
   const languageLabel = visitMailLocaleToNotionSelectLabel(locale)
   const purposeEt = DONATION_PURPOSE_NOTION[data.purpose]
   const publishLabel = data.publishName ? 'Jah' : 'Ei'
+  const bankName = (data.bankName ?? '').trim() || '—'
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -706,19 +708,12 @@ export async function sendDonationEmail(data: {
         ${t.thanks}
       </p>
       <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #43A047;">
+        <p style="margin: 10px 0;"><strong>${t.code}</strong> ${escapeHtml(data.code)}</p>
         <p style="margin: 10px 0;"><strong>${t.purpose}</strong> ${purposeLabel}</p>
         <p style="margin: 10px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
       </div>
-      <p style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">${t.transferLead}</p>
-      <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; margin: 0 0 16px 0; border: 1px solid #e5e7eb;">
-        <p style="margin: 6px 0;"><strong>${t.recipient}</strong> ${t.recipientValue}</p>
-        <p style="margin: 6px 0;"><strong>${t.iban}</strong> ${t.ibanValue}</p>
-        <p style="margin: 6px 0;"><strong>${t.amount}</strong> ${data.amountEur} €</p>
-        <p style="margin: 6px 0;"><strong>${t.referenceNumber}</strong> ${referenceNumber}</p>
-        <p style="margin: 6px 0;"><strong>${t.reference}</strong> ${refLine}</p>
-      </div>
       <p style="font-size: 15px; line-height: 1.6;">
-        ${t.afterTransfer}
+        ${impact}
       </p>
       <p style="font-size: 14px; color: #4b5563;">
         ${t.questions.replace(
@@ -743,17 +738,11 @@ ${t.greetingText(data.donorName)}
 
 ${t.thanks}
 
+${t.code} ${data.code}
 ${t.purpose} ${purposeLabel}
 ${t.amount} ${data.amountEur} €
 
-${t.transferLead}
-${t.recipient} ${t.recipientValue}
-${t.iban} ${t.ibanValue}
-${t.amount} ${data.amountEur} €
-${t.referenceNumber} ${referenceNumber}
-${t.reference} ${refLine}
-
-${t.afterTransfer}
+${impact}
 
 ${t.questions}
 
@@ -774,7 +763,7 @@ https://papagoi.ee/
   const adminHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #059669; border-bottom: 3px solid #43A047; padding-bottom: 10px;">
-        Uus annetus ${escapeHtml(data.code)}
+        Annetus laekus: ${escapeHtml(data.code)}
       </h2>
       <div style="background-color: #f9fafb; padding: 16px 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
         <p style="margin: 6px 0;"><strong>Annetaja:</strong> ${safeName}</p>
@@ -782,6 +771,7 @@ https://papagoi.ee/
         <p style="margin: 6px 0;"><strong>Summa:</strong> ${data.amountEur} €</p>
         <p style="margin: 6px 0;"><strong>Sihtotstarve:</strong> ${escapeHtml(purposeEt)}</p>
         <p style="margin: 6px 0;"><strong>Viitenumber:</strong> ${escapeHtml(referenceNumber)}</p>
+        <p style="margin: 6px 0;"><strong>Pank:</strong> ${escapeHtml(bankName)}</p>
         <p style="margin: 6px 0;"><strong>Keel:</strong> ${escapeHtml(languageLabel)}</p>
         <p style="margin: 6px 0;"><strong>Kommentaar:</strong> ${safeComment}</p>
         <p style="margin: 6px 0;"><strong>Nime võib avaldada:</strong> ${publishLabel}</p>
@@ -790,13 +780,14 @@ https://papagoi.ee/
   `
 
   const adminText = `
-Uus annetus ${data.code}
+Annetus laekus: ${data.code}
 
 Annetaja: ${data.donorName}
 E-post: ${data.donorEmail}
 Summa: ${data.amountEur} €
 Sihtotstarve: ${purposeEt}
 Viitenumber: ${referenceNumber}
+Pank: ${bankName}
 Keel: ${languageLabel}
 Kommentaar: ${comment || '—'}
 Nime võib avaldada: ${publishLabel}
