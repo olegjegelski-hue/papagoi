@@ -199,7 +199,12 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
     const { lines, log } = collectLog()
     const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
-      assert.equal(url.includes(ACCESS_TOKEN), true)
+      assert.equal(url.includes(ACCESS_TOKEN), false)
+      assert.equal(url.includes('access_token'), false)
+      assert.equal(url, 'https://oauth2.googleapis.com/tokeninfo')
+      assert.equal(init?.method, 'POST')
+      assert.equal(new Headers(init?.headers).get('Content-Type'), 'application/x-www-form-urlencoded')
+      assert.equal(String(init?.body), `access_token=${encodeURIComponent(ACCESS_TOKEN)}`)
       assert.equal(init?.cache, 'no-store')
       return jsonResponse({
         scope: 'https://www.googleapis.com/auth/business.manage',
@@ -293,8 +298,12 @@ describe('GMB_AUTH_DEBUG tokeninfo ja GET', { concurrency: false }, () => {
       'AbFvOqnTfGqG-zbokUQxuZ6YQt8dK8wQmEIbRzvo0x2q9TsB25y4elc80WjhG6G4HiR9HaQHQYVYhg'
     const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
+      assert.equal(url.includes(ACCESS_TOKEN), false)
+      assert.equal(url.includes('access_token='), false)
       assert.equal(init?.cache, 'no-store')
       if (url.includes('tokeninfo')) {
+        assert.equal(init?.method, 'POST')
+        assert.equal(url, 'https://oauth2.googleapis.com/tokeninfo')
         return jsonResponse({
           scope: 'https://www.googleapis.com/auth/business.manage',
           expires_in: '3500',
