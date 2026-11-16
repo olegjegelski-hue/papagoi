@@ -3,8 +3,13 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 
 import { COOKIE_CONSENT_KEY, writeConsent } from './cookie-consent'
 import {
+  GOOGLE_TAG_CONSENT_DENIED,
+  GOOGLE_TAG_CONSENT_GRANTED,
   googleAdsBookingSendTo,
+  googleTagInlineSnippet,
+  grantGoogleTagConsent,
   isValidGoogleAdsId,
+  revokeGoogleTagConsent,
   trackGoogleAdsBooking,
 } from './google-ads'
 
@@ -128,6 +133,35 @@ describe('trackGoogleAdsBooking', () => {
     assert.deepEqual(gtagCalls, [
       ['event', 'booking_completed'],
       ['event', 'conversion', { send_to: 'AW-1016905977/AbCdEfGhIjk' }],
+    ])
+  })
+})
+
+describe('Consent Mode', () => {
+  it("paneb 'default' granted enne gtag config'i", () => {
+    const snippet = googleTagInlineSnippet('AW-1016905977')
+    const defaultIdx = snippet.indexOf("gtag('consent', 'default'")
+    const configIdx = snippet.indexOf("gtag('config', 'AW-1016905977')")
+    assert.ok(defaultIdx >= 0, 'consent default puudub')
+    assert.ok(configIdx > defaultIdx, 'consent default peab olema enne config')
+    assert.equal(snippet.includes('"ad_storage":"granted"'), true)
+    assert.equal(snippet.includes('"ad_user_data":"granted"'), true)
+    assert.equal(snippet.includes('"ad_personalization":"granted"'), true)
+    assert.equal(snippet.includes('"analytics_storage":"granted"'), true)
+  })
+
+  it("saadab 'update' granted uuesti nõustumisel", () => {
+    const gtagCalls: GtagCall[] = []
+    Object.defineProperty(globalThis, 'window', {
+      value: { gtag: (...args: unknown[]) => gtagCalls.push(args) },
+      configurable: true,
+      writable: true,
+    })
+    revokeGoogleTagConsent()
+    grantGoogleTagConsent()
+    assert.deepEqual(gtagCalls, [
+      ['consent', 'update', { ...GOOGLE_TAG_CONSENT_DENIED }],
+      ['consent', 'update', { ...GOOGLE_TAG_CONSENT_GRANTED }],
     ])
   })
 })

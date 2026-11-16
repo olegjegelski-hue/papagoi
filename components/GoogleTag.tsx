@@ -7,23 +7,15 @@ import {
   onConsentChange,
   type CookieConsent,
 } from '@/lib/cookie-consent'
-import { isValidGoogleAdsId } from '@/lib/google-ads'
+import {
+  googleTagInlineSnippet,
+  grantGoogleTagConsent,
+  isValidGoogleAdsId,
+  revokeGoogleTagConsent,
+} from '@/lib/google-ads'
 
 type Props = {
   adsId: string
-}
-
-function revokeGoogleTagConsent() {
-  try {
-    window.gtag?.('consent', 'update', {
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      analytics_storage: 'denied',
-    })
-  } catch {
-    // ignore
-  }
 }
 
 export default function GoogleTag({ adsId }: Props) {
@@ -36,6 +28,7 @@ export default function GoogleTag({ adsId }: Props) {
 
     return onConsentChange((consent: CookieConsent) => {
       if (consent.marketing) {
+        grantGoogleTagConsent()
         setAllowed(true)
       } else {
         revokeGoogleTagConsent()
@@ -57,12 +50,7 @@ export default function GoogleTag({ adsId }: Props) {
         id="google-tag"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${safeId}');
-          `,
+          __html: googleTagInlineSnippet(safeId),
         }}
       />
     </>
