@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Phone, Mail, Calendar, Users, Clock, Euro, AlertCircle } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { sortVisitLanguageLabels, visitMailLocaleToNotionSelectLabel } from '@/lib/visit-language'
+import { trackGoogleAdsBooking } from '@/lib/google-ads'
 import { trackBooking } from '@/lib/meta'
 import {
   VIP_GROUP_TYPE,
@@ -358,6 +359,7 @@ export default function StaticBookingInfo({ initialGroupType = '' }: { initialGr
           phone: formData.phone.trim(),
           value: trackingValue,
         })
+        trackGoogleAdsBooking()
         setSubmitMessage(result.message || t('submitSuccess'))
         setFormData({
           name: '',

@@ -1,11 +1,13 @@
 
 import type { Metadata } from 'next'
 import { Nunito, Open_Sans } from 'next/font/google'
+import GoogleTag from '@/components/GoogleTag'
 import MetaPixel from '@/components/MetaPixel'
 import { shareImages } from '@/lib/seo'
 import './globals.css'
 
 const FB_PIXEL_ID = process.env.META_PIXEL_ID
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -61,6 +63,7 @@ export default function RootLayout({
     <html lang="et" className="scroll-smooth">
       <body className={`${nunito.variable} ${openSans.variable} font-sans flex flex-col min-h-screen`}>
         {FB_PIXEL_ID ? <MetaPixel pixelId={FB_PIXEL_ID} /> : null}
+        {GOOGLE_ADS_ID ? <GoogleTag adsId={GOOGLE_ADS_ID} /> : null}
         {children}
       </body>
     </html>
