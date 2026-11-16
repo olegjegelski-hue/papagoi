@@ -97,7 +97,7 @@
   },
   "CookieBanner": {
     "ariaLabel": "Cookie consent",
-    "message": "We use necessary cookies to run the site. Marketing cookies (including Meta Pixel) are used only with your consent.",
+    "message": "We use necessary cookies to run the site. Marketing cookies (including Meta Pixel and the Google tag) are used only with your consent.",
     "readMore": "Read more",
     "accept": "Accept all",
     "necessaryOnly": "Necessary only",
@@ -106,7 +106,7 @@
     "necessaryTitle": "Necessary",
     "necessaryDesc": "Cookies required for the site to work. These cannot be turned off.",
     "marketingTitle": "Marketing",
-    "marketingDesc": "Meta Pixel and related marketing/measurement cookies for ads and visit measurement.",
+    "marketingDesc": "Meta Pixel, Google tag (gtag) and related marketing/measurement cookies for ads and visit measurement.",
     "alwaysOn": "Always on"
   },
   "BroneeriPage": {
@@ -740,7 +740,7 @@
     "s8Analytics": "Analytics cookies",
     "s8AnalyticsP": "These cookies help us understand how visitors use our website:",
     "s8AnalyticsLi": ["Number and duration of visits", "Most popular pages", "Technical data (browser, device)"],
-    "s8AnalyticsNote": "We load Meta Pixel and marketing cookies only after your explicit consent. You can change this later via “Cookie settings”.",
+    "s8AnalyticsNote": "We load Meta Pixel, the Google tag (gtag) and marketing cookies only after your explicit consent. You can change this later via “Cookie settings”.",
     "s8_3Title": "8.3. How to control cookies?",
     "s8_3P": "You can control and delete cookies in your browser settings. Note that some cookies are essential for the site to work and disabling them may affect functionality.",
     "s8_3P2": "You can change consent via the footer link “Cookie settings”, or by deleting the browser storage key",
