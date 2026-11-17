@@ -1,8 +1,8 @@
-
 'use client'
 
 import { Clock, Camera, Heart, Sparkles, Users, Gift } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import PetsVillaLink, { PETSVILLA_HAY_URL } from '@/components/PetsVillaLink'
 
 export default function VisitProcess() {
   const t = useTranslations('VisitProcess')
@@ -55,6 +55,17 @@ export default function VisitProcess() {
                 <h3 className="text-xl font-bold text-gray-800 mb-3">{t('cageFreeTitle')}</h3>
                 <p className="text-gray-600 leading-relaxed text-lg">
                   {t('cageFreeDesc')}
+                </p>
+                <p className="mt-4 rounded-xl border border-papagoi-green-200 bg-papagoi-green-50 p-4 text-left text-gray-700 leading-relaxed">
+                  <PetsVillaLink
+                    href={PETSVILLA_HAY_URL}
+                    source="kulastajatele-hein"
+                    className="underline decoration-papagoi-green/40 hover:text-papagoi-green hover:decoration-papagoi-green"
+                  >
+                    <span className="font-semibold">{t('hayTitle')}</span>
+                    {' – '}
+                    {t('hayText')}
+                  </PetsVillaLink>
                 </p>
               </div>
             </div>

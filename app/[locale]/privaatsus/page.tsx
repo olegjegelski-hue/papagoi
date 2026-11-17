@@ -198,6 +198,7 @@ export default async function PrivacyPage({ params }: Props) {
                   {s8AnalyticsLi.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
                 <p className="text-gray-700 text-sm mt-2">{t('s8AnalyticsNote')}</p>
+                <p className="text-gray-700 text-sm mt-2">{t('s8SharedPixel')}</p>
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('s8_3Title')}</h3>
               <p className="text-gray-700 leading-relaxed mb-4">{t('s8_3P')}</p>
