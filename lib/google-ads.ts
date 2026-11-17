@@ -11,6 +11,8 @@ declare global {
 
 /** Google Ads konto silt, nt AW-1016905977 */
 export const GOOGLE_ADS_ID_PATTERN = /^AW-\d+$/
+/** GA4 mõõtmise ID, nt G-XXXXXXXX */
+export const GA_MEASUREMENT_ID_PATTERN = /^G-[A-Z0-9]+$/
 /** Konversioonisilt, nt AW-1016905977/AbCdEfGhIjk */
 export const GOOGLE_ADS_SEND_TO_PATTERN = /^AW-\d+\/[\w-]+$/
 
@@ -30,6 +32,19 @@ export const GOOGLE_TAG_CONSENT_DENIED = {
 
 export function isValidGoogleAdsId(id: string): boolean {
   return GOOGLE_ADS_ID_PATTERN.test(id.trim())
+}
+
+export function isValidGaMeasurementId(id: string): boolean {
+  return GA_MEASUREMENT_ID_PATTERN.test(id.trim())
+}
+
+/** gtag.js laetakse ühe ID-ga: GA4 kui kehtiv, muidu Ads. */
+export function googleTagLoaderId(adsId?: string, gaId?: string): string | undefined {
+  const ga = gaId?.trim() ?? ''
+  if (ga && isValidGaMeasurementId(ga)) return ga
+  const ads = adsId?.trim() ?? ''
+  if (ads && isValidGoogleAdsId(ads)) return ads
+  return undefined
 }
 
 function callGtagConsent(
@@ -54,15 +69,23 @@ export function revokeGoogleTagConsent(): void {
 }
 
 /** Inline gtag snippet. Consent Mode 'default' granted peab olema enne config'i. */
-export function googleTagInlineSnippet(adsId: string): string {
-  const id = adsId.trim()
+export function googleTagInlineSnippet(adsId?: string, gaId?: string): string {
+  const ads = adsId?.trim() ?? ''
+  const ga = gaId?.trim() ?? ''
   const consent = JSON.stringify(GOOGLE_TAG_CONSENT_GRANTED)
+  const configs: string[] = []
+  if (ads && isValidGoogleAdsId(ads)) {
+    configs.push(`gtag('config', '${ads}');`)
+  }
+  if (ga && isValidGaMeasurementId(ga)) {
+    configs.push(`gtag('config', '${ga}');`)
+  }
   return `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('consent', 'default', ${consent});
-            gtag('config', '${id}');
+            ${configs.join('\n            ')}
           `
 }
 

@@ -7,7 +7,9 @@ import {
   GOOGLE_TAG_CONSENT_GRANTED,
   googleAdsBookingSendTo,
   googleTagInlineSnippet,
+  googleTagLoaderId,
   grantGoogleTagConsent,
+  isValidGaMeasurementId,
   isValidGoogleAdsId,
   revokeGoogleTagConsent,
   trackGoogleAdsBooking,
@@ -45,6 +47,45 @@ describe('isValidGoogleAdsId', () => {
     assert.equal(isValidGoogleAdsId(''), false)
     assert.equal(isValidGoogleAdsId('G-XXXX'), false)
     assert.equal(isValidGoogleAdsId("AW-1';alert(1)//"), false)
+  })
+})
+
+describe('isValidGaMeasurementId', () => {
+  it('lubab G- ja suurtähed/numbrid', () => {
+    assert.equal(isValidGaMeasurementId('G-56FSCMW5CE'), true)
+    assert.equal(isValidGaMeasurementId(' G-ABCDEF123 '), true)
+  })
+
+  it('lükkab tagasi tühja, Ads ID ja süstimiskatse', () => {
+    assert.equal(isValidGaMeasurementId(''), false)
+    assert.equal(isValidGaMeasurementId('AW-1016905977'), false)
+    assert.equal(isValidGaMeasurementId('g-56FSCMW5CE'), false)
+    assert.equal(isValidGaMeasurementId('G-abc'), false)
+    assert.equal(isValidGaMeasurementId("G-XXXX';alert(1)//"), false)
+    assert.equal(isValidGaMeasurementId('G-AB<script>'), false)
+    assert.equal(isValidGaMeasurementId('G-AB CD'), false)
+  })
+})
+
+describe('googleTagLoaderId', () => {
+  it('eelistab kehtivat GA4 ID-d Adsi ees', () => {
+    assert.equal(googleTagLoaderId('AW-1016905977', 'G-56FSCMW5CE'), 'G-56FSCMW5CE')
+  })
+
+  it('tagastab Adsi ID, kui GA4 puudub', () => {
+    assert.equal(googleTagLoaderId('AW-1016905977'), 'AW-1016905977')
+    assert.equal(googleTagLoaderId('AW-1016905977', ''), 'AW-1016905977')
+  })
+
+  it('tagastab GA4 ID, kui Ads puudub', () => {
+    assert.equal(googleTagLoaderId(undefined, 'G-56FSCMW5CE'), 'G-56FSCMW5CE')
+    assert.equal(googleTagLoaderId('', 'G-56FSCMW5CE'), 'G-56FSCMW5CE')
+  })
+
+  it('ignoreerib kehtetut GA4 ID-d', () => {
+    assert.equal(googleTagLoaderId('AW-1016905977', "G-XX';alert(1)//"), 'AW-1016905977')
+    assert.equal(googleTagLoaderId(undefined, "G-XX';alert(1)//"), undefined)
+    assert.equal(googleTagLoaderId(), undefined)
   })
 })
 
@@ -148,6 +189,40 @@ describe('Consent Mode', () => {
     assert.equal(snippet.includes('"ad_user_data":"granted"'), true)
     assert.equal(snippet.includes('"ad_personalization":"granted"'), true)
     assert.equal(snippet.includes('"analytics_storage":"granted"'), true)
+  })
+
+  it('lisab ainult Adsi config, kui GA4 puudub', () => {
+    const snippet = googleTagInlineSnippet('AW-1016905977')
+    assert.equal(snippet.includes("gtag('config', 'AW-1016905977')"), true)
+    assert.equal(snippet.includes("gtag('config', 'G-"), false)
+  })
+
+  it('lisab ainult GA4 config, kui Ads puudub', () => {
+    const snippet = googleTagInlineSnippet(undefined, 'G-56FSCMW5CE')
+    const defaultIdx = snippet.indexOf("gtag('consent', 'default'")
+    const gaIdx = snippet.indexOf("gtag('config', 'G-56FSCMW5CE')")
+    assert.ok(defaultIdx >= 0, 'consent default puudub')
+    assert.ok(gaIdx > defaultIdx, 'consent default peab olema enne GA config')
+    assert.equal(snippet.includes("gtag('config', 'AW-"), false)
+  })
+
+  it('lisab mõlemad config-id, Ads ja GA4', () => {
+    const snippet = googleTagInlineSnippet('AW-1016905977', 'G-56FSCMW5CE')
+    const defaultIdx = snippet.indexOf("gtag('consent', 'default'")
+    const adsIdx = snippet.indexOf("gtag('config', 'AW-1016905977')")
+    const gaIdx = snippet.indexOf("gtag('config', 'G-56FSCMW5CE')")
+    assert.ok(defaultIdx >= 0)
+    assert.ok(adsIdx > defaultIdx)
+    assert.ok(gaIdx > defaultIdx)
+  })
+
+  it('ei lisa GA config kehtetu ID korral (süstimiskaitse)', () => {
+    const injected = "G-XXXX';alert(1)//"
+    const snippet = googleTagInlineSnippet('AW-1016905977', injected)
+    assert.equal(snippet.includes("gtag('config', 'AW-1016905977')"), true)
+    assert.equal(snippet.includes(injected), false)
+    assert.equal(snippet.includes('alert(1)'), false)
+    assert.equal(snippet.includes("gtag('config', 'G-XXXX"), false)
   })
 
   it("saadab 'update' granted uuesti nõustumisel", () => {
