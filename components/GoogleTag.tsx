@@ -9,19 +9,19 @@ import {
 } from '@/lib/cookie-consent'
 import {
   googleTagInlineSnippet,
+  googleTagLoaderId,
   grantGoogleTagConsent,
-  isValidGoogleAdsId,
   revokeGoogleTagConsent,
 } from '@/lib/google-ads'
 
 type Props = {
-  adsId: string
+  adsId?: string
+  gaId?: string
 }
 
-export default function GoogleTag({ adsId }: Props) {
+export default function GoogleTag({ adsId, gaId }: Props) {
   const [allowed, setAllowed] = useState(false)
-  const safeId = adsId.trim()
-  const validId = isValidGoogleAdsId(safeId)
+  const loaderId = googleTagLoaderId(adsId, gaId)
 
   useEffect(() => {
     setAllowed(hasMarketingConsent())
@@ -37,20 +37,20 @@ export default function GoogleTag({ adsId }: Props) {
     })
   }, [])
 
-  if (!allowed || !validId) return null
+  if (!allowed || !loaderId) return null
 
   return (
     <>
       <Script
         id="google-tag-src"
-        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(safeId)}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(loaderId)}`}
         strategy="afterInteractive"
       />
       <Script
         id="google-tag"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
-          __html: googleTagInlineSnippet(safeId),
+          __html: googleTagInlineSnippet(adsId, gaId),
         }}
       />
     </>

@@ -97,7 +97,7 @@
   },
   "CookieBanner": {
     "ariaLabel": "Küpsiste nõusolek",
-    "message": "Kasutame vajalikke küpsiseid saidi tööks. Turundusküpsiseid (sh Meta Pixel ja Google'i silt) kasutame ainult teie nõusolekul.",
+    "message": "Kasutame vajalikke küpsiseid saidi tööks. Turundusküpsiseid (sh Meta Pixel, Google'i silt ja Google Analytics) kasutame ainult teie nõusolekul.",
     "readMore": "Lugege lähemalt",
     "accept": "Nõustun kõigega",
     "necessaryOnly": "Ainult vajalikud",
@@ -106,7 +106,7 @@
     "necessaryTitle": "Vajalikud",
     "necessaryDesc": "Saiditoimimiseks vajalikud küpsised. Neid ei saa välja lülitada.",
     "marketingTitle": "Turundus",
-    "marketingDesc": "Meta Pixel, Google'i silt (gtag) ja seotud turundus-/mõõtmisküpsised reklaamide ja külastuste mõõtmiseks.",
+    "marketingDesc": "Meta Pixel, Google'i silt (gtag), Google Analytics ja seotud turundus-/mõõtmisküpsised reklaamide ja külastuste mõõtmiseks.",
     "alwaysOn": "Alati sees"
   },
   "BroneeriPage": {
@@ -740,7 +740,7 @@
     "s8Analytics": "Analüütilised küpsised",
     "s8AnalyticsP": "Need küpsised aitavad meil mõista, kuidas külastajad meie veebilehte kasutavad:",
     "s8AnalyticsLi": ["Külastuste arv ja kestus", "Kõige populaarsemad lehed", "Tehnilised andmed (brauser, seade)"],
-    "s8AnalyticsNote": "Meta Pixeli, Google'i sildi (gtag) ja turundusküpsiseid laadime alles pärast teie selgesõnalist nõusolekut. Nõusolekut saate hiljem muuta lingiga „Küpsiste seaded“.",
+    "s8AnalyticsNote": "Meta Pixeli, Google'i sildi (gtag), Google Analyticsi ja turundusküpsiseid laadime alles pärast teie selgesõnalist nõusolekut. Nõusolekut saate hiljem muuta lingiga „Küpsiste seaded“.",
     "s8_3Title": "8.3. Kuidas küpsiseid kontrollida?",
     "s8_3P": "Te saate oma brauseri seadetes kontrollida ja kustutada küpsiseid. Palun pange tähele, et mõned küpsised on veebilehe töötamiseks vajalikud ja nende keelamine võib mõjutada lehe funktsionaalsust.",
     "s8_3P2": "Nõusolekut saate muuta jaluse lingiga „Küpsiste seaded“ või kustutades brauseri andmetest võtme",
